@@ -668,7 +668,8 @@ const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
  {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1']},
- {name:'Capital Radio Theatre',dial:'720 AM',tracks:['https://archive.org/download/OrsonWelles-MercuryTheater-1938Recordings/MercuryTheater38-10-30WarOfTheWorlds.mp3'],duration:3084.552}
+ {name:'Capital Radio Theatre',dial:'720 AM',tracks:['assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=20261004-local1'],duration:3084.552},
+ {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265}
 ];
 let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
 const titleRadioBackgroundFeeds=new Map();
