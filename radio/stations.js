@@ -41,8 +41,24 @@
    clock:[
     {
      id:'war-of-the-worlds',
-     src:'https://archive.org/download/OrsonWelles-MercuryTheater-1938Recordings/MercuryTheater38-10-30WarOfTheWorlds.mp3',
+     src:'https://drive.usercontent.google.com/download?id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4&export=download&confirm=t',
      duration:3084.552,
+     loop:true
+    }
+   ]
+  },
+  {
+   id:'capital-melody',
+   stationNumber:4,
+   dial:'880 AM',
+   name:'Capital Melody',
+   format:'Popular music of the 1930s',
+   restartOnTune:false,
+   clock:[
+    {
+     id:'1930s-oldies-program',
+     src:'https://drive.usercontent.google.com/download?id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3&export=download&confirm=t',
+     duration:7978.083265,
      loop:true
     }
    ]
