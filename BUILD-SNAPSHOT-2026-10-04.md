@@ -94,3 +94,12 @@ On this snapshot date the following were updated to match the current approved d
 - DECISIONS.md
 - HISTORICAL-NOTES.md
 - BUILD-SNAPSHOT-2026-10-04.md
+
+
+## Daytime city ambience — implemented
+
+- Added the 3:43 **R25-11-1930s Urban Traffic** ambience as a quiet looping title-screen background layer.
+- It plays only while the title room is in its real Washington, D.C. daytime state and stops at night.
+- Mix level is **7%**, intentionally well below the title radio.
+- The ambience is independent of radio tuning/power and also stops when leaving the title screen.
+- Source recording: craigsmith / Freesound 479574, CC0.
