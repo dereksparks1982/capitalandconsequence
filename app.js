@@ -632,21 +632,14 @@ const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').inn
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
-const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night2';
-let titleCityAmbienceAudio=null,titleNightAmbienceAudio=null;
+const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
+let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
 function titleCityAmbienceVolume(){return window.matchMedia&&window.matchMedia('(max-width:900px)').matches?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME}
 function ensureTitleCityAmbience(){
  if(titleCityAmbienceAudio)return titleCityAmbienceAudio;
- const audio=new Audio(TITLE_DAY_AMBIENCE_SRC);
+ const audio=new Audio();
  audio.preload='auto';audio.loop=true;audio.volume=titleCityAmbienceVolume();
  titleCityAmbienceAudio=audio;
- return audio;
-}
-function ensureTitleNightAmbience(){
- if(titleNightAmbienceAudio)return titleNightAmbienceAudio;
- const audio=new Audio(TITLE_NIGHT_AMBIENCE_SRC);
- audio.preload='auto';audio.loop=true;audio.volume=titleCityAmbienceVolume();
- titleNightAmbienceAudio=audio;
  return audio;
 }
 function titleEnvironmentIsDay(){
@@ -654,26 +647,29 @@ function titleEnvironmentIsDay(){
  return !!(bg&&bg.dataset.mode==='day');
 }
 function syncTitleCityAmbience(){
- const day=ensureTitleCityAmbience(),night=ensureTitleNightAmbience();
- const volume=titleCityAmbienceVolume(),visible=titleScreenVisible()&&!S.paused,isDay=titleEnvironmentIsDay();
- day.volume=volume;night.volume=volume;
- if(visible&&isDay){
-  night.pause();
-  const p=day.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
- }else if(visible&&!isDay){
-  day.pause();
-  const p=night.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ const audio=ensureTitleCityAmbience();
+ const volume=titleCityAmbienceVolume(),visible=titleScreenVisible()&&!S.paused;
+ const mode=titleEnvironmentIsDay()?'day':'night';
+ const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
+ if(titleCityAmbienceMode!==mode){
+  audio.pause();
+  titleCityAmbienceMode=mode;
+  audio.src=src;
+  audio.load();
+  try{audio.currentTime=0}catch(e){}
+ }
+ audio.volume=volume;
+ if(visible){
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }else{
-  day.pause();night.pause();
+  audio.pause();
  }
 }
 function stopTitleCityAmbience(reset=true){
- for(const audio of [titleCityAmbienceAudio,titleNightAmbienceAudio]){
-  if(!audio)continue;
-  audio.pause();
-  if(reset){try{audio.currentTime=0}catch(e){}}
-  audio.volume=titleCityAmbienceVolume();
- }
+ if(!titleCityAmbienceAudio)return;
+ titleCityAmbienceAudio.pause();
+ if(reset){try{titleCityAmbienceAudio.currentTime=0}catch(e){}}
+ titleCityAmbienceAudio.volume=titleCityAmbienceVolume();
 }
 
 const TITLE_RADIO_VOLUME=.38;
@@ -856,7 +852,6 @@ function toggleTitleRadioPower(){
 function pauseTitleAudio(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
- if(titleNightAmbienceAudio)titleNightAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
@@ -1218,8 +1213,8 @@ function initTitleScreen(){
  document.addEventListener('keydown',startTitleRadio,{once:true});
  screen.addEventListener('pointerdown',startTitleRadioBackgroundFeeds,{once:true});
  document.addEventListener('keydown',startTitleRadioBackgroundFeeds,{once:true});
- screen.addEventListener('pointerdown',syncTitleCityAmbience,{once:true});
- document.addEventListener('keydown',syncTitleCityAmbience,{once:true});
+ screen.addEventListener('pointerdown',syncTitleCityAmbience);
+ document.addEventListener('keydown',syncTitleCityAmbience);
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
