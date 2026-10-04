@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="stylesheet" href="styles.css?v=20261004-newspaper1"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="stylesheet" href="styles.css?v=20261004-dcmap1"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
 <body><div id="titleScreen" class="title-screen" aria-label="Federal Electric title screen">
   <div class="title-screen-frame">
     <img id="titleOfficeBackground" class="title-screen-art" src="assets/federal-electric-office-day.webp?v=20261003-dc1" alt="Washington, D.C. executive office">
@@ -24,6 +24,7 @@
     </div>
     <button id="titleRadioKnob" class="title-radio-knob" type="button" aria-label="Turn radio off" aria-pressed="false"></button>
     <button id="titleNewspaperM" class="title-newspaper-m" type="button" aria-label="Open the Metropolitan Ledger newspaper"></button>
+    <button id="titleDcMap" class="title-dc-map" type="button" aria-label="Open the 1938 Washington, D.C. map"></button>
     <button id="titleContinue" class="title-hotspot title-continue" type="button" aria-label="Continue"></button>
     <button id="titleLoadProfile" class="title-hotspot title-load" type="button" aria-label="Load Profile"></button>
     <button id="titleNewProfile" class="title-hotspot title-new" type="button" aria-label="New Profile"></button>
@@ -33,6 +34,23 @@
     <section class="title-dialog-card" role="dialog" aria-modal="true" aria-labelledby="titleDialogHeading">
       <div class="title-dialog-head"><h2 id="titleDialogHeading">Executive Records</h2><button id="titleDialogClose" type="button" aria-label="Close">×</button></div>
       <div id="titleDialogBody"></div>
+    </section>
+  </div>
+  <div id="titleMapViewer" class="title-map-viewer" hidden>
+    <section class="title-map-card" role="dialog" aria-modal="true" aria-labelledby="titleMapHeading">
+      <div class="title-map-head">
+        <div><h2 id="titleMapHeading">Washington In and Out Guide</h2><p>Washington, D.C. · 1938</p></div>
+        <div class="title-map-tools">
+          <button id="titleMapZoomOut" type="button" aria-label="Zoom out">−</button>
+          <button id="titleMapReset" type="button">Reset</button>
+          <button id="titleMapZoomIn" type="button" aria-label="Zoom in">+</button>
+          <button id="titleMapClose" class="title-map-close" type="button" aria-label="Close map">×</button>
+        </div>
+      </div>
+      <div id="titleMapViewport" class="title-map-viewport" tabindex="0" aria-label="1938 Washington, D.C. map. Use the mouse wheel to zoom and drag to move around the map.">
+        <img id="titleMapImage" src="https://upload.wikimedia.org/wikipedia/commons/f/f5/1938_Pictorial_Map_of_Washington_D.C._-_Geographicus_-_WashingtonDC-traster-1938.jpg" alt="Washington In and Out Guide, 1938 pictorial map of Washington, D.C." draggable="false">
+      </div>
+      <div class="title-map-help">Mouse wheel to zoom · click and drag to move</div>
     </section>
   </div>
 </div><header><div id="appVersion" class="app-version" aria-label="Federal Electric version"></div><div class="brand-lockup"><img class="company-logo" src="assets/federal-electric-logo.webp?v=20261002-logo2" alt="Federal Electric FE logo"><div class="brand-copy"><h1>FEDERAL ELECTRIC</h1><small>EXECUTIVE CONTROL BOOK · WASHINGTON, D.C. · 1938</small></div></div><div class="header-mascots" aria-label="Elephant and donkey silhouettes">
