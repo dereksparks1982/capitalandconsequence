@@ -390,9 +390,25 @@ body.elephant-easter-egg-open{overflow:hidden}
  filter:brightness(1.1);
 }
 .title-continue{top:46.55%}
-.title-load{top:56.86%}
-.title-new{top:67.82%}
-.title-settings{top:78.44%}
+.title-profile{top:56.86%}
+.title-options{top:67.82%}
+.title-archives{top:78.44%}
+
+/* The approved office artwork still contains the old drawer captions.
+   Cover only those three caption areas so the new consolidated menu reads correctly. */
+.title-profile::after,.title-options::after,.title-archives::after{
+ content:attr(data-title-label);
+ position:absolute;left:15%;right:15%;top:27%;bottom:27%;
+ display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(#d4bb83,#b8975c);
+ border:1px solid rgba(78,53,25,.9);
+ box-shadow:inset 0 1px 0 rgba(255,242,196,.55),inset 0 -1px 0 rgba(72,45,19,.35);
+ color:#24180d;
+ font:700 clamp(7px,.78vw,15px)/1 Georgia,'Times New Roman',serif;
+ letter-spacing:.055em;
+ text-shadow:0 1px rgba(248,227,176,.65);
+ pointer-events:none;
+}
 @media (orientation:portrait) and (max-width:900px){
  .title-screen{overflow:hidden}
  .title-screen-frame{
