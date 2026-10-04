@@ -162,8 +162,9 @@ The things you ignore may continue without you.
 Federal Electric is actively being developed. The README is intentionally kept player-facing. Detailed implementation history, design decisions, build notes, and future plans live in the project documents:
 
 - [Roadmap](ROADMAP.md)
-- [Current build snapshot](BUILD-SNAPSHOT-2026-10-03.md)
-- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-02.md)
+- [Current build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
+- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-03.md)
+- [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-02.md)
 - [Market design](MARKET-DESIGN.md)
 - [Fight world design](FIGHT-WORLD-DESIGN.md)
 - [Online systems design](ONLINE-SYSTEMS-DESIGN.md)
