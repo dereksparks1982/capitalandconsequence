@@ -711,7 +711,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger','<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();stopTitleRadio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -880,6 +880,103 @@ function toggleTitleFan(){
  }
 }
 
+const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
+
+function titleMapApply(){
+ const img=$('#titleMapImage');if(!img)return;
+ img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
+}
+function titleMapClamp(){
+ const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img||!img.naturalWidth||!img.naturalHeight)return;
+ const vw=viewport.clientWidth,vh=viewport.clientHeight;
+ const w=img.naturalWidth*titleMapState.scale,h=img.naturalHeight*titleMapState.scale;
+ titleMapState.x=w<=vw?(vw-w)/2:Math.min(0,Math.max(vw-w,titleMapState.x));
+ titleMapState.y=h<=vh?(vh-h)/2:Math.min(0,Math.max(vh-h,titleMapState.y));
+}
+function titleMapReset(){
+ const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img||!img.naturalWidth||!img.naturalHeight)return;
+ const fit=Math.min(viewport.clientWidth/img.naturalWidth,viewport.clientHeight/img.naturalHeight);
+ titleMapState.minScale=fit;
+ titleMapState.maxScale=Math.max(fit*12,2);
+ titleMapState.scale=fit;
+ titleMapState.x=(viewport.clientWidth-img.naturalWidth*fit)/2;
+ titleMapState.y=(viewport.clientHeight-img.naturalHeight*fit)/2;
+ titleMapApply();
+}
+function titleMapZoom(factor,clientX,clientY){
+ const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img||!img.naturalWidth)return;
+ const rect=viewport.getBoundingClientRect();
+ const localX=Number.isFinite(clientX)?clientX-rect.left:viewport.clientWidth/2;
+ const localY=Number.isFinite(clientY)?clientY-rect.top:viewport.clientHeight/2;
+ const oldScale=titleMapState.scale;
+ const next=Math.max(titleMapState.minScale,Math.min(titleMapState.maxScale,oldScale*factor));
+ if(Math.abs(next-oldScale)<1e-7)return;
+ const imageX=(localX-titleMapState.x)/oldScale;
+ const imageY=(localY-titleMapState.y)/oldScale;
+ titleMapState.scale=next;
+ titleMapState.x=localX-imageX*next;
+ titleMapState.y=localY-imageY*next;
+ titleMapClamp();titleMapApply();
+}
+function openTitleMap(){
+ const viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewer||!viewport||!img)return;
+ viewer.hidden=false;
+ document.body.classList.add('title-map-open');
+ const ready=()=>requestAnimationFrame(()=>{titleMapReset();viewport.focus()});
+ if(img.complete&&img.naturalWidth)ready();else img.addEventListener('load',ready,{once:true});
+}
+function closeTitleMap(){
+ const viewer=$('#titleMapViewer');if(viewer)viewer.hidden=true;
+ document.body.classList.remove('title-map-open');
+ titleMapState.pointerId=null;
+ const viewport=$('#titleMapViewport');if(viewport)viewport.classList.remove('is-dragging');
+}
+function initTitleMapViewer(){
+ const open=$('#titleDcMap'),viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport');
+ if(!open||!viewer||!viewport)return;
+ open.onclick=openTitleMap;
+ $('#titleMapClose').onclick=closeTitleMap;
+ $('#titleMapReset').onclick=titleMapReset;
+ $('#titleMapZoomIn').onclick=()=>titleMapZoom(1.4);
+ $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
+ viewer.addEventListener('click',e=>{if(e.target===viewer)closeTitleMap()});
+ viewport.addEventListener('wheel',e=>{e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+ viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
+ viewport.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  titleMapState.pointerId=e.pointerId;titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
+  viewport.setPointerCapture(e.pointerId);viewport.classList.add('is-dragging');e.preventDefault();
+ });
+ viewport.addEventListener('pointermove',e=>{
+  if(titleMapState.pointerId!==e.pointerId)return;
+  titleMapState.x+=e.clientX-titleMapState.lastX;titleMapState.y+=e.clientY-titleMapState.lastY;
+  titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
+  titleMapClamp();titleMapApply();
+ });
+ const release=e=>{
+  if(titleMapState.pointerId!==e.pointerId)return;
+  titleMapState.pointerId=null;viewport.classList.remove('is-dragging');
+  try{viewport.releasePointerCapture(e.pointerId)}catch(err){}
+ };
+ viewport.addEventListener('pointerup',release);
+ viewport.addEventListener('pointercancel',release);
+ viewport.addEventListener('keydown',e=>{
+  if(e.key==='+'||e.key==='='){e.preventDefault();titleMapZoom(1.4)}
+  else if(e.key==='-'||e.key==='_'){e.preventDefault();titleMapZoom(1/1.4)}
+  else if(e.key==='0'){e.preventDefault();titleMapReset()}
+  else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+   e.preventDefault();const step=60;
+   if(e.key==='ArrowLeft')titleMapState.x+=step;
+   if(e.key==='ArrowRight')titleMapState.x-=step;
+   if(e.key==='ArrowUp')titleMapState.y+=step;
+   if(e.key==='ArrowDown')titleMapState.y-=step;
+   titleMapClamp();titleMapApply();
+  }
+ });
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)closeTitleMap()});
+ window.addEventListener('resize',()=>{if(!viewer.hidden)titleMapReset()});
+}
+
 function initTitleScreen(){
  const screen=$('#titleScreen');if(!screen)return;
  screen.hidden=false;
@@ -889,6 +986,7 @@ function initTitleScreen(){
  loadTitleRadioTrack(false);
  updateTitleRadioControls();
  startTitleRadio();
+ initTitleMapViewer();
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
