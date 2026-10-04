@@ -342,22 +342,32 @@ This file records decisions that should not drift silently during development.
 ## 2026-10-04 — Title-screen radio station architecture
 
 - The radio remains part of the fixed approved title artwork. Interactions use transparent hit targets.
-- The **lower radio dial** is the tuning control and the **upper tuning/display window** is the power control.
-- **Station 1 is special:** it is the Federal Electric title theme, not a simulated live broadcast. Every tune-in starts the song from the beginning; leaving and returning restarts it.
-- Real broadcast stations follow a continuous station timeline. The station does not wait for the player and does not save a listener-specific resume point.
-- Tuning into a real broadcast joins whatever portion would currently be on the air. Missing the beginning of a program means missing it.
-- Reloading or tuning away should not reset real broadcast programming once the schedule-driven system is implemented.
-- **Station 2** remains a static frequency during daylight. At night it is planned to carry intermittent period-appropriate Morse content through the static. The exact Morse recording/message remains undecided.
-- **Station 3** currently carries the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds*. It is planned to grow into a scheduled sequence of Mercury Theatre programs, with some programs such as *Dracula* reserved for nighttime listening.
-- A further static/dead frequency is planned immediately after the Orson Welles station using the user-supplied static recording. It is documented but not yet in the repository.
+- The **lower radio dial** remains tuning-only.
+- Radio power is a separate invisible hotspot over the square panel on the left side of the radio artwork.
+- The title radio now uses a dedicated Federal Electric broadcast engine in `radio/radio-engine.js`, with station definitions isolated in `radio/stations.js`.
+- Howler.js Core 2.2.4 is vendored locally under `vendor/howler/` and its MIT license is retained.
+- A temporary station label appears above the radio after each tuning change and shows station number, dial frequency and station name.
+- **Station 1 · 610 AM · Federal Electric Network** is special: it is the Federal Electric title theme, not a simulated live broadcast. Every tune-in starts from 0:00.
+- **Station 2 · 540 AM · Capital Signal** is the static / experimental-signal frequency. Daytime remains static; nighttime Morse remains planned.
+- **Station 3 · 720 AM · Capital Radio Theatre** carries the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* program and is intended to grow into a scheduled drama/talk clockwheel.
+- **Station 4 · 880 AM · Capital Melody** carries the complete user-supplied 1930s music recording through a 64 kbps radio-optimized game copy. The untouched original recording remains unchanged.
+- Real broadcast stations are driven by an absolute broadcast clock. Radio power controls audibility only and never creates a listener-specific resume point.
+- Turning the radio OFF must not pause Capital Signal, Capital Radio Theatre, Capital Melody or later live-style stations. Turning it back ON resynchronizes to the current on-air position.
+- The game PAUSE button is different from radio power: PAUSE silences/stops all title audio. On PLAY, live stations resynchronize to the time their broadcast clock has reached.
+- Large media may be hosted outside GitHub. Current oversized radio assets are staged in the Google Drive folder **Federal Electric Radio**. Before public release, Drive-hosted media must use a stable public/link-access URL.
+- Future station programming should be clockwheel-based: music, station IDs, announcers, advertisements, news, dramas and reception effects are scheduled content rather than user-selected tracks.
+- Some drama programs may be restricted to historically/thematically suitable evening slots. *Dracula* remains a specific nighttime candidate.
 - Future weak/distant stations should sound like one fixed frequency with reception variation, not repeated tuning effects.
 - Future historical news interruptions should reflect period network bulletins, not the later Emergency Broadcast System.
 
 
 ## 2026-10-04 — Daytime Washington title ambience
 
-- The title-screen office now carries a subtle loop of period urban traffic during the **daytime D.C. environment only**.
+- The title-screen office carries a subtle loop of period urban traffic during the **daytime D.C. environment only**.
 - The ambience follows the same real Washington, D.C. sunrise/sunset state that selects the day and night office artwork.
-- The traffic layer runs independently from the radio and is deliberately mixed very low at **7% volume** so it reads as street sound outside the office rather than foreground audio.
+- The traffic layer runs independently from radio tuning/power.
+- Approved mix is **7% on desktop** and **2% on mobile** because phone speakers make the same nominal gain sound much more forward.
+- The game PAUSE button is a master title-audio pause and therefore also stops this ambience.
 - The ambience stops when the title environment becomes night and stops when the player leaves the title screen.
-- Current source: craigsmith, **R25-11-1930s Urban Traffic**, Freesound sound 479574, CC0. The recording is sourced from preserved Hollywood optical effects and is described as 1930s urban traffic.
+- Current source: craigsmith, **R25-11-1930s Urban Traffic**, Freesound sound 479574, CC0.
+- Future mobile audio work may use device-specific gain/EQ/compression, but Federal Electric will not attempt to choose a particular physical phone speaker; output routing remains browser/OS controlled.
