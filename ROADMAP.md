@@ -380,3 +380,20 @@ This remains planned after the current Company Operations deepening work. It is 
 - stock quantity entry persistence through market/table rerenders remains a separate stabilization item until verified
 - deeper poker correctness, including side pots/all-in reopening and direct-close settlement
 - deeper historical research for horse betting, boxing wagering and underground activity
+
+
+## Title-screen radio network — 2026-10-04
+
+- [x] Convert the title radio from a single music on/off control into a station-based player.
+- [x] Make the lower radio dial advance through stations rather than turn the radio off.
+- [x] Make the upper tuning/display window above the dial the dedicated radio power control.
+- [x] Station 1: existing title music.
+- [x] Station 2: approved one-minute radio-static recording on continuous rotation.
+- [x] Station 3: original October 30, 1938 Mercury Theatre / Orson Welles War of the Worlds broadcast on continuous rotation.
+- [x] Use playlist-based stations so multiple recordings can play in fixed sequential order and return to the first recording after the last.
+- [ ] Build Station 4 from the selected Library of Congress recordings, appended in the exact order approved as files are supplied.
+- [ ] Add one or two additional distinct static / dead-frequency stations so empty frequencies do not all sound identical.
+- [ ] Add a weak distant station that remains on one frequency but fades in and out under static, representing a broadcaster outside Washington whose signal can barely be received.
+- [ ] Continue extending every station with compatible recordings so the dial gradually becomes a long-form 1938 radio environment rather than a set of short obvious loops.
+- [ ] Add historically appropriate news interruptions and emergency-style bulletins when suitable original recordings are found. Do not imitate the later Emergency Broadcast System, which did not exist in 1938.
+- [ ] Consider calendar-aware historical broadcasts later, so major 1938 events can surface when the in-game date reaches them.

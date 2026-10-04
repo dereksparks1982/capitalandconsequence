@@ -629,63 +629,78 @@ function pokerButton(circle,stake){const limit=pokerLimit(circle),used=S.pokerPl
 $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').onclick=()=>pokerButton('middle',100);$('#pokerElite').onclick=()=>pokerButton('elite',500);$('#simPokerWorking').onclick=()=>simulatePoker('working',25);$('#simPokerMiddle').onclick=()=>simulatePoker('middle',100);$('#simPokerElite').onclick=()=>simulatePoker('elite',500);
 document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
-const TITLE_MUSIC_URL='assets/audio/sunflower-slow-drag.ogg?v=20261003-title2';
-const TITLE_MUSIC_VOLUME=.38;
-let titleMusic=null,titleMusicFadeTimer=null,titleRadioOff=false;
+const TITLE_RADIO_VOLUME=.38;
+const TITLE_RADIO_STATIONS=[
+ {name:'Station 1',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
+ {name:'Station 2',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1']},
+ {name:'Station 3',tracks:['https://archive.org/download/OrsonWelles-MercuryTheater-1938Recordings/MercuryTheater38-10-30WarOfTheWorlds.mp3']}
+];
+let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0;
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
-function ensureTitleMusic(){
- if(titleMusic)return titleMusic;
- titleMusic=new Audio(TITLE_MUSIC_URL);
- titleMusic.loop=true;
- titleMusic.preload='auto';
- titleMusic.volume=TITLE_MUSIC_VOLUME;
- return titleMusic;
+function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
+function ensureTitleRadioControls(){
+ const frame=document.querySelector('.title-screen-frame');
+ const knob=$('#titleRadioKnob');
+ if(knob){knob.removeAttribute('aria-pressed');knob.setAttribute('aria-label','Tune to next radio station')}
+ let power=$('#titleRadioPower');
+ if(!power&&frame){
+  power=document.createElement('button');
+  power.id='titleRadioPower';
+  power.type='button';
+  power.setAttribute('aria-label','Turn radio off');
+  power.setAttribute('aria-pressed','false');
+  power.style.cssText='position:absolute;left:12.95%;top:42.98%;width:2.11%;height:4.74%;margin:0;padding:0;border:0;background:transparent;outline:none;box-shadow:none;cursor:pointer;border-radius:48%;z-index:4;-webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none';
+  frame.appendChild(power);
+ }
+ return power;
 }
-function startTitleMusic(){
+function ensureTitleRadioAudio(){
+ if(titleRadioAudio)return titleRadioAudio;
+ titleRadioAudio=new Audio();
+ titleRadioAudio.preload='auto';
+ titleRadioAudio.volume=TITLE_RADIO_VOLUME;
+ titleRadioAudio.addEventListener('ended',()=>{const station=currentTitleRadioStation();titleRadioTrackIndex=(titleRadioTrackIndex+1)%station.tracks.length;loadTitleRadioTrack(true)});
+ return titleRadioAudio;
+}
+function loadTitleRadioTrack(playNow=false){
+ const audio=ensureTitleRadioAudio();
+ const station=currentTitleRadioStation();
+ if(!station||!station.tracks.length)return;
+ titleRadioTrackIndex=Math.max(0,Math.min(titleRadioTrackIndex,station.tracks.length-1));
+ audio.pause();audio.src=station.tracks[titleRadioTrackIndex];audio.load();audio.volume=TITLE_RADIO_VOLUME;
+ if(playNow&&!titleRadioOff&&titleScreenVisible()){const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+}
+function startTitleRadio(){
  if(!titleScreenVisible()||titleRadioOff)return;
- const audio=ensureTitleMusic();
- if(titleMusicFadeTimer){clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null}
- audio.volume=TITLE_MUSIC_VOLUME;
- const p=audio.play();
- if(p&&typeof p.catch==='function')p.catch(()=>{});
+ const audio=ensureTitleRadioAudio();
+ if(!audio.src)loadTitleRadioTrack(false);
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ audio.volume=TITLE_RADIO_VOLUME;
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
-function toggleTitleRadio(){
- const audio=ensureTitleMusic();
- if(titleMusicFadeTimer){clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null}
- const button=$('#titleRadioKnob');
- if(titleRadioOff){
-  titleRadioOff=false;
-  audio.volume=TITLE_MUSIC_VOLUME;
-  const p=audio.play();
-  if(p&&typeof p.catch==='function')p.catch(()=>{});
- }else{
-  titleRadioOff=true;
-  audio.pause();
- }
- if(button){
-  button.setAttribute('aria-pressed',titleRadioOff?'true':'false');
-  button.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
- }
+function updateTitleRadioControls(){
+ const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
+ if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+station.name);
+ if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
 }
-function stopTitleMusic(fade=true){
- if(!titleMusic)return;
- if(titleMusicFadeTimer){clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null}
- const audio=titleMusic;
- const finish=()=>{
-  audio.pause();
-  try{audio.currentTime=0}catch(e){}
-  audio.volume=TITLE_MUSIC_VOLUME;
- };
+function cycleTitleRadioStation(){
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ titleRadioStationIndex=(titleRadioStationIndex+1)%TITLE_RADIO_STATIONS.length;titleRadioTrackIndex=0;
+ loadTitleRadioTrack(!titleRadioOff);updateTitleRadioControls();
+}
+function toggleTitleRadioPower(){
+ const audio=ensureTitleRadioAudio();
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ titleRadioOff=!titleRadioOff;if(titleRadioOff)audio.pause();else startTitleRadio();updateTitleRadioControls();
+}
+function stopTitleRadio(fade=true){
+ if(!titleRadioAudio)return;
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ const audio=titleRadioAudio;
+ const finish=()=>{audio.pause();try{audio.currentTime=0}catch(e){}audio.volume=TITLE_RADIO_VOLUME};
  if(!fade||audio.paused){finish();return}
- const start=Math.max(0,audio.volume),steps=12;
- let step=0;
- titleMusicFadeTimer=setInterval(()=>{
-  step++;
-  audio.volume=Math.max(0,start*(1-step/steps));
-  if(step>=steps){
-   clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null;finish();
-  }
- },50);
+ const start=Math.max(0,audio.volume),steps=12;let step=0;
+ titleRadioFadeTimer=setInterval(()=>{step++;audio.volume=Math.max(0,start*(1-step/steps));if(step>=steps){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null;finish()}},50);
 }
 function openTitleDialog(title,html){
  const dialog=$('#titleDialog'),heading=$('#titleDialogHeading'),body=$('#titleDialogBody');
@@ -696,7 +711,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger','<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();stopTitleMusic(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();stopTitleRadio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -870,14 +885,18 @@ function initTitleScreen(){
  screen.hidden=false;
  startTitleEnvironment();
  startTitleClock();
- startTitleMusic();
- screen.addEventListener('pointerdown',startTitleMusic,{once:true});
- document.addEventListener('keydown',startTitleMusic,{once:true});
+ ensureTitleRadioControls();
+ loadTitleRadioTrack(false);
+ updateTitleRadioControls();
+ startTitleRadio();
+ screen.addEventListener('pointerdown',startTitleRadio,{once:true});
+ document.addEventListener('keydown',startTitleRadio,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleLoadProfile').onclick=()=>renderProfileManager();
  $('#titleNewProfile').onclick=showNewProfileForm;
  $('#titleSettings').onclick=()=>openTitleDialog('Settings','<p>Settings have not been defined yet. This drawer is reserved for them.</p><div class="title-dialog-actions"><button id="settingsClose" type="button">Close</button></div>');
- $('#titleRadioKnob').onclick=toggleTitleRadio;
+ $('#titleRadioKnob').onclick=cycleTitleRadioStation;
+ $('#titleRadioPower').onclick=toggleTitleRadioPower;
  $('#titleNewspaperM').onclick=openTitleNewspaper;
  $('#titleFanHub').onclick=toggleTitleFan;
  $('#titleDialogClose').onclick=closeTitleDialog;
