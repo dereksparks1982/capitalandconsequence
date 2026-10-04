@@ -353,6 +353,7 @@ body.elephant-easter-egg-open{overflow:hidden}
 }
 .title-hotspot{
  position:absolute;left:42.4%;width:15%;height:7.5%;
+ transform:translate(5px,5px);
  margin:0;padding:0;border:0!important;background:transparent!important;
  outline:none!important;box-shadow:none!important;cursor:pointer;
  -webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none;
