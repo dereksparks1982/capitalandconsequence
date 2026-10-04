@@ -306,9 +306,11 @@ This file records decisions that should not drift silently during development.
 
 ## 2026-10-04 — Title menu and Archives
 
-- The approved future title-button order is **CONTINUE → PROFILE → OPTIONS → ARCHIVES**.
-- **Profile** combines the existing Load Profile and New Profile entry points while retaining load, create and delete/manage behavior.
-- **Options** replaces **Settings** because it fits the period presentation better.
+- **IMPLEMENTED MENU FOUNDATION:** the title-button order is **CONTINUE → PROFILE → OPTIONS → ARCHIVES**.
+- **Profile** combines the former Load Profile and New Profile entry points while retaining load, create and delete/manage behavior in one dialog.
+- **Options** replaces **Settings** because it fits the period presentation better. The drawer currently acts as a reserved placeholder until individual options are approved.
+- **Archives** occupies the fourth drawer as a reserved entry point. The archive UI/content itself is not yet implemented.
+- Because the approved office artwork contains the former drawer captions, only the three changed caption areas are covered by UI label overlays; the underlying approved office artwork is not regenerated or otherwise altered.
 - **Archives** replaces the idea of a modern-sounding Bonus section.
 - Archives are profile-specific. They contain material the profile actually purchased, found, attended, discovered or unlocked rather than exposing every asset automatically.
 - Purchased Metropolitan Ledger issues remain permanently rereadable in Archives without a second newspaper charge.
