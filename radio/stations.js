@@ -41,7 +41,10 @@
    clock:[
     {
      id:'war-of-the-worlds',
-     src:'https://drive.usercontent.google.com/download?id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4&export=download&confirm=t',
+     sources:[
+      'https://drive.google.com/uc?export=download&confirm=t&id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4',
+      'https://drive.usercontent.google.com/download?id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4&export=download&confirm=t'
+     ],
      duration:3084.552,
      loop:true
     }
@@ -57,7 +60,10 @@
    clock:[
     {
      id:'1930s-oldies-program',
-     src:'https://drive.usercontent.google.com/download?id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3&export=download&confirm=t',
+     sources:[
+      'https://drive.google.com/uc?export=download&confirm=t&id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3',
+      'https://drive.usercontent.google.com/download?id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3&export=download&confirm=t'
+     ],
      duration:7978.083265,
      loop:true
     }
