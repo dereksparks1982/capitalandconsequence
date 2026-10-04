@@ -665,10 +665,15 @@ function stopTitleCityAmbience(reset=true){
 }
 
 const TITLE_RADIO_VOLUME=.38;
-let titleRadioEngine=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioLabelTimer=null;
+const TITLE_RADIO_STATIONS=[
+ {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
+ {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1']},
+ {name:'Capital Radio Theatre',dial:'720 AM',tracks:['https://archive.org/download/OrsonWelles-MercuryTheater-1938Recordings/MercuryTheater38-10-30WarOfTheWorlds.mp3'],duration:3084.552}
+];
+let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
+const titleRadioBackgroundFeeds=new Map();
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
-function titleRadioStations(){return Array.isArray(window.FEDERAL_RADIO_STATIONS)?window.FEDERAL_RADIO_STATIONS:[]}
-function currentTitleRadioStation(){const stations=titleRadioStations();return stations[titleRadioStationIndex]||stations[0]||{stationNumber:1,dial:'',name:'Radio'}}
+function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
 function ensureTitleRadioControls(){
  const frame=document.querySelector('.title-screen-frame');
  const knob=$('#titleRadioKnob');
@@ -685,70 +690,175 @@ function ensureTitleRadioControls(){
  }
  return power;
 }
-function ensureTitleRadioEngine(){
- if(titleRadioEngine)return titleRadioEngine;
- if(typeof window.FederalRadioEngine!=='function'||!titleRadioStations().length)return null;
- titleRadioEngine=new window.FederalRadioEngine({
-  stations:titleRadioStations(),
-  volume:TITLE_RADIO_VOLUME,
-  index:titleRadioStationIndex,
-  powered:!titleRadioOff,
-  masterPaused:!!S.paused,
-  getMode:()=>titleEnvironmentIsDay()?'day':'night',
-  onStationChange:(_station,index)=>{titleRadioStationIndex=index;updateTitleRadioControls()}
- });
- return titleRadioEngine;
+function ensureTitleRadioAudio(){
+ if(titleRadioAudio)return titleRadioAudio;
+ titleRadioAudio=new Audio();
+ titleRadioAudio.preload='auto';
+ titleRadioAudio.volume=TITLE_RADIO_VOLUME;
+ titleRadioAudio.addEventListener('ended',()=>{titleRadioTrackIndex=0;loadTitleRadioTrack(titleRadioStationIndex===0&&!titleRadioOff)});
+ return titleRadioAudio;
 }
+function loadTitleRadioTrack(playNow=false){
+ const audio=ensureTitleRadioAudio();
+ const station=TITLE_RADIO_STATIONS[0];
+ if(!station||!station.tracks.length)return;
+ titleRadioTrackIndex=0;
+ audio.pause();audio.src=station.tracks[0];audio.load();audio.volume=TITLE_RADIO_VOLUME;
+ try{audio.currentTime=0}catch(e){}
+ if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()){const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+}
+function titleRadioAirElapsedSeconds(){return titleRadioAirStartAt?Math.max(0,(Date.now()-titleRadioAirStartAt)/1000):0}
+function titleRadioFeedDuration(audio){
+ const index=Number(audio?.dataset?.titleRadioStation);
+ const known=TITLE_RADIO_STATIONS[index]?.duration;
+ if(Number.isFinite(known)&&known>0)return known;
+ return Number.isFinite(audio?.duration)&&audio.duration>0?audio.duration:0;
+}
+function syncTitleRadioFeedToAir(audio,force=false){
+ if(!audio)return false;
+ const duration=titleRadioFeedDuration(audio);
+ if(!duration)return false;
+ const target=titleRadioAirElapsedSeconds()%duration;
+ const drift=Math.abs((audio.currentTime||0)-target);
+ if(force||drift>1.5){try{audio.currentTime=target;return true}catch(e){return false}}
+ return true;
+}
+function forceTitleRadioFeedToAir(audio){
+ if(!audio)return;
+ if(syncTitleRadioFeedToAir(audio,true))return;
+ const onReady=()=>{syncTitleRadioFeedToAir(audio,true);audio.removeEventListener('loadedmetadata',onReady);audio.removeEventListener('durationchange',onReady)};
+ audio.addEventListener('loadedmetadata',onReady);
+ audio.addEventListener('durationchange',onReady);
+}
+function startTitleRadioAirSync(){
+ if(titleRadioAirSyncTimer)return;
+ titleRadioAirSyncTimer=setInterval(()=>{
+  if(!titleScreenVisible()||S.paused)return;
+  for(const audio of titleRadioBackgroundFeeds.values())syncTitleRadioFeedToAir(audio,false);
+ },1000);
+}
+function ensureTitleRadioBackgroundFeed(index){
+ if(index<=0||index>=TITLE_RADIO_STATIONS.length)return null;
+ if(titleRadioBackgroundFeeds.has(index))return titleRadioBackgroundFeeds.get(index);
+ const station=TITLE_RADIO_STATIONS[index];
+ if(!station||!station.tracks.length)return null;
+ const audio=new Audio(station.tracks[0]);
+ audio.dataset.titleRadioStation=String(index);
+ audio.preload='auto';
+ audio.loop=true;
+ audio.volume=TITLE_RADIO_VOLUME;
+ audio.muted=true;
+ audio.addEventListener('loadedmetadata',()=>forceTitleRadioFeedToAir(audio));
+ titleRadioBackgroundFeeds.set(index,audio);
+ return audio;
+}
+function startTitleRadioBackgroundFeeds(){
+ if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
+ startTitleRadioAirSync();
+ for(let i=1;i<TITLE_RADIO_STATIONS.length;i++){
+  const audio=ensureTitleRadioBackgroundFeed(i);if(!audio)continue;
+  forceTitleRadioFeedToAir(audio);
+  audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
+  if(S.paused){audio.pause();continue}
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
+}
+function updateTitleRadioAudibility(){
+ for(const [index,audio] of titleRadioBackgroundFeeds){
+  forceTitleRadioFeedToAir(audio);
+  audio.volume=TITLE_RADIO_VOLUME;
+  if(S.paused){audio.muted=true;audio.pause();continue}
+  audio.muted=!(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible());
+  if(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()){
+   forceTitleRadioFeedToAir(audio);
+   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+  }else if(audio.paused&&titleScreenVisible()){
+   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+  }
+ }
+}
+function startTitleRadio(){
+ if(!titleScreenVisible()||S.paused)return;
+ startTitleRadioBackgroundFeeds();
+ updateTitleRadioAudibility();
+ if(titleRadioOff||titleRadioStationIndex!==0)return;
+ const audio=ensureTitleRadioAudio();
+ if(!audio.src)loadTitleRadioTrack(false);
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ audio.volume=TITLE_RADIO_VOLUME;
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
+let titleRadioLabelTimer=null;
 function showTitleRadioStationLabel(){
  const el=$('#titleRadioStationLabel'),station=currentTitleRadioStation();
  if(!el||!station)return;
- el.textContent='STATION '+station.stationNumber+' · '+station.dial+' · '+station.name.toUpperCase();
- el.classList.remove('is-visible');
- void el.offsetWidth;
- el.classList.add('is-visible');
+ el.textContent='STATION '+(titleRadioStationIndex+1)+' · '+(station.dial||'')+' · '+station.name.toUpperCase();
+ el.classList.remove('is-visible');void el.offsetWidth;el.classList.add('is-visible');
  if(titleRadioLabelTimer)clearTimeout(titleRadioLabelTimer);
  titleRadioLabelTimer=setTimeout(()=>{el.classList.remove('is-visible');titleRadioLabelTimer=null},2200);
 }
-function startTitleRadio(){
- if(!titleScreenVisible()||S.paused||titleRadioOff)return;
- const engine=ensureTitleRadioEngine();if(!engine)return;
- engine.setMasterPaused(false);
- engine.setPower(true);
- engine.activate();
-}
 function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
- if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+station.dial+' '+station.name);
+ if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
 }
 function cycleTitleRadioStation(){
- const stations=titleRadioStations();if(!stations.length)return;
- titleRadioStationIndex=(titleRadioStationIndex+1)%stations.length;
- const engine=ensureTitleRadioEngine();
- if(engine)engine.tune(titleRadioStationIndex);
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ if(titleRadioStationIndex===0&&titleRadioAudio){titleRadioAudio.pause();try{titleRadioAudio.currentTime=0}catch(e){}}
+ titleRadioStationIndex=(titleRadioStationIndex+1)%TITLE_RADIO_STATIONS.length;titleRadioTrackIndex=0;
+ if(titleRadioStationIndex===0){
+  updateTitleRadioAudibility();
+  loadTitleRadioTrack(!titleRadioOff);
+ }else{
+  const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
+  if(feed){forceTitleRadioFeedToAir(feed);const p=feed.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+  updateTitleRadioAudibility();
+ }
  updateTitleRadioControls();
  showTitleRadioStationLabel();
 }
 function toggleTitleRadioPower(){
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  titleRadioOff=!titleRadioOff;
- const engine=ensureTitleRadioEngine();
- if(engine)engine.setPower(!titleRadioOff);
+ if(titleRadioOff){
+  if(titleRadioAudio)titleRadioAudio.pause();
+  updateTitleRadioAudibility();
+ }else if(titleRadioStationIndex===0){
+  loadTitleRadioTrack(true);
+  updateTitleRadioAudibility();
+ }else{
+  startTitleRadioBackgroundFeeds();
+  const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
+  if(feed)forceTitleRadioFeedToAir(feed);
+  updateTitleRadioAudibility();
+ }
  updateTitleRadioControls();
 }
 function pauseTitleAudio(){
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
- const engine=ensureTitleRadioEngine();if(engine)engine.setMasterPaused(true);
+ if(titleRadioAudio)titleRadioAudio.pause();
+ for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
 function resumeTitleAudio(){
  if(!titleScreenVisible())return;
  syncTitleCityAmbience();
- const engine=ensureTitleRadioEngine();
- if(engine){engine.setMasterPaused(false);engine.setPower(!titleRadioOff);if(!titleRadioOff)engine.activate()}
+ startTitleRadioBackgroundFeeds();
+ updateTitleRadioAudibility();
+ if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
 }
-function stopTitleRadio(){
- if(titleRadioLabelTimer){clearTimeout(titleRadioLabelTimer);titleRadioLabelTimer=null}
- const label=$('#titleRadioStationLabel');if(label)label.classList.remove('is-visible');
- if(titleRadioEngine){titleRadioEngine.destroy();titleRadioEngine=null}
+function stopTitleRadio(fade=true){
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ const audio=titleRadioAudio;
+ const finish=()=>{
+  if(audio){audio.pause();try{audio.currentTime=0}catch(e){}audio.volume=TITLE_RADIO_VOLUME}
+  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true;try{feed.currentTime=0}catch(e){}}
+  if(titleRadioAirSyncTimer){clearInterval(titleRadioAirSyncTimer);titleRadioAirSyncTimer=null}
+  titleRadioAirStartAt=0;
+ };
+ if(!audio||!fade||audio.paused){finish();return}
+ const start=Math.max(0,audio.volume),steps=12;let step=0;
+ titleRadioFadeTimer=setInterval(()=>{step++;audio.volume=Math.max(0,start*(1-step/steps));if(step>=steps){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null;finish()}},50);
 }
 function openTitleDialog(title,html){
  const dialog=$('#titleDialog'),heading=$('#titleDialogHeading'),body=$('#titleDialogBody');
@@ -921,7 +1031,6 @@ function updateTitleEnvironment(){
   bg.classList.add('is-ready');
  }
  syncTitleCityAmbience();
- if(titleRadioEngine)titleRadioEngine.refreshContext();
 }
 let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
@@ -1068,12 +1177,16 @@ function initTitleScreen(){
  startTitleEnvironment();
  startTitleClock();
  ensureTitleRadioControls();
- ensureTitleRadioEngine();
+ titleRadioAirStartAt=Date.now();
+ startTitleRadioBackgroundFeeds();
+ loadTitleRadioTrack(false);
  updateTitleRadioControls();
  startTitleRadio();
  initTitleMapViewer();
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
+ screen.addEventListener('pointerdown',startTitleRadioBackgroundFeeds,{once:true});
+ document.addEventListener('keydown',startTitleRadioBackgroundFeeds,{once:true});
  screen.addEventListener('pointerdown',syncTitleCityAmbience,{once:true});
  document.addEventListener('keydown',syncTitleCityAmbience,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
