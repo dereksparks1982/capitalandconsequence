@@ -691,7 +691,11 @@ function openTitleDialog(title,html){
  const dialog=$('#titleDialog'),heading=$('#titleDialogHeading'),body=$('#titleDialogBody');
  if(!dialog||!heading||!body)return;heading.textContent=title;body.innerHTML=html;dialog.hidden=false;
 }
-function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog)dialog.hidden=true}
+function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){dialog.hidden=true;dialog.classList.remove('title-newspaper-dialog')}}
+function openTitleNewspaper(){
+ openTitleDialog('The Metropolitan Ledger','<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
+ const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
+}
 function closeTitleScreen(){closeTitleDialog();stopTitleMusic(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
@@ -874,6 +878,7 @@ function initTitleScreen(){
  $('#titleNewProfile').onclick=showNewProfileForm;
  $('#titleSettings').onclick=()=>openTitleDialog('Settings','<p>Settings have not been defined yet. This drawer is reserved for them.</p><div class="title-dialog-actions"><button id="settingsClose" type="button">Close</button></div>');
  $('#titleRadioKnob').onclick=toggleTitleRadio;
+ $('#titleNewspaperM').onclick=openTitleNewspaper;
  $('#titleFanHub').onclick=toggleTitleFan;
  $('#titleDialogClose').onclick=closeTitleDialog;
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
