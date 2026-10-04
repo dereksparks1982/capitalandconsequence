@@ -629,6 +629,39 @@ function pokerButton(circle,stake){const limit=pokerLimit(circle),used=S.pokerPl
 $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').onclick=()=>pokerButton('middle',100);$('#pokerElite').onclick=()=>pokerButton('elite',500);$('#simPokerWorking').onclick=()=>simulatePoker('working',25);$('#simPokerMiddle').onclick=()=>simulatePoker('middle',100);$('#simPokerElite').onclick=()=>simulatePoker('elite',500);
 document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
+const TITLE_CITY_AMBIENCE_VOLUME=.07;
+const TITLE_CITY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
+let titleCityAmbienceAudio=null;
+function ensureTitleCityAmbience(){
+ if(titleCityAmbienceAudio)return titleCityAmbienceAudio;
+ const audio=new Audio(TITLE_CITY_AMBIENCE_SRC);
+ audio.preload='auto';
+ audio.loop=true;
+ audio.volume=TITLE_CITY_AMBIENCE_VOLUME;
+ titleCityAmbienceAudio=audio;
+ return audio;
+}
+function titleEnvironmentIsDay(){
+ const bg=document.getElementById('titleOfficeBackground');
+ return !!(bg&&bg.dataset.mode==='day');
+}
+function syncTitleCityAmbience(){
+ const audio=ensureTitleCityAmbience();
+ if(titleScreenVisible()&&titleEnvironmentIsDay()){
+  audio.volume=TITLE_CITY_AMBIENCE_VOLUME;
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }else{
+  audio.pause();
+  if(!titleEnvironmentIsDay()){try{audio.currentTime=0}catch(e){}}
+ }
+}
+function stopTitleCityAmbience(reset=true){
+ if(!titleCityAmbienceAudio)return;
+ titleCityAmbienceAudio.pause();
+ if(reset){try{titleCityAmbienceAudio.currentTime=0}catch(e){}}
+ titleCityAmbienceAudio.volume=TITLE_CITY_AMBIENCE_VOLUME;
+}
+
 const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_STATIONS=[
  {name:'Station 1',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
@@ -746,7 +779,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -872,6 +905,7 @@ function updateTitleEnvironment(){
  }else if(bg.complete){
   bg.classList.add('is-ready');
  }
+ syncTitleCityAmbience();
 }
 let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
@@ -1024,6 +1058,8 @@ function initTitleScreen(){
  initTitleMapViewer();
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
+ screen.addEventListener('pointerdown',syncTitleCityAmbience,{once:true});
+ document.addEventListener('keydown',syncTitleCityAmbience,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
