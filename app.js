@@ -631,16 +631,22 @@ document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]')
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
-const TITLE_CITY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
-let titleCityAmbienceAudio=null;
+const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
+const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/title-night-street.mp3?v=20261004-night1';
+let titleCityAmbienceAudio=null,titleNightAmbienceAudio=null;
 function titleCityAmbienceVolume(){return window.matchMedia&&window.matchMedia('(max-width:900px)').matches?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME}
 function ensureTitleCityAmbience(){
  if(titleCityAmbienceAudio)return titleCityAmbienceAudio;
- const audio=new Audio(TITLE_CITY_AMBIENCE_SRC);
- audio.preload='auto';
- audio.loop=true;
- audio.volume=titleCityAmbienceVolume();
+ const audio=new Audio(TITLE_DAY_AMBIENCE_SRC);
+ audio.preload='auto';audio.loop=true;audio.volume=titleCityAmbienceVolume();
  titleCityAmbienceAudio=audio;
+ return audio;
+}
+function ensureTitleNightAmbience(){
+ if(titleNightAmbienceAudio)return titleNightAmbienceAudio;
+ const audio=new Audio(TITLE_NIGHT_AMBIENCE_SRC);
+ audio.preload='auto';audio.loop=true;audio.volume=titleCityAmbienceVolume();
+ titleNightAmbienceAudio=audio;
  return audio;
 }
 function titleEnvironmentIsDay(){
@@ -648,33 +654,43 @@ function titleEnvironmentIsDay(){
  return !!(bg&&bg.dataset.mode==='day');
 }
 function syncTitleCityAmbience(){
- const audio=ensureTitleCityAmbience();
- if(titleScreenVisible()&&titleEnvironmentIsDay()&&!S.paused){
-  audio.volume=titleCityAmbienceVolume();
-  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ const day=ensureTitleCityAmbience(),night=ensureTitleNightAmbience();
+ const volume=titleCityAmbienceVolume(),visible=titleScreenVisible()&&!S.paused,isDay=titleEnvironmentIsDay();
+ day.volume=volume;night.volume=volume;
+ if(visible&&isDay){
+  night.pause();
+  const p=day.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }else if(visible&&!isDay){
+  day.pause();
+  const p=night.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }else{
-  audio.pause();
-  if(!titleEnvironmentIsDay()){try{audio.currentTime=0}catch(e){}}
+  day.pause();night.pause();
  }
 }
 function stopTitleCityAmbience(reset=true){
- if(!titleCityAmbienceAudio)return;
- titleCityAmbienceAudio.pause();
- if(reset){try{titleCityAmbienceAudio.currentTime=0}catch(e){}}
- titleCityAmbienceAudio.volume=titleCityAmbienceVolume();
+ for(const audio of [titleCityAmbienceAudio,titleNightAmbienceAudio]){
+  if(!audio)continue;
+  audio.pause();
+  if(reset){try{audio.currentTime=0}catch(e){}}
+  audio.volume=titleCityAmbienceVolume();
+ }
 }
 
 const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
- {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1']},
- {name:'Capital Radio Theatre',dial:'720 AM',tracks:['assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=20261004-local1'],duration:3084.552},
- {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265}
+ {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1'],dayOnly:true},
+ {name:'Capital Radio Theatre',dial:'720 AM',tracks:['assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=20261004-local1'],duration:3084.552,dayOnly:true},
+ {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265,dayOnly:true}
 ];
 let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
 const titleRadioBackgroundFeeds=new Map();
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
+function titleRadioStationAvailable(index){
+ const station=TITLE_RADIO_STATIONS[index];
+ return !!station&&(!station.dayOnly||titleEnvironmentIsDay());
+}
 function ensureTitleRadioControls(){
  const frame=document.querySelector('.title-screen-frame');
  const knob=$('#titleRadioKnob');
@@ -759,6 +775,7 @@ function startTitleRadioBackgroundFeeds(){
  for(let i=1;i<TITLE_RADIO_STATIONS.length;i++){
   const audio=ensureTitleRadioBackgroundFeed(i);if(!audio)continue;
   forceTitleRadioFeedToAir(audio);
+  if(!titleRadioStationAvailable(i)){audio.muted=true;audio.pause();continue}
   audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
   if(S.paused){audio.pause();continue}
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -768,6 +785,7 @@ function updateTitleRadioAudibility(){
  for(const [index,audio] of titleRadioBackgroundFeeds){
   forceTitleRadioFeedToAir(audio);
   audio.volume=TITLE_RADIO_VOLUME;
+  if(!titleRadioStationAvailable(index)){audio.muted=true;audio.pause();continue}
   if(S.paused){audio.muted=true;audio.pause();continue}
   audio.muted=!(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible());
   if(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()){
@@ -793,7 +811,7 @@ let titleRadioLabelTimer=null;
 function showTitleRadioStationLabel(){
  const el=$('#titleRadioStationLabel'),station=currentTitleRadioStation();
  if(!el||!station)return;
- el.textContent='STATION '+(titleRadioStationIndex+1)+' · '+(station.dial||'')+' · '+station.name.toUpperCase();
+ el.textContent=(station.dial||'')+' · '+station.name.toUpperCase();
  el.classList.remove('is-visible');void el.offsetWidth;el.classList.add('is-visible');
  if(titleRadioLabelTimer)clearTimeout(titleRadioLabelTimer);
  titleRadioLabelTimer=setTimeout(()=>{el.classList.remove('is-visible');titleRadioLabelTimer=null},2200);
@@ -812,7 +830,7 @@ function cycleTitleRadioStation(){
   loadTitleRadioTrack(!titleRadioOff);
  }else{
   const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
-  if(feed){forceTitleRadioFeedToAir(feed);const p=feed.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+  if(feed&&titleRadioStationAvailable(titleRadioStationIndex)){forceTitleRadioFeedToAir(feed);const p=feed.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
   updateTitleRadioAudibility();
  }
  updateTitleRadioControls();
@@ -830,7 +848,7 @@ function toggleTitleRadioPower(){
  }else{
   startTitleRadioBackgroundFeeds();
   const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
-  if(feed)forceTitleRadioFeedToAir(feed);
+  if(feed&&titleRadioStationAvailable(titleRadioStationIndex))forceTitleRadioFeedToAir(feed);
   updateTitleRadioAudibility();
  }
  updateTitleRadioControls();
@@ -838,6 +856,7 @@ function toggleTitleRadioPower(){
 function pauseTitleAudio(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
+ if(titleNightAmbienceAudio)titleNightAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
@@ -1021,7 +1040,8 @@ function updateTitleEnvironment(){
  const localMinutes=p.hour*60+p.minute+p.second/60;
  const mode=localMinutes>=sun.sunrise&&localMinutes<sun.sunset?'day':'night';
  const src=TITLE_OFFICE_IMAGES[mode];
- if(bg.dataset.mode!==mode){
+ const modeChanged=bg.dataset.mode!==mode;
+ if(modeChanged){
   bg.classList.remove('is-ready');
   bg.dataset.mode=mode;
   bg.onload=()=>bg.classList.add('is-ready');
@@ -1030,6 +1050,11 @@ function updateTitleEnvironment(){
   if(bg.complete)bg.classList.add('is-ready');
  }else if(bg.complete){
   bg.classList.add('is-ready');
+ }
+ if(modeChanged){
+  setTitleFanOff(mode==='night');
+  if(mode==='day'&&!S.paused)startTitleRadioBackgroundFeeds();
+  updateTitleRadioAudibility();
  }
  syncTitleCityAmbience();
 }
@@ -1064,15 +1089,20 @@ function startTitleClock(){
  titleClockTimer=setInterval(updateTitleClock,250);
 }
 
-function toggleTitleFan(){
+function setTitleFanOff(isOff){
  const fan=document.querySelector('.title-fan-motion');
  const button=$('#titleFanHub');
  if(!fan)return;
- const isOff=fan.classList.toggle('is-off');
+ fan.classList.toggle('is-off',!!isOff);
  if(button){
   button.setAttribute('aria-pressed',isOff?'true':'false');
   button.setAttribute('aria-label',isOff?'Turn fan on':'Turn fan off');
  }
+}
+function toggleTitleFan(){
+ const fan=document.querySelector('.title-fan-motion');
+ if(!fan)return;
+ setTitleFanOff(!fan.classList.contains('is-off'));
 }
 
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
