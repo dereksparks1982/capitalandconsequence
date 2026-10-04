@@ -682,7 +682,7 @@ function ensureTitleRadioControls(){
   power.type='button';
   power.setAttribute('aria-label','Turn radio off');
   power.setAttribute('aria-pressed','false');
-  power.style.cssText='position:absolute;left:12.95%;top:42.98%;width:2.11%;height:4.74%;margin:0;padding:0;border:0;background:transparent;outline:none;box-shadow:none;cursor:pointer;border-radius:48%;z-index:4;-webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none';
+  power.style.cssText='position:absolute;left:9.55%;top:50.25%;width:3.30%;height:5.20%;margin:0;padding:0;border:0;background:transparent;outline:none;box-shadow:none;cursor:pointer;border-radius:6%;z-index:4;-webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none';
   frame.appendChild(power);
  }
  return power;
