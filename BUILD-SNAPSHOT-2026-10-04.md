@@ -17,20 +17,21 @@ This snapshot records the accepted Federal Electric state and the design decisio
   2. static frequency
   3. October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds*
 
-## Approved title-menu redesign — not yet implemented
+## Title-menu consolidation — implemented
 
-Future title button order:
+Current title button order:
 
 1. **CONTINUE**
 2. **PROFILE**
 3. **OPTIONS**
 4. **ARCHIVES**
 
-Rules:
-- Profile combines Load Profile and New Profile while retaining profile management.
-- Options replaces Settings.
-- Archives is profile-specific and contains acquired/purchased/unlocked material.
-- No title-screen layout or artwork change should be made beyond the approved controls without explicit approval.
+Current behavior:
+- Profile combines the former Load Profile and New Profile controls while retaining profile creation, loading and deletion.
+- Options replaces Settings and currently opens a reserved placeholder.
+- Archives occupies the fourth drawer and currently opens a reserved placeholder; archive content is still planned.
+- Only the changed drawer-caption areas are covered by UI overlays so the approved office artwork itself remains untouched.
+- No other title-screen layout or artwork change was made in this slice.
 
 ## Archives design — planned
 
