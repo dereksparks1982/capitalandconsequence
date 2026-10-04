@@ -1,7 +1,6 @@
 /* Federal Electric radio automation engine.
-   Uses Howler.js core (MIT) for browser playback.
-   Live stations use an absolute broadcast clock: radio power controls
-   audibility, never the position of the broadcast. */
+   Native browser audio playback with a broadcast clock.
+   Radio power controls audibility; live-station position comes from the clock. */
 (function(){
  'use strict';
 
@@ -15,10 +14,15 @@
    this.powered=options.powered!==false;
    this.masterPaused=!!options.masterPaused;
    this.airStartAt=Date.now();
-   this.howl=null;
-   this.soundId=null;
    this.localResumeOffset=0;
    this.contextMode=this.getMode();
+   this.audio=new Audio();
+   this.audio.preload='auto';
+   this.audio.volume=this.volume;
+   this.audio.loop=false;
+   this.loadToken=0;
+   this.sourceIndex=0;
+   this.currentBlockId='';
    this.syncTimer=setInterval(()=>this.sync(),1000);
   }
 
@@ -32,11 +36,9 @@
   }
   isLive(station=this.current()){return !!station&&!station.restartOnTune}
 
-  _stopHowl(unload=true){
-   if(!this.howl)return;
-   try{this.howl.stop(this.soundId)}catch(e){}
-   if(unload){try{this.howl.unload()}catch(e){}}
-   this.howl=null;this.soundId=null;
+  _sources(block){
+   if(Array.isArray(block?.sources)&&block.sources.length)return block.sources.filter(Boolean);
+   return block?.src?[block.src]:[];
   }
 
   _knownCycle(clock){
@@ -72,63 +74,88 @@
    return {block:clock[0],offset:0};
   }
 
-  _playCurrent(options={}){
-   const station=this.current();
-   if(!station||!this.powered||this.masterPaused||typeof Howl!=='function')return;
-   const firstSlot=this._slotFor(station);
-   if(!firstSlot||!firstSlot.block?.src)return;
-   const token={};
-   this.playToken=token;
-   this._stopHowl(true);
-   const block=firstSlot.block;
-   const howl=new Howl({
-    src:[block.src],
-    html5:true,
-    preload:true,
-    loop:!!block.loop&&this.clockFor(station).length===1,
-    volume:this.volume,
-    onload:()=>{
-     if(this.playToken!==token||this.howl!==howl||this.soundId==null)return;
-     const duration=Number(block.duration)>0?Number(block.duration):howl.duration();
-     const slot=this._slotFor(station,duration);
-     let offset=slot?.block?.id===block.id?slot.offset:0;
-     if(station.restartOnTune&&Number.isFinite(options.localOffset))offset=Math.max(0,options.localOffset);
-     try{if(offset>0)howl.seek(offset,this.soundId)}catch(e){}
-     try{howl.volume(this.volume,this.soundId)}catch(e){}
-    },
-    onend:()=>{
-     if(this.playToken!==token||this.masterPaused||!this.powered)return;
-     if(!block.loop||this.clockFor(station).length>1)this._playCurrent();
-    },
-    onloaderror:(_id,error)=>console.warn('Federal Electric radio load error:',station.name,error),
-    onplayerror:(id,error)=>{
-     console.warn('Federal Electric radio play error:',station.name,error);
-     if(this.playToken!==token||this.masterPaused||!this.powered)return;
-     howl.once('unlock',()=>{
-      if(this.playToken!==token||this.masterPaused||!this.powered)return;
-      try{
-       const retryId=howl.play(id);
-       this.soundId=retryId;
-       howl.volume(this.volume,retryId);
-      }catch(e){}
-     });
-    }
-   });
-   this.howl=howl;
-   const id=howl.play();
-   this.soundId=id;
+  _seekToSlot(station,slot){
+   if(!slot||!this.audio)return;
+   const duration=Number(slot.block?.duration)>0?Number(slot.block.duration):this.audio.duration;
+   let offset=slot.offset||0;
+   if(!station.restartOnTune&&Number.isFinite(duration)&&duration>0)offset%=duration;
    try{
-    let offset=firstSlot.offset||0;
-    if(station.restartOnTune&&Number.isFinite(options.localOffset))offset=Math.max(0,options.localOffset);
-    if(offset>0)howl.seek(offset,id);
-    howl.volume(this.volume,id);
+    if(Number.isFinite(offset)&&offset>=0&&Math.abs((this.audio.currentTime||0)-offset)>.5)this.audio.currentTime=offset;
    }catch(e){}
+  }
+
+  _attemptPlay(){
+   if(!this.powered||this.masterPaused)return;
+   this.audio.volume=this.volume;
+   const p=this.audio.play();
+   if(p&&typeof p.catch==='function')p.catch(()=>{});
+  }
+
+  _loadCurrent(options={}){
+   const station=this.current();
+   if(!station||!this.powered||this.masterPaused)return;
+   const firstSlot=this._slotFor(station);
+   if(!firstSlot?.block)return;
+   const sources=this._sources(firstSlot.block);
+   if(!sources.length)return;
+
+   const token=++this.loadToken;
+   const block=firstSlot.block;
+   const clock=this.clockFor(station);
+   this.sourceIndex=0;
+   this.currentBlockId=block.id||'';
+   this.audio.pause();
+   this.audio.loop=!!block.loop&&clock.length===1;
+
+   const loadSource=()=>{
+    if(token!==this.loadToken)return;
+    const src=sources[this.sourceIndex];
+    if(!src)return;
+    this.audio.src=src;
+    this.audio.load();
+
+    const onMeta=()=>{
+     if(token!==this.loadToken)return;
+     const duration=Number(block.duration)>0?Number(block.duration):this.audio.duration;
+     const slot=this._slotFor(station,duration);
+     if(station.restartOnTune&&Number.isFinite(options.localOffset))slot.offset=Math.max(0,options.localOffset);
+     this._seekToSlot(station,slot);
+    };
+    this.audio.onloadedmetadata=onMeta;
+    this.audio.oncanplay=onMeta;
+    this.audio.onerror=()=>{
+     if(token!==this.loadToken)return;
+     if(this.sourceIndex+1<sources.length){
+      this.sourceIndex++;
+      loadSource();
+     }
+    };
+    this.audio.onended=()=>{
+     if(token!==this.loadToken||this.masterPaused||!this.powered)return;
+     if(!this.audio.loop)this._loadCurrent();
+    };
+
+    let immediateOffset=firstSlot.offset||0;
+    if(station.restartOnTune&&Number.isFinite(options.localOffset))immediateOffset=Math.max(0,options.localOffset);
+    try{if(immediateOffset>0)this.audio.currentTime=immediateOffset}catch(e){}
+    this._attemptPlay();
+   };
+   loadSource();
   }
 
   activate(){
    if(!this.powered||this.masterPaused)return;
-   if(this.howl&&this.howl.playing(this.soundId))return;
-   this._playCurrent({localOffset:this.localResumeOffset});
+   const station=this.current();
+   if(!station)return;
+   if(this.audio.src&&this.currentBlockId){
+    if(this.isLive(station)){
+     const slot=this._slotFor(station,this.audio.duration);
+     this._seekToSlot(station,slot);
+    }
+    this._attemptPlay();
+    return;
+   }
+   this._loadCurrent({localOffset:this.localResumeOffset});
   }
 
   tune(index){
@@ -140,9 +167,12 @@
    const station=this.current();
    this.contextMode=this.getMode();
    this.localResumeOffset=0;
-   this._stopHowl(true);
+   this.audio.pause();
+   this.audio.removeAttribute('src');
+   this.audio.load();
+   this.currentBlockId='';
    if(this.onStationChange)this.onStationChange(station,this.index);
-   if(this.powered&&!this.masterPaused)this._playCurrent();
+   if(this.powered&&!this.masterPaused)this._loadCurrent({localOffset:0});
    return station;
   }
 
@@ -150,17 +180,26 @@
 
   setPower(on){
    const next=!!on;
+   const station=this.current();
    if(this.powered===next){
     if(next)this.activate();
     return;
    }
    this.powered=next;
-   const station=this.current();
    if(!next){
-    if(station?.restartOnTune)this.localResumeOffset=0;
-    this._stopHowl(true);
+    if(station?.restartOnPower||station?.restartOnTune)this.localResumeOffset=0;
+    this.audio.pause();
    }else if(!this.masterPaused){
-    this._playCurrent();
+    if(station?.restartOnPower||station?.restartOnTune){
+     this.audio.pause();
+     try{this.audio.currentTime=0}catch(e){}
+     this.localResumeOffset=0;
+    }
+    if(this.isLive(station)){
+     const slot=this._slotFor(station,this.audio.duration);
+     this._seekToSlot(station,slot);
+    }
+    this.activate();
    }
   }
 
@@ -169,49 +208,57 @@
    if(this.masterPaused===next)return;
    const station=this.current();
    if(next){
-    if(station?.restartOnTune&&this.howl&&this.soundId!=null){
-     const pos=Number(this.howl.seek(this.soundId));
+    if(station?.restartOnTune){
+     const pos=Number(this.audio.currentTime);
      if(Number.isFinite(pos))this.localResumeOffset=pos;
     }
     this.masterPaused=true;
-    this._stopHowl(true);
+    this.audio.pause();
    }else{
     this.masterPaused=false;
-    if(this.powered)this._playCurrent({localOffset:this.localResumeOffset});
+    if(this.powered){
+     if(this.isLive(station)){
+      const slot=this._slotFor(station,this.audio.duration);
+      this._seekToSlot(station,slot);
+     }
+     this.activate();
+    }
    }
   }
 
   setVolume(volume){
    if(Number.isFinite(volume))this.volume=Math.max(0,Math.min(1,volume));
-   if(this.howl&&this.soundId!=null)try{this.howl.volume(this.volume,this.soundId)}catch(e){}
+   this.audio.volume=this.volume;
   }
 
   refreshContext(){
    const mode=this.getMode();
    if(mode===this.contextMode)return;
    this.contextMode=mode;
-   if(this.powered&&!this.masterPaused)this._playCurrent({localOffset:this.localResumeOffset});
+   if(this.powered&&!this.masterPaused)this._loadCurrent({localOffset:this.localResumeOffset});
   }
 
   sync(){
-   if(!this.powered||this.masterPaused||!this.isLive()||!this.howl||this.soundId==null)return;
+   if(!this.powered||this.masterPaused||!this.isLive()||!this.audio?.src)return;
    const station=this.current();
-   const clock=this.clockFor(station);
-   if(clock.length!==1)return;
-   const block=clock[0];
-   const duration=Number(block.duration)>0?Number(block.duration):this.howl.duration();
-   if(!Number.isFinite(duration)||duration<=0)return;
-   const expected=this.elapsedSeconds()%duration;
-   const actual=Number(this.howl.seek(this.soundId));
-   if(Number.isFinite(actual)&&Math.abs(actual-expected)>2.5){
-    try{this.howl.seek(expected,this.soundId)}catch(e){}
+   const slot=this._slotFor(station,this.audio.duration);
+   if(!slot||slot.block?.id!==this.currentBlockId){
+    this._loadCurrent();
+    return;
+   }
+   const expected=Number(slot.offset);
+   const actual=Number(this.audio.currentTime);
+   if(Number.isFinite(expected)&&Number.isFinite(actual)&&Math.abs(actual-expected)>2.5){
+    try{this.audio.currentTime=expected}catch(e){}
    }
   }
 
   destroy(){
    if(this.syncTimer){clearInterval(this.syncTimer);this.syncTimer=null}
-   this._stopHowl(true);
-   this.playToken=null;
+   this.loadToken++;
+   this.audio.pause();
+   this.audio.removeAttribute('src');
+   this.audio.load();
   }
  }
 
