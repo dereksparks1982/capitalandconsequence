@@ -390,11 +390,13 @@ Implemented:
 - [x] Title-screen Metropolitan Ledger can be opened from its existing hotspot.
 - [x] Opening the current newspaper edition charges **3¢ once** to the most recently played profile's **Personal Cash** and records that edition as purchased for that profile.
 
+Implemented menu foundation:
+- [x] Consolidate the title menu to **Continue → Profile → Options → Archives**.
+- [x] **Profile** replaces separate Load Profile / New Profile title buttons while retaining profile creation, loading and deletion in one manager.
+- [x] **Options** replaces the modern-sounding Settings label; its drawer is reserved for future approved options.
+- [x] **Archives** now occupies the fourth title drawer as a reserved entry point. Archive content remains planned and will be profile-specific, containing only material that profile actually acquired, purchased, discovered or unlocked.
+
 Approved next work:
-- [ ] Consolidate the title menu to **Continue → Profile → Options → Archives**.
-- [ ] **Profile** replaces separate Load Profile / New Profile title buttons while retaining profile creation, loading and deletion.
-- [ ] **Options** replaces the modern-sounding Settings label.
-- [ ] **Archives** is profile-specific and contains only material that profile actually acquired, purchased, discovered or unlocked.
 - [ ] Build a newspaper archive that shows owned issues as miniature dated front pages and lets purchased issues be reopened without another charge.
 - [ ] Generate or hand-author dozens of Metropolitan Ledger editions that advance with the save's historical date. Major historical issues can be handcrafted; ordinary issues can use a reusable newspaper layout populated by the simulation.
 - [ ] The title-screen newspaper should eventually reflect the date/state of the most recently played profile rather than remaining a single fixed issue.
