@@ -216,8 +216,18 @@ Completed race cards now preserve the complete finishing order. If the player wa
 
 ### Title screen and local executive profiles
 
-Federal Electric now opens on the approved 1930s executive-office title screen. The title artwork is used directly as the screen rather than recreated in HTML. Transparent interaction regions sit over the filing-cabinet drawers for **Continue**, **Load Profile**, **New Profile**, and **Settings**.
+Federal Electric opens on the approved 1930s executive-office title screen. The title artwork is used directly rather than recreated in HTML, and interactive objects use transparent overlays so unrelated parts of the approved room are not altered.
 
-The game supports up to **three local profiles**. Each profile has its own autosave. Existing browser progress is preserved by migrating the legacy save into **Profile 1** the first time the profile system runs. When all three slots are occupied, creating another profile requires deleting one of the existing profiles first.
+The current build supports up to **three local profiles**, each with its own autosave. Existing browser progress is preserved by migrating the legacy save into **Profile 1** the first time the profile system runs.
 
-The title-screen radio now uses multiple stations. The lower tuning dial advances through the available stations, while the upper tuning/display window above the dial is the radio power control. Station 1 is the existing title music. Station 2 is the approved looping radio-static recording. Station 3 is the original October 30, 1938 Mercury Theatre / Orson Welles War of the Worlds broadcast. Stations use ordered playlists so recordings play sequentially and return to the first track after the last.
+Current title-screen interactions include:
+- the lower radio dial for tuning and the upper radio window for power
+- a clickable Metropolitan Ledger hotspot
+- the framed 1938 Washington, D.C. wall map, which opens a full pan-and-zoom viewer
+- the live Washington clock and the approved title-room day/night environment
+
+The title-screen Metropolitan Ledger currently costs **3¢** the first time its edition is opened by the most recently played profile. The charge comes from **Personal Cash**, not Company Cash. That edition is then recorded as purchased for that profile and can be reopened without another charge.
+
+The approved next title-menu consolidation is **Continue → Profile → Options → Archives**. **Profile** will combine the existing Load Profile and New Profile functions. **Archives** will become the profile-specific record of acquired newspapers, collectible cards and other unlocked material.
+
+The title-screen radio currently contains the Federal Electric title theme, an approved static station, and the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast. The future radio design is schedule-driven: the title theme remains the exception that always restarts from the beginning, while true broadcast stations will advance independently of the listener so tuning in joins whatever is already on the air.
