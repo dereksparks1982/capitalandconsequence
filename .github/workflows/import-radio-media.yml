@@ -1,0 +1,54 @@
+name: Import Federal Electric radio media
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-radio-media.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-radio-media:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Drive downloader
+        run: python -m pip install --disable-pip-version-check gdown
+
+      - name: Download approved radio MP3s
+        run: |
+          mkdir -p assets/audio
+          gdown --id 1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4 -O assets/audio/mercury-theatre-war-of-the-worlds.mp3
+          gdown --id 16bqTETY06cPW6y_1LCzNLSJaLauEmk_3 -O assets/audio/capital-melody-1930s.mp3
+
+      - name: Verify media
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files = [
+              Path('assets/audio/mercury-theatre-war-of-the-worlds.mp3'),
+              Path('assets/audio/capital-melody-1930s.mp3'),
+          ]
+          for p in files:
+              size = p.stat().st_size
+              print(f'{p}: {size} bytes')
+              if size < 1_000_000:
+                  raise SystemExit(f'{p} is unexpectedly small')
+              head = p.read_bytes()[:16]
+              if head.startswith(b'<') or head.startswith(b'<!DOCTYPE'):
+                  raise SystemExit(f'{p} looks like HTML, not audio')
+          PY
+
+      - name: Commit local radio media
+        run: |
+          git config user.name "Federal Electric Media Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/audio/mercury-theatre-war-of-the-worlds.mp3 assets/audio/capital-melody-1930s.mp3
+          git diff --cached --stat
+          git commit -m "Add local radio broadcast media"
+          git push
