@@ -352,3 +352,12 @@ This file records decisions that should not drift silently during development.
 - A further static/dead frequency is planned immediately after the Orson Welles station using the user-supplied static recording. It is documented but not yet in the repository.
 - Future weak/distant stations should sound like one fixed frequency with reception variation, not repeated tuning effects.
 - Future historical news interruptions should reflect period network bulletins, not the later Emergency Broadcast System.
+
+
+## 2026-10-04 — Daytime Washington title ambience
+
+- The title-screen office now carries a subtle loop of period urban traffic during the **daytime D.C. environment only**.
+- The ambience follows the same real Washington, D.C. sunrise/sunset state that selects the day and night office artwork.
+- The traffic layer runs independently from the radio and is deliberately mixed very low at **7% volume** so it reads as street sound outside the office rather than foreground audio.
+- The ambience stops when the title environment becomes night and stops when the player leaves the title screen.
+- Current source: craigsmith, **R25-11-1930s Urban Traffic**, Freesound sound 479574, CC0. The recording is sourced from preserved Hollywood optical effects and is described as 1930s urban traffic.
