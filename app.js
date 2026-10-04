@@ -630,7 +630,7 @@ $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').oncli
 document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
-const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.04;
+const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
 const TITLE_CITY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 let titleCityAmbienceAudio=null;
 function titleCityAmbienceVolume(){return window.matchMedia&&window.matchMedia('(max-width:900px)').matches?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME}
