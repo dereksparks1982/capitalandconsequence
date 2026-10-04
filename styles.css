@@ -396,17 +396,26 @@ body.elephant-easter-egg-open{overflow:hidden}
 
 /* The approved office artwork still contains the old drawer captions.
    Cover only those three caption areas so the new consolidated menu reads correctly. */
-.title-profile::after,.title-options::after,.title-archives::after{
+.title-continue::after,.title-profile::after,.title-options::after,.title-archives::after{
  content:attr(data-title-label);
- position:absolute;left:15%;right:15%;top:27%;bottom:27%;
+ position:absolute;
+ left:2%;right:2%;top:10%;bottom:10%;
  display:flex;align-items:center;justify-content:center;
- background:linear-gradient(#d4bb83,#b8975c);
- border:1px solid rgba(78,53,25,.9);
- box-shadow:inset 0 1px 0 rgba(255,242,196,.55),inset 0 -1px 0 rgba(72,45,19,.35);
- color:#24180d;
- font:700 clamp(7px,.78vw,15px)/1 Georgia,'Times New Roman',serif;
+ z-index:2;
+ overflow:hidden;
+ background:
+  linear-gradient(180deg,rgba(225,203,151,.98) 0%,rgba(200,166,104,.99) 48%,rgba(171,132,77,.99) 100%);
+ border:1px solid rgba(66,42,20,.98);
+ border-radius:3px;
+ box-shadow:
+  inset 0 1px 0 rgba(255,244,205,.72),
+  inset 0 -2px 0 rgba(81,50,21,.34),
+  0 1px 2px rgba(28,17,7,.42);
+ color:#21150b;
+ font:700 clamp(7px,.8vw,15px)/1 Georgia,'Times New Roman',serif;
  letter-spacing:.055em;
- text-shadow:0 1px rgba(248,227,176,.65);
+ text-shadow:0 1px rgba(250,231,184,.62);
+ white-space:nowrap;
  pointer-events:none;
 }
 @media (orientation:portrait) and (max-width:900px){
