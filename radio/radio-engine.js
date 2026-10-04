@@ -86,27 +86,43 @@
     html5:true,
     preload:true,
     loop:!!block.loop&&this.clockFor(station).length===1,
-    volume:0,
+    volume:this.volume,
     onload:()=>{
-     if(this.playToken!==token||this.howl!==howl)return;
+     if(this.playToken!==token||this.howl!==howl||this.soundId==null)return;
      const duration=Number(block.duration)>0?Number(block.duration):howl.duration();
      const slot=this._slotFor(station,duration);
      let offset=slot?.block?.id===block.id?slot.offset:0;
      if(station.restartOnTune&&Number.isFinite(options.localOffset))offset=Math.max(0,options.localOffset);
-     const id=howl.play();
-     this.soundId=id;
-     try{if(offset>0)howl.seek(offset,id)}catch(e){}
-     howl.volume(this.volume,id);
+     try{if(offset>0)howl.seek(offset,this.soundId)}catch(e){}
+     try{howl.volume(this.volume,this.soundId)}catch(e){}
     },
     onend:()=>{
      if(this.playToken!==token||this.masterPaused||!this.powered)return;
      if(!block.loop||this.clockFor(station).length>1)this._playCurrent();
     },
     onloaderror:(_id,error)=>console.warn('Federal Electric radio load error:',station.name,error),
-    onplayerror:(_id,error)=>console.warn('Federal Electric radio play error:',station.name,error)
+    onplayerror:(id,error)=>{
+     console.warn('Federal Electric radio play error:',station.name,error);
+     if(this.playToken!==token||this.masterPaused||!this.powered)return;
+     howl.once('unlock',()=>{
+      if(this.playToken!==token||this.masterPaused||!this.powered)return;
+      try{
+       const retryId=howl.play(id);
+       this.soundId=retryId;
+       howl.volume(this.volume,retryId);
+      }catch(e){}
+     });
+    }
    });
    this.howl=howl;
-   howl.load();
+   const id=howl.play();
+   this.soundId=id;
+   try{
+    let offset=firstSlot.offset||0;
+    if(station.restartOnTune&&Number.isFinite(options.localOffset))offset=Math.max(0,options.localOffset);
+    if(offset>0)howl.seek(offset,id);
+    howl.volume(this.volume,id);
+   }catch(e){}
   }
 
   activate(){
