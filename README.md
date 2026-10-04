@@ -229,6 +229,6 @@ Current title-screen interactions include:
 
 The title-screen Metropolitan Ledger currently costs **3¢** the first time its edition is opened by the most recently played profile. The charge comes from **Personal Cash**, not Company Cash. That edition is then recorded as purchased for that profile and can be reopened without another charge.
 
-The approved next title-menu consolidation is **Continue → Profile → Options → Archives**. **Profile** will combine the existing Load Profile and New Profile functions. **Archives** will become the profile-specific record of acquired newspapers, collectible cards and other unlocked material.
+The title menu is now consolidated as **Continue → Profile → Options → Archives**. **Profile** combines loading, creating, and deleting local profiles in one drawer. **Options** replaces Settings and is reserved for future game/presentation choices. **Archives** is present as the fourth drawer and is reserved for the profile-specific record of acquired newspapers, collectible cards, people, places, and other unlocked material.
 
 The title-screen radio currently contains the Federal Electric title theme, an approved static station, and the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast. The future radio design is schedule-driven: the title theme remains the exception that always restarts from the beginning, while true broadcast stations will advance independently of the listener so tuning in joins whatever is already on the air.
