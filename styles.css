@@ -422,6 +422,9 @@ body.elephant-easter-egg-open{overflow:hidden}
  white-space:nowrap;
  pointer-events:none;
 }
+.title-continue::after{transform:translateX(2%)}
+.title-profile::after,.title-options::after,.title-archives::after{transform:translate(2%,4%)}
+
 @media (orientation:portrait) and (max-width:900px){
  .title-screen{overflow:hidden}
  .title-screen-frame{
