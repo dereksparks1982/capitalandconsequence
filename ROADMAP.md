@@ -419,19 +419,44 @@ Approved next work:
 
 Current implementation:
 - [x] Lower radio dial advances through stations.
-- [x] Upper tuning/display window is the dedicated radio power control.
-- [x] Station 1 is the Federal Electric title theme.
-- [x] Station 2 is the approved static frequency.
-- [x] Station 3 is the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast.
+- [x] Radio power is a separate invisible hotspot over the square panel on the left side of the approved radio artwork; the tuning dial remains tuning-only.
+- [x] A temporary station label appears above the radio after tuning and shows station number, dial position and station name.
+- [x] The radio now runs through a dedicated Federal Electric broadcast engine in `radio/radio-engine.js`.
+- [x] Howler.js Core 2.2.4 is vendored under `vendor/howler/` with its MIT license.
+- [x] Station definitions are separated into `radio/stations.js` so programming and media sources can change without rewriting the title-screen controls.
+- [x] **Station 1 · 610 AM · Federal Electric Network** is the title/theme station and intentionally restarts from 0:00 when tuned back in.
+- [x] **Station 2 · 540 AM · Capital Signal** is the static / experimental-signal frequency.
+- [x] **Station 3 · 720 AM · Capital Radio Theatre** carries the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast.
+- [x] **Station 4 · 880 AM · Capital Melody** carries the complete user-supplied 1930s music program, using a radio-optimized 64 kbps game copy of the untouched original recording.
+- [x] Live-style stations derive position from an absolute broadcast clock. Radio power controls audibility only and does not create a listener resume point.
+- [x] The game PAUSE button is a master audio pause for the title soundscape. On PLAY, live stations resynchronize to the point their broadcast clock has reached.
+- [x] Daytime Washington city ambience remains independent of radio tuning and is mixed at **7% desktop / 2% mobile**.
+- [x] Large radio media is stored outside the source repo when appropriate. Current Orson and music copies are staged in the **Federal Electric Radio** Google Drive folder.
 
-Authoritative future behavior:
-- [ ] **Station 1 is the exception to live broadcasting.** Every time the player tunes to it, the Federal Electric title theme starts at 0:00. When it ends, it may loop back to the beginning. Leaving and returning restarts it from the beginning.
-- [ ] True broadcast stations do **not** remember the listener's progress. Their programming advances on its own schedule whether the player is tuned in or not.
-- [ ] Tuning into a real broadcast joins whatever point is currently on the air. If an hour-long drama began 37 minutes ago, the listener hears minute 37 rather than the beginning.
-- [ ] Reloading or tuning away must not reset a real broadcast. Playback position should be derived from the station schedule/clock.
-- [ ] The Mercury Theatre frequency grows into a schedule of multiple Orson Welles / Mercury Theatre episodes rather than a user-selectable episode list.
-- [ ] Some Mercury Theatre programs may be restricted to historically/thematically suitable evening slots. *Dracula* is specifically planned as a nighttime program.
-- [ ] **Station 2 remains static during the day.** After evening begins, Morse-code material may emerge from the static. The exact recording/message is not yet approved and must be period-appropriate rather than a short modern training loop.
-- [ ] A separate static/dead frequency is planned immediately after the Orson Welles station using the user-supplied static recording; that asset has not yet been added to the repository.
+Hosting / release work:
+- [ ] Make Drive-hosted radio media available through a stable public/link-access streaming URL before treating those assets as production-public. The current connected Drive tool can upload files but cannot grant unrestricted public-link access.
+- [ ] Replace any temporary remote-media URL in `radio/stations.js` without changing station logic once the final public host is confirmed.
+- [ ] Prefer GitHub for small audio assets and Drive or another approved media host for oversized recordings.
+
+Authoritative station behavior:
+- [x] **Station 1 is the exception to live broadcasting.** Every tune-in begins the Federal Electric theme from 0:00 rather than joining an independent broadcast clock.
+- [x] True broadcast stations do **not** remember the listener's progress. Their programming advances according to the station clock whether the radio speaker is on or off.
+- [x] Tuning into a real broadcast joins whatever point is currently on the air.
+- [x] Radio OFF never pauses a live station. Turning it back on resynchronizes to the current on-air position.
+- [ ] Persist the station epoch across full page reloads if we decide broadcasts should remain phase-locked across reloads rather than beginning a fresh broadcast day when the title page is opened.
+- [ ] Grow Capital Radio Theatre into a clockwheel of multiple Mercury Theatre / radio-drama programs rather than a user-selectable episode list.
+- [ ] Reserve some drama programs for historically/thematically suitable evening slots. *Dracula* remains a specific nighttime candidate.
+- [ ] **Capital Signal remains static during the day.** After evening begins, period-appropriate Morse material may emerge from the static. The exact recording/message is not yet approved.
+- [ ] Add station IDs, announcer links, period advertisements, sponsor breaks, news bulletins and weak-reception segments so stations become full programmed broadcasts rather than single-file loops.
+- [ ] Build reusable clockwheel categories such as MUSIC → STATION ID → MUSIC → ADVERTISEMENT → NEWS → MUSIC.
 - [ ] Add other weak or distant stations only when they sound like fixed frequencies with reception variation, not like an artificial retuning effect.
-- [ ] Add historically appropriate news interruptions and bulletins when suitable original recordings are found. Do not imitate the later Emergency Broadcast System.
+- [ ] Historical news interruptions should reflect period network bulletins, not the later Emergency Broadcast System.
+
+### Mobile / device audio mix roadmap
+
+- [x] Mobile Washington street ambience reduced to **2%** while desktop remains **7%**.
+- [ ] Add a device-specific title-audio mix layer so ambience, radio and future sound effects can each have separate desktop/mobile gain without changing station programming.
+- [ ] Test iPhone playback through the handset speaker pair, headphones and external Bluetooth audio before locking radio gain.
+- [ ] If needed, add a conservative mobile-only EQ / compression profile to tame harsh phone-speaker playback without degrading desktop audio.
+- [ ] Keep audio routing under the browser/OS. Federal Electric should adjust mix and dynamics, not pretend it can select a particular physical iPhone speaker.
+- [ ] Add an Options control later for master volume, radio volume and ambience volume after the current title-screen presentation is stable.
