@@ -469,13 +469,13 @@ body.elephant-easter-egg-open{overflow:hidden}
   conic-gradient(
    from 8deg,
    transparent 0deg 9deg,
-   rgb(58,43,33) 10deg 41deg,
+   rgb(34,28,24) 10deg 41deg,
    transparent 42deg 99deg,
-   rgb(58,43,33) 100deg 131deg,
+   rgb(34,28,24) 100deg 131deg,
    transparent 132deg 189deg,
-   rgb(58,43,33) 190deg 221deg,
+   rgb(34,28,24) 190deg 221deg,
    transparent 222deg 279deg,
-   rgb(58,43,33) 280deg 311deg,
+   rgb(34,28,24) 280deg 311deg,
    transparent 312deg 360deg
   );
 }
