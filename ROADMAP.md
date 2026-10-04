@@ -382,18 +382,54 @@ This remains planned after the current Company Operations deepening work. It is 
 - deeper historical research for horse betting, boxing wagering and underground activity
 
 
+## Title-screen office, profiles and Archives — 2026-10-04
+
+Implemented:
+- [x] Approved 1930s executive-office title artwork remains the visual baseline; interactive features use overlays rather than repainting unrelated objects.
+- [x] Framed Washington, D.C. wall map opens the 1938 **Washington In and Out Guide** in a pan-and-zoom viewer.
+- [x] Title-screen Metropolitan Ledger can be opened from its existing hotspot.
+- [x] Opening the current newspaper edition charges **3¢ once** to the most recently played profile's **Personal Cash** and records that edition as purchased for that profile.
+
+Approved next work:
+- [ ] Consolidate the title menu to **Continue → Profile → Options → Archives**.
+- [ ] **Profile** replaces separate Load Profile / New Profile title buttons while retaining profile creation, loading and deletion.
+- [ ] **Options** replaces the modern-sounding Settings label.
+- [ ] **Archives** is profile-specific and contains only material that profile actually acquired, purchased, discovered or unlocked.
+- [ ] Build a newspaper archive that shows owned issues as miniature dated front pages and lets purchased issues be reopened without another charge.
+- [ ] Generate or hand-author dozens of Metropolitan Ledger editions that advance with the save's historical date. Major historical issues can be handcrafted; ordinary issues can use a reusable newspaper layout populated by the simulation.
+- [ ] The title-screen newspaper should eventually reflect the date/state of the most recently played profile rather than remaining a single fixed issue.
+- [ ] Use the same tall-card gallery concept proven in the Hanafi card project for the Federal Electric collectible-card archive, with period-appropriate Federal Electric styling.
+- [ ] Add a discreet period film canister on the shelf behind the horse and plant near the lamp. It should be partially obscured and use a normal hand pointer as the hotspot.
+- [ ] Correct the plant/decanter visual overlap by adding a small planter/base behind the decanter and redirecting only the plant's lower stems. Do not alter the approved horse, lamp, shelf, clock, fan or other unrelated title artwork.
+
+### Motion-picture system — planned
+
+- [ ] The film canister opens a period **Motion Picture** / theater selection rather than a modern streaming library.
+- [ ] Standard admission target: **25¢** per showing; major first-run/premiere target: **40¢**. These are gameplay rates grounded in period admission ranges and remain subject to venue-specific historical research.
+- [ ] Admission is charged from the last-played profile's **Personal Cash** every time a film is attended. Paying does not grant home ownership of the movie.
+- [ ] Theater playback intentionally has **no pause, rewind, fast-forward, scrubbing or resume bookmark**.
+- [ ] The picture keeps running while the player is away from the keyboard or another browser tab is active. Leaving early means the missed portion is missed.
+- [ ] Returning for another showing requires another ticket and begins a new showing from the start.
+- [ ] Archives may preserve a ticket stub, poster/program entry, viewing date or attendance record after a movie has been seen, but the archive does not provide free replay.
+- [ ] Only films/assets whose U.S. rights status has been individually verified may be bundled or served by the project.
+
 ## Title-screen radio network — 2026-10-04
 
-- [x] Convert the title radio from a single music on/off control into a station-based player.
-- [x] Make the lower radio dial advance through stations rather than turn the radio off.
-- [x] Make the upper tuning/display window above the dial the dedicated radio power control.
-- [x] Station 1: existing title music.
-- [x] Station 2: approved one-minute radio-static recording on continuous rotation.
-- [x] Station 3: original October 30, 1938 Mercury Theatre / Orson Welles War of the Worlds broadcast on continuous rotation.
-- [x] Use playlist-based stations so multiple recordings can play in fixed sequential order and return to the first recording after the last.
-- [ ] Build Station 4 from the selected Library of Congress recordings, appended in the exact order approved as files are supplied.
-- [ ] Add one or two additional distinct static / dead-frequency stations so empty frequencies do not all sound identical.
-- [ ] Add a weak distant station that remains on one frequency but fades in and out under static, representing a broadcaster outside Washington whose signal can barely be received.
-- [ ] Continue extending every station with compatible recordings so the dial gradually becomes a long-form 1938 radio environment rather than a set of short obvious loops.
-- [ ] Add historically appropriate news interruptions and emergency-style bulletins when suitable original recordings are found. Do not imitate the later Emergency Broadcast System, which did not exist in 1938.
-- [ ] Consider calendar-aware historical broadcasts later, so major 1938 events can surface when the in-game date reaches them.
+Current implementation:
+- [x] Lower radio dial advances through stations.
+- [x] Upper tuning/display window is the dedicated radio power control.
+- [x] Station 1 is the Federal Electric title theme.
+- [x] Station 2 is the approved static frequency.
+- [x] Station 3 is the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast.
+
+Authoritative future behavior:
+- [ ] **Station 1 is the exception to live broadcasting.** Every time the player tunes to it, the Federal Electric title theme starts at 0:00. When it ends, it may loop back to the beginning. Leaving and returning restarts it from the beginning.
+- [ ] True broadcast stations do **not** remember the listener's progress. Their programming advances on its own schedule whether the player is tuned in or not.
+- [ ] Tuning into a real broadcast joins whatever point is currently on the air. If an hour-long drama began 37 minutes ago, the listener hears minute 37 rather than the beginning.
+- [ ] Reloading or tuning away must not reset a real broadcast. Playback position should be derived from the station schedule/clock.
+- [ ] The Mercury Theatre frequency grows into a schedule of multiple Orson Welles / Mercury Theatre episodes rather than a user-selectable episode list.
+- [ ] Some Mercury Theatre programs may be restricted to historically/thematically suitable evening slots. *Dracula* is specifically planned as a nighttime program.
+- [ ] **Station 2 remains static during the day.** After evening begins, Morse-code material may emerge from the static. The exact recording/message is not yet approved and must be period-appropriate rather than a short modern training loop.
+- [ ] A separate static/dead frequency is planned immediately after the Orson Welles station using the user-supplied static recording; that asset has not yet been added to the repository.
+- [ ] Add other weak or distant stations only when they sound like fixed frequencies with reception variation, not like an artificial retuning effect.
+- [ ] Add historically appropriate news interruptions and bulletins when suitable original recordings are found. Do not imitate the later Emergency Broadcast System.
