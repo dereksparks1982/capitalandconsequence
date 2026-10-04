@@ -103,3 +103,30 @@ On this snapshot date the following were updated to match the current approved d
 - Mix level is **7%**, intentionally well below the title radio.
 - The ambience is independent of radio tuning/power and also stops when leaving the title screen.
 - Source recording: craigsmith / Freesound 479574, CC0.
+
+
+## Radio engine upgrade — implemented
+
+- Vendored **Howler.js Core 2.2.4** under `vendor/howler/` with its MIT license.
+- Added `radio/radio-engine.js` as the Federal Electric broadcast-clock playback layer.
+- Added `radio/stations.js` as the single station/programming definition file.
+- Title-screen tuning, power and game PAUSE now call the radio engine instead of maintaining separate hidden `Audio` elements in `app.js`.
+- Radio OFF controls speaker audibility only for live-style stations. Their broadcast position is calculated from the station clock.
+- Game PAUSE is a master title-audio pause. PLAY resynchronizes live stations to the point their clock has reached.
+- Added a transient station identifier above the radio after tuning.
+- Current fictional lineup:
+  1. **610 AM · Federal Electric Network** — Federal Electric title theme; restarts at 0:00 on every tune-in.
+  2. **540 AM · Capital Signal** — daytime static / experimental signal; nighttime Morse programming remains planned.
+  3. **720 AM · Capital Radio Theatre** — Mercury Theatre / Orson Welles drama and talk frequency.
+  4. **880 AM · Capital Melody** — user-supplied 1930s music program.
+- The complete 2:12:58 music recording was preserved untouched and a **64 kbps / ~61 MB** game-streaming copy was produced for Capital Melody.
+- The user's Orson Welles MP3 and the radio-optimized Capital Melody MP3 are staged in the Google Drive folder **Federal Electric Radio**.
+- Current connected Drive tooling cannot grant unrestricted public-link permission. Treat the Drive URLs in station configuration as staging until a stable public/link-access host is confirmed.
+
+## Mobile title-audio mix — current
+
+- Washington daytime street ambience remains **7% on desktop**.
+- Mobile street ambience is **2%**.
+- Radio and ambience remain independently mixed.
+- Future work may add mobile-specific radio gain and conservative EQ/compression after iPhone speaker/headphone testing.
+- Physical speaker routing stays under iOS/browser control; Federal Electric will tune its mix rather than attempt to select a hardware speaker.
