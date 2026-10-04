@@ -351,6 +351,31 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-radio-knob:hover,.title-radio-knob:focus,.title-radio-knob:focus-visible,.title-radio-knob:active{
  border:0!important;background:transparent!important;outline:none!important;box-shadow:none!important;
 }
+.title-radio-station-label{
+ position:absolute;
+ left:4.35%;top:46.45%;
+ width:13.4%;min-height:2.7%;
+ display:flex;align-items:center;justify-content:center;
+ z-index:5;pointer-events:none;
+ box-sizing:border-box;
+ padding:.28% .45%;
+ border:1px solid rgba(110,85,48,.7);
+ border-radius:2px;
+ background:rgba(28,23,15,.9);
+ color:#e7d7aa;
+ font:700 clamp(6px,.58vw,11px)/1.15 Georgia,'Times New Roman',serif;
+ letter-spacing:.035em;
+ text-align:center;
+ text-shadow:0 1px 1px #000;
+ white-space:nowrap;
+ opacity:0;
+ transform:translateY(3px);
+ transition:opacity .16s ease,transform .16s ease;
+}
+.title-radio-station-label.is-visible{
+ opacity:1;
+ transform:translateY(0);
+}
 .title-dc-map{
  position:absolute;
  left:93.02%;top:.55%;
