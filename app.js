@@ -572,7 +572,7 @@ function startFreshGame(){clearPauseLock();S=initial();selectedStockTicker=null;
 $('#reset').onclick=()=>{if(confirm('You are about to start a new game. All previous progress will be lost. Continue?'))startFreshGame()}
 const continueEmpire=$('#continueEmpire');if(continueEmpire)continueEmpire.onclick=()=>{S.endlessMode=true;S.campaignCompleted=true;S.campaignEndPending=false;save(true);render();beginNextDay()};
 const campaignNewGame=$('#campaignNewGame');if(campaignNewGame)campaignNewGame.onclick=()=>startFreshGame();
-const pauseToggle=$('#pauseToggle');if(pauseToggle)pauseToggle.onclick=()=>{if(S.paused){clearPauseLock();S.paused=false}else{S.paused=true;showTab('desk')}save(true);render()};
+const pauseToggle=$('#pauseToggle');if(pauseToggle)pauseToggle.onclick=()=>{if(S.paused){clearPauseLock();S.paused=false;resumeTitleAudio()}else{S.paused=true;pauseTitleAudio();showTab('desk')}save(true);render()};
 function treasuryAmount(){const n=Math.floor(Number($('#treasuryAmount')?.value));return Number.isFinite(n)&&n>0?n:0}
 const exploreIpo=$('#exploreIpo');if(exploreIpo)exploreIpo.onclick=()=>{ipoScaffoldOpen=!ipoScaffoldOpen;renderOwnership()};
 const closeIpoScaffold=$('#closeIpoScaffold');if(closeIpoScaffold)closeIpoScaffold.onclick=()=>{ipoScaffoldOpen=false;renderOwnership()};
@@ -649,7 +649,7 @@ function titleEnvironmentIsDay(){
 }
 function syncTitleCityAmbience(){
  const audio=ensureTitleCityAmbience();
- if(titleScreenVisible()&&titleEnvironmentIsDay()){
+ if(titleScreenVisible()&&titleEnvironmentIsDay()&&!S.paused){
   audio.volume=titleCityAmbienceVolume();
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }else{
@@ -740,7 +740,8 @@ function startTitleRadioBackgroundFeeds(){
  for(let i=1;i<TITLE_RADIO_STATIONS.length;i++){
   const audio=ensureTitleRadioBackgroundFeed(i);if(!audio)continue;
   forceTitleRadioFeedToAir(audio);
-  audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible());
+  audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
+  if(S.paused){audio.pause();continue}
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
 }
@@ -748,6 +749,7 @@ function updateTitleRadioAudibility(){
  for(const [index,audio] of titleRadioBackgroundFeeds){
   forceTitleRadioFeedToAir(audio);
   audio.volume=TITLE_RADIO_VOLUME;
+  if(S.paused){audio.muted=true;audio.pause();continue}
   audio.muted=!(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible());
   if(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()){
    forceTitleRadioFeedToAir(audio);
@@ -758,7 +760,7 @@ function updateTitleRadioAudibility(){
  }
 }
 function startTitleRadio(){
- if(!titleScreenVisible())return;
+ if(!titleScreenVisible()||S.paused)return;
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(titleRadioOff||titleRadioStationIndex!==0)return;
@@ -801,6 +803,19 @@ function toggleTitleRadioPower(){
   updateTitleRadioAudibility();
  }
  updateTitleRadioControls();
+}
+function pauseTitleAudio(){
+ if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
+ if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
+ if(titleRadioAudio)titleRadioAudio.pause();
+ for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
+}
+function resumeTitleAudio(){
+ if(!titleScreenVisible())return;
+ syncTitleCityAmbience();
+ startTitleRadioBackgroundFeeds();
+ updateTitleRadioAudibility();
+ if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
 }
 function stopTitleRadio(fade=true){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
