@@ -339,6 +339,18 @@ body.elephant-easter-egg-open{overflow:hidden}
 @media (orientation:portrait) and (max-width:900px){
  .title-game-logo{width:31.5%;top:6.0%}
 }
+.title-radio-knob{
+ position:absolute;
+ left:13.55%;top:51.55%;
+ width:2.30%;height:4.00%;
+ margin:0;padding:0;border:0!important;background:transparent!important;
+ outline:none!important;box-shadow:none!important;cursor:pointer;
+ border-radius:50%;z-index:4;
+ -webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none;
+}
+.title-radio-knob:hover,.title-radio-knob:focus,.title-radio-knob:focus-visible,.title-radio-knob:active{
+ border:0!important;background:transparent!important;outline:none!important;box-shadow:none!important;
+}
 .title-hotspot{
  position:absolute;left:42.4%;width:15%;height:7.5%;
  margin:0;padding:0;border:0!important;background:transparent!important;

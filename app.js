@@ -631,7 +631,7 @@ document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]')
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_MUSIC_URL='assets/audio/sunflower-slow-drag.ogg?v=20261003-title2';
 const TITLE_MUSIC_VOLUME=.38;
-let titleMusic=null,titleMusicFadeTimer=null;
+let titleMusic=null,titleMusicFadeTimer=null,titleRadioOff=false;
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
 function ensureTitleMusic(){
  if(titleMusic)return titleMusic;
@@ -642,12 +642,30 @@ function ensureTitleMusic(){
  return titleMusic;
 }
 function startTitleMusic(){
- if(!titleScreenVisible())return;
+ if(!titleScreenVisible()||titleRadioOff)return;
  const audio=ensureTitleMusic();
  if(titleMusicFadeTimer){clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null}
  audio.volume=TITLE_MUSIC_VOLUME;
  const p=audio.play();
  if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
+function toggleTitleRadio(){
+ const audio=ensureTitleMusic();
+ if(titleMusicFadeTimer){clearInterval(titleMusicFadeTimer);titleMusicFadeTimer=null}
+ const button=$('#titleRadioKnob');
+ if(titleRadioOff){
+  titleRadioOff=false;
+  audio.volume=TITLE_MUSIC_VOLUME;
+  const p=audio.play();
+  if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }else{
+  titleRadioOff=true;
+  audio.pause();
+ }
+ if(button){
+  button.setAttribute('aria-pressed',titleRadioOff?'true':'false');
+  button.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
+ }
 }
 function stopTitleMusic(fade=true){
  if(!titleMusic)return;
@@ -844,6 +862,7 @@ function initTitleScreen(){
  $('#titleLoadProfile').onclick=()=>renderProfileManager();
  $('#titleNewProfile').onclick=showNewProfileForm;
  $('#titleSettings').onclick=()=>openTitleDialog('Settings','<p>Settings have not been defined yet. This drawer is reserved for them.</p><div class="title-dialog-actions"><button id="settingsClose" type="button">Close</button></div>');
+ $('#titleRadioKnob').onclick=toggleTitleRadio;
  $('#titleDialogClose').onclick=closeTitleDialog;
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
  document.addEventListener('click',e=>{if(e.target?.id==='settingsClose')closeTitleDialog()});
