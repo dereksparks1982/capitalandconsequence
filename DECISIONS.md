@@ -293,27 +293,60 @@ This file records decisions that should not drift silently during development.
 
 ## 2026-10-04 — Title-screen interactive objects and future Easter eggs
 
-- The title-screen office remains a fixed approved artwork. Interactive ideas should use precise overlays/hit targets rather than altering unrelated parts of the image.
-- **Newspaper:** only the **M in "Metropolitan Ledger"** on the visible desk newspaper is the hidden click target. Clicking that M opens the approved 1938 Metropolitan Ledger mockup about the Munich Agreement.
-- **Washington wall map:** clicking the framed Washington, D.C. map on the far-right wall should open a readable map of Washington, D.C. as it stood in 1938.
-- **Flag history:** a specific middle red stripe of the U.S. flag beside the green desk lamp should be clickable and open a short history of the United States and the 48-star flag as it stood in 1938. This must remain separate from the documented future star Easter egg.
-- **Desk lamp:** clicking the green shade of the desk lamp should toggle its light state. The green shade itself is the intended hit target because the physical switch/base is not visible.
-- **Weather lighting:** future live Washington weather may affect the title screen. Rain or storm conditions during daytime should use the darker night-style office illumination, automatically light the lamps, and add rain/storm animation only in the window. This changes visual lighting only; it does not change the game clock or phase to night.
-- **Bookcase Easter egg:** on the left bookcase, use the shelf directly below the top shelf. After the row of upright books on the left and the small tilted/lying stack near the middle, the intended target is the **next upright book immediately to the right of that tilted stack**. It is not the far-left book. The future behavior for clicking this book is not yet defined.
-- **Clock cleanup:** the title artwork currently contains more clocks than desired, including the main live clock plus small decorative clocks near the bust/picture area. A future overlay or other non-destructive visual treatment may hide one of the redundant decorative clocks. Do not change this until a specific clock and replacement treatment are approved.
+- The title-screen office remains a fixed approved artwork. Interactive ideas use precise overlays/hit targets rather than altering unrelated parts of the image.
+- **Newspaper:** the existing hidden newspaper hotspot opens the approved Metropolitan Ledger issue. The first open of that edition charges **3¢** from the most recently played profile's **Personal Cash** and records the edition as purchased. Reopening the same edition for that profile is free.
+- **Washington wall map:** IMPLEMENTED. Clicking the framed Washington, D.C. map opens the 1938 **Washington In and Out Guide** in a full viewer with mouse-wheel zoom, drag-to-pan, reset, keyboard controls and close behavior.
+- **Flag history:** a specific middle red stripe of the U.S. flag beside the green desk lamp is reserved for a future short history of the United States and the 48-star flag as it stood in 1938. This remains separate from the future star Easter egg.
+- **Desk lamp:** clicking the green shade is reserved to toggle its light state. The shade is the intended hit target because the physical switch/base is not visible.
+- **Weather lighting:** future live Washington weather may affect title-room lighting. Rain/storm conditions during daytime may use darker room illumination, automatic lamps and window-only rain/storm animation without changing the simulation phase to night.
+- **Bookcase Easter egg:** on the left bookcase, use the shelf directly below the top shelf. After the row of upright books on the left and the small tilted/lying stack near the middle, the intended target is the next upright book immediately to the right of that tilted stack.
+- **Clock cleanup:** any future hiding of redundant decorative clocks must use a non-destructive overlay or similarly narrow treatment and requires explicit approval.
+- **Film canister:** planned placement is on the shelf behind the horse and plant near the lamp, deliberately partly obscured so it feels discovered rather than advertised. The horse, plant, lamp and shelf are not to be moved merely to make room for it.
+- **Plant/decanter correction:** planned surgical visual fix is a small pot/base behind the decanter with only the lower plant stems corrected so the plant no longer appears to grow out of the alcohol decanter. Do not redraw the whole room.
 
+## 2026-10-04 — Title menu and Archives
 
+- The approved future title-button order is **CONTINUE → PROFILE → OPTIONS → ARCHIVES**.
+- **Profile** combines the existing Load Profile and New Profile entry points while retaining load, create and delete/manage behavior.
+- **Options** replaces **Settings** because it fits the period presentation better.
+- **Archives** replaces the idea of a modern-sounding Bonus section.
+- Archives are profile-specific. They contain material the profile actually purchased, found, attended, discovered or unlocked rather than exposing every asset automatically.
+- Purchased Metropolitan Ledger issues remain permanently rereadable in Archives without a second newspaper charge.
+- Newspaper archive entries should look like miniature folded/front-page newspapers with masthead and date, not generic modern cards.
+- Federal Electric collectible cards should use the same general tall-card gallery concept as the Hanafi card library, restyled for the 1930s material.
+- Movie attendance can leave an archival record such as a ticket, poster/program or dated viewing entry, but paying admission does not grant free movie playback.
+
+## 2026-10-04 — Newspaper ownership and changing editions
+
+- A newspaper is a physical purchase. The current price is **3¢ per edition**.
+- The charge comes from the most recently played profile's **Personal Cash**, never Company Cash.
+- Each profile owns purchased editions independently.
+- A purchased edition can be reopened freely thereafter.
+- The Metropolitan Ledger should evolve as the save advances, with dozens of dated issues across 1938 and the later campaign rather than one permanent front page.
+- Historical stories follow the calendar; simulation stories may reflect Federal Electric, markets, sports, scandals and other events when the public would reasonably know about them.
+- The newspaper sitting in the title room should eventually reflect the most recently played profile's current historical date/state.
+
+## 2026-10-04 — Motion-picture attendance
+
+- The clickable film canister represents **going to a theater**, not owning a home movie collection.
+- Target standard admission is **25¢**; major first-run/premiere admission is **40¢**, subject to later theater-specific historical research.
+- Admission is paid from Personal Cash each time the player attends.
+- A 1938 showing has **no pause, rewind, fast-forward, scrubber or resume point**.
+- The film continues while the player is away. Missed material stays missed.
+- Leaving the showing ends that attendance. Another viewing requires another ticket and begins as a new showing.
+- Archives may record that the film was seen but do not turn attendance into permanent playback ownership.
+- Every film or scan intended for distribution with the game requires rights/public-domain verification of the exact version used.
 
 ## 2026-10-04 — Title-screen radio station architecture
 
-- The radio remains part of the fixed approved title artwork. Radio interactions use transparent hit targets and do not alter the artwork.
-- The **lower radio dial** is the tuning control. Each click advances to the next available station and wraps from the final available station back to Station 1. It no longer powers the radio off.
-- The **upper tuning/display window directly above the dial** is the power control. Clicking it turns the radio off or back on.
-- Every station is an ordered playlist, including stations that currently contain only one file. A station plays file 1, then 2, then 3, and so on; after its final file it returns to file 1.
-- Station 1 is the existing title music.
-- Station 2 is the approved Cloud-10 radio-static recording on continuous rotation.
-- Station 3 is the original October 30, 1938 Mercury Theatre / Orson Welles War of the Worlds broadcast on continuous rotation.
-- Station 4 is reserved for a growing sequence of compatible Library of Congress recordings. Files are appended in the approved order as they are supplied.
-- Future dial positions may include additional distinct static/dead frequencies and a faint distant station whose single signal fades in and out under interference without sounding like someone is retuning the dial.
-- Long term, stations grow by appending compatible recordings rather than replacing existing material, creating progressively longer period radio programming.
-- Future historical news interruptions may be added when suitable original audio is found. Any 1938 interruption behavior should reflect contemporary network bulletins rather than the later Emergency Broadcast System.
+- The radio remains part of the fixed approved title artwork. Interactions use transparent hit targets.
+- The **lower radio dial** is the tuning control and the **upper tuning/display window** is the power control.
+- **Station 1 is special:** it is the Federal Electric title theme, not a simulated live broadcast. Every tune-in starts the song from the beginning; leaving and returning restarts it.
+- Real broadcast stations follow a continuous station timeline. The station does not wait for the player and does not save a listener-specific resume point.
+- Tuning into a real broadcast joins whatever portion would currently be on the air. Missing the beginning of a program means missing it.
+- Reloading or tuning away should not reset real broadcast programming once the schedule-driven system is implemented.
+- **Station 2** remains a static frequency during daylight. At night it is planned to carry intermittent period-appropriate Morse content through the static. The exact Morse recording/message remains undecided.
+- **Station 3** currently carries the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds*. It is planned to grow into a scheduled sequence of Mercury Theatre programs, with some programs such as *Dracula* reserved for nighttime listening.
+- A further static/dead frequency is planned immediately after the Orson Welles station using the user-supplied static recording. It is documented but not yet in the repository.
+- Future weak/distant stations should sound like one fixed frequency with reception variation, not repeated tuning effects.
+- Future historical news interruptions should reflect period network bulletins, not the later Emergency Broadcast System.
