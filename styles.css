@@ -447,7 +447,24 @@ body.elephant-easter-egg-open{overflow:hidden}
  transform-origin:50% 50%;
  animation:titleFanSpin .52s linear infinite;
 }
-.title-fan-motion.is-off::after{animation-play-state:paused}
+.title-fan-motion.is-off::after{
+ animation-play-state:paused;
+ opacity:1;
+ filter:none;
+ background:
+  conic-gradient(
+   from 8deg,
+   transparent 0deg 9deg,
+   rgb(105,70,38) 10deg 41deg,
+   transparent 42deg 99deg,
+   rgb(105,70,38) 100deg 131deg,
+   transparent 132deg 189deg,
+   rgb(105,70,38) 190deg 221deg,
+   transparent 222deg 279deg,
+   rgb(105,70,38) 280deg 311deg,
+   transparent 312deg 360deg
+  );
+}
 @keyframes titleFanSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){
  .title-fan-motion::after{animation:none;opacity:.32}
