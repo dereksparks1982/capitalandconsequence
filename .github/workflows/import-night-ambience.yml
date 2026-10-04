@@ -1,0 +1,54 @@
+name: Import title night ambience
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-night-ambience.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-night-ambience:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch Pixabay night ambience
+        run: |
+          python - <<'PY'
+          import re, html, pathlib, requests
+          page='https://pixabay.com/sound-effects/city-street-at-night-with-cars-49378/'
+          headers={'User-Agent':'Mozilla/5.0'}
+          text=requests.get(page,headers=headers,timeout=30).text
+          patterns=[
+            r'https://cdn\.pixabay\.com/download/audio/[^"\'<> ]+\.mp3[^"\'<> ]*',
+            r'https:\\/\\/cdn\.pixabay\.com\\/download\\/audio\\/[^"\'<> ]+\.mp3[^"\'<> ]*'
+          ]
+          url=None
+          for pat in patterns:
+            m=re.search(pat,text)
+            if m:
+              url=html.unescape(m.group(0)).replace('\\/','/')
+              break
+          if not url:
+            raise SystemExit('Could not locate Pixabay MP3 URL')
+          out=pathlib.Path('assets/audio/title-night-street.mp3')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          r=requests.get(url,headers=headers,timeout=60)
+          r.raise_for_status()
+          out.write_bytes(r.content)
+          print(out, out.stat().st_size, url)
+          if out.stat().st_size < 1000000:
+            raise SystemExit('Downloaded night ambience is unexpectedly small')
+          PY
+
+      - name: Commit night ambience
+        run: |
+          git config user.name "Federal Electric Media Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/audio/title-night-street.mp3
+          git commit -m "Add local nighttime street ambience"
+          git push
