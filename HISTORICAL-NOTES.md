@@ -94,3 +94,31 @@ Likewise, exact bout rules, card timing, commission fees, purse structures, medi
 - U.S. Congressional Record, 1934, legislation creating the District of Columbia Boxing Commission and regulating boxing exhibitions.
 - U.S. Congressional Record, 1944, later amendments referring back to the Act of April 24, 1934 and the existing District Boxing Commission.
 - Library of Congress, Harris & Ewing Collection, Washington boxing photograph dated 1937 or 1938.
+
+
+## Period newspapers, cinema, radio and preserved media
+
+Federal Electric treats period media as part of the historical simulation rather than as modern on-demand content.
+
+### Metropolitan Ledger
+
+- The current title-screen issue is priced at **3¢** because that price is printed into the approved newspaper prop and is now a gameplay cost.
+- A purchased paper is a physical object and may be reread without paying again.
+- Future dated editions should distinguish researched historical reporting from fictional/simulation-generated local reporting.
+- Historical dates, headlines, prices, advertisements and major-event claims should be verified before an issue is labeled as period-authentic.
+
+### Motion pictures
+
+- The planned theater model charges per attendance rather than granting permanent ownership.
+- Current gameplay targets are **25¢** for an ordinary showing and **40¢** for a major first-run/premiere. These are period-oriented design rates, not claims that every Washington theater charged those exact amounts.
+- Venue-specific ticket prices, taxes, matinee/evening differences and premiere pricing remain research items.
+- Theater playback intentionally omits modern conveniences such as pause, rewind, fast-forward, scrubbing and resume bookmarks.
+- Before a film is packaged, streamed or otherwise distributed through the game, verify the copyright/public-domain status of the **exact film version and scan/restoration** being used. A public-domain underlying film does not automatically make every modern restoration or soundtrack unrestricted.
+
+### Radio
+
+- The intended broadcast model is schedule-driven. Real stations continue through programming whether the player is listening or not, and tuning in joins the program in progress.
+- The Federal Electric title theme is intentionally exempt from that historical model and restarts from the beginning whenever its station is selected.
+- Mercury Theatre programming may be scheduled by time of day, including nighttime-only placement where appropriate for the game's atmosphere.
+- Morse-code and weak-signal material should sound period-plausible and should not rely on very short modern training loops when a longer broadcast texture is required.
+- Historical news interruptions should use period-appropriate network-bulletin conventions and must not imitate the later Emergency Broadcast System.
