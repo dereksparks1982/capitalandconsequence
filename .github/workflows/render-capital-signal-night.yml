@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Normalize source audio
         run: |
           ffmpeg -y -i assets/audio/545962__cloud-10__radio-static-2.wav -ac 1 -ar 44100 -c:a pcm_s16le /tmp/static.wav
@@ -53,14 +58,12 @@ jobs:
           static = read_wav('/tmp/static.wav')
           sample = read_wav('/tmp/morse-m.wav')
           
-          # Use the supplied Morse example to derive the tone character.
           peak = max(abs(x) for x in sample) or 1
           threshold = peak * 0.18
           active = [i for i,x in enumerate(sample) if abs(x) >= threshold]
           if not active:
               raise SystemExit('Could not detect tone in supplied Morse example')
           
-          # Find the first continuous tone group, allowing tiny zero-crossing gaps.
           max_gap = int(RATE * 0.025)
           start = active[0]
           prev = active[0]
@@ -73,7 +76,6 @@ jobs:
           groups.append((start, prev))
           tone_start, tone_end = groups[0]
           
-          # Estimate frequency from positive-going zero crossings in the middle of the first dash.
           pad = int(RATE * 0.02)
           seg = sample[min(tone_end, tone_start+pad):max(tone_start+pad+2, tone_end-pad)]
           crossings = []
@@ -89,11 +91,9 @@ jobs:
               freq = 700.0
           freq = max(350.0, min(1200.0, freq))
           
-          # Estimate the supplied sample's level and keep our signal modest.
           rms = math.sqrt(sum(x*x for x in seg) / max(1,len(seg))) / 32768.0
           tone_amp = max(0.18, min(0.42, rms * 1.25))
           
-          # Build Morse timing first.
           events = []
           t = INTRO
           words = MESSAGE.split(' ')
@@ -113,7 +113,6 @@ jobs:
           total_duration = t + OUTRO
           n = int(total_duration * RATE)
           
-          # Loop the exact supplied static source beneath the signal.
           out = [0.0] * n
           static_peak = max(abs(x) for x in static) or 1
           static_scale = 0.30 * 32767.0 / static_peak
@@ -123,7 +122,6 @@ jobs:
           rng = random.Random(1938)
           fade_n = max(1, int(FADE * RATE))
           
-          # Add the Morse with small level variation to suggest a weak distant carrier.
           for start_s, dur_s in events:
               start_i = int(start_s * RATE)
               length = int(dur_s * RATE)
@@ -135,14 +133,12 @@ jobs:
                       env *= j / fade_n
                   if length - j - 1 < fade_n:
                       env *= (length - j - 1) / fade_n
-                  # slow flutter, subtle enough to remain decodable
                   flutter = 0.92 + 0.08 * math.sin(2*math.pi*3.2*(j/RATE) + phase)
                   tone = math.sin(2*math.pi*freq*(j/RATE) + phase)
                   idx = start_i + j
                   if idx < n:
                       out[idx] += tone * 32767.0 * strength * env * flutter
           
-          # Gentle master fade at both ends.
           edge = int(0.8 * RATE)
           pcm = array.array('h')
           for i, x in enumerate(out):
