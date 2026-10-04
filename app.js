@@ -631,10 +631,16 @@ document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]')
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
+const TITLE_NIGHT_AMBIENCE_VOLUME=.12;
+const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.04;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
-function titleCityAmbienceVolume(){return window.matchMedia&&window.matchMedia('(max-width:900px)').matches?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME}
+function titleCityAmbienceVolume(mode=titleCityAmbienceMode||'day'){
+ const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
+ if(mode==='night')return mobile?TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME:TITLE_NIGHT_AMBIENCE_VOLUME;
+ return mobile?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME;
+}
 function ensureTitleCityAmbience(){
  if(titleCityAmbienceAudio)return titleCityAmbienceAudio;
  const audio=new Audio();
@@ -648,8 +654,8 @@ function titleEnvironmentIsDay(){
 }
 function syncTitleCityAmbience(){
  const audio=ensureTitleCityAmbience();
- const volume=titleCityAmbienceVolume(),visible=titleScreenVisible()&&!S.paused;
  const mode=titleEnvironmentIsDay()?'day':'night';
+ const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!S.paused;
  const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
  if(titleCityAmbienceMode!==mode){
   audio.pause();
@@ -669,7 +675,7 @@ function stopTitleCityAmbience(reset=true){
  if(!titleCityAmbienceAudio)return;
  titleCityAmbienceAudio.pause();
  if(reset){try{titleCityAmbienceAudio.currentTime=0}catch(e){}}
- titleCityAmbienceAudio.volume=titleCityAmbienceVolume();
+ titleCityAmbienceAudio.volume=titleCityAmbienceVolume(titleEnvironmentIsDay()?'day':'night');
 }
 
 const TITLE_RADIO_VOLUME=.38;
