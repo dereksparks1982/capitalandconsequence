@@ -850,11 +850,15 @@ function startTitleClock(){
  titleClockTimer=setInterval(updateTitleClock,250);
 }
 
-function stopTitleFan(){
+function toggleTitleFan(){
  const fan=document.querySelector('.title-fan-motion');
  const button=$('#titleFanHub');
- if(fan)fan.classList.add('is-off');
- if(button){button.setAttribute('aria-pressed','true');button.setAttribute('aria-label','Fan off')}
+ if(!fan)return;
+ const isOff=fan.classList.toggle('is-off');
+ if(button){
+  button.setAttribute('aria-pressed',isOff?'true':'false');
+  button.setAttribute('aria-label',isOff?'Turn fan on':'Turn fan off');
+ }
 }
 
 function initTitleScreen(){
@@ -870,7 +874,7 @@ function initTitleScreen(){
  $('#titleNewProfile').onclick=showNewProfileForm;
  $('#titleSettings').onclick=()=>openTitleDialog('Settings','<p>Settings have not been defined yet. This drawer is reserved for them.</p><div class="title-dialog-actions"><button id="settingsClose" type="button">Close</button></div>');
  $('#titleRadioKnob').onclick=toggleTitleRadio;
- $('#titleFanHub').onclick=stopTitleFan;
+ $('#titleFanHub').onclick=toggleTitleFan;
  $('#titleDialogClose').onclick=closeTitleDialog;
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
  document.addEventListener('click',e=>{if(e.target?.id==='settingsClose')closeTitleDialog()});
