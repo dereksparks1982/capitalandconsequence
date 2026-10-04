@@ -756,7 +756,7 @@ function profileSummary(p){
 function renderProfileManager(message=''){
  const profiles=readProfiles(),active=activeProfileId();
  const rows=profiles.map(p=>'<div class="profile-row"><div><strong>'+escapeHtml(p.name)+'</strong><small>'+escapeHtml(profileSummary(p))+(p.id===active?' · ACTIVE':'')+'</small></div><button type="button" data-profile-load="'+escapeHtml(p.id)+'">Load</button><button class="profile-delete danger" type="button" data-profile-delete="'+escapeHtml(p.id)+'">Delete</button></div>').join('');
- openTitleDialog('Load Profile',(message?'<p class="title-dialog-note">'+escapeHtml(message)+'</p>':'')+(rows||'<p>No profiles have been created yet.</p>')+'<div class="title-dialog-actions"><button id="profileManagerNew" type="button">New Profile</button></div>');
+ openTitleDialog('Profile',(message?'<p class="title-dialog-note">'+escapeHtml(message)+'</p>':'')+(rows||'<p>No profiles have been created yet.</p>')+'<div class="title-dialog-actions"><button id="profileManagerNew" type="button">New Profile</button></div>');
  $('#titleDialogBody').querySelectorAll('[data-profile-load]').forEach(b=>b.onclick=()=>loadProfileById(b.dataset.profileLoad));
  $('#titleDialogBody').querySelectorAll('[data-profile-delete]').forEach(b=>b.onclick=()=>deleteProfileById(b.dataset.profileDelete));
  const add=$('#profileManagerNew');if(add)add.onclick=()=>showNewProfileForm();
@@ -1025,16 +1025,16 @@ function initTitleScreen(){
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
- $('#titleLoadProfile').onclick=()=>renderProfileManager();
- $('#titleNewProfile').onclick=showNewProfileForm;
- $('#titleSettings').onclick=()=>openTitleDialog('Settings','<p>Settings have not been defined yet. This drawer is reserved for them.</p><div class="title-dialog-actions"><button id="settingsClose" type="button">Close</button></div>');
+ $('#titleProfile').onclick=()=>renderProfileManager();
+ $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
+ $('#titleArchives').onclick=()=>openTitleDialog('Archives','<p>Archives are not yet open. This drawer is reserved for the profile-specific collection of purchased, discovered, attended, and unlocked material.</p><div class="title-dialog-actions"><button id="archivesClose" type="button">Close</button></div>');
  $('#titleRadioKnob').onclick=cycleTitleRadioStation;
  $('#titleRadioPower').onclick=toggleTitleRadioPower;
  $('#titleNewspaperM').onclick=openTitleNewspaper;
  $('#titleFanHub').onclick=toggleTitleFan;
  $('#titleDialogClose').onclick=closeTitleDialog;
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
- document.addEventListener('click',e=>{if(e.target?.id==='settingsClose')closeTitleDialog()});
+ document.addEventListener('click',e=>{if(e.target?.id==='optionsClose'||e.target?.id==='archivesClose')closeTitleDialog()});
 }
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
