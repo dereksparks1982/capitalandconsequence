@@ -290,3 +290,15 @@ This file records decisions that should not drift silently during development.
 - The selected top-level button is visibly **blue with white text**. Related secondary section buttons use the same selected-state treatment.
 - The underlying section IDs and gameplay systems remain intact; this is a navigation consolidation rather than a rewrite of the affected systems.
 - Pause behavior is unchanged: pressing **PAUSE** returns the player to **Executive Desk**, disables and grays out gameplay navigation and controls, and leaves only **PLAY** and **New Game** usable.
+
+## 2026-10-04 — Title-screen interactive objects and future Easter eggs
+
+- The title-screen office remains a fixed approved artwork. Interactive ideas should use precise overlays/hit targets rather than altering unrelated parts of the image.
+- **Newspaper:** the visible Metropolitan Ledger paper on the desk is intended to be a tightly shaped clickable target. Clicking it should open the approved 1938 Metropolitan Ledger mockup about the Munich Agreement.
+- **Washington wall map:** clicking the framed Washington, D.C. map on the far-right wall should open a readable map of Washington, D.C. as it stood in 1938.
+- **Flag history:** a specific middle red stripe of the U.S. flag beside the green desk lamp should be clickable and open a short history of the United States and the 48-star flag as it stood in 1938. This must remain separate from the documented future star Easter egg.
+- **Desk lamp:** clicking the green shade of the desk lamp should toggle its light state. The green shade itself is the intended hit target because the physical switch/base is not visible.
+- **Weather lighting:** future live Washington weather may affect the title screen. Rain or storm conditions during daytime should use the darker night-style office illumination, automatically light the lamps, and add rain/storm animation only in the window. This changes visual lighting only; it does not change the game clock or phase to night.
+- **Bookcase Easter egg:** on the left bookcase, the intended clickable book is the **far-left visible volume on the shelf directly below the top shelf**, as identified in the 2026-10-04 reference crop. The future behavior for clicking this book is not yet defined.
+- **Clock cleanup:** the title artwork currently contains more clocks than desired, including the main live clock plus small decorative clocks near the bust/picture area. A future overlay or other non-destructive visual treatment may hide one of the redundant decorative clocks. Do not change this until a specific clock and replacement treatment are approved.
+
