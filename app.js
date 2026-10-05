@@ -913,6 +913,7 @@ function pauseTitleAudio(){
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
  stopTitleNewspaperRustle(false);
+ stopTitleFilingCabinetOpen();
  stopTitleFanAudio(false);
  stopTitleClockAudio(false);
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
@@ -966,6 +967,9 @@ function playTitleFilingCabinetOpen(){
  audio.volume=TITLE_FILING_CABINET_OPEN_VOLUME;
  try{audio.currentTime=0}catch(e){}
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
+function stopTitleFilingCabinetOpen(){
+ if(titleFilingCabinetAudio)titleFilingCabinetAudio.pause();
 }
 
 const TITLE_NEWSPAPER_RUSTLES=[
