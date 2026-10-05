@@ -1,0 +1,26 @@
+name: Analyze filing cabinet sound
+
+on:
+  push:
+    paths:
+      - '.github/workflows/analyze-filing-cabinet.yml'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Analyze filing cabinet source
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="assets/audio/freesound_community-filing-cabinet-89398.mp3"
+          test -s "$SRC"
+          echo "DURATION:"
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$SRC"
+          echo "SILENCES:"
+          ffmpeg -hide_banner -i "$SRC" -af "silencedetect=noise=-32dB:d=0.12" -f null - 2>&1 | grep -E "silence_(start|end)" || true
