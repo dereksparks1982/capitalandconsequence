@@ -444,7 +444,7 @@ body.elephant-easter-egg-open{overflow:hidden}
   inset 0 -1px 0 rgba(81,50,21,.32),
   0 1px 1px rgba(28,17,7,.32);
  color:#21150b;
- font:700 clamp(6.5px,.7vw,13px)/1 Georgia,'Times New Roman',serif;
+ font:700 clamp(11.5px,1.1vw,18px)/1 Georgia,'Times New Roman',serif;
  letter-spacing:.05em;
  text-shadow:0 1px rgba(250,231,184,.58);
  white-space:nowrap;
