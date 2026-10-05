@@ -137,3 +137,55 @@ Research references:
 - SSA, Annual Statistical Supplement, Table 3.B3: https://www.ssa.gov/policy/docs/statcomps/supplement/2023/3b.html
 - FRED / NBER Macrohistory, Average Hourly Earnings, Electrical Manufacturing: https://fred.stlouisfed.org/series/M0811AUSM259NNBR
 - The Wheeler Times, April 28, 1938, Mazda lamp price advertisement: https://newspapers.swco.ttu.edu/bitstreams/3d9b9804-30ed-437f-9ee4-d2a995973756/download
+
+
+## 1938 Washington title and name verification — October 5, 2026
+
+This pass separates historical institutions and period titles from Federal Electric's fictional recurring cast.
+
+### Metropolitan Police title
+
+The Metropolitan Police Department of the District of Columbia identifies **Ernest W. Brown** as **Major and Superintendent** from October 1932 through November 1941. A 1937 FBI Law Enforcement Bulletin likewise identifies him as Major Ernest W. Brown, Superintendent of Police, Washington, D.C. The game's recurring police contact therefore should not be presented as the police "Commissioner" or as the department head in 1938.
+
+- **Arthur Hayes remains fictional.**
+- His in-game title is now **Inspector Arthur Hayes**, a period-plausible subordinate police rank that does not displace the real 1938 superintendent.
+- Older saves using "Commissioner Arthur Hayes" are normalized during migration.
+
+Sources:
+- Metropolitan Police Department, Ernest W. Brown biography: https://mpdc.dc.gov/biography/ernest-w-brown
+- FBI Law Enforcement Bulletin, October 1937: https://leb.fbi.gov/file-repository/archives/october-1937.pdf
+
+### Washington-Hoover Airport
+
+Washington-Hoover Airport was still the capital's commercial airport in 1938. Historic American Engineering Record material held by the Library of Congress notes that unsafe conditions there remained an issue and that President Franklin D. Roosevelt announced Gravelly Point as the site of the new National Airport on September 27, 1938.
+
+This makes Washington-Hoover Airport a historically valid 1938 location if Federal Electric later uses it for a fictional meeting, hangar, poker game, or other invented event. Any such club or event remains fictional unless separately sourced.
+
+Source:
+- Library of Congress / HAER, Suitland Parkway historical report: https://tile.loc.gov/storage-services/master/pnp/habshaer/md/md1300/md1360/data/md1360data.pdf
+
+### Benning and the fictional Capital Race Grounds
+
+Horse-race betting in the District was prohibited in 1908, ending Benning's horse-racing era. The old Benning site remained in other uses into the twentieth century, but it should not be represented as an ordinary operating 1938 pari-mutuel horse track without an explicit alternate-history rule.
+
+Accordingly:
+- **Capital Race Grounds is fictional** and remains the game's legal-sports venue.
+- The game should not silently relabel it as the historical Benning Race Track.
+- If Benning is ever restored as an alternate-history racing venue, the divergence from real history should be stated in-game.
+
+Supporting references:
+- Library of Congress photographs document Benning as an early Washington race/motorsport site: https://www.loc.gov/item/90710634/
+- Contemporary and historical summaries document the 1908 anti-gambling action and later non-horse-racing uses.
+
+### Fictional recurring entities
+
+Unless explicitly changed by a sourced historical pass, the following current entities are fictional: **Federal Electric, The Metropolitan Ledger, Madam Star, the Star Club, Inspector Arthur Hayes, Eddie Doyle, Harrison Vale, Marty Kane, Capital Race Grounds, Neighborhood Game, Commerce Club, Embassy Room**, and the fictional companies listed on the Federal Exchange.
+
+This rule allows the simulation to generate scandals, bankruptcies, crimes, relationships, raids, market collapses and alternate outcomes without falsely attributing those events to real historical people or establishments.
+
+### Wage check
+
+The existing Federal Electric wage anchor remains supported. The NBER Macrohistory electrical-manufacturing series published by FRED shows U.S. electrical-manufacturing average hourly earnings around **80 cents per hour throughout 1938**, including 80.1 cents in January 1938.
+
+Source:
+- FRED / NBER Macrohistory, Average Hourly Earnings, Electrical Manufacturing: https://fred.stlouisfed.org/series/M0811AUSM259NNBR
