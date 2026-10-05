@@ -912,6 +912,7 @@ function pauseTitleAudio(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
+ stopTitleNewspaperRustle(false);
  stopTitleFanAudio(false);
  stopTitleClockAudio(false);
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
@@ -945,6 +946,40 @@ function openTitleDialog(title,html){
 function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){dialog.hidden=true;dialog.classList.remove('title-newspaper-dialog')}}
 const TITLE_NEWSPAPER_PRICE=.03;
 const TITLE_NEWSPAPER_EDITION='1938-09-30';
+const TITLE_NEWSPAPER_RUSTLE_VOLUME=.18;
+const TITLE_NEWSPAPER_RUSTLES=[
+ 'assets/audio/newspaper-rustle-01.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-02.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-03.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-04.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-05.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-06.mp3?v=20261004-paper1',
+ 'assets/audio/newspaper-rustle-07.mp3?v=20261004-paper1'
+];
+let titleNewspaperRustleAudio=null,titleNewspaperRustleLast=-1;
+function playTitleNewspaperRustle(){
+ if(S.paused||!TITLE_NEWSPAPER_RUSTLES.length)return;
+ let index=0;
+ if(TITLE_NEWSPAPER_RUSTLES.length===1)index=0;
+ else index=(titleNewspaperRustleLast+1+Math.floor(Math.random()*(TITLE_NEWSPAPER_RUSTLES.length-1)))%TITLE_NEWSPAPER_RUSTLES.length;
+ titleNewspaperRustleLast=index;
+ if(!titleNewspaperRustleAudio){
+  titleNewspaperRustleAudio=new Audio();
+  titleNewspaperRustleAudio.preload='auto';
+ }
+ const audio=titleNewspaperRustleAudio;
+ audio.pause();
+ audio.src=TITLE_NEWSPAPER_RUSTLES[index];
+ audio.volume=TITLE_NEWSPAPER_RUSTLE_VOLUME;
+ audio.load();
+ try{audio.currentTime=0}catch(e){}
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
+function stopTitleNewspaperRustle(reset=false){
+ if(!titleNewspaperRustleAudio)return;
+ titleNewspaperRustleAudio.pause();
+ if(reset){try{titleNewspaperRustleAudio.currentTime=0}catch(e){}}
+}
 
 function lastPlayedProfile(){
  const profiles=readProfiles();
@@ -981,8 +1016,9 @@ function openTitleNewspaper(){
  const receipt=purchase.charged?'<p class="title-newspaper-receipt">3¢ charged to '+escapeHtml(purchase.profile?.name||'last-played profile')+' · Personal Cash</p>':'';
  openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
+ playTitleNewspaperRustle();
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
