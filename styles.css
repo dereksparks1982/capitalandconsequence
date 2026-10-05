@@ -957,3 +957,14 @@ body.elephant-easter-egg-open{overflow:hidden}
 /* v0.4.0 active profile indicator */
 .active-profile-label{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;border-bottom:3px solid #7b5b2f!important}
 @media(max-width:700px){.active-profile-label{max-width:150px;font-size:10px}}
+
+
+/* v0.4.0 title Archives newspaper gallery */
+.title-archive-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:14px}
+.title-archive-card{display:flex;flex-direction:column;gap:6px;align-items:stretch;padding:9px;border:1px solid #8d7956;background:#e6d6b4;color:#241b11;text-align:left;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.title-archive-card:hover,.title-archive-card:focus-visible{outline:2px solid #705127;background:#f0e1bf}
+.title-archive-card img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border:1px solid #746142;background:#fffaf0}
+.title-archive-card span{font:700 11px/1.2 'Courier New',monospace;color:#6d2f28;text-transform:uppercase}
+.title-archive-card b{font:700 14px/1.2 Georgia,serif;color:#241b11}
+.title-archive-card small{font:700 9px/1.15 'Courier New',monospace;letter-spacing:.06em;color:#586052}
+@media(max-width:700px){.title-archive-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.title-archive-card{padding:6px}.title-archive-card b{font-size:12px}}
