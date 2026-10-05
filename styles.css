@@ -726,3 +726,26 @@ body.elephant-easter-egg-open{overflow:hidden}
  .title-map-tools .title-map-close{font-size:22px}
  .title-map-help{font-size:11px}
 }
+
+.title-dev-daynight{
+ position:absolute;
+ left:1.1%;
+ bottom:1.8%;
+ z-index:20;
+ padding:.5em .8em;
+ border:1px solid rgba(255,213,117,.82);
+ border-radius:3px;
+ background:rgba(14,12,9,.88);
+ color:#f4d889;
+ font:700 clamp(8px,.68vw,12px)/1.1 Arial,sans-serif;
+ letter-spacing:.04em;
+ box-shadow:0 2px 6px rgba(0,0,0,.55);
+ cursor:pointer;
+ opacity:.9;
+}
+.title-dev-daynight:hover,
+.title-dev-daynight:focus-visible{
+ background:rgba(48,34,17,.96);
+ color:#fff0b5;
+ outline:1px solid rgba(255,229,156,.8);
+}
