@@ -152,7 +152,7 @@ Accepted closeout state:
 - [x] README, Roadmap, build snapshot and handoff refreshed for thread/build closeout.
 
 Next engineering slice after this closed build remains the first unchecked stabilization item:
-- [ ] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs.
+- [x] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs. 1938 electrical-manufacturing wage anchor is 80¢/hour; raw-material inventory now uses production-stock units rather than treating bulk commodity prices as per-bulb costs.
 
 
 ## v0.5 — Living America
@@ -228,7 +228,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Pre-flop folding no longer sends an incomplete board into the seven-card evaluator.
 - [x] Correct poker betting-round action closure and all-in/side-pot behavior.
 - [x] Make poker window-close/quit settlement unavoidable and consistent.
-- [ ] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs.
+- [x] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs. 1938 electrical-manufacturing wage anchor is 80¢/hour; raw-material inventory now uses production-stock units rather than treating bulk commodity prices as per-bulb costs.
 - [ ] Correct selected production-grade material/cost consumption.
 - [ ] Audit partial shipments, wrong-grade settlement, replacement inventory, deadlines, and repeated late penalties.
 - [x] Add two Star Club daytime visit lengths: Brief Visit and Afternoon Visit.
