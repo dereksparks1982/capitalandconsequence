@@ -1,17 +1,51 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="preload" href="assets/audio/sunflower-slow-drag.ogg?v=20261003-title2" as="audio" type="audio/ogg"><link rel="stylesheet" href="styles.css?v=20261004-storm1"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="preload" href="assets/audio/sunflower-slow-drag.ogg?v=20261003-title2" as="audio" type="audio/ogg"><link rel="stylesheet" href="styles.css?v=20261004-reel2"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
 <body><div id="titleScreen" class="title-screen" aria-label="Federal Electric title screen">
   <div class="title-screen-frame">
     <img id="titleOfficeBackground" class="title-screen-art" src="assets/federal-electric-office-day.webp?v=20261003-dc1" alt="Washington, D.C. executive office">
-    <div class="title-storm-room" aria-hidden="true"></div>
-    <div class="title-storm-window" aria-hidden="true"></div>
-    <div class="title-film-reel" aria-hidden="true">
-      <span class="title-film-hole title-film-hole-1"></span>
-      <span class="title-film-hole title-film-hole-2"></span>
-      <span class="title-film-hole title-film-hole-3"></span>
-      <span class="title-film-hole title-film-hole-4"></span>
-      <span class="title-film-hole title-film-hole-5"></span>
-    </div>
+    <svg class="title-film-reel" viewBox="0 0 100 122" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="titleReelMetal" cx="34%" cy="26%" r="78%">
+          <stop offset="0%" stop-color="#b78c5f"/>
+          <stop offset="24%" stop-color="#6f533b"/>
+          <stop offset="58%" stop-color="#3a2b22"/>
+          <stop offset="82%" stop-color="#241a15"/>
+          <stop offset="100%" stop-color="#8a6848"/>
+        </radialGradient>
+        <linearGradient id="titleReelEdge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#d0a578"/>
+          <stop offset="34%" stop-color="#5d4533"/>
+          <stop offset="72%" stop-color="#221914"/>
+          <stop offset="100%" stop-color="#a77c52"/>
+        </linearGradient>
+        <linearGradient id="titleReelStand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#76553a"/>
+          <stop offset="100%" stop-color="#241913"/>
+        </linearGradient>
+        <mask id="titleReelCutouts">
+          <rect width="100" height="100" fill="black"/>
+          <circle cx="50" cy="46" r="41" fill="white"/>
+          <ellipse cx="50" cy="22" rx="9" ry="14" fill="black"/>
+          <ellipse cx="72.8" cy="38.6" rx="9" ry="14" fill="black" transform="rotate(72 72.8 38.6)"/>
+          <ellipse cx="64.1" cy="65.4" rx="9" ry="14" fill="black" transform="rotate(144 64.1 65.4)"/>
+          <ellipse cx="35.9" cy="65.4" rx="9" ry="14" fill="black" transform="rotate(216 35.9 65.4)"/>
+          <ellipse cx="27.2" cy="38.6" rx="9" ry="14" fill="black" transform="rotate(288 27.2 38.6)"/>
+        </mask>
+        <filter id="titleReelShadow" x="-35%" y="-25%" width="170%" height="175%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#080605" flood-opacity=".72"/>
+        </filter>
+      </defs>
+      <g filter="url(#titleReelShadow)">
+        <path d="M44 82 L39 106 L61 106 L56 82 Z" fill="url(#titleReelStand)" stroke="#1d1511" stroke-width="2"/>
+        <path d="M29 106 H71 L77 113 Q78 116 73 116 H27 Q22 116 23 113 Z" fill="url(#titleReelStand)" stroke="#1b1410" stroke-width="2"/>
+        <circle cx="50" cy="46" r="43" fill="#1c1511" stroke="#b18459" stroke-width="2.4"/>
+        <circle cx="50" cy="46" r="40.5" fill="url(#titleReelMetal)" mask="url(#titleReelCutouts)"/>
+        <circle cx="50" cy="46" r="38.5" fill="none" stroke="rgba(218,172,116,.43)" stroke-width="1.2"/>
+        <circle cx="50" cy="46" r="10.5" fill="url(#titleReelEdge)" stroke="#1a1310" stroke-width="2"/>
+        <circle cx="50" cy="46" r="4.2" fill="#17110e" stroke="#c09261" stroke-width="1.3"/>
+        <path d="M17 63 Q12 68 13 75 Q14 80 10 85" fill="none" stroke="#2a2019" stroke-width="2.3" stroke-linecap="round"/>
+      </g>
+    </svg>
     <img class="title-game-logo" src="assets/federal-electric-logo-overlay.webp?v=20261003-logo1" alt="Federal Electric — A Game of Industry, Markets, and Power">
     <div class="title-fan-motion" aria-hidden="true"></div>
     <button id="titleFanHub" class="title-fan-hub" type="button" aria-label="Turn fan off" aria-pressed="false"></button>
@@ -103,4 +137,4 @@
 <div class="activity-panel" data-activity-panel="illicit" data-activity-name="cock" hidden><div class="activity-panel-head"><b>Cockfighting</b><button class="activity-close" data-activity-close="illicit" aria-label="Close Cockfighting">×</button></div><div class="sheet"><article id="cockfightCard" class="underground-card"><h4>Cockfighting</h4><p class="muted">Invitation required.</p></article></div></div>
 <p id="underworldNote"></p></section>
 </main><div id="dailyReportOverlay" class="daily-report-overlay" hidden><section class="daily-report-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · PRIVATE</div><h2>Daily Report</h2><h3 id="dailyReportDate"></h3><div id="dailyReportBody"></div><button id="beginNextDay">Retire for the Night</button></section></div><div id="campaignEndOverlay" class="campaign-end-overlay" hidden><section class="campaign-end-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · CAMPAIGN RECORD</div><h2>Main Campaign Complete</h2><h3>372 Turns · January 1938 – September 1945</h3><div id="campaignEndBody"></div><div class="campaign-end-actions"><button id="continueEmpire" type="button">Continue Empire</button><button id="campaignNewGame" type="button" class="danger">Start New Game</button></div></section></div>
-<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="app.js?v=20261004-storm1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>
+<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="app.js?v=20261004-playtime1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>
