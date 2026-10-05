@@ -139,6 +139,8 @@ Someone says a useful contact can be found across town.
 
 Your factory is still running.
 
+If you want to leave the gameplay sheets without stopping the simulation, **Step Away From Desk** returns you to the office/title hub while the active world clock, eligible production, and market continue.
+
 The clock is moving.
 
 By nightfall the exchange and ordinary daytime business are closed, but Washington is not. Boxing begins. Social calls change. Underground activity becomes more important.
@@ -162,8 +164,10 @@ The things you ignore may continue without you.
 Federal Electric is actively being developed. The README is intentionally kept player-facing. Detailed implementation history, design decisions, build notes, and future plans live in the project documents:
 
 - [Roadmap](ROADMAP.md)
-- [Current build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
-- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-03.md)
+- [Current build snapshot](BUILD-SNAPSHOT-2026-10-05.md)
+- [Current handoff](HANDOFF-2026-10-05.md)
+- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
+- [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-03.md)
 - [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-02.md)
 - [Market design](MARKET-DESIGN.md)
 - [Fight world design](FIGHT-WORLD-DESIGN.md)
@@ -222,13 +226,14 @@ Federal Electric opens on the approved 1930s executive-office title screen. The 
 The current build supports up to **three local profiles**, each with its own autosave. Existing browser progress is preserved by migrating the legacy save into **Profile 1** the first time the profile system runs.
 
 Current title-screen interactions include:
-- the lower radio dial for tuning and the upper radio window for power
+- the lower radio dial for tuning and the separate radio power hotspot
 - a clickable Metropolitan Ledger hotspot
-- the framed 1938 Washington, D.C. wall map, which opens a full pan-and-zoom viewer
+- the framed 1938 Washington, D.C. wall map, which opens a full pan-and-zoom viewer with numbered location pins, always-visible labels, click-for-details cards, and a session tool for dragging/saving pin positions locally
 - the live Washington clock and the approved title-room day/night environment
+- a draggable, collapsible session-only developer panel for day/night preview, infinite money, freeze time, hotspot display, and outside-noise on/off testing
 
 The title-screen Metropolitan Ledger currently costs **3¢** the first time its edition is opened by the most recently played profile. The charge comes from **Personal Cash**, not Company Cash. That edition is then recorded as purchased for that profile and can be reopened without another charge.
 
 The title menu is now consolidated as **Continue → Profile → Options → Archives**. **Profile** combines loading, creating, and deleting local profiles in one drawer. **Options** replaces Settings and is reserved for future game/presentation choices. **Archives** is present as the fourth drawer and is reserved for the profile-specific record of acquired newspapers, collectible cards, people, places, and other unlocked material.
 
-The title-screen radio currently contains the Federal Electric title theme, an approved static station, and the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast. The future radio design is schedule-driven: the title theme remains the exception that always restarts from the beginning, while true broadcast stations will advance independently of the listener so tuning in joins whatever is already on the air.
+The title-screen radio currently exposes five frequencies: **Federal Electric Network (610 AM)**, **Capital Signal (540 AM)**, **Capital Radio Theatre (720 AM)**, **Capital Melody (880 AM)**, and **Capital News Service (1010 AM)**. The title theme remains the exception that restarts from the beginning when tuned back in. The live-style stations advance from a shared on-air clock, and Stations 2–4 can substitute separate nighttime programming. The title soundscape also includes independent city/street ambience, fan, clock, filing-cabinet, and newspaper sounds; the global PAUSE control stops the title audio together.
