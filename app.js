@@ -574,6 +574,7 @@ const pauseProduction=$('#pauseProduction');if(pauseProduction)pauseProduction.o
 const abandonProduction=$('#abandonProduction');if(abandonProduction)abandonProduction.onclick=window.abandonProductionRun;
 $('#maintain').onclick=()=>{if(!businessOpen())return note('Regular works maintenance authorization resumes next Business Day.');if(S.companyCash<750)return note('Insufficient company cash.');S.companyCash-=750;S.lastExpenses+=750;S.machinery=clamp(S.machinery+12,0,100);save();render()}
 $('#endDay').onclick=()=>{if(S.phase==='day'){if(confirm('Close the current business day early and begin Washington Night?'))closeBusinessDay(true)}else if(S.phase==='night'){if(confirm('Retire early and review the Daily Report?'))closeNight(true)}}
+const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
 function startFreshGame(){clearPauseLock();S=initial();selectedStockTicker=null;save();render()}
 $('#reset').onclick=()=>{if(confirm('You are about to start a new game. All previous progress will be lost. Continue?'))startFreshGame()}
@@ -695,7 +696,9 @@ const TITLE_RADIO_STATIONS=[
 ];
 let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
 const titleRadioBackgroundFeeds=new Map();
+let titleScreenDeskBreak=false;
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
+function titleScreenBlocksSimulation(){return titleScreenVisible()&&!titleScreenDeskBreak}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
 function titleRadioStationAvailable(index){
  const station=TITLE_RADIO_STATIONS[index];
@@ -1087,6 +1090,23 @@ function openTitleNewspaper(){
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
 function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function stepAwayFromDesk(){
+ const screen=$('#titleScreen');if(!screen)return;
+ save(true);
+ titleScreenDeskBreak=true;
+ screen.hidden=false;
+ startTitleEnvironment();
+ startTitleClock();
+ ensureTitleRadioControls();
+ if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
+ startTitleRadioBackgroundFeeds();
+ updateTitleRadioControls();
+ syncTitleCityAmbience();
+ syncTitleFanAudio();
+ syncTitleClockAudio();
+ startTitleRadio();
+ updateTitleDevPanel();
+}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -1134,6 +1154,12 @@ function deleteProfileById(id){
  renderProfileManager();
 }
 function continueFromTitle(){
+ if(titleScreenDeskBreak){
+  titleScreenDeskBreak=false;
+  closeTitleScreen();
+  render();
+  return;
+ }
  const profiles=readProfiles(),active=activeProfileId();
  if(active&&profiles.some(p=>p.id===active)){loadProfileById(active);return}
  if(profiles.length){loadProfileById(profiles[0].id);return}
@@ -1573,8 +1599,8 @@ function initTitleScreen(){
 }
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
-marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenVisible()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenVisible())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
+marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
+clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
 autosaveTimer=setInterval(()=>save(true),5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
