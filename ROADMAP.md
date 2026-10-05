@@ -417,8 +417,8 @@ Implemented menu foundation:
 
 Approved next work:
 - [x] Build a newspaper archive that shows owned issues as miniature dated front pages and lets purchased issues be reopened without another charge. The title-screen Archives drawer now reads the last-played profile's owned newspaper IDs, renders dated front-page cards, and reopens owned issues as archive copies without charging Personal Cash.
-- [ ] Generate or hand-author dozens of Metropolitan Ledger editions that advance with the save's historical date. Major historical issues can be handcrafted; ordinary issues can use a reusable newspaper layout populated by the simulation.
-- [ ] The title-screen newspaper should eventually reflect the date/state of the most recently played profile rather than remaining a single fixed issue.
+- [x] Generate or hand-author dozens of Metropolitan Ledger editions that advance with the save's historical date. Ordinary issues now use a reusable period newspaper layout populated from each profile's dated headline, story, market wire, society and sports state, providing a distinct purchasable issue for every playable save date; handcrafted catalog issues such as September 30, 1938 remain supported.
+- [x] The title-screen newspaper now reflects the date/state of the most recently played profile when opened. Purchases snapshot that exact edition into the profile archive; the approved desk artwork itself remains untouched.
 - [ ] Use the same tall-card gallery concept proven in the Hanafi card project for the Federal Electric collectible-card archive, with period-appropriate Federal Electric styling.
 - [ ] Add a discreet period film canister on the shelf behind the horse and plant near the lamp. It should be partially obscured and use a normal hand pointer as the hotspot.
 - [ ] Correct the plant/decanter visual overlap by adding a small planter/base behind the decanter and redirecting only the plant's lower stems. Do not alter the approved horse, lamp, shelf, clock, fan or other unrelated title artwork.
