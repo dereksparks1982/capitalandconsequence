@@ -683,7 +683,8 @@ const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
  {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1'],nightTracks:['assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1','assets/audio/capital-signal-night-message-01.ogg?v=20261004-night1','assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1']},
  {name:'Capital Radio Theatre',dial:'720 AM',tracks:['assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=20261004-local1'],duration:3084.552,nightTracks:['assets/audio/orson-welles-dracula-1938-github.mp3?v=20261004-dracula1']},
- {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265,nightTracks:['assets/audio/pepsi-jingle-commercial.mp3?v=20261004-pepsi1','assets/audio/capital-melody-night-github.mp3?v=20261004-nightmelody1']}
+ {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265,nightTracks:['assets/audio/pepsi-jingle-commercial.mp3?v=20261004-pepsi1','assets/audio/capital-melody-night-github.mp3?v=20261004-nightmelody1']},
+ {name:'News',dial:'Station 5',tracks:['assets/audio/station-5-newscast.mp3?v=20261004-news1'],duration:22831.584}
 ];
 let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
 const titleRadioBackgroundFeeds=new Map();
