@@ -1,0 +1,56 @@
+name: Import newspaper rustles
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-newspaper-rustles.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download exact newspaper source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet yt-dlp
+          yt-dlp --no-playlist -x --audio-format mp3 -o "/tmp/newspaper-source.%(ext)s" "https://pixabay.com/sound-effects/film-special-effects-rustling-a-newspaper-66647/"
+          test -s /tmp/newspaper-source.mp3
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/newspaper-source.mp3
+
+      - name: Split seven distinct rustles
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/audio
+          make_clip () {
+            local n="$1" start="$2" dur="$3"
+            ffmpeg -y -hide_banner -loglevel error -ss "$start" -t "$dur" -i /tmp/newspaper-source.mp3 \
+              -af "afade=t=in:st=0:d=0.025,afade=t=out:st=$(python -c "print(max(0,float('$dur')-0.04))"):d=0.04" \
+              -ac 1 -ar 44100 -b:a 32k "assets/audio/newspaper-rustle-$n.mp3"
+          }
+          make_clip 01 0.28 0.72
+          make_clip 02 2.73 0.89
+          make_clip 03 5.16 1.09
+          make_clip 04 7.75 0.94
+          make_clip 05 10.15 0.67
+          make_clip 06 12.42 0.91
+          make_clip 07 15.09 0.75
+
+      - name: Commit rustle clips and remove importer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Federal Electric Build"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/audio/newspaper-rustle-*.mp3
+          git rm .github/workflows/import-newspaper-rustles.yml
+          git commit -m "Add randomized newspaper rustle clips"
+          git push origin main
