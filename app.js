@@ -943,10 +943,31 @@ function openTitleDialog(title,html){
  const dialog=$('#titleDialog'),heading=$('#titleDialogHeading'),body=$('#titleDialogBody');
  if(!dialog||!heading||!body)return;heading.textContent=title;body.innerHTML=html;dialog.hidden=false;
 }
-function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){dialog.hidden=true;dialog.classList.remove('title-newspaper-dialog')}}
+function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){const closingNewspaper=dialog.classList.contains('title-newspaper-dialog')&&!dialog.hidden;if(closingNewspaper)playTitleNewspaperRustle();dialog.hidden=true;dialog.classList.remove('title-newspaper-dialog')}}
 const TITLE_NEWSPAPER_PRICE=.03;
 const TITLE_NEWSPAPER_EDITION='1938-09-30';
 const TITLE_NEWSPAPER_RUSTLE_VOLUME=.18;
+const TITLE_FILING_CABINET_OPEN_SRC='assets/audio/filing-cabinet-open.mp3?v=20261004-cabinet1';
+const TITLE_FILING_CABINET_OPEN_VOLUME=.22;
+let titleFilingCabinetAudio=null;
+function preloadTitleFilingCabinetOpen(){
+ if(titleFilingCabinetAudio)return titleFilingCabinetAudio;
+ const audio=new Audio(TITLE_FILING_CABINET_OPEN_SRC);
+ audio.preload='auto';
+ audio.volume=TITLE_FILING_CABINET_OPEN_VOLUME;
+ audio.load();
+ titleFilingCabinetAudio=audio;
+ return audio;
+}
+function playTitleFilingCabinetOpen(){
+ if(S.paused)return;
+ const audio=preloadTitleFilingCabinetOpen();
+ audio.pause();
+ audio.volume=TITLE_FILING_CABINET_OPEN_VOLUME;
+ try{audio.currentTime=0}catch(e){}
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
+
 const TITLE_NEWSPAPER_RUSTLES=[
  'assets/audio/newspaper-rustle-01.mp3?v=20261004-paper1',
  'assets/audio/newspaper-rustle-02.mp3?v=20261004-paper1',
@@ -1370,6 +1391,7 @@ function initTitleScreen(){
  startTitleClock();
  ensureTitleRadioControls();
  preloadTitleNewspaperRustles();
+ preloadTitleFilingCabinetOpen();
  titleRadioAirStartAt=Date.now();
  startTitleRadioBackgroundFeeds();
  loadTitleRadioTrack(false);
@@ -1386,6 +1408,8 @@ function initTitleScreen(){
  document.addEventListener('keydown',syncTitleFanAudio,{once:true});
  screen.addEventListener('pointerdown',syncTitleClockAudio,{once:true});
  document.addEventListener('keydown',syncTitleClockAudio,{once:true});
+ const titleCabinetButtons=[$('#titleContinue'),$('#titleProfile'),$('#titleOptions'),$('#titleArchives')].filter(Boolean);
+ titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
