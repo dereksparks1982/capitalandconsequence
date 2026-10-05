@@ -136,6 +136,25 @@ Next v0.3 passes:
 - plants and additional warehouses
 - delegation/management so a larger company can buy back some of the owner's time
 
+## v0.4.0 title-screen / Washington office pass — 2026-10-05 — CLOSED BUILD
+
+Accepted closeout state:
+- [x] **Step Away From Desk** returns a loaded playthrough to the office/title hub while the simulation continues; Continue returns directly to the desk.
+- [x] Draggable/collapsible **DEV PANEL** is session-only and includes Day/Night, Infinite Money, Freeze Time, Show Hotspots, Outside Noise, and Reset Overrides.
+- [x] Infinite Money preserves the real saved company/personal balances instead of writing the cheat balance into the save.
+- [x] Approved day/night office art follows the playthrough phase; weather does not select the background.
+- [x] Real Washington clock display remains independent of the playthrough phase because no in-game analog-time mapping has been approved.
+- [x] Washington wall map supports pan/zoom, six numbered markers, click-for-details cards, draggable pin editing, local position persistence, Reset Pins, and mobile-visible labels.
+- [x] Existing pin click descriptions were preserved when labels were restored.
+- [x] Filing-cabinet title labels were enlarged without resizing the approved brass plaques or changing unrelated artwork.
+- [x] Outside ambience can be isolated with the session-only DEV PANEL toggle.
+- [x] Final code baseline before documentation closeout deployed successfully on GitHub Pages at commit `4c645b2489b62b999fbb27c855002ddd710f90cf`.
+- [x] README, Roadmap, build snapshot and handoff refreshed for thread/build closeout.
+
+Next engineering slice after this closed build remains the first unchecked stabilization item:
+- [ ] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs.
+
+
 ## v0.5 — Living America
 
 - researched historical timeline
@@ -415,48 +434,49 @@ Approved next work:
 - [ ] Archives may preserve a ticket stub, poster/program entry, viewing date or attendance record after a movie has been seen, but the archive does not provide free replay.
 - [ ] Only films/assets whose U.S. rights status has been individually verified may be bundled or served by the project.
 
-## Title-screen radio network — 2026-10-04
+## Title-screen radio network — 2026-10-05
 
-Current implementation:
-- [x] Lower radio dial advances through stations.
-- [x] Radio power is a separate invisible hotspot over the square panel on the left side of the approved radio artwork; the tuning dial remains tuning-only.
-- [x] A temporary station label appears above the radio after tuning and shows station number, dial position and station name.
-- [x] The radio now runs through a dedicated Federal Electric broadcast engine in `radio/radio-engine.js`.
-- [x] Howler.js Core 2.2.4 is vendored under `vendor/howler/` with its MIT license.
-- [x] Station definitions are separated into `radio/stations.js` so programming and media sources can change without rewriting the title-screen controls.
-- [x] **Station 1 · 610 AM · Federal Electric Network** is the title/theme station and intentionally restarts from 0:00 when tuned back in.
-- [x] **Station 2 · 540 AM · Capital Signal** is the static / experimental-signal frequency.
-- [x] **Station 3 · 720 AM · Capital Radio Theatre** carries the October 30, 1938 Mercury Theatre / Orson Welles *War of the Worlds* broadcast.
-- [x] **Station 4 · 880 AM · Capital Melody** carries the complete user-supplied 1930s music program, using a radio-optimized 64 kbps game copy of the untouched original recording.
-- [x] Live-style stations derive position from an absolute broadcast clock. Radio power controls audibility only and does not create a listener resume point.
-- [x] The game PAUSE button is a master audio pause for the title soundscape. On PLAY, live stations resynchronize to the point their broadcast clock has reached.
-- [x] Daytime Washington city ambience remains independent of radio tuning and is mixed at **7% desktop / 2% mobile**.
-- [x] Large radio media is stored outside the source repo when appropriate. Current Orson and music copies are staged in the **Federal Electric Radio** Google Drive folder.
+Current accepted implementation:
+- [x] Lower radio dial advances through frequencies; power is a separate hotspot.
+- [x] Tuning popup shows **frequency + station name only**.
+- [x] The abandoned Howler / separate radio-engine refactor is **not** the current playback path. The proven title-radio implementation remains in `app.js`; do not revive the abandoned refactor without explicit approval.
+- [x] **610 AM · Federal Electric Network** carries the title theme and intentionally restarts from 0:00 when tuned back in.
+- [x] **540 AM · Capital Signal** carries the daytime static/experimental feed and a separate nighttime sequence.
+- [x] **720 AM · Capital Radio Theatre** carries *War of the Worlds* by day and the approved local *Dracula* program at night.
+- [x] **880 AM · Capital Melody** carries the long 1930s music program by day and a nighttime sequence with approved period commercial/music assets.
+- [x] **1010 AM · Capital News Service** carries the current long-form newscast feed.
+- [x] Live-style stations use a shared on-air epoch while the title screen is active; radio OFF controls audibility rather than creating a listener resume bookmark.
+- [x] Master PAUSE stops radio, outside ambience, fan, clock, filing-cabinet and newspaper title audio together; PLAY resumes the soundscape.
+- [x] Title-office day/night state follows the **playthrough phase**, not weather. Day is Business Day; Night/Report use the night office.
+- [x] Fan defaults OFF when the office changes to night; manual fan control remains available.
+- [x] Outside city/street ambience remains independent of radio tuning.
+- [x] Session-only **Outside Noise: ON/OFF** is available in the DEV PANEL for testing the ambience without touching radio/fan/clock audio.
 
-Hosting / release work:
-- [ ] Make Drive-hosted radio media available through a stable public/link-access streaming URL before treating those assets as production-public. The current connected Drive tool can upload files but cannot grant unrestricted public-link access.
-- [ ] Replace any temporary remote-media URL in `radio/stations.js` without changing station logic once the final public host is confirmed.
-- [ ] Prefer GitHub for small audio assets and Drive or another approved media host for oversized recordings.
+Current mix constants:
+- Day outside ambience: **7% desktop / 2% mobile**.
+- Night outside ambience: **14% desktop / 5% mobile**.
+- Fan: **15%**.
+- Clock: **8%**.
+- Filing-cabinet open: **22%**.
+- Newspaper rustle: **18%**.
+- Radio: **38%**.
+
+These are implementation values, not a promise that the final mix is locked.
 
 Authoritative station behavior:
-- [x] **Station 1 is the exception to live broadcasting.** Every tune-in begins the Federal Electric theme from 0:00 rather than joining an independent broadcast clock.
-- [x] True broadcast stations do **not** remember the listener's progress. Their programming advances according to the station clock whether the radio speaker is on or off.
-- [x] Tuning into a real broadcast joins whatever point is currently on the air.
-- [x] Radio OFF never pauses a live station. Turning it back on resynchronizes to the current on-air position.
-- [ ] Persist the station epoch across full page reloads if we decide broadcasts should remain phase-locked across reloads rather than beginning a fresh broadcast day when the title page is opened.
-- [ ] Grow Capital Radio Theatre into a clockwheel of multiple Mercury Theatre / radio-drama programs rather than a user-selectable episode list.
-- [ ] Reserve some drama programs for historically/thematically suitable evening slots. *Dracula* remains a specific nighttime candidate.
-- [ ] **Capital Signal remains static during the day.** After evening begins, period-appropriate Morse material may emerge from the static. The exact recording/message is not yet approved.
-- [ ] Add station IDs, announcer links, period advertisements, sponsor breaks, news bulletins and weak-reception segments so stations become full programmed broadcasts rather than single-file loops.
-- [ ] Build reusable clockwheel categories such as MUSIC → STATION ID → MUSIC → ADVERTISEMENT → NEWS → MUSIC.
-- [ ] Add other weak or distant stations only when they sound like fixed frequencies with reception variation, not like an artificial retuning effect.
-- [ ] Historical news interruptions should reflect period network bulletins, not the later Emergency Broadcast System.
+- [x] Station 1 is the restart-on-tune exception.
+- [x] True broadcast-style stations do not preserve a listener-specific resume point.
+- [x] Tuning into a live-style station joins its current on-air point.
+- [x] Turning the radio OFF does not convert a live station into a paused personal recording.
+- [ ] Decide whether the station epoch should persist across full page reloads.
+- [ ] Expand stations into longer clockwheels with station IDs, announcer links, period advertisements, sponsor breaks, news bulletins, weak-reception segments and multiple programs.
+- [ ] Continue rights/source verification before adding new bundled historical recordings.
+- [ ] Add normal player-facing Options controls for master/radio/ambience volume only after the current title presentation is stable.
 
 ### Mobile / device audio mix roadmap
 
-- [x] Mobile Washington street ambience reduced to **2%** while desktop remains **7%**.
-- [ ] Add a device-specific title-audio mix layer so ambience, radio and future sound effects can each have separate desktop/mobile gain without changing station programming.
-- [ ] Test iPhone playback through the handset speaker pair, headphones and external Bluetooth audio before locking radio gain.
-- [ ] If needed, add a conservative mobile-only EQ / compression profile to tame harsh phone-speaker playback without degrading desktop audio.
-- [ ] Keep audio routing under the browser/OS. Federal Electric should adjust mix and dynamics, not pretend it can select a particular physical iPhone speaker.
-- [ ] Add an Options control later for master volume, radio volume and ambience volume after the current title-screen presentation is stable.
+- [x] Mobile daytime Washington street ambience is currently **2%**.
+- [x] Filing-cabinet title labels were enlarged for both desktop and mobile, with a stronger mobile size increase.
+- [x] Washington map location labels remain visible on small screens instead of disappearing at the mobile breakpoint.
+- [ ] Test iPhone playback through handset speakers, headphones and Bluetooth before locking final radio/ambience gain.
+- [ ] Add device-specific mix/EQ only if real-device testing proves it necessary.
