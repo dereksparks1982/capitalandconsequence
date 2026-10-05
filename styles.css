@@ -941,3 +941,14 @@ body.elephant-easter-egg-open{overflow:hidden}
 }
 
 .title-map-marker-pin b{display:block;transform:rotate(45deg);font:700 13px/1 'Courier New',monospace}
+
+
+/* v0.4.0 persistent radio control strip */
+.global-radio-bar{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2100000;display:flex;align-items:stretch;gap:4px;width:min(560px,calc(100vw - 18px));min-height:44px;padding:5px;border:2px solid #8d6d3b;border-radius:5px;background:linear-gradient(180deg,#34291c,#1c1711);color:#f1dfb7;box-shadow:0 5px 18px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,235,190,.18);font-family:'Courier New',monospace}
+.global-radio-bar button{flex:0 0 auto;min-width:44px;padding:5px 9px;border:1px solid #9b7a45;background:#2b251c;color:#f3dfb4;font:bold 13px/1 'Courier New',monospace}
+.global-radio-bar button:hover,.global-radio-bar button:focus-visible{outline:1px solid #f0d69b;background:#473824}
+.global-radio-readout{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:3px 8px;border:1px inset #655437;background:#151714;text-align:center}
+.global-radio-readout span{color:#bca77d;font:700 9px/1 'Courier New',monospace;letter-spacing:.18em}
+.global-radio-readout b{margin-top:3px;overflow:hidden;color:#f1dfb7;font:700 12px/1.15 Georgia,'Times New Roman',serif;text-overflow:ellipsis;white-space:nowrap}
+#globalRadioPower[aria-pressed="false"]{color:#d69a8f;border-color:#8b554e}
+@media(max-width:700px){.global-radio-bar{width:calc(100vw - 12px);min-height:40px;bottom:max(5px,env(safe-area-inset-bottom));padding:4px;gap:3px}.global-radio-bar button{min-width:39px;padding:4px 7px;font-size:12px}.global-radio-readout{padding:2px 5px}.global-radio-readout span{font-size:8px}.global-radio-readout b{font-size:10.5px}}
