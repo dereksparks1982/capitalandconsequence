@@ -935,7 +935,6 @@ body.elephant-easter-egg-open{overflow:hidden}
  cursor:pointer;
 }
 @media(max-width:700px){
- .title-map-marker-label{display:none}
  .title-map-marker{transform:translate(-14px,-14px)}
  .title-map-marker-pin{width:28px;height:28px;flex-basis:28px}
  .title-map-location-card{right:8px;bottom:8px;width:calc(100% - 16px)}
