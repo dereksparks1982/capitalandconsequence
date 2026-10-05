@@ -1194,6 +1194,11 @@ function updateTitleEnvironment(){
  const sun=titleDCSunTimes(now);
  const localMinutes=p.hour*60+p.minute+p.second/60;
  const mode=localMinutes>=sun.sunrise&&localMinutes<sun.sunset?'day':'night';
+ const frame=bg.closest('.title-screen-frame');
+ if(frame){
+  frame.classList.toggle('title-env-day',mode==='day');
+  frame.classList.toggle('title-env-night',mode==='night');
+ }
  const src=TITLE_OFFICE_IMAGES[mode];
  const modeChanged=bg.dataset.mode!==mode;
  if(modeChanged){
@@ -1433,10 +1438,16 @@ function initTitleMapViewer(){
  window.addEventListener('resize',()=>{if(!viewer.hidden)titleMapReset()});
 }
 
+const TITLE_STORM_PREVIEW_ACTIVE=true;
+function syncTitleStormPreview(){
+ const frame=document.querySelector('.title-screen-frame');
+ if(frame)frame.classList.toggle('title-storm-active',TITLE_STORM_PREVIEW_ACTIVE);
+}
 function initTitleScreen(){
  const screen=$('#titleScreen');if(!screen)return;
  screen.hidden=false;
  startTitleEnvironment();
+ syncTitleStormPreview();
  startTitleClock();
  ensureTitleRadioControls();
  preloadTitleNewspaperRustles();
