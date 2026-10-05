@@ -631,8 +631,8 @@ document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]')
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
-const TITLE_NIGHT_AMBIENCE_VOLUME=.12;
-const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.04;
+const TITLE_NIGHT_AMBIENCE_VOLUME=.14;
+const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.05;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
