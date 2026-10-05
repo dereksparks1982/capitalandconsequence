@@ -754,8 +754,9 @@ function ensureTitleRadioAudio(){
  if(titleRadioAudio)return titleRadioAudio;
  titleRadioAudio=new Audio();
  titleRadioAudio.preload='auto';
+ titleRadioAudio.loop=true;
  titleRadioAudio.volume=TITLE_RADIO_VOLUME;
- titleRadioAudio.addEventListener('ended',()=>{titleRadioTrackIndex=0;loadTitleRadioTrack(titleRadioStationIndex===0&&!titleRadioOff)});
+ titleRadioAudio.muted=true;
  return titleRadioAudio;
 }
 function loadTitleRadioTrack(playNow=false){
@@ -763,9 +764,11 @@ function loadTitleRadioTrack(playNow=false){
  const station=TITLE_RADIO_STATIONS[0];
  if(!station||!station.tracks.length)return;
  titleRadioTrackIndex=0;
- audio.pause();audio.src=station.tracks[0];audio.load();audio.volume=TITLE_RADIO_VOLUME;
- try{audio.currentTime=0}catch(e){}
- if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()){const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+ if(!audio.src){audio.src=station.tracks[0];audio.load();try{audio.currentTime=0}catch(e){}}
+ audio.loop=true;
+ audio.volume=TITLE_RADIO_VOLUME;
+ audio.muted=!(titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
+ if((playNow||titleScreenVisible())&&!S.paused){const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
 }
 function titleRadioAirElapsedSeconds(){return titleRadioAirStartAt?Math.max(0,(Date.now()-titleRadioAirStartAt)/1000):0}
 function titleRadioFeedDuration(audio){
@@ -833,6 +836,13 @@ function startTitleRadioBackgroundFeeds(){
  }
 }
 function updateTitleRadioAudibility(){
+ if(titleRadioAudio){
+  titleRadioAudio.volume=TITLE_RADIO_VOLUME;
+  titleRadioAudio.muted=!(titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
+  if(!S.paused&&titleScreenVisible()&&titleRadioAudio.paused){
+   const p=titleRadioAudio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+  }
+ }
  for(const [index,audio] of titleRadioBackgroundFeeds){
   configureTitleRadioFeedProgram(index,audio);
   forceTitleRadioFeedToAir(audio);
@@ -851,13 +861,13 @@ function updateTitleRadioAudibility(){
 function startTitleRadio(){
  if(!titleScreenVisible()||S.paused)return;
  startTitleRadioBackgroundFeeds();
- updateTitleRadioAudibility();
- if(titleRadioOff||titleRadioStationIndex!==0)return;
  const audio=ensureTitleRadioAudio();
  if(!audio.src)loadTitleRadioTrack(false);
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  audio.volume=TITLE_RADIO_VOLUME;
+ audio.muted=!(titleRadioStationIndex===0&&!titleRadioOff);
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ updateTitleRadioAudibility();
 }
 let titleRadioLabelTimer=null;
 function showTitleRadioStationLabel(){
@@ -875,11 +885,10 @@ function updateTitleRadioControls(){
 }
 function cycleTitleRadioStation(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
- if(titleRadioStationIndex===0&&titleRadioAudio){titleRadioAudio.pause();try{titleRadioAudio.currentTime=0}catch(e){}}
  titleRadioStationIndex=(titleRadioStationIndex+1)%TITLE_RADIO_STATIONS.length;titleRadioTrackIndex=0;
  if(titleRadioStationIndex===0){
+  if(!titleRadioAudio?.src)loadTitleRadioTrack(false);
   updateTitleRadioAudibility();
-  loadTitleRadioTrack(!titleRadioOff);
  }else{
   const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
   if(feed)configureTitleRadioFeedProgram(titleRadioStationIndex,feed);
@@ -893,10 +902,9 @@ function toggleTitleRadioPower(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  titleRadioOff=!titleRadioOff;
  if(titleRadioOff){
-  if(titleRadioAudio)titleRadioAudio.pause();
   updateTitleRadioAudibility();
  }else if(titleRadioStationIndex===0){
-  loadTitleRadioTrack(true);
+  if(!titleRadioAudio?.src)loadTitleRadioTrack(false);
   updateTitleRadioAudibility();
  }else{
   startTitleRadioBackgroundFeeds();
