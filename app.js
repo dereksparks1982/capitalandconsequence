@@ -88,10 +88,10 @@ function makeContractOffer(){
  const suggestedPrice=+(grade.price*guideAdj*win.priceMult).toFixed(3);
  return {id:'FE-'+String(nextContractNumber()).padStart(3,'0'),customer:customer[0],product:'Electric Light Bulbs',requestedQuality:grade.quality,requestedQualityName:grade.qualityName,requestedQuantity:quantity,suggestedPrice,quality:grade.quality,qualityName:grade.qualityName,quantity,delivered:0,completed:0,productionQuantity:quantity,productionPolicy:'normal',productionState:'queued',price:suggestedPrice,status:'offered',deadlineClass:win.deadlineClass,deadlineTurns:win.turns,deadlineTurnSerial,deadlineDate:contractDeadlineDate(deadlineTurnSerial),deadline:contractDeadlineLabel(deadlineTurnSerial,win.deadlineClass),deadlineMonth:monthKey(contractDeadlineDate(deadlineTurnSerial)),deadlinePassed:false,relationship:customer[1],customerTrait:customer[2],history:0,productionSeconds,negotiation:{rounds:0,counter:null,lastProposal:null}};
 }
-const initial=()=>({version:13,gameDate:'1938-01-03',turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:50000,dayStartPersonalCash:12000,dailyReport:null,companyCash:50000,personalCash:12000,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:80,machinery:92,workforce:{present:80,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,tungsten:3500},lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1938 balancing weak demand against hopes for renewed industrial activity.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1938-01',raidDays:rollRaidDays('1938-01-03'),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:'1938-01-03',pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
+const initial=()=>({version:13,gameDate:'1938-01-03',turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:50000,dayStartPersonalCash:12000,dailyReport:null,companyCash:50000,personalCash:12000,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:80,machinery:92,workforce:{present:80,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,tungsten:3500},lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1938 balancing weak demand against hopes for renewed industrial activity.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1938-01',raidDays:rollRaidDays('1938-01-03'),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:'1938-01-03',pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
 let S=initial(), marketTimer=null, clockTimer=null, autosaveTimer=null, selectedStockTicker=null;
 const stockTradeQuantityDrafts=Object.create(null);
-function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:13});if(!x.gameDate){fresh.gameDate='1938-01-03';fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks();for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
+function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:13});if(!x.gameDate){fresh.gameDate='1938-01-03';fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks();for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
  fresh.turnSerial=Number.isFinite(+x.turnSerial)?Math.max(1,Math.floor(+x.turnSerial)):1;
  fresh.campaignCompleted=!!x.campaignCompleted;fresh.campaignEndPending=!!x.campaignEndPending;fresh.endlessMode=!!x.endlessMode;
  fresh.inventoryByGrade=Object.assign({economy:0,standard:0,long:0},x.inventoryByGrade||{});
@@ -1061,7 +1061,7 @@ function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){const clos
 const TITLE_NEWSPAPER_PRICE=.03;
 const TITLE_NEWSPAPER_EDITION='1938-09-30';
 const TITLE_NEWSPAPER_CATALOG={
- '1938-09-30':{dateLabel:'September 30, 1938',headline:'EUROPE WATCHES MUNICH ACCORD',image:'assets/1938-munich-accord-newspaper.webp?v=20261004-news1'}
+ '1938-09-30':{id:'1938-09-30',kind:'image',dateLabel:'September 30, 1938',headline:'EUROPE WATCHES MUNICH ACCORD',image:'assets/1938-munich-accord-newspaper.webp?v=20261004-news1'}
 };
 const TITLE_NEWSPAPER_RUSTLE_VOLUME=.18;
 const TITLE_FILING_CABINET_OPEN_SRC='assets/audio/filing-cabinet-open.mp3?v=20261004-cabinet1';
@@ -1144,32 +1144,63 @@ function lastPlayedProfile(){
  if(!profiles.length)return null;
  return profiles.slice().sort((a,b)=>(+b.lastPlayed||0)-(+a.lastPlayed||0))[0]||null;
 }
+function titleNewspaperIssueFromSave(saveData){
+ const raw=saveData?.gameDate||TITLE_NEWSPAPER_EDITION;
+ const iso=/^\d{4}-\d{2}-\d{2}$/.test(raw)?raw:TITLE_NEWSPAPER_EDITION;
+ if(TITLE_NEWSPAPER_CATALOG[iso])return Object.assign({},TITLE_NEWSPAPER_CATALOG[iso]);
+ const d=new Date(iso+'T12:00:00');
+ const dateLabel=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+ return {
+  id:iso,kind:'generated',dateLabel,
+  headline:saveData?.headline||'WASHINGTON WATCHES INDUSTRY WITH CAUTION',
+  story:saveData?.story||'Manufacturers weigh orders, costs and the uncertain pace of recovery.',
+  societyStory:saveData?.societyStory||'Washington begins another day of meetings, dinners and quiet conversations.',
+  sportsStory:saveData?.sportsStory||'No major sporting results were filed for this edition.',
+  marketWire:saveData?.marketWire||'Markets remain a subject of close attention in business offices across the capital.'
+ };
+}
+function snapshotTitleNewspaperIssue(issue){
+ return {id:issue.id,kind:issue.kind,dateLabel:issue.dateLabel,headline:issue.headline,story:issue.story||'',societyStory:issue.societyStory||'',sportsStory:issue.sportsStory||'',marketWire:issue.marketWire||'',image:issue.image||''};
+}
+function titleNewspaperIssueHtml(issue){
+ if(issue.kind==='image'&&issue.image)return '<img class="title-newspaper-view" src="'+escapeHtml(issue.image)+'" alt="The Metropolitan Ledger front page for '+escapeHtml(issue.dateLabel)+'">';
+ return '<article class="title-generated-newspaper"><header><small>WASHINGTON, D.C. · 3 CENTS</small><h3>THE METROPOLITAN LEDGER</h3><b>'+escapeHtml(issue.dateLabel)+'</b></header><h4>'+escapeHtml(issue.headline)+'</h4><p>'+escapeHtml(issue.story||'')+'</p><div class="title-generated-news-grid"><section><h5>FINANCIAL &amp; INDUSTRIAL</h5><p>'+escapeHtml(issue.marketWire||'')+'</p></section><section><h5>WASHINGTON &amp; SOCIETY</h5><p>'+escapeHtml(issue.societyStory||'')+'</p></section><section><h5>SPORTS</h5><p>'+escapeHtml(issue.sportsStory||'')+'</p></section></div></article>';
+}
+function titleNewspaperArchiveCard(issue){
+ const preview=issue.kind==='image'&&issue.image?'<img src="'+escapeHtml(issue.image)+'" alt="">':'<div class="title-archive-generated-thumb"><strong>THE<br>METROPOLITAN<br>LEDGER</strong><span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b></div>';
+ return '<button class="title-archive-card" type="button" data-archive-newspaper="'+escapeHtml(issue.id)+'">'+preview+'<span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b><small>OWNED · REOPEN FREE</small></button>';
+}
 function purchaseTitleNewspaper(){
  const profile=lastPlayedProfile();
- if(!profile)return {ok:true,charged:false,profile:null,reason:'no-profile'};
+ if(!profile){
+  const issue=Object.assign({},TITLE_NEWSPAPER_CATALOG[TITLE_NEWSPAPER_EDITION]);
+  return {ok:true,charged:false,profile:null,reason:'no-profile',issue};
+ }
  const key=profileSaveKey(profile.id);
  let saveData=null;
  try{saveData=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
  if(!saveData)saveData=initial();
  saveData=migrate(saveData);
+ const issue=titleNewspaperIssueFromSave(saveData);
  saveData.titleNewspaperPurchases=Array.isArray(saveData.titleNewspaperPurchases)?saveData.titleNewspaperPurchases:[];
- if(saveData.titleNewspaperPurchases.includes(TITLE_NEWSPAPER_EDITION))return {ok:true,charged:false,profile};
+ saveData.titleNewspaperArchive=saveData.titleNewspaperArchive&&typeof saveData.titleNewspaperArchive==='object'?saveData.titleNewspaperArchive:{};
+ if(saveData.titleNewspaperPurchases.includes(issue.id)){
+  if(!saveData.titleNewspaperArchive[issue.id])saveData.titleNewspaperArchive[issue.id]=snapshotTitleNewspaperIssue(issue);
+  localStorage.setItem(key,JSON.stringify(saveData));
+  return {ok:true,charged:false,profile,issue:saveData.titleNewspaperArchive[issue.id]};
+ }
  const balance=Number(saveData.personalCash)||0;
- if(balance<TITLE_NEWSPAPER_PRICE)return {ok:false,charged:false,profile};
+ if(balance<TITLE_NEWSPAPER_PRICE)return {ok:false,charged:false,profile,issue};
  saveData.personalCash=Math.round((balance-TITLE_NEWSPAPER_PRICE)*100)/100;
- saveData.titleNewspaperPurchases.push(TITLE_NEWSPAPER_EDITION);
+ saveData.titleNewspaperPurchases.push(issue.id);
+ saveData.titleNewspaperArchive[issue.id]=snapshotTitleNewspaperIssue(issue);
  localStorage.setItem(key,JSON.stringify(saveData));
  if(activeProfileId()===profile.id){
   S.personalCash=saveData.personalCash;
   S.titleNewspaperPurchases=saveData.titleNewspaperPurchases.slice();
+  S.titleNewspaperArchive=Object.assign({},saveData.titleNewspaperArchive);
  }
- return {ok:true,charged:true,profile};
-}
-function openArchivedTitleNewspaper(editionId){
- const issue=TITLE_NEWSPAPER_CATALOG[editionId];if(!issue)return;
- ensureTitleNewspaperRustleForOpen();
- openTitleDialog('The Metropolitan Ledger','<p class="title-newspaper-receipt">ARCHIVE COPY · '+escapeHtml(issue.dateLabel)+' · no charge</p><img class="title-newspaper-view" src="'+escapeHtml(issue.image)+'" alt="The Metropolitan Ledger front page for '+escapeHtml(issue.dateLabel)+'">');
- const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
+ return {ok:true,charged:true,profile,issue:saveData.titleNewspaperArchive[issue.id]};
 }
 function titleArchiveSave(){
  const profile=lastPlayedProfile();if(!profile)return {profile:null,saveData:null};
@@ -1177,14 +1208,25 @@ function titleArchiveSave(){
  if(!saveData)return {profile,saveData:null};
  return {profile,saveData:migrate(saveData)};
 }
+function archivedTitleNewspaperIssue(saveData,editionId){
+ if(saveData?.titleNewspaperArchive?.[editionId])return saveData.titleNewspaperArchive[editionId];
+ if(TITLE_NEWSPAPER_CATALOG[editionId])return Object.assign({},TITLE_NEWSPAPER_CATALOG[editionId]);
+ return null;
+}
+function openArchivedTitleNewspaper(editionId){
+ const {saveData}=titleArchiveSave(),issue=archivedTitleNewspaperIssue(saveData,editionId);if(!issue)return;
+ ensureTitleNewspaperRustleForOpen();
+ openTitleDialog('The Metropolitan Ledger','<p class="title-newspaper-receipt">ARCHIVE COPY · '+escapeHtml(issue.dateLabel)+' · no charge</p>'+titleNewspaperIssueHtml(issue));
+ const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
+}
 function renderTitleArchives(){
  const {profile,saveData}=titleArchiveSave();
  if(!profile){
   openTitleDialog('Archives','<p class="title-dialog-note">Create or load a profile before collecting archive material.</p>');
   return;
  }
- const owned=Array.isArray(saveData?.titleNewspaperPurchases)?saveData.titleNewspaperPurchases.filter(id=>TITLE_NEWSPAPER_CATALOG[id]):[];
- const cards=owned.map(id=>{const issue=TITLE_NEWSPAPER_CATALOG[id];return '<button class="title-archive-card" type="button" data-archive-newspaper="'+escapeHtml(id)+'"><img src="'+escapeHtml(issue.image)+'" alt=""><span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b><small>OWNED · REOPEN FREE</small></button>'}).join('');
+ const owned=Array.isArray(saveData?.titleNewspaperPurchases)?saveData.titleNewspaperPurchases:[];
+ const cards=owned.map(id=>archivedTitleNewspaperIssue(saveData,id)).filter(Boolean).sort((a,b)=>String(b.id).localeCompare(String(a.id))).map(titleNewspaperArchiveCard).join('');
  openTitleDialog('Archives','<p class="title-dialog-note">'+escapeHtml(profile.name)+' · Purchased Newspapers</p>'+(cards?'<div class="title-archive-gallery">'+cards+'</div>':'<p>No purchased newspaper issues are in this profile\'s archive yet.</p>'));
  $('#titleDialogBody').querySelectorAll('[data-archive-newspaper]').forEach(button=>button.onclick=()=>openArchivedTitleNewspaper(button.dataset.archiveNewspaper));
 }
@@ -1195,9 +1237,9 @@ function openTitleNewspaper(){
   return;
  }
  ensureTitleNewspaperRustleForOpen();
- const issue=TITLE_NEWSPAPER_CATALOG[TITLE_NEWSPAPER_EDITION];
+ const issue=purchase.issue||Object.assign({},TITLE_NEWSPAPER_CATALOG[TITLE_NEWSPAPER_EDITION]);
  const receipt=purchase.charged?'<p class="title-newspaper-receipt">3¢ charged to '+escapeHtml(purchase.profile?.name||'last-played profile')+' · Personal Cash</p>':'<p class="title-newspaper-receipt">OWNED ARCHIVE ISSUE · no additional charge</p>';
- openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="'+escapeHtml(issue.image)+'" alt="The Metropolitan Ledger front page for '+escapeHtml(issue.dateLabel)+'">');
+ openTitleDialog('The Metropolitan Ledger',receipt+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
 function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
