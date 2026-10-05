@@ -15,16 +15,247 @@ function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){let d=(a[i]||0)
 function card(c,hide=false){return '<span class="p-card '+((c.s==='♥'||c.s==='♦')?'red':'')+(hide?' back':'')+'">'+(hide?'FE':c.r+'<i>'+c.s+'</i>')+'</span>'}
 function clockText(n){n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 function updateClock(){const elapsed=Math.floor((Date.now()-sessionStarted)/1000);let left=Math.max(0,businessStart-elapsed);try{if(window.opener&&!window.opener.closed&&typeof window.opener.FE_POKER_CLOCK==='function')left=Math.max(0,window.opener.FE_POKER_CLOCK()-elapsed)}catch(e){}const el=document.querySelector('#pokerBusinessClock');if(el)el.textContent=clockText(left)}
-function start(roomKey){sessionStarted=Date.now();const raw=new URLSearchParams(location.search).get('remaining');businessStart=raw===null?0:Math.max(0,Number(raw)||0);clearInterval(clockTimer);clockTimer=setInterval(updateClock,250);updateClock();let R=rooms[roomKey];if(!R)return;G={roomKey,R,deck:deck(),board:[],pot:0,street:0,currentBet:0,handNo:0,log:[],players:[{name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0},...R.npcs.map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0}))]};document.querySelector('#pokerModal').className='poker-modal open '+R.className;document.querySelector('#pokerRoomName').textContent=R.name;newHand()}
-function newHand(){if(!G)return;G.deck=deck();G.board=[];G.pot=0;G.street=0;G.currentBet=0;G.handNo++;G.log=[];G.players.forEach(p=>{p.fold=p.chips<=0;p.bet=0;p.hole=[G.deck.pop(),G.deck.pop()]});let b=G.R.blind;post(1,b);post(2,b*2);G.currentBet=b*2;log('Blinds posted. Cards are dealt.');bots();render()}
-function post(i,n){let p=G.players[i],x=Math.min(n,p.chips);p.chips-=x;p.bet+=x;G.pot+=x}
-function log(s){G.log.unshift(s);G.log=G.log.slice(0,7)}
-function strength(p){if(G.street===0){let a=p.hole[0].v,b=p.hole[1].v,pair=a===b,suited=p.hole[0].s===p.hole[1].s;return pair?.55+a/35:(a+b)/35+(suited?.08:0)}return eval7([...p.hole,...G.board]).score[0]/8+Math.max(...p.hole.map(c=>c.v))/80}
-function botAct(p){if(p.fold||p.chips<=0)return;let need=G.currentBet-p.bet,s=strength(p),noise=Math.random(),agg={tight:-.1,steady:0,loose:.08,bluff:.02,aggressive:.14}[p.style]||0;if(need>0&&s+agg+noise*.22<.38){p.fold=true;log(p.name+' folds.');return}if((s+agg>.72&&Math.random()<.45)||p.style==='bluff'&&Math.random()<.14){let raise=Math.min(p.chips,Math.max(G.R.blind*2,Math.round(G.pot*.3)));post(G.players.indexOf(p),need+raise);G.currentBet=p.bet;log(p.name+' raises to $'+p.bet+'.')}else{post(G.players.indexOf(p),need);log(p.name+(need?' calls.':' checks.'))}}
-function bots(){for(let i=1;i<G.players.length;i++)botAct(G.players[i]);let max=Math.max(...G.players.map(p=>p.bet));G.currentBet=max}
-function player(action){let p=G.players[0],need=G.currentBet-p.bet;if(action==='fold'){p.fold=true;log('You fold.');return showdown(true)}if(action==='call'){post(0,need);log(need?'You call.':'You check.')}if(action==='raise'){let amt=Math.max(G.R.blind*2,Math.floor(G.pot*.35)),total=need+amt;if(p.chips<=0)return;post(0,total);G.currentBet=p.bet;log('You raise to $'+p.bet+'.')}bots();if(G.players.filter(x=>!x.fold).length===1)return showdown(false);advance()}
-function advance(){G.players.forEach(p=>p.bet=0);G.currentBet=0;if(G.street===0){G.deck.pop();G.board.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.street=1;log('The flop is dealt.')}else if(G.street===1){G.deck.pop();G.board.push(G.deck.pop());G.street=2;log('The turn is dealt.')}else if(G.street===2){G.deck.pop();G.board.push(G.deck.pop());G.street=3;log('The river is dealt.')}else return showdown(false);bots();render()}
-function showdown(folded){let live=G.players.filter(p=>!p.fold);if(live.length===1){live[0].chips+=G.pot;log(live[0].name+' takes the pot.')}else if(G.board.length<5){let winner=live[Math.floor(Math.random()*live.length)];winner.chips+=G.pot;log(winner.name+' takes the pot after the fold.')}else{let ranked=live.map(p=>({p,e:eval7([...p.hole,...G.board])})).sort((a,b)=>cmp(b.e.score,a.e.score)),best=ranked[0].e.score,w=ranked.filter(x=>cmp(x.e.score,best)===0),share=Math.floor(G.pot/w.length);w.forEach(x=>x.p.chips+=share);log(w.map(x=>x.p.name).join(' & ')+' win'+(w.length>1?' split':'')+' with '+ranked[0].e.name+'.')}G.pot=0;render(true)}
-function render(done=false){if(!G)return;document.querySelector('#pokerPot').textContent='$'+G.pot;document.querySelector('#pokerBoard').innerHTML=G.board.map(c=>card(c)).join('')||'<span class="board-empty">PRE-FLOP</span>';let seats=document.querySelector('#pokerSeats');seats.innerHTML=G.players.map((p,i)=>'<div class="p-seat seat-'+i+(p.fold?' folded':'')+'"><b>'+p.name+'</b><div class="cards">'+p.hole.map(c=>card(c,i!==0&&!done)).join('')+'</div><small>$'+p.chips+' · '+(i===0?'Federal Electric':p.style)+'</small></div>').join('');document.querySelector('#pokerLog').innerHTML=G.log.map(x=>'<div>'+x+'</div>').join('');let p=G.players[0],need=Math.max(0,G.currentBet-p.bet);document.querySelector('#pokerCall').textContent=need?'Call $'+need:'Check';document.querySelector('#pokerActions').style.display=done?'none':'flex';document.querySelector('#pokerNext').style.display=done?'inline-block':'none'}
+function start(roomKey){
+ sessionStarted=Date.now();
+ const raw=new URLSearchParams(location.search).get('remaining');
+ businessStart=raw===null?0:Math.max(0,Number(raw)||0);
+ clearInterval(clockTimer);clockTimer=setInterval(updateClock,250);updateClock();
+ const R=rooms[roomKey];if(!R)return;
+ G={roomKey,R,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
+  {name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true},
+  ...R.npcs.map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true}))
+ ]};
+ document.querySelector('#pokerModal').className='poker-modal open '+R.className;
+ document.querySelector('#pokerRoomName').textContent=R.name;
+ newHand();
+}
+function livePlayerIndexes(){return G.players.map((p,i)=>!p.fold&&p.chips>=0?i:-1).filter(i=>i>=0)}
+function nextSeat(from,predicate){
+ for(let step=1;step<=G.players.length;step++){
+  const i=(from+step+G.players.length)%G.players.length;
+  if(predicate(G.players[i],i))return i;
+ }
+ return -1;
+}
+function actionEligible(p){return !!p&&!p.fold&&!p.allIn&&p.chips>0}
+function needsAction(p){return actionEligible(p)&&(!p.acted||p.bet<G.currentBet)}
+function post(i,n){
+ const p=G.players[i],x=Math.max(0,Math.min(n,p.chips));
+ p.chips-=x;p.bet+=x;p.committed+=x;G.pot+=x;
+ if(p.chips===0)p.allIn=true;
+ return x;
+}
+function log(s){G.log.unshift(s);G.log=G.log.slice(0,9)}
+function newHand(){
+ if(!G)return;
+ G.deck=deck();G.board=[];G.pot=0;G.street=0;G.currentBet=0;G.minRaise=G.R.blind*2;G.handNo++;G.done=false;G.log=[];
+ G.players.forEach(p=>{
+  p.fold=p.chips<=0;p.bet=0;p.committed=0;p.allIn=p.chips<=0;p.acted=false;p.raiseOpen=!p.fold;p.hole=[];
+  if(!p.fold)p.hole=[G.deck.pop(),G.deck.pop()];
+ });
+ const live=livePlayerIndexes();
+ if(live.length<2){log('The table cannot continue with fewer than two funded players.');G.done=true;render(true);return}
+ G.dealer=nextSeat(G.dealer,p=>!p.fold);
+ let sb,bb,first;
+ if(live.length===2){
+  sb=G.dealer;bb=nextSeat(sb,p=>!p.fold);first=sb;
+ }else{
+  sb=nextSeat(G.dealer,p=>!p.fold);bb=nextSeat(sb,p=>!p.fold);first=nextSeat(bb,p=>actionEligible(p));
+ }
+ const small=G.R.blind,big=G.R.blind*2;
+ post(sb,small);post(bb,big);
+ G.currentBet=Math.max(...G.players.map(p=>p.bet));
+ G.minRaise=big;
+ G.turnIndex=first>=0?first:nextSeat(bb,p=>actionEligible(p));
+ log('Blinds posted. Cards are dealt.');
+ runTable();
+}
+function strength(p){
+ if(G.street===0){
+  const a=p.hole[0].v,b=p.hole[1].v,pair=a===b,suited=p.hole[0].s===p.hole[1].s;
+  return pair?.55+a/35:(a+b)/35+(suited?.08:0);
+ }
+ return eval7([...p.hole,...G.board]).score[0]/8+Math.max(...p.hole.map(c=>c.v))/80;
+}
+function markFullRaise(raiser,raiseSize){
+ G.minRaise=Math.max(G.R.blind*2,raiseSize);
+ G.players.forEach((p,i)=>{
+  if(i!==raiser&&actionEligible(p)){p.acted=false;p.raiseOpen=true}
+ });
+}
+function callOrCheck(i){
+ const p=G.players[i],need=Math.max(0,G.currentBet-p.bet);
+ const paid=post(i,need);
+ p.acted=true;p.raiseOpen=false;
+ if(need===0)log(p.name+(i===0?' check.':' checks.'));
+ else if(p.allIn)log(p.name+(i===0?' call all-in for $':' calls all-in for $')+paid+'.');
+ else log(p.name+(i===0?' call $':' calls $')+paid+'.');
+}
+function foldPlayer(i){
+ const p=G.players[i];p.fold=true;p.acted=true;p.raiseOpen=false;log(p.name+(i===0?' fold.':' folds.'));
+}
+function raisePlayer(i,desiredRaise){
+ const p=G.players[i],oldBet=G.currentBet,need=Math.max(0,oldBet-p.bet);
+ if(!p.raiseOpen){callOrCheck(i);return}
+ const paid=post(i,need+Math.max(G.minRaise,desiredRaise));
+ const newBet=p.bet;
+ p.acted=true;p.raiseOpen=false;
+ if(newBet<=oldBet){
+  if(need===0)log(p.name+(i===0?' check.':' checks.'));
+  else log(p.name+(p.allIn?(i===0?' call all-in for $':' calls all-in for $'):(i===0?' call $':' calls $'))+paid+'.');
+  return;
+ }
+ const raiseSize=newBet-oldBet;
+ G.currentBet=newBet;
+ if(raiseSize>=G.minRaise){
+  markFullRaise(i,raiseSize);
+  p.acted=true;p.raiseOpen=false;
+  log(p.name+(p.allIn?(i===0?' raise all-in to $':' raises all-in to $'):(i===0?' raise to $':' raises to $'))+p.bet+'.');
+ }else{
+  log(p.name+(i===0?' move all-in to $':' moves all-in to $')+p.bet+'; the short raise does not reopen betting.');
+ }
+}
+function botAct(i){
+ const p=G.players[i];if(!needsAction(p))return;
+ const need=Math.max(0,G.currentBet-p.bet),s=strength(p),noise=Math.random(),agg={tight:-.1,steady:0,loose:.08,bluff:.02,aggressive:.14}[p.style]||0;
+ if(need>0&&s+agg+noise*.22<.38){foldPlayer(i);return}
+ const wantsRaise=p.raiseOpen&&p.chips>need&&((s+agg>.72&&Math.random()<.45)||(p.style==='bluff'&&Math.random()<.14));
+ if(wantsRaise){
+  const raise=Math.max(G.minRaise,Math.round(G.pot*.3),G.R.blind*2);
+  raisePlayer(i,raise);
+ }else callOrCheck(i);
+}
+function bettingRoundComplete(){
+ const live=G.players.filter(p=>!p.fold);
+ if(live.length<=1)return true;
+ const actors=live.filter(actionEligible);
+ if(!actors.length)return true;
+ return actors.every(p=>p.acted&&p.bet===G.currentBet);
+}
+function dealNextStreet(){
+ G.players.forEach(p=>{p.bet=0;if(actionEligible(p)){p.acted=false;p.raiseOpen=true}});
+ G.currentBet=0;G.minRaise=G.R.blind*2;
+ if(G.street===0){
+  G.deck.pop();G.board.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.street=1;log('The flop is dealt.');
+ }else if(G.street===1){
+  G.deck.pop();G.board.push(G.deck.pop());G.street=2;log('The turn is dealt.');
+ }else if(G.street===2){
+  G.deck.pop();G.board.push(G.deck.pop());G.street=3;log('The river is dealt.');
+ }
+ const first=nextSeat(G.dealer,p=>actionEligible(p));
+ G.turnIndex=first;
+}
+function runOutBoard(){
+ while(G.board.length<5){
+  G.deck.pop();
+  if(G.board.length===0)G.board.push(G.deck.pop(),G.deck.pop(),G.deck.pop());
+  else G.board.push(G.deck.pop());
+ }
+ G.street=3;
+ log('The remaining board is run out for the all-in players.');
+}
+function finishBettingRound(){
+ const live=G.players.filter(p=>!p.fold);
+ if(live.length<=1){showdown();return}
+ if(G.street===3){showdown();return}
+ const actors=live.filter(actionEligible);
+ if(actors.length<=1){runOutBoard();showdown();return}
+ dealNextStreet();
+}
+function runTable(){
+ if(!G||G.done)return;
+ for(let guard=0;guard<100;guard++){
+  const live=G.players.filter(p=>!p.fold);
+  if(live.length<=1){showdown();return}
+  if(bettingRoundComplete()){
+   finishBettingRound();
+   if(!G||G.done)return;
+   continue;
+  }
+  if(G.turnIndex<0||!needsAction(G.players[G.turnIndex])){
+   const next=nextSeat(G.turnIndex<0?G.dealer:G.turnIndex,p=>needsAction(p));
+   if(next<0){finishBettingRound();if(!G||G.done)return;continue}
+   G.turnIndex=next;
+  }
+  if(G.turnIndex===0){render();return}
+  const acted=G.turnIndex;
+  botAct(acted);
+  G.turnIndex=nextSeat(acted,p=>needsAction(p));
+ }
+ throw new Error('Poker betting loop exceeded safety limit');
+}
+function player(action){
+ if(!G||G.done||G.turnIndex!==0||!needsAction(G.players[0]))return;
+ const p=G.players[0],need=Math.max(0,G.currentBet-p.bet);
+ if(action==='fold')foldPlayer(0);
+ else if(action==='call')callOrCheck(0);
+ else if(action==='raise'){
+  if(!p.raiseOpen){log('Betting has not reopened; you may only call or fold.');render();return}
+  const amt=Math.max(G.minRaise,Math.floor(G.pot*.35),G.R.blind*2);
+  raisePlayer(0,amt);
+ }
+ G.turnIndex=nextSeat(0,q=>needsAction(q));
+ runTable();
+}
+function buildSidePots(){
+ const levels=[...new Set(G.players.map(p=>p.committed).filter(n=>n>0))].sort((a,b)=>a-b);
+ const pots=[];let previous=0;
+ for(const level of levels){
+  const contributors=G.players.filter(p=>p.committed>=level);
+  const amount=(level-previous)*contributors.length;
+  if(amount>0)pots.push({amount,eligible:contributors.filter(p=>!p.fold)});
+  previous=level;
+ }
+ return pots;
+}
+function awardPot(pot,label){
+ if(!pot.amount||!pot.eligible.length)return;
+ if(pot.eligible.length===1){
+  pot.eligible[0].chips+=pot.amount;
+  log(pot.eligible[0].name+' '+(pot.eligible[0].committed===Math.max(...G.players.map(p=>p.committed))&&pot.eligible.every(p=>p===pot.eligible[0])?'receives':'wins')+' '+label+' $'+pot.amount+'.');
+  return;
+ }
+ const ranked=pot.eligible.map(p=>({p,e:eval7([...p.hole,...G.board])})).sort((a,b)=>cmp(b.e.score,a.e.score));
+ const best=ranked[0].e.score,winners=ranked.filter(x=>cmp(x.e.score,best)===0);
+ const share=Math.floor(pot.amount/winners.length),remainder=pot.amount-share*winners.length;
+ winners.forEach((x,i)=>x.p.chips+=share+(i<remainder?1:0));
+ log(winners.map(x=>x.p.name).join(' & ')+' win '+label+' $'+pot.amount+' with '+ranked[0].e.name+'.');
+}
+function showdown(){
+ if(!G||G.done)return;
+ const live=G.players.filter(p=>!p.fold);
+ if(live.length===1){
+  live[0].chips+=G.pot;log(live[0].name+' takes the $'+G.pot+' pot.');
+ }else{
+  if(G.board.length<5)runOutBoard();
+  const pots=buildSidePots();
+  pots.forEach((pot,i)=>awardPot(pot,i===0?'main pot':'side pot '+i));
+ }
+ G.pot=0;G.done=true;render(true);
+}
+function render(done=false){
+ if(!G)return;
+ document.querySelector('#pokerPot').textContent='
+function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
+window.FE_POKER={start,action:player,newHand,leave};})();+G.pot;
+ document.querySelector('#pokerBoard').innerHTML=G.board.map(c=>card(c)).join('')||'<span class="board-empty">PRE-FLOP</span>';
+ const seats=document.querySelector('#pokerSeats');
+ seats.innerHTML=G.players.map((p,i)=>'<div class="p-seat seat-'+i+(p.fold?' folded':'')+(p.allIn?' all-in':'')+'"><b>'+p.name+'</b><div class="cards">'+p.hole.map(c=>card(c,i!==0&&!done)).join('')+'</div><small>
+function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
+window.FE_POKER={start,action:player,newHand,leave};})();+p.chips+' · '+(i===0?'Federal Electric':p.style)+(p.allIn&&!p.fold?' · ALL-IN':'')+'</small></div>').join('');
+ document.querySelector('#pokerLog').innerHTML=G.log.map(x=>'<div>'+x+'</div>').join('');
+ const p=G.players[0],need=Math.max(0,G.currentBet-p.bet),humanTurn=!done&&G.turnIndex===0&&needsAction(p);
+ const call=document.querySelector('#pokerCall');
+ if(need&&p.chips<=need)call.textContent='Call All-In 
+function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
+window.FE_POKER={start,action:player,newHand,leave};})();+p.chips;
+ else call.textContent=need?'Call 
+function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
+window.FE_POKER={start,action:player,newHand,leave};})();+need:'Check';
+ const raise=document.querySelector('#pokerRaise');
+ if(raise)raise.disabled=!humanTurn||!p.raiseOpen||p.chips<=need;
+ document.querySelector('#pokerActions').style.display=humanTurn?'flex':'none';
+ document.querySelector('#pokerNext').style.display=done?'inline-block':'none';
+}
 function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
 window.FE_POKER={start,action:player,newHand,leave};})();
