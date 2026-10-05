@@ -235,7 +235,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Phase-specific Star Club controls: Brief/ Afternoon by day and Brief Evening/ Evening at night, with different encounter pools.
 - [x] Reset/schedule Star Club raids correctly across dates and weekdays. Star Club raids now have an independent hidden future turn/date selected 4–8 game-months ahead from actual playable weekday dates; poker raid days no longer trigger Star Club raid outcomes, and being at the Star Club on its raid night is tracked separately.
 - [x] Reposition Federal Exchange trade quantity directly above Buy/Sell controls for rapid trading.
-- [ ] Preserve typed Federal Exchange quantities across five-second market rerenders; previous attempt was rolled back with the broken UI build.
+- [x] Preserve typed Federal Exchange quantities across rerenders. The market table snapshots each ticker's current quantity before rebuilding and restores it immediately afterward, so typed orders no longer reset to 10.
 - [ ] Historical/name verification pass for 1938 Washington titles, wages, and fictional entities.
 - [x] Bring MARKET-DESIGN and core project documentation into sync with hidden intraday quotations, race betting v2, and the current roadmap.
 - [x] Make stock tickers and company names open a Security Record with a quotation graph and historical ledger.
