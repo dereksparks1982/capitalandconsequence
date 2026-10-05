@@ -18,18 +18,18 @@ const stockSeed=[
 ['ACC','American Consumer Corp.','Consumer',25.15,.028,.038],['HHA','Household & Home Appliances','Consumer',19.45,.020,.048],['USG','United Soap & Goods','Consumer',23.75,.032,.033],['RTA','Republic Tobacco & Allied','Consumer',34.50,.045,.035]
 ];
 let SAVE_KEY='federalElectricSave';
-const APP_VERSION='v0.4.0', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90;
+const APP_VERSION='v0.4.0', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1938=.80, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1938*WORKDAY_HOURS;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
-const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.18},glass:{name:'Glass',unitPrice:.095},tungsten:{name:'Tungsten',unitPrice:.32}};
+const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},tungsten:{name:'Tungsten',unitPrice:.018}};
 function unitCash(n){return '$'+Number(n).toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}
 const contractCustomers=[
  ['Capital Hardware & Supply Co.','Existing customer','balanced'],['Potomac Hotel Supply','Commercial buyer','forgiving'],['District Lighting & Fixture Co.','Regional distributor','strict'],['Chesapeake Mercantile Co.','Wholesale buyer','price'],['National Home Stores','Retail chain','quality'],['Columbia Property Management','Property operator','impatient']
 ];
 const customerTraits={balanced:{label:'Practical',reject:.55,discount:.82,partial:true},forgiving:{label:'Forgiving',reject:.28,discount:.88,partial:true},strict:{label:'Strict specification buyer',reject:.82,discount:.72,partial:false},price:{label:'Price-sensitive wholesaler',reject:.42,discount:.78,partial:true},quality:{label:'Quality-focused chain',reject:.88,discount:.70,partial:false},impatient:{label:'Deadline-sensitive operator',reject:.62,discount:.80,partial:true}};
 const contractGrades=[
- {quality:'economy',qualityName:'Economy Short-Life',price:.16},
- {quality:'standard',qualityName:'Standard Service',price:.20},
- {quality:'long',qualityName:'Long-Life Premium',price:.27}
+ {quality:'economy',qualityName:'Economy Short-Life',price:.12},
+ {quality:'standard',qualityName:'Standard Service',price:.15},
+ {quality:'long',qualityName:'Long-Life Premium',price:.20}
 ];
 function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function seededUnit(key){return (hashString(key)%1000000)/1000000}
@@ -74,7 +74,7 @@ function chooseContractWindow(quantity){const roll=Math.random();if(roll<.08)ret
 function rollRaidDays(iso){const d=new Date(iso+'T12:00:00'),y=d.getFullYear(),m=d.getMonth(),days=new Date(y,m+1,0).getDate(),count=1+Math.floor(Math.random()*2),set=new Set();while(set.size<count){const n=1+Math.floor(Math.random()*days),x=new Date(y,m,n);if(x.getDay()!==0)set.add(n)}return [...set].sort((a,b)=>a-b)}
 function rollStarRaidMonth(iso){const d=new Date(iso+'T12:00:00');d.setMonth(d.getMonth()+4+Math.floor(Math.random()*5));return monthKey(d.toISOString().slice(0,10))}
 function pokerRisk(circle){return circle==='working'?.012:circle==='middle'?.007:.003}
-const starterContract=()=>({id:'FE-001',customer:'Capital Hardware & Supply Co.',product:'Electric Light Bulbs',quality:'standard',qualityName:'Standard Service',quantity:1000,delivered:0,completed:0,productionQuantity:1000,productionPolicy:'normal',productionState:'queued',price:.20,status:'accepted',deadlineClass:'STANDARD',deadlineTurns:4,deadlineTurnSerial:4,deadlineDate:campaignDateForTurn(4),deadline:'End of January 1938 · Turn 4/372',deadlineMonth:'1938-01',deadlinePassed:false,relationship:'Existing customer',history:0,productionSeconds:600});
+const starterContract=()=>({id:'FE-001',customer:'Capital Hardware & Supply Co.',product:'Electric Light Bulbs',quality:'standard',qualityName:'Standard Service',quantity:1000,delivered:0,completed:0,productionQuantity:1000,productionPolicy:'normal',productionState:'queued',price:.15,status:'accepted',deadlineClass:'STANDARD',deadlineTurns:4,deadlineTurnSerial:4,deadlineDate:campaignDateForTurn(4),deadline:'End of January 1938 · Turn 4/372',deadlineMonth:'1938-01',deadlinePassed:false,relationship:'Existing customer',history:0,productionSeconds:600});
 function nextContractNumber(){return Math.max(1,...S.contracts.concat(S.contractOffers||[]).map(x=>+(String(x.id||'').replace(/\D/g,''))||0))+1}
 function contractGrade(q){return contractGrades.find(g=>g.quality===q)||contractGrades[1]}
 function contractRunSeconds(qty){return Math.max(600,Math.ceil(Math.max(1,qty)/1000)*600)}
@@ -210,7 +210,11 @@ function renderTreasury(){
  if(distribution)distribution.disabled=!businessOpen()||S.paused;if(divert)divert.disabled=S.phase==='report'||S.paused;
 }
 let ipoScaffoldOpen=false;
-function companyValueEstimate(){return S.companyCash+S.inventory*.14+Object.values(S.materials).reduce((a,b)=>a+b*.015,0)}
+function companyValueEstimate(){
+ const finished=Object.entries(S.inventoryByGrade||{}).reduce((sum,[q,qty])=>sum+(Math.max(0,+qty||0)*(contractGrade(q).price*.65)),0);
+ const raw=Object.entries(MATERIAL_MARKET).reduce((sum,[k,m])=>sum+(Math.max(0,+S.materials?.[k]||0)*m.unitPrice),0);
+ return S.companyCash+finished+raw-Math.max(0,+S.debt||0);
+}
 function renderOwnership(){
  const panel=$('#ipoScaffold'),openBtn=$('#exploreIpo');if(!panel||!openBtn)return;
  panel.hidden=!ipoScaffoldOpen;openBtn.setAttribute('aria-expanded',ipoScaffoldOpen?'true':'false');
@@ -431,7 +435,7 @@ window.pauseActiveProduction=()=>{if(!businessOpen())return note('The works are 
 window.abandonProductionRun=()=>{if(!businessOpen())return note('The works are closed for the night.');const x=activeContract()||queuedContracts()[0];if(!x)return;const made=Math.floor(x.completed||0),target=productionTarget(x);if(made<target&&!confirm('Stop the remaining production on '+x.id+'? '+made.toLocaleString()+' units already manufactured will remain in the Warehouse. The contract itself will NOT be cancelled.'))return;S.productionQueue=S.productionQueue.filter(v=>v!==x.id);if(S.activeContractId===x.id)S.activeContractId=null;x.productionState='abandoned';S.lineStatus='idle';S.lineMessage=x.id+' production stopped at '+made.toLocaleString()+' units. The customer contract remains open.';note(S.lineMessage);save();render()}
 window.moveQueue=(id,dir)=>{if(!businessOpen())return note('The works office is closed for the night.');const i=S.productionQueue.indexOf(id),j=i+dir;if(i<0||j<0||j>=S.productionQueue.length||id===S.activeContractId)return;[S.productionQueue[i],S.productionQueue[j]]=[S.productionQueue[j],S.productionQueue[i]];save();renderFactory()}
 function startNextQueued(){normalizeProductionTimes();const x=queuedContracts()[0];if(!x){S.activeContractId=null;S.lineStatus='idle';S.lineMessage='Production queue complete.';return}activateProduction(x)}
-function productionCfg(q){return {standard:{c:1,g:1,t:.5,cost:.105},long:{c:1.12,g:1.08,t:.72,cost:.132},economy:{c:.82,g:.88,t:.35,cost:.079}}[q]}
+function productionCfg(q){return {standard:{c:1,g:1,t:.5,cost:.015},long:{c:1.12,g:1.08,t:.72,cost:.022},economy:{c:.82,g:.88,t:.35,cost:.012}}[q]}
 function productionQualityProfile(c){
  const w=S.workforce||{},policy=productionPolicyCfg(c),base=clamp((w.skill||68)*.32+(w.morale||73)*.16+(w.discipline||81)*.17+S.machinery*.35,45,99),internal=clamp((100-base)*.0007*policy.defects,.002,.06),latent=clamp((100-base)*.00025*policy.defects,.0005,.025),qc=clamp(100-internal*150-latent*200,70,99.8);return {internal,latent,qc}
 }
@@ -544,7 +548,7 @@ function closeBusinessDay(manual=false){
  if(window.finishUnderworldDay)window.finishUnderworldDay();
  finishDayContracts();
  for(const [ticker,x] of Object.entries(S.stocks)){const close=Number.isFinite(+x.hiddenPrice)?+x.hiddenPrice:+x.price;x.price=close;if(!Array.isArray(x.history))x.history=[];const last=x.history[x.history.length-1];if(last&&last.date===S.gameDate)last.close=close;else x.history.push({date:S.gameDate,close});if(x.history.length>260)x.history=x.history.slice(-260);x.prev=x.prevClose}
- const payroll=S.workers*18;S.companyCash-=payroll;S.lastExpenses+=payroll;
+ const payroll=S.workers*WORKER_DAILY_WAGE;S.companyCash-=payroll;S.lastExpenses+=payroll;
  const reportDate=displayDate(),dayTrades=S.transactions.filter(t=>t.date===reportDate&&(t.action==='BUY'||t.action==='SELL')),stockRealized=dayTrades.filter(t=>t.action==='SELL').reduce((a,t)=>a+(t.realized||0),0),stockPositionMove=Object.entries(S.portfolio).reduce((a,[k,p])=>a+p.shares*((S.stocks[k]?.price||0)-(S.stocks[k]?.open||0)),0);
  S.ledger.push({date:reportDate,rev:S.lastRevenue,exp:S.lastExpenses});
  S.dailyReport={iso:S.gameDate,date:reportDate,openingCompanyCash:S.dayStartCompanyCash,openingPersonalCash:S.dayStartPersonalCash,revenue:S.lastRevenue,expenses:S.lastExpenses,companyClose:S.companyCash,personalAtClose:S.personalCash,stockTrades:dayTrades.length,stockRealized,stockPositionMove,marketCloseIndex:marketIndex(),portfolioAtMarketClose:portfolioValue()};
