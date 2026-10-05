@@ -1458,10 +1458,54 @@ function toggleTitleFan(){
 }
 
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
+const TITLE_MAP_LOCATIONS=[
+ {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
+ {id:'star',n:2,name:"Madam Star's Star Club",area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
+ {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue, placed outside the downtown core.'},
+ {id:'workingPoker',n:4,name:'Neighborhood Game',area:'Navy Yard / Southeast',x:.5826,y:.6322,description:'The lower-stakes working-class poker room.'},
+ {id:'commercePoker',n:5,name:'Commerce Club',area:'Downtown / Pennsylvania Avenue',x:.4536,y:.5088,description:'A respectable downtown club hosting the middle-stakes business poker game.'},
+ {id:'embassyPoker',n:6,name:'Embassy Room',area:'Dupont / Massachusetts Avenue',x:.3928,y:.3602,description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.'}
+];
 
 function titleMapApply(){
  const img=$('#titleMapImage');if(!img)return;
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
+ titleMapPositionMarkers();
+}
+function titleMapPositionMarkers(){
+ const img=$('#titleMapImage'),layer=$('#titleMapMarkers');if(!img||!layer||!img.naturalWidth||!img.naturalHeight)return;
+ layer.querySelectorAll('[data-map-location]').forEach(marker=>{
+  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
+  if(!location)return;
+  marker.style.left=(titleMapState.x+location.x*img.naturalWidth*titleMapState.scale)+'px';
+  marker.style.top=(titleMapState.y+location.y*img.naturalHeight*titleMapState.scale)+'px';
+ });
+}
+function closeTitleMapLocation(){
+ const card=$('#titleMapLocationCard');if(card)card.hidden=true;
+}
+function openTitleMapLocation(id){
+ const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
+ $('#titleMapLocationName').textContent=location.name;
+ $('#titleMapLocationArea').textContent=location.area;
+ $('#titleMapLocationDescription').textContent=location.description;
+ card.hidden=false;
+}
+function buildTitleMapMarkers(){
+ const layer=$('#titleMapMarkers');if(!layer)return;
+ layer.innerHTML='';
+ for(const location of TITLE_MAP_LOCATIONS){
+  const marker=document.createElement('button');
+  marker.type='button';
+  marker.className='title-map-marker';
+  marker.dataset.mapLocation=location.id;
+  marker.setAttribute('aria-label',location.name+' — '+location.area);
+  marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label">'+location.name+'</span>';
+  marker.addEventListener('pointerdown',e=>e.stopPropagation());
+  marker.addEventListener('click',e=>{e.stopPropagation();openTitleMapLocation(location.id)});
+  layer.appendChild(marker);
+ }
+ titleMapPositionMarkers();
 }
 function titleMapClamp(){
  const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img||!img.naturalWidth||!img.naturalHeight)return;
@@ -1504,6 +1548,7 @@ function openTitleMap(){
 }
 function closeTitleMap(){
  const viewer=$('#titleMapViewer');if(viewer)viewer.hidden=true;
+ closeTitleMapLocation();
  document.body.classList.remove('title-map-open');
  titleMapState.pointerId=null;
  const viewport=$('#titleMapViewport');if(viewport)viewport.classList.remove('is-dragging');
@@ -1511,12 +1556,15 @@ function closeTitleMap(){
 function initTitleMapViewer(){
  const open=$('#titleDcMap'),viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport');
  if(!open||!viewer||!viewport)return;
+ buildTitleMapMarkers();
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMap;
- $('#titleMapReset').onclick=titleMapReset;
+ $('#titleMapLocationClose').onclick=closeTitleMapLocation;
+ $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
  $('#titleMapZoomIn').onclick=()=>titleMapZoom(1.4);
  $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
  viewer.addEventListener('click',e=>{if(e.target===viewer)closeTitleMap()});
+ viewport.addEventListener('click',e=>{if(e.target===viewport)closeTitleMapLocation()});
  viewport.addEventListener('wheel',e=>{e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
  viewport.addEventListener('pointerdown',e=>{
