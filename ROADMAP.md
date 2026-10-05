@@ -207,7 +207,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Poker clock initialization uses the current Federal Electric business-day time rather than resetting to 60:00.
 - [x] Poker elapsed time is no longer deducted a second time when the main business clock has already been running.
 - [x] Pre-flop folding no longer sends an incomplete board into the seven-card evaluator.
-- [ ] Correct poker betting-round action closure and all-in/side-pot behavior.
+- [x] Correct poker betting-round action closure and all-in/side-pot behavior.
 - [ ] Make poker window-close/quit settlement unavoidable and consistent.
 - [ ] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs.
 - [ ] Correct selected production-grade material/cost consumption.
