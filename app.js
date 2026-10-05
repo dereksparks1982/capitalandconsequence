@@ -912,12 +912,14 @@ function pauseTitleAudio(){
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
  stopTitleFanAudio(false);
+ stopTitleClockAudio(false);
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
 function resumeTitleAudio(){
  if(!titleScreenVisible())return;
  syncTitleCityAmbience();
  syncTitleFanAudio();
+ syncTitleClockAudio();
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
@@ -979,7 +981,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleFanAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -1135,11 +1137,34 @@ function updateTitleClock(){
  minute.setAttribute('transform','rotate('+(m*6)+' 50 50)');
  second.setAttribute('transform','rotate('+(s*6)+' 50 50)');
 }
+const TITLE_CLOCK_SOUND_SRC='assets/audio/clock-ticking-trimmed-1m58s.mp3?v=20261004-clock1';
+const TITLE_CLOCK_SOUND_VOLUME=.08;
+let titleClockAudio=null;
+function ensureTitleClockAudio(){
+ if(titleClockAudio)return titleClockAudio;
+ titleClockAudio=new Audio(TITLE_CLOCK_SOUND_SRC);
+ titleClockAudio.preload='auto';
+ titleClockAudio.loop=true;
+ titleClockAudio.volume=TITLE_CLOCK_SOUND_VOLUME;
+ return titleClockAudio;
+}
+function stopTitleClockAudio(reset=false){
+ if(!titleClockAudio)return;
+ titleClockAudio.pause();
+ if(reset){try{titleClockAudio.currentTime=0}catch(e){}}
+}
+function syncTitleClockAudio(){
+ if(!titleScreenVisible()||S.paused){stopTitleClockAudio(false);return}
+ const audio=ensureTitleClockAudio();
+ audio.volume=TITLE_CLOCK_SOUND_VOLUME;
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
 let titleClockTimer=null;
 function startTitleClock(){
  const numerals=['XII','III','VI','IX'];
  document.querySelectorAll('.title-clock-num').forEach((el,i)=>{if(numerals[i])el.textContent=numerals[i]});
  updateTitleClock();
+ syncTitleClockAudio();
  if(titleClockTimer)clearInterval(titleClockTimer);
  titleClockTimer=setInterval(updateTitleClock,250);
 }
@@ -1304,6 +1329,8 @@ function initTitleScreen(){
  document.addEventListener('keydown',syncTitleCityAmbience);
  screen.addEventListener('pointerdown',syncTitleFanAudio,{once:true});
  document.addEventListener('keydown',syncTitleFanAudio,{once:true});
+ screen.addEventListener('pointerdown',syncTitleClockAudio,{once:true});
+ document.addEventListener('keydown',syncTitleClockAudio,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
