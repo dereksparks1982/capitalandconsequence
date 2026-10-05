@@ -911,11 +911,13 @@ function pauseTitleAudio(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleCityAmbienceAudio)titleCityAmbienceAudio.pause();
  if(titleRadioAudio)titleRadioAudio.pause();
+ stopTitleFanAudio(false);
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
 function resumeTitleAudio(){
  if(!titleScreenVisible())return;
  syncTitleCityAmbience();
+ syncTitleFanAudio();
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
@@ -977,7 +979,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleFanAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
  const date=save?.gameDate?new Date(save.gameDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'New game';
@@ -1142,6 +1144,32 @@ function startTitleClock(){
  titleClockTimer=setInterval(updateTitleClock,250);
 }
 
+const TITLE_FAN_SOUND_SRC='assets/audio/hasin2004-fan-sound-247413.mp3?v=20261004-fan1';
+const TITLE_FAN_SOUND_VOLUME=.12;
+let titleFanAudio=null;
+function titleFanIsOff(){
+ const fan=document.querySelector('.title-fan-motion');
+ return !fan||fan.classList.contains('is-off');
+}
+function ensureTitleFanAudio(){
+ if(titleFanAudio)return titleFanAudio;
+ titleFanAudio=new Audio(TITLE_FAN_SOUND_SRC);
+ titleFanAudio.preload='auto';
+ titleFanAudio.loop=true;
+ titleFanAudio.volume=TITLE_FAN_SOUND_VOLUME;
+ return titleFanAudio;
+}
+function stopTitleFanAudio(reset=false){
+ if(!titleFanAudio)return;
+ titleFanAudio.pause();
+ if(reset){try{titleFanAudio.currentTime=0}catch(e){}}
+}
+function syncTitleFanAudio(){
+ if(!titleScreenVisible()||S.paused||titleFanIsOff()){stopTitleFanAudio(false);return}
+ const audio=ensureTitleFanAudio();
+ audio.volume=TITLE_FAN_SOUND_VOLUME;
+ const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+}
 function setTitleFanOff(isOff){
  const fan=document.querySelector('.title-fan-motion');
  const button=$('#titleFanHub');
@@ -1151,6 +1179,7 @@ function setTitleFanOff(isOff){
   button.setAttribute('aria-pressed',isOff?'true':'false');
   button.setAttribute('aria-label',isOff?'Turn fan on':'Turn fan off');
  }
+ if(isOff)stopTitleFanAudio(true);else syncTitleFanAudio();
 }
 function toggleTitleFan(){
  const fan=document.querySelector('.title-fan-motion');
@@ -1273,6 +1302,8 @@ function initTitleScreen(){
  document.addEventListener('keydown',startTitleRadioBackgroundFeeds,{once:true});
  screen.addEventListener('pointerdown',syncTitleCityAmbience);
  document.addEventListener('keydown',syncTitleCityAmbience);
+ screen.addEventListener('pointerdown',syncTitleFanAudio,{once:true});
+ document.addEventListener('keydown',syncTitleFanAudio,{once:true});
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
