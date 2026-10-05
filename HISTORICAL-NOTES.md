@@ -122,3 +122,18 @@ Federal Electric treats period media as part of the historical simulation rather
 - Mercury Theatre programming may be scheduled by time of day, including nighttime-only placement where appropriate for the game's atmosphere.
 - Morse-code and weak-signal material should sound period-plausible and should not rely on very short modern training loops when a longer broadcast texture is required.
 - Historical news interruptions should use period-appropriate network-bulletin conventions and must not imitate the later Emergency Broadcast System.
+
+
+## Factory economics calibration — October 5, 2026
+
+The v0.4.0 economics audit corrected a unit-semantics problem in the bulb model.
+
+- Social Security Administration historical tables report average 1938 manufacturing earnings of **$0.62 per hour** and **35.6 hours per week**.
+- The NBER Macrohistory electrical-manufacturing series published through FRED reports roughly **$0.80 per hour** for U.S. electrical manufacturing in 1938. Federal Electric therefore uses **$0.80/hour × 8 hours = $6.40 per worker** for its representative Business Day payroll.
+- A surviving April 1938 U.S. newspaper advertisement lists common 75-watt and 100-watt Mazda lamps at **15¢ retail**. Federal Electric's game guide prices are now 12¢ Economy, 15¢ Standard and 20¢ Long-Life, with customer negotiation still moving actual contract prices.
+- Copper, glass and tungsten inventory values in Federal Electric are **production stock units**, not pounds or ounces. Their prices are calibrated against the amount consumed by one lamp. This fixes the old error where a Standard bulb consumed more than its selling price in raw-material replacement cost before labor.
+
+Research references:
+- SSA, Annual Statistical Supplement, Table 3.B3: https://www.ssa.gov/policy/docs/statcomps/supplement/2023/3b.html
+- FRED / NBER Macrohistory, Average Hourly Earnings, Electrical Manufacturing: https://fred.stlouisfed.org/series/M0811AUSM259NNBR
+- The Wheeler Times, April 28, 1938, Mazda lamp price advertisement: https://newspapers.swco.ttu.edu/bitstreams/3d9b9804-30ed-437f-9ee4-d2a995973756/download
