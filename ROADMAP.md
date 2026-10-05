@@ -229,7 +229,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Correct poker betting-round action closure and all-in/side-pot behavior.
 - [x] Make poker window-close/quit settlement unavoidable and consistent.
 - [x] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs. 1938 electrical-manufacturing wage anchor is 80¢/hour; raw-material inventory now uses production-stock units rather than treating bulk commodity prices as per-bulb costs.
-- [ ] Correct selected production-grade material/cost consumption.
+- [x] Correct selected production-grade material/cost consumption. Selected grade now drives raw-material draw, operating cost, finished-lot grade, and the visible variable-cost estimate from one authoritative helper.
 - [ ] Audit partial shipments, wrong-grade settlement, replacement inventory, deadlines, and repeated late penalties.
 - [x] Add two Star Club daytime visit lengths: Brief Visit and Afternoon Visit.
 - [x] Phase-specific Star Club controls: Brief/ Afternoon by day and Brief Evening/ Evening at night, with different encounter pools.
