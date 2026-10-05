@@ -236,7 +236,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Reset/schedule Star Club raids correctly across dates and weekdays. Star Club raids now have an independent hidden future turn/date selected 4–8 game-months ahead from actual playable weekday dates; poker raid days no longer trigger Star Club raid outcomes, and being at the Star Club on its raid night is tracked separately.
 - [x] Reposition Federal Exchange trade quantity directly above Buy/Sell controls for rapid trading.
 - [x] Preserve typed Federal Exchange quantities across rerenders. The market table snapshots each ticker's current quantity before rebuilding and restores it immediately afterward, so typed orders no longer reset to 10.
-- [ ] Historical/name verification pass for 1938 Washington titles, wages, and fictional entities.
+- [x] Historical/name verification pass for 1938 Washington titles, wages, and fictional entities. The 1938 MPD chief title is reserved for the real Major and Superintendent Ernest W. Brown; fictional Arthur Hayes is now Inspector Arthur Hayes, fictional venues/contacts are explicitly labeled as such, Washington-Hoover Airport is verified as a valid 1938 setting, and the 80¢ electrical-manufacturing wage anchor remains sourced.
 - [x] Bring MARKET-DESIGN and core project documentation into sync with hidden intraday quotations, race betting v2, and the current roadmap.
 - [x] Make stock tickers and company names open a Security Record with a quotation graph and historical ledger.
 - [x] Seed every Federal Exchange security with 90 pre-game trading sessions before January 3, 1938 and merge that history into older saves so Turn 1 has a meaningful chart.
