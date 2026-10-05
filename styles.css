@@ -726,24 +726,3 @@ body.elephant-easter-egg-open{overflow:hidden}
  .title-map-tools .title-map-close{font-size:22px}
  .title-map-help{font-size:11px}
 }
-
-
-/* Vintage film reel on the window ledge beside the horse statue and plant.
-   Separate overlay; approved office artwork remains unchanged. */
-.title-film-reel{
- position:absolute;
- left:86.9%;
- top:47.5%;
- width:4.6%;
- height:auto;
- z-index:2;
- pointer-events:none;
- overflow:visible;
- transform:rotate(-6deg);
- transform-origin:50% 96%;
- opacity:.96;
- filter:saturate(.82) sepia(.12) brightness(.88) contrast(1.08);
-}
-@media (max-width:700px){
- .title-film-reel{left:86.8%;top:47.3%;width:4.8%}
-}
