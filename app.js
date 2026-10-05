@@ -1060,6 +1060,9 @@ function openTitleDialog(title,html){
 function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){const closingNewspaper=dialog.classList.contains('title-newspaper-dialog')&&!dialog.hidden;if(closingNewspaper)playTitleNewspaperRustle();dialog.hidden=true;dialog.classList.remove('title-newspaper-dialog')}}
 const TITLE_NEWSPAPER_PRICE=.03;
 const TITLE_NEWSPAPER_EDITION='1938-09-30';
+const TITLE_NEWSPAPER_CATALOG={
+ '1938-09-30':{dateLabel:'September 30, 1938',headline:'EUROPE WATCHES MUNICH ACCORD',image:'assets/1938-munich-accord-newspaper.webp?v=20261004-news1'}
+};
 const TITLE_NEWSPAPER_RUSTLE_VOLUME=.18;
 const TITLE_FILING_CABINET_OPEN_SRC='assets/audio/filing-cabinet-open.mp3?v=20261004-cabinet1';
 const TITLE_FILING_CABINET_OPEN_VOLUME=.22;
@@ -1162,6 +1165,29 @@ function purchaseTitleNewspaper(){
  }
  return {ok:true,charged:true,profile};
 }
+function openArchivedTitleNewspaper(editionId){
+ const issue=TITLE_NEWSPAPER_CATALOG[editionId];if(!issue)return;
+ ensureTitleNewspaperRustleForOpen();
+ openTitleDialog('The Metropolitan Ledger','<p class="title-newspaper-receipt">ARCHIVE COPY · '+escapeHtml(issue.dateLabel)+' · no charge</p><img class="title-newspaper-view" src="'+escapeHtml(issue.image)+'" alt="The Metropolitan Ledger front page for '+escapeHtml(issue.dateLabel)+'">');
+ const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
+}
+function titleArchiveSave(){
+ const profile=lastPlayedProfile();if(!profile)return {profile:null,saveData:null};
+ let saveData=null;try{saveData=JSON.parse(localStorage.getItem(profileSaveKey(profile.id))||'null')}catch(e){}
+ if(!saveData)return {profile,saveData:null};
+ return {profile,saveData:migrate(saveData)};
+}
+function renderTitleArchives(){
+ const {profile,saveData}=titleArchiveSave();
+ if(!profile){
+  openTitleDialog('Archives','<p class="title-dialog-note">Create or load a profile before collecting archive material.</p>');
+  return;
+ }
+ const owned=Array.isArray(saveData?.titleNewspaperPurchases)?saveData.titleNewspaperPurchases.filter(id=>TITLE_NEWSPAPER_CATALOG[id]):[];
+ const cards=owned.map(id=>{const issue=TITLE_NEWSPAPER_CATALOG[id];return '<button class="title-archive-card" type="button" data-archive-newspaper="'+escapeHtml(id)+'"><img src="'+escapeHtml(issue.image)+'" alt=""><span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b><small>OWNED · REOPEN FREE</small></button>'}).join('');
+ openTitleDialog('Archives','<p class="title-dialog-note">'+escapeHtml(profile.name)+' · Purchased Newspapers</p>'+(cards?'<div class="title-archive-gallery">'+cards+'</div>':'<p>No purchased newspaper issues are in this profile\'s archive yet.</p>'));
+ $('#titleDialogBody').querySelectorAll('[data-archive-newspaper]').forEach(button=>button.onclick=()=>openArchivedTitleNewspaper(button.dataset.archiveNewspaper));
+}
 function openTitleNewspaper(){
  const purchase=purchaseTitleNewspaper();
  if(!purchase.ok){
@@ -1169,8 +1195,9 @@ function openTitleNewspaper(){
   return;
  }
  ensureTitleNewspaperRustleForOpen();
- const receipt=purchase.charged?'<p class="title-newspaper-receipt">3¢ charged to '+escapeHtml(purchase.profile?.name||'last-played profile')+' · Personal Cash</p>':'';
- openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
+ const issue=TITLE_NEWSPAPER_CATALOG[TITLE_NEWSPAPER_EDITION];
+ const receipt=purchase.charged?'<p class="title-newspaper-receipt">3¢ charged to '+escapeHtml(purchase.profile?.name||'last-played profile')+' · Personal Cash</p>':'<p class="title-newspaper-receipt">OWNED ARCHIVE ISSUE · no additional charge</p>';
+ openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="'+escapeHtml(issue.image)+'" alt="The Metropolitan Ledger front page for '+escapeHtml(issue.dateLabel)+'">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
 function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
@@ -1808,7 +1835,7 @@ function initTitleScreen(){
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
- $('#titleArchives').onclick=()=>openTitleDialog('Archives','<p>Archives are not yet open. This drawer is reserved for the profile-specific collection of purchased, discovered, attended, and unlocked material.</p><div class="title-dialog-actions"><button id="archivesClose" type="button">Close</button></div>');
+ $('#titleArchives').onclick=renderTitleArchives;
  const titleRadioKnob=$('#titleRadioKnob');
  titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
  titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
@@ -1823,7 +1850,7 @@ function initTitleScreen(){
  $('#titleFanHub').onclick=toggleTitleFan;
  $('#titleDialogClose').onclick=closeTitleDialog;
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
- document.addEventListener('click',e=>{if(e.target?.id==='optionsClose'||e.target?.id==='archivesClose')closeTitleDialog()});
+ document.addEventListener('click',e=>{if(e.target?.id==='optionsClose')closeTitleDialog()});
 }
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
