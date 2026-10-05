@@ -169,3 +169,27 @@ No economics rebalance was applied in this closed title-screen build.
 ## Closeout
 
 This build is closed. Start the next thread from this snapshot and `HANDOFF-2026-10-05.md`. Do not reinterpret discussion from the previous thread as authorization for new repo changes.
+
+
+## October 5 continuation closeout
+
+Continuation code baseline before documentation closeout: `28a32e96c337913038e1eb6687013d36b8136069`.
+
+Completed after the original title-screen closeout:
+- persistent bottom-center radio controls across gameplay views
+- live-style radio stations continue in progress after leaving the title screen; 610 AM title theme still restarts on tune-in
+- active profile label in the persistent gameplay status area
+- bulb economics/payroll rebalance and historical wage calibration
+- selected production-grade material/cost consistency
+- contract fulfillment, replacement and repeated-late-penalty corrections
+- independent Star Club raid scheduling
+- Federal Exchange typed quantity preservation
+- 1938 Washington title/name verification and Inspector Arthur Hayes correction
+- owned newspaper archive
+- generated dated Metropolitan Ledger issues driven by profile save state
+- profile-specific newspaper snapshots and free archive reopening
+- Federal Electric tall-card collectible archive foundation
+
+The old stabilization queue is fully closed.
+
+The next roadmap work touches the approved title artwork: the period film canister and the plant/decanter overlap correction. No further title-art mutation should occur without the exact approved image target.
