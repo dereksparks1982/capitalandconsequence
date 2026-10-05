@@ -1458,14 +1458,61 @@ function toggleTitleFan(){
 }
 
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
-const TITLE_MAP_LOCATIONS=[
+const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV1';
+const TITLE_MAP_LOCATION_DEFAULTS=[
  {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
  {id:'star',n:2,name:"Madam Star's Star Club",area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
- {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue, placed outside the downtown core.'},
+ {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue.'},
  {id:'workingPoker',n:4,name:'Neighborhood Game',area:'Navy Yard / Southeast',x:.5826,y:.6322,description:'The lower-stakes working-class poker room.'},
  {id:'commercePoker',n:5,name:'Commerce Club',area:'Downtown / Pennsylvania Avenue',x:.4536,y:.5088,description:'A respectable downtown club hosting the middle-stakes business poker game.'},
  {id:'embassyPoker',n:6,name:'Embassy Room',area:'Dupont / Massachusetts Avenue',x:.3928,y:.3602,description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.'}
 ];
+const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
+let titleMapPinEdit=false,titleMapPinDrag=null;
+
+function loadTitleMapLocationLayout(){
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(TITLE_MAP_LAYOUT_KEY)||'null')}catch(e){}
+ if(!saved||typeof saved!=='object')return;
+ for(const location of TITLE_MAP_LOCATIONS){
+  const p=saved[location.id];
+  if(!p||!Number.isFinite(+p.x)||!Number.isFinite(+p.y))continue;
+  location.x=Math.max(0,Math.min(1,+p.x));
+  location.y=Math.max(0,Math.min(1,+p.y));
+ }
+}
+function saveTitleMapLocationLayout(){
+ const saved={};
+ for(const location of TITLE_MAP_LOCATIONS)saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6)};
+ localStorage.setItem(TITLE_MAP_LAYOUT_KEY,JSON.stringify(saved));
+}
+function resetTitleMapLocationLayout(){
+ localStorage.removeItem(TITLE_MAP_LAYOUT_KEY);
+ TITLE_MAP_LOCATIONS.forEach((location,i)=>{
+  location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
+  location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
+ });
+ closeTitleMapLocation();
+ titleMapPositionMarkers();
+ updateTitleMapPinEditor();
+}
+function updateTitleMapPinEditor(){
+ const button=$('#titleMapEditPins'),help=$('#titleMapHelp'),viewer=$('#titleMapViewer');
+ if(button){
+  button.textContent=titleMapPinEdit?'Done Placing':'Edit Pins';
+  button.setAttribute('aria-pressed',titleMapPinEdit?'true':'false');
+  button.style.background=titleMapPinEdit?'#6d532e':'';
+  button.style.color=titleMapPinEdit?'#fff0bd':'';
+ }
+ if(viewer)viewer.classList.toggle('is-editing-pins',titleMapPinEdit);
+ if(help)help.textContent=titleMapPinEdit?'Drag any pin to its correct location · positions save automatically':'Mouse wheel to zoom · click and drag to move';
+}
+function toggleTitleMapPinEditor(){
+ titleMapPinEdit=!titleMapPinEdit;
+ titleMapPinDrag=null;
+ closeTitleMapLocation();
+ updateTitleMapPinEditor();
+}
 
 function titleMapApply(){
  const img=$('#titleMapImage');if(!img)return;
@@ -1501,8 +1548,41 @@ function buildTitleMapMarkers(){
   marker.dataset.mapLocation=location.id;
   marker.setAttribute('aria-label',location.name+' — '+location.area);
   marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label">'+location.name+'</span>';
-  marker.addEventListener('pointerdown',e=>e.stopPropagation());
-  marker.addEventListener('click',e=>{e.stopPropagation();openTitleMapLocation(location.id)});
+  marker.addEventListener('pointerdown',e=>{
+   e.stopPropagation();
+   if(!titleMapPinEdit||e.button!==0)return;
+   titleMapPinDrag={id:location.id,pointerId:e.pointerId};
+   marker.setPointerCapture(e.pointerId);
+   marker.style.zIndex='9';
+   marker.style.cursor='grabbing';
+   e.preventDefault();
+  });
+  marker.addEventListener('pointermove',e=>{
+   if(!titleMapPinDrag||titleMapPinDrag.id!==location.id||titleMapPinDrag.pointerId!==e.pointerId)return;
+   const img=$('#titleMapImage'),viewport=$('#titleMapViewport');if(!img||!viewport||!img.naturalWidth)return;
+   const rect=viewport.getBoundingClientRect();
+   const localX=e.clientX-rect.left,localY=e.clientY-rect.top;
+   location.x=Math.max(0,Math.min(1,(localX-titleMapState.x)/(img.naturalWidth*titleMapState.scale)));
+   location.y=Math.max(0,Math.min(1,(localY-titleMapState.y)/(img.naturalHeight*titleMapState.scale)));
+   titleMapPositionMarkers();
+   e.preventDefault();
+  });
+  const finish=e=>{
+   if(!titleMapPinDrag||titleMapPinDrag.id!==location.id||titleMapPinDrag.pointerId!==e.pointerId)return;
+   try{marker.releasePointerCapture(e.pointerId)}catch(err){}
+   marker.style.zIndex='';
+   marker.style.cursor='';
+   titleMapPinDrag=null;
+   saveTitleMapLocationLayout();
+   e.stopPropagation();
+  };
+  marker.addEventListener('pointerup',finish);
+  marker.addEventListener('pointercancel',finish);
+  marker.addEventListener('click',e=>{
+   e.stopPropagation();
+   if(titleMapPinEdit)return;
+   openTitleMapLocation(location.id);
+  });
   layer.appendChild(marker);
  }
  titleMapPositionMarkers();
@@ -1556,10 +1636,14 @@ function closeTitleMap(){
 function initTitleMapViewer(){
  const open=$('#titleDcMap'),viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport');
  if(!open||!viewer||!viewport)return;
+ loadTitleMapLocationLayout();
  buildTitleMapMarkers();
+ updateTitleMapPinEditor();
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMap;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
+ $('#titleMapEditPins').onclick=toggleTitleMapPinEditor;
+ $('#titleMapResetPins').onclick=()=>{if(confirm('Reset all six map pins to their original approximate positions?'))resetTitleMapLocationLayout()};
  $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
  $('#titleMapZoomIn').onclick=()=>titleMapZoom(1.4);
  $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
