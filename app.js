@@ -663,7 +663,7 @@ function titleEnvironmentIsDay(){
 function syncTitleCityAmbience(){
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
- const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!S.paused;
+ const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!S.paused&&titleDevOutsideNoise;
  const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
  if(titleCityAmbienceMode!==mode){
   audio.pause();
@@ -1220,7 +1220,7 @@ function titleDCSunTimes(date){
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
 let titleEnvironmentDevOverride=null;
-let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false;
+let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevOutsideNoise=true;
 const TITLE_DEV_MONEY=999999999;
 
 function titlePlaythroughEnvironmentMode(){
@@ -1239,6 +1239,7 @@ function updateTitleDevPanel(){
  setTitleDevButtonState('titleDevInfiniteMoney',titleDevInfiniteMoney,'Infinite Money: '+(titleDevInfiniteMoney?'ON':'OFF'));
  setTitleDevButtonState('titleDevFreezeTime',titleDevFreezeTime,'Freeze Time: '+(titleDevFreezeTime?'ON':'OFF'));
  setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
+ setTitleDevButtonState('titleDevOutsideNoise',titleDevOutsideNoise,'Outside Noise: '+(titleDevOutsideNoise?'ON':'OFF'));
 }
 function toggleTitleEnvironmentDev(){
  const current=titlePlaythroughEnvironmentMode();
@@ -1273,6 +1274,11 @@ function toggleTitleDevHotspots(){
  if(screen)screen.classList.toggle('title-dev-show-hotspots',titleDevShowHotspots);
  updateTitleDevPanel();
 }
+function toggleTitleDevOutsideNoise(){
+ titleDevOutsideNoise=!titleDevOutsideNoise;
+ if(titleDevOutsideNoise)syncTitleCityAmbience();else stopTitleCityAmbience(false);
+ updateTitleDevPanel();
+}
 function resetTitleDevOverrides(){
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
   S.companyCash=titleDevMoneySnapshot.companyCash;
@@ -1282,6 +1288,7 @@ function resetTitleDevOverrides(){
  titleDevMoneySnapshot=null;
  titleDevFreezeTime=false;
  titleDevShowHotspots=false;
+ titleDevOutsideNoise=true;
  titleEnvironmentDevOverride=null;
  const screen=document.getElementById('titleScreen');
  if(screen)screen.classList.remove('title-dev-show-hotspots');
@@ -1328,6 +1335,7 @@ function initTitleDevPanel(){
  document.getElementById('titleDevInfiniteMoney').onclick=toggleTitleDevInfiniteMoney;
  document.getElementById('titleDevFreezeTime').onclick=toggleTitleDevFreezeTime;
  document.getElementById('titleDevHotspots').onclick=toggleTitleDevHotspots;
+ document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
  updateTitleDevPanel();
 }
