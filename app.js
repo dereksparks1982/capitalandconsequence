@@ -104,7 +104,14 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  fresh.productionQueue=(x.productionQueue||fresh.contracts.filter(c=>c.productionState==='queued'||c.productionState==='running'||c.productionState==='paused').map(c=>c.id)).filter(id=>{const c=fresh.contracts.find(v=>v.id===id);return c&&c.status!=='delivered'&&c.status!=='delivered-discount'&&(+c.completed||0)<(+c.productionQuantity||+c.quantity||1)});
  fresh.activeContractId=fresh.productionQueue.includes(x.activeContractId)?x.activeContractId:null;fresh.lineStatus=x.lineStatus||'idle';fresh.lineMessage=x.lineMessage||'No production run is running.';fresh.lastProductionQuality=x.lastProductionQuality||null;
  for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
-function save(silent=true){localStorage.setItem(SAVE_KEY,JSON.stringify(S));touchActiveProfile();updateCashHeader();if(!silent)note('Company books saved.')}
+function save(silent=true){
+ let payload=S;
+ if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
+  payload=Object.assign({},S,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
+ }
+ localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
+ touchActiveProfile();updateCashHeader();if(!silent)note('Company books saved.');
+}
 function readProfiles(){try{const p=JSON.parse(localStorage.getItem(PROFILE_INDEX_KEY)||'[]');return Array.isArray(p)?p.slice(0,PROFILE_LIMIT):[]}catch(e){return[]}}
 function writeProfiles(p){localStorage.setItem(PROFILE_INDEX_KEY,JSON.stringify((p||[]).slice(0,PROFILE_LIMIT)))}
 function profileSaveKey(id){return 'federalElectricProfile_'+id}
@@ -1187,21 +1194,116 @@ function titleDCSunTimes(date){
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
 let titleEnvironmentDevOverride=null;
+let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false;
+const TITLE_DEV_MONEY=999999999;
+
 function titlePlaythroughEnvironmentMode(){
  return titleEnvironmentDevOverride||(S.phase==='night'||S.phase==='report'?'night':'day');
 }
-function updateTitleEnvironmentDevButton(){
- const button=document.getElementById('titleDevDayNight');
+function setTitleDevButtonState(id,on,label){
+ const button=document.getElementById(id);
  if(!button)return;
+ button.textContent=label;
+ button.classList.toggle('is-on',!!on);
+ button.setAttribute('aria-pressed',on?'true':'false');
+}
+function updateTitleDevPanel(){
  const mode=titlePlaythroughEnvironmentMode();
- button.textContent=mode==='day'?'DEV: SWITCH TO NIGHT':'DEV: SWITCH TO DAY';
- button.setAttribute('aria-label',mode==='day'?'Developer: switch title screen to night':'Developer: switch title screen to day');
+ setTitleDevButtonState('titleDevDayNight',titleEnvironmentDevOverride!==null,'Day / Night: '+mode.toUpperCase());
+ setTitleDevButtonState('titleDevInfiniteMoney',titleDevInfiniteMoney,'Infinite Money: '+(titleDevInfiniteMoney?'ON':'OFF'));
+ setTitleDevButtonState('titleDevFreezeTime',titleDevFreezeTime,'Freeze Time: '+(titleDevFreezeTime?'ON':'OFF'));
+ setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
 }
 function toggleTitleEnvironmentDev(){
  const current=titlePlaythroughEnvironmentMode();
  titleEnvironmentDevOverride=current==='day'?'night':'day';
  updateTitleEnvironment();
- updateTitleEnvironmentDevButton();
+ updateTitleDevPanel();
+}
+function toggleTitleDevInfiniteMoney(){
+ if(!titleDevInfiniteMoney){
+  titleDevMoneySnapshot={companyCash:S.companyCash,personalCash:S.personalCash};
+  titleDevInfiniteMoney=true;
+  S.companyCash=TITLE_DEV_MONEY;
+  S.personalCash=TITLE_DEV_MONEY;
+ }else{
+  if(titleDevMoneySnapshot){
+   S.companyCash=titleDevMoneySnapshot.companyCash;
+   S.personalCash=titleDevMoneySnapshot.personalCash;
+  }
+  titleDevInfiniteMoney=false;
+  titleDevMoneySnapshot=null;
+ }
+ render();
+ updateTitleDevPanel();
+}
+function toggleTitleDevFreezeTime(){
+ titleDevFreezeTime=!titleDevFreezeTime;
+ updateTitleDevPanel();
+}
+function toggleTitleDevHotspots(){
+ titleDevShowHotspots=!titleDevShowHotspots;
+ const screen=document.getElementById('titleScreen');
+ if(screen)screen.classList.toggle('title-dev-show-hotspots',titleDevShowHotspots);
+ updateTitleDevPanel();
+}
+function resetTitleDevOverrides(){
+ if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
+  S.companyCash=titleDevMoneySnapshot.companyCash;
+  S.personalCash=titleDevMoneySnapshot.personalCash;
+ }
+ titleDevInfiniteMoney=false;
+ titleDevMoneySnapshot=null;
+ titleDevFreezeTime=false;
+ titleDevShowHotspots=false;
+ titleEnvironmentDevOverride=null;
+ const screen=document.getElementById('titleScreen');
+ if(screen)screen.classList.remove('title-dev-show-hotspots');
+ updateTitleEnvironment();
+ render();
+ updateTitleDevPanel();
+}
+function initTitleDevPanel(){
+ const panel=document.getElementById('titleDevPanel');
+ const handle=document.getElementById('titleDevPanelHandle');
+ const frame=panel?.closest('.title-screen-frame');
+ if(!panel||!handle||!frame)return;
+ let dragId=null,startX=0,startY=0,startLeft=0,startTop=0;
+ handle.addEventListener('pointerdown',e=>{
+  if(e.button!==0||e.target.closest('button'))return;
+  const frameRect=frame.getBoundingClientRect(),panelRect=panel.getBoundingClientRect();
+  dragId=e.pointerId;startX=e.clientX;startY=e.clientY;
+  startLeft=panelRect.left-frameRect.left;startTop=panelRect.top-frameRect.top;
+  panel.style.left=startLeft+'px';panel.style.top=startTop+'px';panel.style.right='auto';panel.style.bottom='auto';
+  handle.setPointerCapture(e.pointerId);panel.classList.add('is-dragging');e.preventDefault();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(dragId!==e.pointerId)return;
+  const maxLeft=Math.max(0,frame.clientWidth-panel.offsetWidth);
+  const maxTop=Math.max(0,frame.clientHeight-panel.offsetHeight);
+  const left=Math.max(0,Math.min(maxLeft,startLeft+e.clientX-startX));
+  const top=Math.max(0,Math.min(maxTop,startTop+e.clientY-startY));
+  panel.style.left=left+'px';panel.style.top=top+'px';
+ });
+ const release=e=>{
+  if(dragId!==e.pointerId)return;
+  dragId=null;panel.classList.remove('is-dragging');
+  try{handle.releasePointerCapture(e.pointerId)}catch(err){}
+ };
+ handle.addEventListener('pointerup',release);
+ handle.addEventListener('pointercancel',release);
+ document.getElementById('titleDevCollapse')?.addEventListener('click',()=>{
+  panel.classList.toggle('is-collapsed');
+  const collapsed=panel.classList.contains('is-collapsed');
+  document.getElementById('titleDevCollapse').textContent=collapsed?'+':'−';
+  document.getElementById('titleDevCollapse').setAttribute('aria-label',collapsed?'Expand developer panel':'Collapse developer panel');
+ });
+ document.getElementById('titleDevDayNight').onclick=toggleTitleEnvironmentDev;
+ document.getElementById('titleDevInfiniteMoney').onclick=toggleTitleDevInfiniteMoney;
+ document.getElementById('titleDevFreezeTime').onclick=toggleTitleDevFreezeTime;
+ document.getElementById('titleDevHotspots').onclick=toggleTitleDevHotspots;
+ document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
+ updateTitleDevPanel();
 }
 function updateTitleEnvironment(){
  const bg=document.getElementById('titleOfficeBackground');
@@ -1230,7 +1332,7 @@ function updateTitleEnvironment(){
   updateTitleRadioAudibility();
  }
  syncTitleCityAmbience();
- updateTitleEnvironmentDevButton();
+ updateTitleDevPanel();
 }
 let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
@@ -1452,7 +1554,7 @@ function initTitleScreen(){
  document.addEventListener('keydown',syncTitleClockAudio,{once:true});
  const titleCabinetButtons=[$('#titleContinue'),$('#titleProfile'),$('#titleOptions'),$('#titleArchives')].filter(Boolean);
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
- $('#titleDevDayNight').onclick=toggleTitleEnvironmentDev;
+ initTitleDevPanel();
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
@@ -1471,8 +1573,8 @@ function initTitleScreen(){
 }
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
-marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleScreenVisible()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleScreenVisible())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
+marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenVisible()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
+clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenVisible())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
 autosaveTimer=setInterval(()=>save(true),5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
