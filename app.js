@@ -1186,8 +1186,22 @@ function titleDCSunTimes(date){
  const solarNoon=720-4*TITLE_DC_LON-eq+offset*60;
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
+let titleEnvironmentDevOverride=null;
 function titlePlaythroughEnvironmentMode(){
- return S.phase==='night'||S.phase==='report'?'night':'day';
+ return titleEnvironmentDevOverride||(S.phase==='night'||S.phase==='report'?'night':'day');
+}
+function updateTitleEnvironmentDevButton(){
+ const button=document.getElementById('titleDevDayNight');
+ if(!button)return;
+ const mode=titlePlaythroughEnvironmentMode();
+ button.textContent=mode==='day'?'DEV: SWITCH TO NIGHT':'DEV: SWITCH TO DAY';
+ button.setAttribute('aria-label',mode==='day'?'Developer: switch title screen to night':'Developer: switch title screen to day');
+}
+function toggleTitleEnvironmentDev(){
+ const current=titlePlaythroughEnvironmentMode();
+ titleEnvironmentDevOverride=current==='day'?'night':'day';
+ updateTitleEnvironment();
+ updateTitleEnvironmentDevButton();
 }
 function updateTitleEnvironment(){
  const bg=document.getElementById('titleOfficeBackground');
@@ -1216,6 +1230,7 @@ function updateTitleEnvironment(){
   updateTitleRadioAudibility();
  }
  syncTitleCityAmbience();
+ updateTitleEnvironmentDevButton();
 }
 let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
@@ -1437,6 +1452,7 @@ function initTitleScreen(){
  document.addEventListener('keydown',syncTitleClockAudio,{once:true});
  const titleCabinetButtons=[$('#titleContinue'),$('#titleProfile'),$('#titleOptions'),$('#titleArchives')].filter(Boolean);
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
+ $('#titleDevDayNight').onclick=toggleTitleEnvironmentDev;
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
