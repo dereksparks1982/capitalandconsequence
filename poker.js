@@ -5,7 +5,7 @@ const rooms={
  middle:{name:'The Commerce Club',className:'poker-middle',stake:100,blind:2,npcs:[['Walter Briggs','steady'],['Charles Webb','tight'],['Eddie Doyle','bluff']]},
  elite:{name:'The Embassy Room',className:'poker-elite',stake:500,blind:10,npcs:[['Harrison Vale','tight'],['Sen. Robert Whitmore','steady'],['August Belmont III','aggressive']]}
 };
-let G=null,sessionStarted=Date.now(),businessStart=3600,clockTimer=null;
+let G=null,sessionStarted=Date.now(),businessStart=3600,clockTimer=null,sessionSettled=false;
 const ranks='23456789TJQKA',suits='♣♦♥♠';
 function deck(){let d=[];for(let r of ranks)for(let s of suits)d.push({r,s,v:ranks.indexOf(r)+2});for(let i=d.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
 function combos(a,k){let out=[];function go(start,x){if(x.length===k){out.push(x.slice());return}for(let i=start;i<a.length;i++){x.push(a[i]);go(i+1,x);x.pop()}}go(0,[]);return out}
@@ -16,6 +16,7 @@ function card(c,hide=false){return '<span class="p-card '+((c.s==='♥'||c.s==='
 function clockText(n){n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 function updateClock(){const elapsed=Math.floor((Date.now()-sessionStarted)/1000);let left=Math.max(0,businessStart-elapsed);try{if(window.opener&&!window.opener.closed&&typeof window.opener.FE_POKER_CLOCK==='function')left=Math.max(0,window.opener.FE_POKER_CLOCK()-elapsed)}catch(e){}const el=document.querySelector('#pokerBusinessClock');if(el)el.textContent=clockText(left)}
 function start(roomKey){
+ sessionSettled=false;
  sessionStarted=Date.now();
  const raw=new URLSearchParams(location.search).get('remaining');
  businessStart=raw===null?0:Math.max(0,Number(raw)||0);
@@ -251,5 +252,21 @@ function render(done=false){
  document.querySelector('#pokerActions').style.display=humanTurn?'flex':'none';
  document.querySelector('#pokerNext').style.display=done?'inline-block':'none';
 }
-function leave(){if(!G)return;let delta=G.players[0].chips-G.R.stake;clearInterval(clockTimer);let elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);document.querySelector('#pokerModal').className='poker-modal';G=null}
+function settleSession(){
+ if(!G||sessionSettled)return false;
+ sessionSettled=true;
+ clearInterval(clockTimer);
+ const delta=G.players[0].chips-G.R.stake;
+ const elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));
+ if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed);
+ return true;
+}
+function leave(){
+ if(!G)return;
+ settleSession();
+ document.querySelector('#pokerModal').className='poker-modal';
+ G=null;
+}
+window.addEventListener('pagehide',settleSession);
+window.addEventListener('beforeunload',settleSession);
 window.FE_POKER={start,action:player,newHand,leave};})();
