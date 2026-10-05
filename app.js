@@ -726,7 +726,7 @@ function configureTitleRadioFeedProgram(index,audio,force=false){
  audio.load();
  audio.volume=TITLE_RADIO_VOLUME;
  audio.muted=muted;
- if(!S.paused&&titleScreenVisible()&&titleRadioStationAvailable(index)){
+ if(!S.paused&&titleRadioStationAvailable(index)){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
 }
@@ -741,7 +741,7 @@ function advanceTitleRadioFeed(index,audio){
  audio.src=program.tracks[next];
  audio.load();
  audio.volume=TITLE_RADIO_VOLUME;
- if(!S.paused&&titleScreenVisible()&&titleRadioStationAvailable(index)){
+ if(!S.paused&&titleRadioStationAvailable(index)){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
 }
@@ -857,7 +857,7 @@ function startTitleRadioBackgroundFeeds(){
   configureTitleRadioFeedProgram(i,audio);
   forceTitleRadioFeedToAir(audio);
   if(!titleRadioStationAvailable(i)){audio.muted=true;audio.pause();continue}
-  audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
+  audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&!S.paused);
   if(S.paused){audio.pause();continue}
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
@@ -869,17 +869,17 @@ function updateTitleRadioAudibility(){
   audio.volume=TITLE_RADIO_VOLUME;
   if(!titleRadioStationAvailable(index)){audio.muted=true;audio.pause();continue}
   if(S.paused){audio.muted=true;audio.pause();continue}
-  audio.muted=!(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible());
-  if(index===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()){
+  audio.muted=!(index===titleRadioStationIndex&&!titleRadioOff);
+  if(index===titleRadioStationIndex&&!titleRadioOff){
    forceTitleRadioFeedToAir(audio);
    const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
-  }else if(audio.paused&&titleScreenVisible()){
+  }else if(audio.paused){
    const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
   }
  }
 }
 function startTitleRadio(){
- if(!titleScreenVisible()||S.paused)return;
+ if(S.paused)return;
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(titleRadioOff||titleRadioStationIndex!==0)return;
@@ -902,11 +902,18 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower');
+ if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
+ if(globalPower){
+  globalPower.textContent=titleRadioOff?'OFF':'ON';
+  globalPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
+  globalPower.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
+ }
 }
-function cycleTitleRadioStation(){
+function cycleTitleRadioStation(direction=1){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleRadioStationIndex===0&&titleRadioAudio){titleRadioAudio.pause();try{titleRadioAudio.currentTime=0}catch(e){}}
- titleRadioStationIndex=(titleRadioStationIndex+1)%TITLE_RADIO_STATIONS.length;titleRadioTrackIndex=0;
+ titleRadioStationIndex=(titleRadioStationIndex+(direction<0?-1:1)+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;titleRadioTrackIndex=0;
  if(titleRadioStationIndex===0){
   updateTitleRadioAudibility();
   loadTitleRadioTrack(!titleRadioOff);
@@ -948,10 +955,11 @@ function pauseTitleAudio(){
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
 function resumeTitleAudio(){
- if(!titleScreenVisible())return;
- syncTitleCityAmbience();
- syncTitleFanAudio();
- syncTitleClockAudio();
+ if(titleScreenVisible()){
+  syncTitleCityAmbience();
+  syncTitleFanAudio();
+  syncTitleClockAudio();
+ }
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
@@ -1089,7 +1097,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+'<img class="title-newspaper-view" src="assets/1938-munich-accord-newspaper.webp?v=20261004-news1" alt="The Metropolitan Ledger front page for September 30, 1938">');
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleRadio(true);stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true}
+function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
  const screen=$('#titleScreen');if(!screen)return;
  save(true);
@@ -1729,6 +1737,10 @@ function initTitleScreen(){
  titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
  titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
  $('#titleRadioPower').onclick=toggleTitleRadioPower;
+ const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower');
+ if(globalRadioPrev)globalRadioPrev.onclick=()=>cycleTitleRadioStation(-1);
+ if(globalRadioNext)globalRadioNext.onclick=()=>cycleTitleRadioStation(1);
+ if(globalRadioPower)globalRadioPower.onclick=toggleTitleRadioPower;
  const titleNewspaperButton=$('#titleNewspaperM');
  titleNewspaperButton.addEventListener('pointerdown',primeTitleNewspaperRustle);
  titleNewspaperButton.onclick=openTitleNewspaper;
@@ -1744,7 +1756,12 @@ clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||ti
 autosaveTimer=setInterval(()=>save(true),5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
- else if(titleScreenVisible())updateTitleEnvironment();
+ else{
+  updateTitleEnvironment();
+  startTitleRadioBackgroundFeeds();
+  updateTitleRadioAudibility();
+  if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio();
+ }
 });
 window.addEventListener('pagehide',()=>save(true));
 (()=>{
