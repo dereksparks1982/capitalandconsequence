@@ -952,3 +952,8 @@ body.elephant-easter-egg-open{overflow:hidden}
 .global-radio-readout b{margin-top:3px;overflow:hidden;color:#f1dfb7;font:700 12px/1.15 Georgia,'Times New Roman',serif;text-overflow:ellipsis;white-space:nowrap}
 #globalRadioPower[aria-pressed="false"]{color:#d69a8f;border-color:#8b554e}
 @media(max-width:700px){.global-radio-bar{width:calc(100vw - 12px);min-height:40px;bottom:max(5px,env(safe-area-inset-bottom));padding:4px;gap:3px}.global-radio-bar button{min-width:39px;padding:4px 7px;font-size:12px}.global-radio-readout{padding:2px 5px}.global-radio-readout span{font-size:8px}.global-radio-readout b{font-size:10.5px}}
+
+
+/* v0.4.0 active profile indicator */
+.active-profile-label{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;border-bottom:3px solid #7b5b2f!important}
+@media(max-width:700px){.active-profile-label{max-width:150px;font-size:10px}}
