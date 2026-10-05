@@ -753,10 +753,20 @@ function ensureTitleRadioControls(){
 }
 function ensureTitleRadioAudio(){
  if(titleRadioAudio)return titleRadioAudio;
- titleRadioAudio=new Audio();
+ const station=TITLE_RADIO_STATIONS[0];
+ const src=station&&station.tracks&&station.tracks[0]?station.tracks[0]:'';
+ titleRadioAudio=new Audio(src);
  titleRadioAudio.preload='auto';
  titleRadioAudio.volume=TITLE_RADIO_VOLUME;
- titleRadioAudio.addEventListener('ended',()=>{titleRadioTrackIndex=0;loadTitleRadioTrack(titleRadioStationIndex===0&&!titleRadioOff)});
+ titleRadioAudio.dataset.titleRadioSource=src;
+ if(src)titleRadioAudio.load();
+ titleRadioAudio.addEventListener('ended',()=>{
+  titleRadioTrackIndex=0;
+  try{titleRadioAudio.currentTime=0}catch(e){}
+  if(titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused){
+   const p=titleRadioAudio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+  }
+ });
  return titleRadioAudio;
 }
 function loadTitleRadioTrack(playNow=false){
@@ -764,9 +774,18 @@ function loadTitleRadioTrack(playNow=false){
  const station=TITLE_RADIO_STATIONS[0];
  if(!station||!station.tracks.length)return;
  titleRadioTrackIndex=0;
- audio.pause();audio.src=station.tracks[0];audio.load();audio.volume=TITLE_RADIO_VOLUME;
+ audio.pause();
+ const src=station.tracks[0];
+ if(audio.dataset.titleRadioSource!==src){
+  audio.src=src;
+  audio.dataset.titleRadioSource=src;
+  audio.load();
+ }
+ audio.volume=TITLE_RADIO_VOLUME;
  try{audio.currentTime=0}catch(e){}
- if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()){const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
+ if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused){
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
 }
 function titleRadioAirElapsedSeconds(){return titleRadioAirStartAt?Math.max(0,(Date.now()-titleRadioAirStartAt)/1000):0}
 function titleRadioFeedDuration(audio){
@@ -1194,10 +1213,36 @@ function updateTitleEnvironment(){
  }
  syncTitleCityAmbience();
 }
-let titleEnvironmentTimer=null;
+let titleEnvironmentTimer=null,titleEnvironmentBoundaryTimer=null;
+function titleNextEnvironmentBoundaryDelay(now=new Date()){
+ const p=titleZoneParts(now);
+ const sun=titleDCSunTimes(now);
+ const currentSeconds=p.hour*3600+p.minute*60+p.second;
+ const sunriseSeconds=sun.sunrise*60;
+ const sunsetSeconds=sun.sunset*60;
+ let seconds;
+ if(currentSeconds<sunriseSeconds){
+  seconds=sunriseSeconds-currentSeconds;
+ }else if(currentSeconds<sunsetSeconds){
+  seconds=sunsetSeconds-currentSeconds;
+ }else{
+  const tomorrow=new Date(now.getTime()+24*60*60*1000);
+  const tomorrowSun=titleDCSunTimes(tomorrow);
+  seconds=(24*3600-currentSeconds)+tomorrowSun.sunrise*60;
+ }
+ return Math.max(250,seconds*1000+250);
+}
+function scheduleTitleEnvironmentBoundary(){
+ if(titleEnvironmentBoundaryTimer)clearTimeout(titleEnvironmentBoundaryTimer);
+ titleEnvironmentBoundaryTimer=setTimeout(()=>{
+  updateTitleEnvironment();
+  scheduleTitleEnvironmentBoundary();
+ },titleNextEnvironmentBoundaryDelay());
+}
 function startTitleEnvironment(){
  Object.values(TITLE_OFFICE_IMAGES).forEach(src=>{const img=new Image();img.src=src});
  updateTitleEnvironment();
+ scheduleTitleEnvironmentBoundary();
  if(titleEnvironmentTimer)clearInterval(titleEnvironmentTimer);
  titleEnvironmentTimer=setInterval(updateTitleEnvironment,30000);
 }
@@ -1418,7 +1463,9 @@ function initTitleScreen(){
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
  $('#titleArchives').onclick=()=>openTitleDialog('Archives','<p>Archives are not yet open. This drawer is reserved for the profile-specific collection of purchased, discovered, attended, and unlocked material.</p><div class="title-dialog-actions"><button id="archivesClose" type="button">Close</button></div>');
- $('#titleRadioKnob').onclick=cycleTitleRadioStation;
+ const titleRadioKnob=$('#titleRadioKnob');
+ titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
+ titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
  $('#titleRadioPower').onclick=toggleTitleRadioPower;
  const titleNewspaperButton=$('#titleNewspaperM');
  titleNewspaperButton.addEventListener('pointerdown',primeTitleNewspaperRustle);
@@ -1433,7 +1480,10 @@ loadInitial();render();initTitleScreen();
 marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleScreenVisible()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
 clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleScreenVisible())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
 autosaveTimer=setInterval(()=>save(true),5000);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)save(true)});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden)save(true);
+ else if(titleScreenVisible()){updateTitleEnvironment();scheduleTitleEnvironmentBoundary()}
+});
 window.addEventListener('pagehide',()=>save(true));
 (()=>{
  const stamp=document.getElementById('confidentialStamp');
