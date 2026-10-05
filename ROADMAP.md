@@ -233,7 +233,7 @@ Work is performed one slice at a time on `main`, with each slice verified before
 - [x] Audit partial shipments, wrong-grade settlement, replacement inventory, deadlines, and repeated late penalties. Wrong-grade discounted deliveries no longer count as correct completions; defect claims reopen/requeue replacement work when warehouse stock is insufficient; overdue contracts receive one bounded late-service penalty per overdue turn without double-charging the same turn.
 - [x] Add two Star Club daytime visit lengths: Brief Visit and Afternoon Visit.
 - [x] Phase-specific Star Club controls: Brief/ Afternoon by day and Brief Evening/ Evening at night, with different encounter pools.
-- [ ] Reset/schedule Star Club raids correctly across dates and weekdays.
+- [x] Reset/schedule Star Club raids correctly across dates and weekdays. Star Club raids now have an independent hidden future turn/date selected 4–8 game-months ahead from actual playable weekday dates; poker raid days no longer trigger Star Club raid outcomes, and being at the Star Club on its raid night is tracked separately.
 - [x] Reposition Federal Exchange trade quantity directly above Buy/Sell controls for rapid trading.
 - [ ] Preserve typed Federal Exchange quantities across five-second market rerenders; previous attempt was rolled back with the broken UI build.
 - [ ] Historical/name verification pass for 1938 Washington titles, wages, and fictional entities.
