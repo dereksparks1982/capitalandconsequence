@@ -1186,14 +1186,13 @@ function titleDCSunTimes(date){
  const solarNoon=720-4*TITLE_DC_LON-eq+offset*60;
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
+function titlePlaythroughEnvironmentMode(){
+ return S.phase==='night'||S.phase==='report'?'night':'day';
+}
 function updateTitleEnvironment(){
  const bg=document.getElementById('titleOfficeBackground');
  if(!bg)return;
- const now=new Date();
- const p=titleZoneParts(now);
- const sun=titleDCSunTimes(now);
- const localMinutes=p.hour*60+p.minute+p.second/60;
- const mode=localMinutes>=sun.sunrise&&localMinutes<sun.sunset?'day':'night';
+ const mode=titlePlaythroughEnvironmentMode();
  const frame=bg.closest('.title-screen-frame');
  if(frame){
   frame.classList.toggle('title-env-day',mode==='day');
@@ -1218,38 +1217,12 @@ function updateTitleEnvironment(){
  }
  syncTitleCityAmbience();
 }
-let titleEnvironmentTimer=null,titleEnvironmentBoundaryTimer=null;
-function titleNextEnvironmentBoundaryDelay(now=new Date()){
- const p=titleZoneParts(now);
- const sun=titleDCSunTimes(now);
- const currentSeconds=p.hour*3600+p.minute*60+p.second;
- const sunriseSeconds=sun.sunrise*60;
- const sunsetSeconds=sun.sunset*60;
- let seconds;
- if(currentSeconds<sunriseSeconds){
-  seconds=sunriseSeconds-currentSeconds;
- }else if(currentSeconds<sunsetSeconds){
-  seconds=sunsetSeconds-currentSeconds;
- }else{
-  const tomorrow=new Date(now.getTime()+24*60*60*1000);
-  const tomorrowSun=titleDCSunTimes(tomorrow);
-  seconds=(24*3600-currentSeconds)+tomorrowSun.sunrise*60;
- }
- return Math.max(250,seconds*1000+250);
-}
-function scheduleTitleEnvironmentBoundary(){
- if(titleEnvironmentBoundaryTimer)clearTimeout(titleEnvironmentBoundaryTimer);
- titleEnvironmentBoundaryTimer=setTimeout(()=>{
-  updateTitleEnvironment();
-  scheduleTitleEnvironmentBoundary();
- },titleNextEnvironmentBoundaryDelay());
-}
+let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
  Object.values(TITLE_OFFICE_IMAGES).forEach(src=>{const img=new Image();img.src=src});
  updateTitleEnvironment();
- scheduleTitleEnvironmentBoundary();
  if(titleEnvironmentTimer)clearInterval(titleEnvironmentTimer);
- titleEnvironmentTimer=setInterval(updateTitleEnvironment,30000);
+ titleEnvironmentTimer=setInterval(updateTitleEnvironment,1000);
 }
 function updateTitleClock(){
  const hour=document.getElementById('titleClockHour');
@@ -1438,16 +1411,10 @@ function initTitleMapViewer(){
  window.addEventListener('resize',()=>{if(!viewer.hidden)titleMapReset()});
 }
 
-const TITLE_STORM_PREVIEW_ACTIVE=true;
-function syncTitleStormPreview(){
- const frame=document.querySelector('.title-screen-frame');
- if(frame)frame.classList.toggle('title-storm-active',TITLE_STORM_PREVIEW_ACTIVE);
-}
 function initTitleScreen(){
  const screen=$('#titleScreen');if(!screen)return;
  screen.hidden=false;
  startTitleEnvironment();
- syncTitleStormPreview();
  startTitleClock();
  ensureTitleRadioControls();
  preloadTitleNewspaperRustles();
@@ -1493,7 +1460,7 @@ clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||ti
 autosaveTimer=setInterval(()=>save(true),5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
- else if(titleScreenVisible()){updateTitleEnvironment();scheduleTitleEnvironmentBoundary()}
+ else if(titleScreenVisible())updateTitleEnvironment();
 });
 window.addEventListener('pagehide',()=>save(true));
 (()=>{
