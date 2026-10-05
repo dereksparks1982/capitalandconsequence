@@ -416,7 +416,7 @@ Implemented menu foundation:
 - [x] **Archives** now occupies the fourth title drawer as a reserved entry point. Archive content remains planned and will be profile-specific, containing only material that profile actually acquired, purchased, discovered or unlocked.
 
 Approved next work:
-- [ ] Build a newspaper archive that shows owned issues as miniature dated front pages and lets purchased issues be reopened without another charge.
+- [x] Build a newspaper archive that shows owned issues as miniature dated front pages and lets purchased issues be reopened without another charge. The title-screen Archives drawer now reads the last-played profile's owned newspaper IDs, renders dated front-page cards, and reopens owned issues as archive copies without charging Personal Cash.
 - [ ] Generate or hand-author dozens of Metropolitan Ledger editions that advance with the save's historical date. Major historical issues can be handcrafted; ordinary issues can use a reusable newspaper layout populated by the simulation.
 - [ ] The title-screen newspaper should eventually reflect the date/state of the most recently played profile rather than remaining a single fixed issue.
 - [ ] Use the same tall-card gallery concept proven in the Hanafi card project for the Federal Electric collectible-card archive, with period-appropriate Federal Electric styling.
