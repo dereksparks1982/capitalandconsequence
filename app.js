@@ -1170,7 +1170,7 @@ function startTitleClock(){
 }
 
 const TITLE_FAN_SOUND_SRC='assets/audio/hasin2004-fan-sound-247413.mp3?v=20261004-fan1';
-const TITLE_FAN_SOUND_VOLUME=.12;
+const TITLE_FAN_SOUND_VOLUME=.15;
 let titleFanAudio=null;
 function titleFanIsOff(){
  const fan=document.querySelector('.title-fan-motion');
