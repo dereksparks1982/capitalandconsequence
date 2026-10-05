@@ -968,3 +968,23 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-archive-card b{font:700 14px/1.2 Georgia,serif;color:#241b11}
 .title-archive-card small{font:700 9px/1.15 'Courier New',monospace;letter-spacing:.06em;color:#586052}
 @media(max-width:700px){.title-archive-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.title-archive-card{padding:6px}.title-archive-card b{font-size:12px}}
+
+
+/* v0.4.0 generated Metropolitan Ledger editions */
+.title-generated-newspaper{max-width:900px;margin:0 auto;padding:22px 24px;background:#eee5cf;color:#17130d;border:1px solid #8e7d60;font-family:Georgia,'Times New Roman',serif}
+.title-generated-newspaper header{display:block;padding:0 0 8px;background:transparent;color:#17130d;border:0;border-bottom:5px double #17130d;text-align:center;box-shadow:none}
+.title-generated-newspaper header small{display:block;font:700 10px/1.2 'Courier New',monospace;letter-spacing:.14em}
+.title-generated-newspaper header h3{margin:5px 0 3px;color:#17130d;font-size:clamp(28px,5vw,52px);letter-spacing:.04em}
+.title-generated-newspaper header b{font:700 12px/1.2 'Courier New',monospace;text-transform:uppercase}
+.title-generated-newspaper>h4{margin:18px 0 8px;padding:8px 0;border-top:2px solid #17130d;border-bottom:2px solid #17130d;color:#17130d;font-size:clamp(22px,4vw,38px);line-height:1.03;text-align:center;text-transform:uppercase}
+.title-generated-newspaper>p{font-size:16px;line-height:1.55}
+.title-generated-news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;padding-top:12px;border-top:2px solid #17130d}
+.title-generated-news-grid section{padding-right:12px;border-right:1px solid #8e7d60}
+.title-generated-news-grid section:last-child{padding-right:0;border-right:0}
+.title-generated-news-grid h5{margin:0 0 6px;font-size:13px;letter-spacing:.05em}
+.title-generated-news-grid p{margin:0;font-size:13px;line-height:1.45}
+.title-archive-generated-thumb{display:flex;flex-direction:column;justify-content:flex-start;min-height:190px;padding:12px 8px;border:1px solid #746142;background:#eee5cf;color:#17130d;text-align:center}
+.title-archive-generated-thumb strong{padding-bottom:7px;border-bottom:3px double #17130d;font:700 16px/1.05 Georgia,serif;letter-spacing:.03em}
+.title-archive-generated-thumb span{margin:7px 0;font:700 8px/1.1 'Courier New',monospace}
+.title-archive-generated-thumb b{font:700 13px/1.08 Georgia,serif;text-transform:uppercase}
+@media(max-width:700px){.title-generated-newspaper{padding:14px}.title-generated-news-grid{grid-template-columns:1fr}.title-generated-news-grid section{padding:0 0 10px;border-right:0;border-bottom:1px solid #8e7d60}.title-generated-news-grid section:last-child{border-bottom:0}}
