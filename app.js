@@ -681,7 +681,7 @@ function stopTitleCityAmbience(reset=true){
 const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
- {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1'],dayOnly:true},
+ {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1'],nightTracks:['assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1','assets/audio/capital-signal-night-message-01.ogg?v=20261004-night1','assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1']},
  {name:'Capital Radio Theatre',dial:'720 AM',tracks:['assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=20261004-local1'],duration:3084.552,dayOnly:true},
  {name:'Capital Melody',dial:'880 AM',tracks:['assets/audio/capital-melody-1930s.mp3?v=20261004-local1'],duration:7978.083265,dayOnly:true}
 ];
@@ -692,6 +692,47 @@ function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStatio
 function titleRadioStationAvailable(index){
  const station=TITLE_RADIO_STATIONS[index];
  return !!station&&(!station.dayOnly||titleEnvironmentIsDay());
+}
+function titleRadioFeedProgram(index){
+ const station=TITLE_RADIO_STATIONS[index];
+ if(!station)return null;
+ if(!titleEnvironmentIsDay()&&Array.isArray(station.nightTracks)&&station.nightTracks.length){
+  return {mode:'night',tracks:station.nightTracks,loop:false};
+ }
+ return {mode:'day',tracks:station.tracks||[],loop:true};
+}
+function configureTitleRadioFeedProgram(index,audio,force=false){
+ if(!audio)return;
+ const program=titleRadioFeedProgram(index);
+ if(!program||!program.tracks.length)return;
+ if(!force&&audio.dataset.titleRadioProgram===program.mode)return;
+ const muted=audio.muted;
+ audio.pause();
+ audio.dataset.titleRadioProgram=program.mode;
+ audio.dataset.titleRadioTrack='0';
+ audio.loop=program.loop;
+ audio.src=program.tracks[0];
+ audio.load();
+ audio.volume=TITLE_RADIO_VOLUME;
+ audio.muted=muted;
+ if(!S.paused&&titleScreenVisible()&&titleRadioStationAvailable(index)){
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
+}
+function advanceTitleRadioFeed(index,audio){
+ if(!audio)return;
+ const program=titleRadioFeedProgram(index);
+ if(!program||program.loop||!program.tracks.length)return;
+ const current=Math.max(0,Number(audio.dataset.titleRadioTrack)||0);
+ const next=(current+1)%program.tracks.length;
+ audio.dataset.titleRadioTrack=String(next);
+ audio.loop=false;
+ audio.src=program.tracks[next];
+ audio.load();
+ audio.volume=TITLE_RADIO_VOLUME;
+ if(!S.paused&&titleScreenVisible()&&titleRadioStationAvailable(index)){
+  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
 }
 function ensureTitleRadioControls(){
  const frame=document.querySelector('.title-screen-frame');
@@ -735,6 +776,9 @@ function titleRadioFeedDuration(audio){
 }
 function syncTitleRadioFeedToAir(audio,force=false){
  if(!audio)return false;
+ const index=Number(audio?.dataset?.titleRadioStation);
+ const program=titleRadioFeedProgram(index);
+ if(program&&!program.loop)return true;
  const duration=titleRadioFeedDuration(audio);
  if(!duration)return false;
  const target=titleRadioAirElapsedSeconds()%duration;
@@ -760,14 +804,18 @@ function ensureTitleRadioBackgroundFeed(index){
  if(index<=0||index>=TITLE_RADIO_STATIONS.length)return null;
  if(titleRadioBackgroundFeeds.has(index))return titleRadioBackgroundFeeds.get(index);
  const station=TITLE_RADIO_STATIONS[index];
- if(!station||!station.tracks.length)return null;
- const audio=new Audio(station.tracks[0]);
+ const program=titleRadioFeedProgram(index);
+ if(!station||!program||!program.tracks.length)return null;
+ const audio=new Audio(program.tracks[0]);
  audio.dataset.titleRadioStation=String(index);
+ audio.dataset.titleRadioProgram=program.mode;
+ audio.dataset.titleRadioTrack='0';
  audio.preload='auto';
- audio.loop=true;
+ audio.loop=program.loop;
  audio.volume=TITLE_RADIO_VOLUME;
  audio.muted=true;
  audio.addEventListener('loadedmetadata',()=>forceTitleRadioFeedToAir(audio));
+ audio.addEventListener('ended',()=>advanceTitleRadioFeed(index,audio));
  titleRadioBackgroundFeeds.set(index,audio);
  return audio;
 }
@@ -776,6 +824,7 @@ function startTitleRadioBackgroundFeeds(){
  startTitleRadioAirSync();
  for(let i=1;i<TITLE_RADIO_STATIONS.length;i++){
   const audio=ensureTitleRadioBackgroundFeed(i);if(!audio)continue;
+  configureTitleRadioFeedProgram(i,audio);
   forceTitleRadioFeedToAir(audio);
   if(!titleRadioStationAvailable(i)){audio.muted=true;audio.pause();continue}
   audio.muted=!(i===titleRadioStationIndex&&!titleRadioOff&&titleScreenVisible()&&!S.paused);
@@ -785,6 +834,7 @@ function startTitleRadioBackgroundFeeds(){
 }
 function updateTitleRadioAudibility(){
  for(const [index,audio] of titleRadioBackgroundFeeds){
+  configureTitleRadioFeedProgram(index,audio);
   forceTitleRadioFeedToAir(audio);
   audio.volume=TITLE_RADIO_VOLUME;
   if(!titleRadioStationAvailable(index)){audio.muted=true;audio.pause();continue}
@@ -832,6 +882,7 @@ function cycleTitleRadioStation(){
   loadTitleRadioTrack(!titleRadioOff);
  }else{
   const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
+  if(feed)configureTitleRadioFeedProgram(titleRadioStationIndex,feed);
   if(feed&&titleRadioStationAvailable(titleRadioStationIndex)){forceTitleRadioFeedToAir(feed);const p=feed.play();if(p&&typeof p.catch==='function')p.catch(()=>{})}
   updateTitleRadioAudibility();
  }
@@ -850,6 +901,7 @@ function toggleTitleRadioPower(){
  }else{
   startTitleRadioBackgroundFeeds();
   const feed=ensureTitleRadioBackgroundFeed(titleRadioStationIndex);
+  if(feed)configureTitleRadioFeedProgram(titleRadioStationIndex,feed);
   if(feed&&titleRadioStationAvailable(titleRadioStationIndex))forceTitleRadioFeedToAir(feed);
   updateTitleRadioAudibility();
  }
