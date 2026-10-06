@@ -23,7 +23,7 @@ This snapshot closes the October 6 radio/title-control and factory-delegation bu
 - volume controls are **down → up → numeric value**
 - volume changes in 5-point steps
 - desktop fresh-load default: **75%**
-- small-screen/mobile fresh-load default: **50%**
+- small-screen/mobile fresh-load default: **20%**
 - radio volume is session-only
 - old floating station label removed
 - old speaker-area power hotspot removed

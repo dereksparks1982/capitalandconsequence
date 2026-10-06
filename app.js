@@ -880,7 +880,7 @@ function stopTitleCityAmbience(reset=true){
 }
 
 function titleRadioDefaultVolumePercent(){
- return window.matchMedia&&window.matchMedia('(max-width:700px)').matches?50:75;
+ return window.matchMedia&&window.matchMedia('(max-width:700px)').matches?20:75;
 }
 let titleRadioVolumePercent=titleRadioDefaultVolumePercent();
 function titleRadioVolume(){
