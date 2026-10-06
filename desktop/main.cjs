@@ -4,12 +4,6 @@ const { fileURLToPath } = require('url');
 
 app.setName('Federal Electric');
 
-// Portable Linux alphas must launch without requiring root-owned chrome-sandbox setup.
-// Store/release packaging can restore the OS sandbox once installer/depot ownership is controlled.
-if (process.platform === 'linux' && app.isPackaged) {
-  app.commandLine.appendSwitch('no-sandbox');
-}
-
 const APP_ROOT = path.resolve(__dirname, '..');
 const SMOKE_TEST = process.argv.includes('--smoke-test');
 

@@ -41,13 +41,54 @@ jobs:
       - name: Build portable Linux directory
         run: npm run pack:linux
 
-      - name: Add human-readable launcher
+      - name: Build double-click Linux launcher
         run: |
+          mv dist/linux-unpacked/federal-electric dist/linux-unpacked/federal-electric-bin
+          cat > /tmp/federal-electric-launcher.c <<'EOF'
+          #define _GNU_SOURCE
+          #include <limits.h>
+          #include <stdio.h>
+          #include <stdlib.h>
+          #include <string.h>
+          #include <unistd.h>
+
+          int main(int argc, char **argv) {
+            char self[PATH_MAX];
+            ssize_t n = readlink("/proc/self/exe", self, sizeof(self) - 1);
+            if (n < 0) {
+              perror("Federal Electric launcher");
+              return 1;
+            }
+            self[n] = '\0';
+            char *slash = strrchr(self, '/');
+            if (!slash) return 1;
+            *slash = '\0';
+
+            char target[PATH_MAX];
+            if (snprintf(target, sizeof(target), "%s/federal-electric-bin", self) >= (int)sizeof(target)) {
+              return 1;
+            }
+
+            char **next = calloc((size_t)argc + 2, sizeof(char *));
+            if (!next) return 1;
+            next[0] = target;
+            next[1] = "--no-sandbox";
+            for (int i = 1; i < argc; i++) next[i + 1] = argv[i];
+            next[argc + 1] = NULL;
+
+            execv(target, next);
+            perror("Federal Electric");
+            free(next);
+            return 1;
+          }
+          EOF
+          gcc -O2 -s /tmp/federal-electric-launcher.c -o dist/linux-unpacked/federal-electric
+          chmod 0755 dist/linux-unpacked/federal-electric
           ln -s federal-electric "dist/linux-unpacked/Federal Electric"
 
-      - name: Smoke-test packaged executable
+      - name: Smoke-test exact double-click launcher
         run: |
-          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --no-sandbox --smoke-test
+          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --smoke-test
 
       - name: Package standalone alpha
         run: |
