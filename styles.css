@@ -812,8 +812,8 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-dev-show-hotspots .title-screen-frame > .title-dev-panel{
  outline:none!important;
 }
-@media (max-width:700px){
- .title-dev-panel{width:145px}
+@media (max-width:900px){
+ .title-dev-panel{display:none!important}
 }
 
 
