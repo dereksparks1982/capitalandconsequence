@@ -1138,13 +1138,13 @@ body.elephant-easter-egg-open{overflow:hidden}
  align-items:stretch!important;
  gap:2px!important;
  min-width:0!important;
- height:24px!important;
+ height:32px!important;
 }
 #globalRadioBar .global-radio-volume-buttons button{
  min-width:0!important;
  width:100%!important;
- height:24px!important;
- min-height:24px!important;
+ height:32px!important;
+ min-height:32px!important;
  margin:0!important;
  padding:0!important;
  border:1px solid #9b7a45!important;
@@ -1165,7 +1165,7 @@ body.elephant-easter-egg-open{overflow:hidden}
  justify-content:center!important;
  width:28px!important;
  min-width:28px!important;
- height:24px!important;
+ height:32px!important;
  margin:0!important;
  text-align:center!important;
  font:700 9px/1 'Courier New',monospace!important;
@@ -1203,16 +1203,16 @@ body.elephant-easter-egg-open{overflow:hidden}
   gap:2px!important;
   transform:translateY(-1px)!important;
  }
- #globalRadioBar .global-radio-volume-buttons{height:24px!important;gap:2px!important}
+ #globalRadioBar .global-radio-volume-buttons{height:28px!important;gap:2px!important}
  #globalRadioBar .global-radio-volume-buttons button{
-  height:24px!important;
-  min-height:24px!important;
+  height:28px!important;
+  min-height:28px!important;
   font-size:9px!important;
  }
  #globalRadioBar .global-radio-volume-control output{
   width:26px!important;
   min-width:26px!important;
-  height:24px!important;
+  height:28px!important;
   font-size:8px!important;
   text-align:center!important;
  }

@@ -879,7 +879,10 @@ function stopTitleCityAmbience(reset=true){
  titleCityAmbienceAudio.volume=titleCityAmbienceVolume(titleEnvironmentIsDay()?'day':'night');
 }
 
-let titleRadioVolumePercent=75;
+function titleRadioDefaultVolumePercent(){
+ return window.matchMedia&&window.matchMedia('(max-width:700px)').matches?50:75;
+}
+let titleRadioVolumePercent=titleRadioDefaultVolumePercent();
 function titleRadioVolume(){
  return clamp(titleRadioVolumePercent/100,0,1);
 }
@@ -891,7 +894,7 @@ function applyTitleRadioVolume(){
 }
 function setTitleRadioVolumePercent(value){
  const parsed=Number(value);
- titleRadioVolumePercent=Number.isFinite(parsed)?clamp(Math.round(parsed),0,100):75;
+ titleRadioVolumePercent=Number.isFinite(parsed)?clamp(Math.round(parsed),0,100):titleRadioDefaultVolumePercent();
  applyTitleRadioVolume();
 }
 const TITLE_RADIO_STATIONS=[
