@@ -954,22 +954,6 @@ function advanceTitleRadioFeed(index,audio){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
 }
-function ensureTitleRadioControls(){
- const frame=document.querySelector('.title-screen-frame');
- const knob=$('#titleRadioKnob');
- if(knob){knob.removeAttribute('aria-pressed');knob.setAttribute('aria-label','Tune to next radio station')}
- let power=$('#titleRadioPower');
- if(!power&&frame){
-  power=document.createElement('button');
-  power.id='titleRadioPower';
-  power.type='button';
-  power.setAttribute('aria-label','Turn radio off');
-  power.setAttribute('aria-pressed','false');
-  power.style.cssText='position:absolute;left:9.55%;top:50.25%;width:3.30%;height:5.20%;margin:0;padding:0;border:0;background:transparent;outline:none;box-shadow:none;cursor:pointer;border-radius:6%;z-index:4;-webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none';
-  frame.appendChild(power);
- }
- return power;
-}
 function ensureTitleRadioAudio(){
  if(titleRadioAudio)return titleRadioAudio;
  const station=TITLE_RADIO_STATIONS[0];
@@ -1106,27 +1090,11 @@ function startTitleRadio(){
  audio.volume=titleRadioVolume();
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
-let titleRadioLabelTimer=null;
-function showTitleRadioStationLabel(){
- const el=$('#titleRadioStationLabel'),station=currentTitleRadioStation();
- if(!el||!station)return;
- el.textContent=(station.dial||'')+' · '+station.name.toUpperCase();
- el.classList.remove('is-visible');void el.offsetWidth;el.classList.add('is-visible');
- if(titleRadioLabelTimer)clearTimeout(titleRadioLabelTimer);
- titleRadioLabelTimer=setTimeout(()=>{el.classList.remove('is-visible');titleRadioLabelTimer=null},2200);
-}
 function updateTitleRadioControls(){
- const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
- if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
- if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolumeUp=$('#globalRadioVolumeUp'),globalVolumeDown=$('#globalRadioVolumeDown'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
+ const knob=$('#titleRadioKnob'),station=currentTitleRadioStation();
+ if(knob)knob.setAttribute('aria-label','Tune physical radio dial. Current: '+(station.dial?station.dial+' ':'')+station.name);
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolumeUp=$('#globalRadioVolumeUp'),globalVolumeDown=$('#globalRadioVolumeDown'),globalVolumeValue=$('#globalRadioVolumeValue');
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
- if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
- if(devPower){
-  devPower.textContent='RADIO: '+(titleRadioOff?'OFF':'ON');
-  devPower.classList.toggle('is-on',!titleRadioOff);
-  devPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
- }
  if(globalVolumeValue)globalVolumeValue.textContent=String(titleRadioVolumePercent);
  if(globalVolumeUp)globalVolumeUp.disabled=titleRadioVolumePercent>=100;
  if(globalVolumeDown)globalVolumeDown.disabled=titleRadioVolumePercent<=0;
@@ -1136,7 +1104,7 @@ function updateTitleRadioControls(){
   globalPower.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
  }
 }
-function tuneTitleRadioStation(index,showLabel=true){
+function tuneTitleRadioStation(index){
  const next=((Math.floor(+index)||0)%TITLE_RADIO_STATIONS.length+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleRadioAudio){titleRadioAudio.pause();if(titleRadioStationIndex===0||next===0){try{titleRadioAudio.currentTime=0}catch(e){}}}
@@ -1156,21 +1124,15 @@ function tuneTitleRadioStation(index,showLabel=true){
   updateTitleRadioAudibility();
  }
  updateTitleRadioControls();
- if(showLabel)showTitleRadioStationLabel();
 }
 function cycleTitleRadioStation(direction=1){
- tuneTitleRadioStation(titleRadioStationIndex+(direction<0?-1:1),true);
+ tuneTitleRadioStation(titleRadioStationIndex+(direction<0?-1:1));
 }
 function setRadioLocationContext(context,force=false){
  if(!Object.prototype.hasOwnProperty.call(TITLE_RADIO_CONTEXT_STATIONS,context))context='office';
  const changed=titleRadioLocationContext!==context;
  titleRadioLocationContext=context;
- if(titleRadioAutoTune&&(changed||force))tuneTitleRadioStation(TITLE_RADIO_CONTEXT_STATIONS[context],true);
- updateTitleDevPanel();
-}
-function toggleTitleRadioAutoTune(){
- titleRadioAutoTune=!titleRadioAutoTune;
- if(titleRadioAutoTune)setRadioLocationContext(titleRadioLocationContext,true);
+ if(titleRadioAutoTune&&(changed||force))tuneTitleRadioStation(TITLE_RADIO_CONTEXT_STATIONS[context]);
  updateTitleDevPanel();
 }
 function toggleTitleRadioPower(){
@@ -1439,7 +1401,6 @@ function stepAwayFromDesk(){
  titleRadioLocationContext='office';
  startTitleEnvironment();
  startTitleClock();
- ensureTitleRadioControls();
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
  startTitleRadioBackgroundFeeds();
  setRadioLocationContext('office',true);
@@ -1687,7 +1648,6 @@ function updateTitleDevPanel(){
  setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevEditHotspots',titleDevEditHotspots,'Edit Hotspots: '+(titleDevEditHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevOutsideNoise',titleDevOutsideNoise,'Outside Noise: '+(titleDevOutsideNoise?'ON':'OFF'));
- setTitleDevButtonState('titleDevRadioAuto',titleRadioAutoTune,'Auto Tune: '+(titleRadioAutoTune?'ON':'OFF'));
  updateTitleRadioControls();
  updateTitleHotspotReadout();
 }
@@ -1823,10 +1783,6 @@ function initTitleDevPanel(){
  document.getElementById('titleDevHotspotTaller').onclick=()=>adjustTitleHotspot(0,0,0,.2);
  document.getElementById('titleDevHotspotSave').onclick=saveTitleHotspotLayout;
  document.getElementById('titleDevHotspotResetSelected').onclick=resetSelectedTitleHotspot;
- document.getElementById('titleDevRadioPrev').onclick=()=>cycleTitleRadioStation(-1);
- document.getElementById('titleDevRadioPower').onclick=toggleTitleRadioPower;
- document.getElementById('titleDevRadioNext').onclick=()=>cycleTitleRadioStation(1);
- document.getElementById('titleDevRadioAuto').onclick=toggleTitleRadioAutoTune;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
  updateTitleDevPanel();
@@ -2192,7 +2148,6 @@ function initTitleScreen(){
  titleRadioStationIndex=0;titleRadioTrackIndex=0;titleRadioOff=false;titleRadioLocationContext='title';
  startTitleEnvironment();
  startTitleClock();
- ensureTitleRadioControls();
  preloadTitleNewspaperRustles();
  preloadTitleFilingCabinetOpen();
  titleRadioAirStartAt=Date.now();
@@ -2224,7 +2179,6 @@ function initTitleScreen(){
  const titleRadioKnob=$('#titleRadioKnob');
  titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
  titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
- $('#titleRadioPower').onclick=toggleTitleRadioPower;
  const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower'),globalRadioVolumeUp=$('#globalRadioVolumeUp'),globalRadioVolumeDown=$('#globalRadioVolumeDown');
  if(globalRadioPrev)globalRadioPrev.onclick=()=>cycleTitleRadioStation(-1);
  if(globalRadioNext)globalRadioNext.onclick=()=>cycleTitleRadioStation(1);
