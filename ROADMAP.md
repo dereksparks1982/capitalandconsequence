@@ -480,3 +480,11 @@ Authoritative station behavior:
 - [x] Washington map location labels remain visible on small screens instead of disappearing at the mobile breakpoint.
 - [ ] Test iPhone playback through handset speakers, headphones and Bluetooth before locking final radio/ambience gain.
 - [ ] Add device-specific mix/EQ only if real-device testing proves it necessary.
+
+
+### Radio content curation — future build
+
+- [ ] Curate every in-game radio station as a hand-built period program rather than a generic playlist: selected songs, announcer/DJ segments, station IDs, commercials, news, reception/static transitions, time-of-day programming and hidden/secret material.
+- [ ] Preserve the GTA-style rule that stations feel continuously on-air while the player may manually tune at any location.
+- [ ] Keep location context as a suggested/default station only; player tuning always remains available.
+- [ ] The title-screen context always opens on 610 AM Federal Electric Network with the approved title theme beginning from 0:00; the player may tune away afterward.
