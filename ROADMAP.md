@@ -155,7 +155,17 @@ Next engineering slice after this closed build remains the first unchecked stabi
 - [x] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs. 1938 electrical-manufacturing wage anchor is 80¢/hour; raw-material inventory now uses production-stock units rather than treating bulk commodity prices as per-bulb costs.
 
 
-## v0.5 — Living America
+## v0.5 — Living America / Washington Power
+
+Current development build: **v0.5.0-dev**
+
+- [x] Begin factory delegation foundation with Foreman Sullivan routine morning auto-start, explicit non-routine holds, and management alerts.
+- [ ] Add researched paid General Manager / executive management hiring, compensation and competence traits.
+- [ ] Let delegated management make fallible decisions: repair delays, purchasing errors, labor disputes, missed deadlines and judgment calls can still reach the owner.
+- [ ] Make unresolved management problems compound into lower output, lost customers, cash pressure, layoffs and eventually possible plant closure rather than turning delegation into passive guaranteed income.
+- [ ] Build a Washington influence / power-broker progression fed by business reputation, clubs, press, police, bankers, lobbyists, officials and political contacts.
+- [ ] Alternate-history civic rule: the early presidentially appointed Washington mayoralty survives into the Federal Electric timeline instead of being abolished; a sufficiently powerful player may eventually seek a presidential appointment as Mayor of Washington, D.C.
+- [ ] Mayor gameplay should shift part of the simulation from company operations to city administration, appointments, budgets, public pressure, favors, scandals and competing interests while Federal Electric continues under delegated management.
 
 - researched historical timeline
 - original period-style reporting of researched real events
