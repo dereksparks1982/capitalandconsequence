@@ -827,9 +827,9 @@ $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').oncli
 document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
-const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.01;
+const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.005;
 const TITLE_NIGHT_AMBIENCE_VOLUME=.14;
-const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.025;
+const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.01;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
@@ -875,20 +875,7 @@ function stopTitleCityAmbience(reset=true){
  titleCityAmbienceAudio.volume=titleCityAmbienceVolume(titleEnvironmentIsDay()?'day':'night');
 }
 
-const TITLE_RADIO_VOLUME=.38;
-const TITLE_RADIO_MOBILE_VOLUME=.50;
-const TITLE_RADIO_VOLUME_KEY='federalElectricRadioVolumePercentV3';
-function defaultTitleRadioVolumePercent(){
- return 75;
-}
-let titleRadioVolumePercent=defaultTitleRadioVolumePercent();
-try{
- const rawSaved=localStorage.getItem(TITLE_RADIO_VOLUME_KEY);
- if(rawSaved!==null){
-  const saved=Number(rawSaved);
-  if(Number.isFinite(saved)&&saved>=0&&saved<=100)titleRadioVolumePercent=Math.round(saved);
- }
-}catch(e){}
+let titleRadioVolumePercent=75;
 function titleRadioVolume(){
  return clamp(titleRadioVolumePercent/100,0,1);
 }
@@ -898,10 +885,9 @@ function applyTitleRadioVolume(){
  for(const audio of titleRadioBackgroundFeeds.values())audio.volume=volume;
  updateTitleRadioControls();
 }
-function setTitleRadioVolumePercent(value,persist=true){
- const next=clamp(Math.round(Number(value)||0),0,100);
- titleRadioVolumePercent=next;
- if(persist){try{localStorage.setItem(TITLE_RADIO_VOLUME_KEY,String(next))}catch(e){}}
+function setTitleRadioVolumePercent(value){
+ const parsed=Number(value);
+ titleRadioVolumePercent=Number.isFinite(parsed)?clamp(Math.round(parsed),0,100):75;
  applyTitleRadioVolume();
 }
 const TITLE_RADIO_STATIONS=[
