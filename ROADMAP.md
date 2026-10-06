@@ -458,7 +458,7 @@ Accepted final control state:
 - [x] The station-name/frequency display is the drag handle on desktop and touch devices; desktop uses the four-direction move cursor.
 - [x] Control order is previous station → station readout → next station → volume down → volume up → numeric volume → power.
 - [x] Volume changes in 5-point steps.
-- [x] Fresh desktop session starts at 75%; fresh small-screen/mobile session starts at 20%; radio volume is not persisted across page reloads.
+- [x] Fresh desktop session starts at 40%; fresh small-screen/mobile session starts at 20%; radio volume is not persisted across page reloads.
 - [x] Old floating station label and old speaker-area power hotspot are removed.
 - [x] Redundant radio controls are removed from the DEV panel.
 - [x] Mobile title audio suppresses city/street ambience, fan audio and clock ticking, leaving the radio/music path uncluttered.
