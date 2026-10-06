@@ -922,9 +922,13 @@ function startTitleRadioAirSync(){
   if(audio&&!audio.paused)syncTitleRadioFeedToAir(audio,false);
  },1000);
 }
-function ensureTitleRadioBackgroundFeed(index){
+function ensureTitleRadioBackgroundFeed(index,preloadMode='auto'){
  if(index<=0||index>=TITLE_RADIO_STATIONS.length)return null;
- if(titleRadioBackgroundFeeds.has(index))return titleRadioBackgroundFeeds.get(index);
+ if(titleRadioBackgroundFeeds.has(index)){
+  const existing=titleRadioBackgroundFeeds.get(index);
+  if(preloadMode==='auto')existing.preload='auto';
+  return existing;
+ }
  const station=TITLE_RADIO_STATIONS[index];
  const program=titleRadioFeedProgram(index);
  if(!station||!program||!program.tracks.length)return null;
@@ -932,7 +936,7 @@ function ensureTitleRadioBackgroundFeed(index){
  audio.dataset.titleRadioStation=String(index);
  audio.dataset.titleRadioProgram=program.mode;
  audio.dataset.titleRadioTrack='0';
- audio.preload='auto';
+ audio.preload=preloadMode;
  audio.loop=program.loop;
  audio.volume=titleRadioVolume();
  audio.muted=true;
@@ -940,6 +944,16 @@ function ensureTitleRadioBackgroundFeed(index){
  audio.addEventListener('ended',()=>advanceTitleRadioFeed(index,audio));
  titleRadioBackgroundFeeds.set(index,audio);
  return audio;
+}
+function prewarmHeavyTitleRadioOnDesktop(){
+ const desktop=window.matchMedia&&window.matchMedia('(min-width:901px)').matches;
+ if(!desktop)return;
+ const melody=ensureTitleRadioBackgroundFeed(3,'metadata');
+ if(melody){
+  melody.muted=true;
+  melody.pause();
+  try{melody.load()}catch(e){}
+ }
 }
 function startTitleRadioBackgroundFeeds(){
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
@@ -2080,6 +2094,7 @@ function initTitleScreen(){
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
  initTitleHotspotEditor();
  initTitleDevPanel();
+ prewarmHeavyTitleRadioOnDesktop();
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
  $('#titleOptions').onclick=()=>openTitleDialog('Options','<p>Options have not been defined yet. This drawer is reserved for future game and presentation options.</p><div class="title-dialog-actions"><button id="optionsClose" type="button">Close</button></div>');
