@@ -1,0 +1,49 @@
+{
+  "name": "federal-electric",
+  "version": "0.5.0-alpha.1",
+  "private": true,
+  "description": "Federal Electric desktop alpha",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "pack:linux": "electron-builder --linux dir --x64",
+    "dist:linux": "electron-builder --linux AppImage --x64"
+  },
+  "devDependencies": {
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.elderredsoftworks.federalelectric",
+    "productName": "Federal Electric",
+    "artifactName": "Federal-Electric-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "app.js",
+      "styles.css",
+      "boxing.css",
+      "boxing.js",
+      "racing.css",
+      "racing.js",
+      "oval-racing.js",
+      "underworld.css",
+      "underworld.js",
+      "poker.html",
+      "poker.js",
+      "assets/**/*",
+      "radio/**/*",
+      "vendor/**/*",
+      "desktop/**/*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Game",
+      "executableName": "federal-electric"
+    }
+  }
+}
