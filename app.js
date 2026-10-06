@@ -1437,7 +1437,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
+function closeTitleScreen(){if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
  const screen=$('#titleScreen');if(!screen)return;
  save(true);
@@ -1571,6 +1571,86 @@ function titleDCSunTimes(date){
 let titleEnvironmentDevOverride=null;
 let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevEditHotspots=false,titleDevOutsideNoise=true;
 const TITLE_DEV_MONEY=999999999;
+
+let cityRoomSession={locationId:null,roomId:null,dev:false};
+
+function federalCity(){return window.FederalElectricCity||null}
+function cityLocation(locationId){return federalCity()?.getLocation?.(locationId)||null}
+function cityRoom(locationId,roomId){return federalCity()?.getRoom?.(locationId,roomId)||null}
+
+function titleDevPopulateRooms(locationId,preferredRoomId=''){
+ const roomSelect=document.getElementById('titleDevRoomSelect');
+ const location=cityLocation(locationId);
+ if(!roomSelect)return;
+ roomSelect.innerHTML='';
+ if(!location||!location.rooms.length){
+  const option=document.createElement('option');option.value='';option.textContent='NO ROOMS';roomSelect.appendChild(option);roomSelect.disabled=true;return;
+ }
+ roomSelect.disabled=false;
+ for(const room of location.rooms){
+  const option=document.createElement('option');option.value=room.id;option.textContent=room.name;roomSelect.appendChild(option);
+ }
+ const wanted=preferredRoomId&&location.rooms.some(v=>v.id===preferredRoomId)?preferredRoomId:location.defaultRoom;
+ if(wanted)roomSelect.value=wanted;
+}
+function titleDevPopulateLocations(){
+ const select=document.getElementById('titleDevLocationSelect'),city=federalCity();if(!select||!city)return;
+ const previous=select.value;
+ select.innerHTML='';
+ for(const location of city.listLocations()){
+  const option=document.createElement('option');option.value=location.id;option.textContent=location.name;select.appendChild(option);
+ }
+ if(previous&&cityLocation(previous))select.value=previous;
+ else if(cityRoomSession.locationId&&cityLocation(cityRoomSession.locationId))select.value=cityRoomSession.locationId;
+ else select.value='factory';
+ titleDevPopulateRooms(select.value,cityRoomSession.locationId===select.value?cityRoomSession.roomId:'');
+}
+function updateTitleDevCityControls(){
+ const status=document.getElementById('titleDevRoomStatus');
+ if(!status)return;
+ if(!cityRoomSession.locationId){status.textContent='No room open';return}
+ const location=cityLocation(cityRoomSession.locationId),room=cityRoom(cityRoomSession.locationId,cityRoomSession.roomId);
+ status.textContent=(location?.name||cityRoomSession.locationId)+' · '+(room?.name||cityRoomSession.roomId||'room');
+}
+function openCityRoom(locationId,roomId,options={}){
+ const location=cityLocation(locationId);if(!location)return false;
+ const room=cityRoom(locationId,roomId||location.defaultRoom);if(!room)return false;
+ const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return false;
+ closeTitleDialog();closeTitleMap();
+ cityRoomSession={locationId:location.id,roomId:room.id,dev:!!options.dev};
+ document.getElementById('cityRoomLocationName').textContent=location.name;
+ document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
+ document.getElementById('cityRoomName').textContent=room.name;
+ document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
+ overlay.hidden=false;
+ document.body.classList.add('city-room-open');
+ updateTitleDevCityControls();
+ return true;
+}
+function closeCityRoom(){
+ const overlay=document.getElementById('cityRoomOverlay');if(overlay)overlay.hidden=true;
+ document.body.classList.remove('city-room-open');
+ cityRoomSession={locationId:null,roomId:null,dev:false};
+ updateTitleDevCityControls();
+}
+function openSelectedTitleDevRoom(){
+ const locationId=document.getElementById('titleDevLocationSelect')?.value;
+ const roomId=document.getElementById('titleDevRoomSelect')?.value;
+ if(locationId)openCityRoom(locationId,roomId,{dev:true});
+}
+function initCityRoomUI(){
+ const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return;
+ document.getElementById('cityRoomClose').onclick=closeCityRoom;
+ document.getElementById('cityRoomReturnOffice').onclick=closeCityRoom;
+ overlay.addEventListener('click',e=>{if(e.target===overlay)closeCityRoom()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeCityRoom()});
+}
+window.FE_CITY={
+ openRoom:(locationId,roomId)=>openCityRoom(locationId,roomId,{dev:false}),
+ closeRoom:closeCityRoom,
+ listLocations:()=>federalCity()?.listLocations?.()||[]
+};
+
 const TITLE_HOTSPOT_LAYOUT_KEY='federalElectricTitleHotspotsV1';
 const TITLE_HOTSPOT_IDS=['titleContinue','titleProfile','titleOptions','titleArchives'];
 const titleHotspotDefaults=Object.create(null);
@@ -1695,6 +1775,7 @@ function updateTitleDevPanel(){
  setTitleDevButtonState('titleDevOutsideNoise',titleDevOutsideNoise,'Outside Noise: '+(titleDevOutsideNoise?'ON':'OFF'));
  updateTitleRadioControls();
  updateTitleHotspotReadout();
+ updateTitleDevCityControls();
 }
 function toggleTitleEnvironmentDev(){
  const current=titlePlaythroughEnvironmentMode();
@@ -1817,6 +1898,11 @@ function initTitleDevPanel(){
  document.getElementById('titleDevFreezeTime').onclick=toggleTitleDevFreezeTime;
  document.getElementById('titleDevHotspots').onclick=toggleTitleDevHotspots;
  document.getElementById('titleDevEditHotspots').onclick=toggleTitleDevEditHotspots;
+ titleDevPopulateLocations();
+ const titleDevLocationSelect=document.getElementById('titleDevLocationSelect');
+ if(titleDevLocationSelect)titleDevLocationSelect.onchange=e=>titleDevPopulateRooms(e.target.value);
+ const titleDevGoRoom=document.getElementById('titleDevGoRoom');
+ if(titleDevGoRoom)titleDevGoRoom.onclick=openSelectedTitleDevRoom;
  document.getElementById('titleDevHotspotSelect').onchange=e=>selectTitleHotspot(e.target.value);
  document.getElementById('titleDevHotspotUp').onclick=()=>adjustTitleHotspot(0,-.2);
  document.getElementById('titleDevHotspotLeft').onclick=()=>adjustTitleHotspot(-.2,0);
@@ -1960,14 +2046,14 @@ function toggleTitleFan(){
 
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
 const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV1';
-const TITLE_MAP_LOCATION_DEFAULTS=[
+const TITLE_MAP_LOCATION_DEFAULTS=(window.FederalElectricCity?.mapLocations?.()||[
  {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
  {id:'star',n:2,name:'Star Club',area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
  {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue.'},
  {id:'workingPoker',n:4,name:'Neighborhood Game',area:'Navy Yard / Southeast',x:.5826,y:.6322,description:'The lower-stakes working-class poker room.'},
  {id:'commercePoker',n:5,name:'Commerce Club',area:'Downtown / Pennsylvania Avenue',x:.4536,y:.5088,description:'A respectable downtown club hosting the middle-stakes business poker game.'},
  {id:'embassyPoker',n:6,name:'Embassy Room',area:'Dupont / Massachusetts Avenue',x:.3928,y:.3602,description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.'}
-];
+]).map(v=>Object.assign({},v));
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null;
 
@@ -2215,6 +2301,7 @@ function initTitleScreen(){
  const titleCabinetButtons=[$('#titleContinue'),$('#titleProfile'),$('#titleOptions'),$('#titleArchives')].filter(Boolean);
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
  initTitleHotspotEditor();
+ initCityRoomUI();
  initTitleDevPanel();
  initGlobalRadioDrag();
  prewarmHeavyTitleRadioOnDesktop();

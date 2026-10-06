@@ -14,6 +14,13 @@
         <button id="titleDevFreezeTime" type="button" aria-pressed="false">Freeze Time: OFF</button>
         <button id="titleDevHotspots" type="button" aria-pressed="false">Show Hotspots: OFF</button>
         <button id="titleDevEditHotspots" type="button" aria-pressed="false">Edit Hotspots: OFF</button>
+        <div class="title-dev-city-tools" aria-label="Developer city room controls">
+          <strong>CITY / ROOM</strong>
+          <select id="titleDevLocationSelect" aria-label="Developer location"></select>
+          <select id="titleDevRoomSelect" aria-label="Developer room"></select>
+          <button id="titleDevGoRoom" type="button">Go To Room</button>
+          <output id="titleDevRoomStatus">No room open</output>
+        </div>
         <div class="title-dev-hotspot-tools">
           <select id="titleDevHotspotSelect" aria-label="Selected title hotspot">
             <option value="titleContinue">CONTINUE</option>
@@ -104,6 +111,27 @@
     </section>
   </div>
 </div>
+<div id="cityRoomOverlay" class="city-room-overlay" hidden>
+  <section class="city-room-shell" role="dialog" aria-modal="true" aria-labelledby="cityRoomLocationName">
+    <div class="city-room-head">
+      <div>
+        <small>WASHINGTON, D.C. · CITY LOCATION</small>
+        <h2 id="cityRoomLocationName">Location</h2>
+        <p id="cityRoomArea"></p>
+      </div>
+      <button id="cityRoomClose" type="button" aria-label="Close room">×</button>
+    </div>
+    <div class="city-room-placeholder">
+      <span class="city-room-placeholder-tag">PLACEHOLDER ROOM SHELL · NO ARTWORK ASSIGNED</span>
+      <h3 id="cityRoomName">Room</h3>
+      <p id="cityRoomDescription"></p>
+      <p class="city-room-framework-note">This shell is part of the reusable Washington city framework. Story-specific access, people, events and artwork can be layered onto the same location later.</p>
+    </div>
+    <div class="city-room-actions">
+      <button id="cityRoomReturnOffice" type="button">Return to Executive Office</button>
+    </div>
+  </section>
+</div>
 <div id="globalRadioBar" class="global-radio-bar" role="group" aria-label="Federal Electric radio controls">
   <button id="globalRadioPrev" type="button" aria-label="Tune to previous radio station">◀</button>
   <div class="global-radio-readout"><b id="globalRadioStation">610 AM · Federal Electric Network</b></div>
@@ -158,4 +186,4 @@
 <div class="activity-panel" data-activity-panel="illicit" data-activity-name="cock" hidden><div class="activity-panel-head"><b>Cockfighting</b><button class="activity-close" data-activity-close="illicit" aria-label="Close Cockfighting">×</button></div><div class="sheet"><article id="cockfightCard" class="underground-card"><h4>Cockfighting</h4><p class="muted">Invitation required.</p></article></div></div>
 <p id="underworldNote"></p></section>
 </main><div id="dailyReportOverlay" class="daily-report-overlay" hidden><section class="daily-report-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · PRIVATE</div><h2>Daily Report</h2><h3 id="dailyReportDate"></h3><div id="dailyReportBody"></div><button id="beginNextDay">Retire for the Night</button></section></div><div id="campaignEndOverlay" class="campaign-end-overlay" hidden><section class="campaign-end-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · CAMPAIGN RECORD</div><h2>Main Campaign Complete</h2><h3>372 Turns · January 1938 – September 1945</h3><div id="campaignEndBody"></div><div class="campaign-end-actions"><button id="continueEmpire" type="button">Continue Empire</button><button id="campaignNewGame" type="button" class="danger">Start New Game</button></div></section></div>
-<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="app.js?v=20261006-direct-radio-restore1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>
+<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="city.js?v=20261006-cityrooms1"></script><script src="app.js?v=20261006-cityrooms1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>

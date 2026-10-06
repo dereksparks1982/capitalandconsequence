@@ -177,6 +177,19 @@ Closed release: **v0.5.0** · accepted gameplay baseline `46d8b4d565cb1ee5e7f369
 
 ## v0.6 — Washington Network — NEXT BUILD
 
+### v0.6.0-dev — Washington city / room foundation
+
+- [x] Add a **character-agnostic Washington city registry** so locations belong to the world rather than to one protagonist's story.
+- [x] Add reusable location → room structure with a default room per location.
+- [x] Seed the current map venues into that registry without changing the user's existing six pin IDs or saved pin placement.
+- [x] Register **White House**, **Washington Arena**, **Washington Airport**, and **Metropolitan Police** as additional city locations even though their final map pins/interiors are not assigned.
+- [x] Add a neutral **placeholder room shell** so locations can exist and be tested before artwork is commissioned.
+- [x] Add **DEV PANEL location + room teleport controls** that bypass normal discovery/access rules for testing.
+- [ ] Connect normal player travel from map locations into the room framework.
+- [ ] Add story/player-specific discovery, invitations, influence gates, travel time and access rules outside the city registry.
+- [ ] Add final room artwork only after individual locations are approved.
+- [ ] Reuse the same Washington city registry for future playable characters and separate stories.
+
 Carry-forward engineering from the v0.5 closeout:
 - broaden fallible delegated-management decisions and incidents
 - extend management neglect into customer loss, cash pressure, layoffs and possible plant closure after balancing
