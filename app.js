@@ -877,25 +877,18 @@ function stopTitleCityAmbience(reset=true){
 
 const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_MOBILE_VOLUME=.50;
-const TITLE_RADIO_VOLUME_KEY='federalElectricRadioVolumeV1';
-const TITLE_RADIO_VOLUME_LEVELS=[
- {key:'low',label:'LOW',short:'L',factor:.65},
- {key:'med',label:'MED',short:'M',factor:1},
- {key:'high',label:'HIGH',short:'H',factor:1.35}
-];
-let titleRadioVolumeIndex=1;
-try{
- const savedVolume=localStorage.getItem(TITLE_RADIO_VOLUME_KEY);
- const savedIndex=TITLE_RADIO_VOLUME_LEVELS.findIndex(v=>v.key===savedVolume);
- if(savedIndex>=0)titleRadioVolumeIndex=savedIndex;
-}catch(e){}
-function titleRadioBaseVolume(){
+const TITLE_RADIO_VOLUME_KEY='federalElectricRadioVolumePercentV2';
+function defaultTitleRadioVolumePercent(){
  const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
- return mobile?TITLE_RADIO_MOBILE_VOLUME:TITLE_RADIO_VOLUME;
+ return Math.round((mobile?TITLE_RADIO_MOBILE_VOLUME:TITLE_RADIO_VOLUME)*100);
 }
+let titleRadioVolumePercent=defaultTitleRadioVolumePercent();
+try{
+ const saved=Number(localStorage.getItem(TITLE_RADIO_VOLUME_KEY));
+ if(Number.isFinite(saved)&&saved>=0&&saved<=100)titleRadioVolumePercent=Math.round(saved);
+}catch(e){}
 function titleRadioVolume(){
- const level=TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex]||TITLE_RADIO_VOLUME_LEVELS[1];
- return clamp(titleRadioBaseVolume()*level.factor,0,1);
+ return clamp(titleRadioVolumePercent/100,0,1);
 }
 function applyTitleRadioVolume(){
  const volume=titleRadioVolume();
@@ -903,9 +896,10 @@ function applyTitleRadioVolume(){
  for(const audio of titleRadioBackgroundFeeds.values())audio.volume=volume;
  updateTitleRadioControls();
 }
-function cycleTitleRadioVolume(){
- titleRadioVolumeIndex=(titleRadioVolumeIndex+1)%TITLE_RADIO_VOLUME_LEVELS.length;
- try{localStorage.setItem(TITLE_RADIO_VOLUME_KEY,TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex].key)}catch(e){}
+function setTitleRadioVolumePercent(value,persist=true){
+ const next=clamp(Math.round(Number(value)||0),0,100);
+ titleRadioVolumePercent=next;
+ if(persist){try{localStorage.setItem(TITLE_RADIO_VOLUME_KEY,String(next))}catch(e){}}
  applyTitleRadioVolume();
 }
 const TITLE_RADIO_STATIONS=[
@@ -1133,8 +1127,7 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower'),devVolume=$('#titleDevRadioVolume');
- const volumeLevel=TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex]||TITLE_RADIO_VOLUME_LEVELS[1];
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower'),devVolume=$('#titleDevRadioVolume'),devVolumeValue=$('#titleDevRadioVolumeValue');
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devPower){
@@ -1143,13 +1136,15 @@ function updateTitleRadioControls(){
   devPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
  }
  if(globalVolume){
-  globalVolume.textContent='VOL '+volumeLevel.short;
-  globalVolume.setAttribute('aria-label','Radio volume '+volumeLevel.label.toLowerCase()+'. Press to change.');
+  globalVolume.value=String(titleRadioVolumePercent);
+  globalVolume.setAttribute('aria-valuetext',titleRadioVolumePercent+' percent');
  }
+ if(globalVolumeValue)globalVolumeValue.textContent=String(titleRadioVolumePercent);
  if(devVolume){
-  devVolume.textContent='VOL: '+volumeLevel.label;
-  devVolume.setAttribute('aria-label','Radio volume '+volumeLevel.label.toLowerCase()+'. Press to change.');
+  devVolume.value=String(titleRadioVolumePercent);
+  devVolume.setAttribute('aria-valuetext',titleRadioVolumePercent+' percent');
  }
+ if(devVolumeValue)devVolumeValue.textContent=String(titleRadioVolumePercent);
  if(globalPower){
   globalPower.textContent=titleRadioOff?'OFF':'ON';
   globalPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
@@ -1845,7 +1840,7 @@ function initTitleDevPanel(){
  document.getElementById('titleDevRadioPrev').onclick=()=>cycleTitleRadioStation(-1);
  document.getElementById('titleDevRadioPower').onclick=toggleTitleRadioPower;
  document.getElementById('titleDevRadioNext').onclick=()=>cycleTitleRadioStation(1);
- document.getElementById('titleDevRadioVolume').onclick=cycleTitleRadioVolume;
+ document.getElementById('titleDevRadioVolume').addEventListener('input',e=>setTitleRadioVolumePercent(e.target.value));
  document.getElementById('titleDevRadioAuto').onclick=toggleTitleRadioAutoTune;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
@@ -2249,7 +2244,7 @@ function initTitleScreen(){
  if(globalRadioPrev)globalRadioPrev.onclick=()=>cycleTitleRadioStation(-1);
  if(globalRadioNext)globalRadioNext.onclick=()=>cycleTitleRadioStation(1);
  if(globalRadioPower)globalRadioPower.onclick=toggleTitleRadioPower;
- if(globalRadioVolume)globalRadioVolume.onclick=cycleTitleRadioVolume;
+ if(globalRadioVolume)globalRadioVolume.addEventListener('input',e=>setTitleRadioVolumePercent(e.target.value));
  const titleNewspaperButton=$('#titleNewspaperM');
  titleNewspaperButton.addEventListener('pointerdown',primeTitleNewspaperRustle);
  titleNewspaperButton.onclick=openTitleNewspaper;
