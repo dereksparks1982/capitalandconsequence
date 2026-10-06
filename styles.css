@@ -1123,7 +1123,7 @@ body.elephant-easter-egg-open{overflow:hidden}
  transform:translateX(-50%)!important;
  z-index:2100000!important;
  display:grid!important;
- grid-template-columns:36px minmax(0,1fr) 42px 112px 36px!important;
+ grid-template-columns:36px minmax(0,232px) 42px minmax(112px,1fr) 36px!important;
  align-items:center!important;
  width:500px!important;
  max-width:calc(100vw - 28px)!important;
@@ -1223,7 +1223,7 @@ body.elephant-easter-egg-open{overflow:hidden}
 }
 @media(max-width:700px){
  #globalRadioBar{
-  grid-template-columns:30px minmax(0,1fr) 36px 92px 30px!important;
+  grid-template-columns:30px minmax(0,142px) 36px minmax(92px,1fr) 30px!important;
   width:min(350px,calc(100vw - 40px))!important;
   max-width:calc(100vw - 40px)!important;
   height:34px!important;

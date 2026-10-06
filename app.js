@@ -833,8 +833,11 @@ const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.01;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
+function titleMobileRadioOnly(){
+ return !!(window.matchMedia&&window.matchMedia('(max-width:900px)').matches);
+}
 function titleCityAmbienceVolume(mode=titleCityAmbienceMode||'day'){
- const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
+ const mobile=titleMobileRadioOnly();
  if(mode==='night')return mobile?TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME:TITLE_NIGHT_AMBIENCE_VOLUME;
  return mobile?TITLE_CITY_AMBIENCE_MOBILE_VOLUME:TITLE_CITY_AMBIENCE_VOLUME;
 }
@@ -850,6 +853,7 @@ function titleEnvironmentIsDay(){
  return !!(bg&&bg.dataset.mode==='day');
 }
 function syncTitleCityAmbience(){
+ if(titleMobileRadioOnly()){stopTitleCityAmbience(false);return}
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
  const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!S.paused&&titleDevOutsideNoise;
@@ -1723,6 +1727,7 @@ function toggleTitleDevHotspots(){
 }
 function toggleTitleDevEditHotspots(){setTitleHotspotEditMode(!titleDevEditHotspots)}
 function restartTitleCityAmbienceFromDev(){
+ if(titleMobileRadioOnly()){stopTitleCityAmbience(false);return}
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
  const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
@@ -1894,7 +1899,7 @@ function stopTitleClockAudio(reset=false){
  if(reset){try{titleClockAudio.currentTime=0}catch(e){}}
 }
 function syncTitleClockAudio(){
- if(!titleScreenVisible()||S.paused){stopTitleClockAudio(false);return}
+ if(titleMobileRadioOnly()||!titleScreenVisible()||S.paused){stopTitleClockAudio(false);return}
  const audio=ensureTitleClockAudio();
  audio.volume=TITLE_CLOCK_SOUND_VOLUME;
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -1930,7 +1935,7 @@ function stopTitleFanAudio(reset=false){
  if(reset){try{titleFanAudio.currentTime=0}catch(e){}}
 }
 function syncTitleFanAudio(){
- if(!titleScreenVisible()||S.paused||titleFanIsOff()){stopTitleFanAudio(false);return}
+ if(titleMobileRadioOnly()||!titleScreenVisible()||S.paused||titleFanIsOff()){stopTitleFanAudio(false);return}
  const audio=ensureTitleFanAudio();
  audio.volume=TITLE_FAN_SOUND_VOLUME;
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
