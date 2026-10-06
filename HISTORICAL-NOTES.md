@@ -189,3 +189,14 @@ The existing Federal Electric wage anchor remains supported. The NBER Macrohisto
 
 Source:
 - FRED / NBER Macrohistory, Average Hourly Earnings, Electrical Manufacturing: https://fred.stlouisfed.org/series/M0811AUSM259NNBR
+
+
+## General Manager compensation anchor — v0.5.0-dev
+
+The first paid General Manager uses the 1940 Census's reported **1939 median wage or salary income for male year-round full-time managers, officials, and proprietors (except farm): $2,254 per year** as a broad management-income anchor. Federal Electric converts that annual figure across 260 workdays for a prototype management wage of about **$8.67 per playable Business Day**.
+
+This is a game-scale baseline, not a claim that every 1938 electrical-factory general manager earned exactly that amount. The census category is deliberately broad; later management tiers can be refined by industry and company size.
+
+Sources:
+- U.S. Census Bureau, 1939 occupation income tables (later comparative publication reproducing 1939 figures): https://www2.census.gov/prod2/popscan/p60-023.pdf
+- U.S. Census Bureau, 1940 Census of Population, Wage or Salary Income in 1939: https://www.census.gov/library/publications/1943/dec/population-labor-force-sample.html
