@@ -1,5 +1,5 @@
 /* Federal Electric fictional radio lineup.
-   Audio sources may be repo-local or remotely hosted. */
+   Desktop/runtime audio is repo-local so the game does not depend on streaming. */
 (function(){
  'use strict';
  window.FEDERAL_RADIO_STATIONS=[
@@ -41,10 +41,7 @@
    clock:[
     {
      id:'war-of-the-worlds',
-     sources:[
-      'https://drive.google.com/uc?export=download&confirm=t&id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4',
-      'https://drive.usercontent.google.com/download?id=1K_dcYlyaL6z5trT1ZUcc_Kpl3YmAdnz4&export=download&confirm=t'
-     ],
+     src:'assets/audio/mercury-theatre-war-of-the-worlds.mp3?v=desktop1',
      duration:3084.552,
      loop:true
     }
@@ -60,10 +57,7 @@
    clock:[
     {
      id:'1930s-oldies-program',
-     sources:[
-      'https://drive.google.com/uc?export=download&confirm=t&id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3',
-      'https://drive.usercontent.google.com/download?id=16bqTETY06cPW6y_1LCzNLSJaLauEmk_3&export=download&confirm=t'
-     ],
+     src:'assets/audio/capital-melody-1930s.mp3?v=desktop1',
      duration:7978.083265,
      loop:true
     }

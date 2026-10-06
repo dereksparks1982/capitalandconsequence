@@ -5,8 +5,10 @@
   "description": "Federal Electric desktop alpha",
   "main": "desktop/main.cjs",
   "scripts": {
+    "prepare:runtime": "node desktop/prepare-runtime-assets.cjs",
+    "prestart": "npm run prepare:runtime",
     "start": "electron .",
-    "pack:linux": "electron-builder --linux dir --x64",
+    "pack:linux": "electron-builder --linux dir --x64 --publish never",
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never"
   },
   "devDependencies": {
@@ -21,22 +23,16 @@
       "output": "dist"
     },
     "files": [
-      "index.html",
-      "app.js",
-      "styles.css",
-      "boxing.css",
-      "boxing.js",
-      "racing.css",
-      "racing.js",
-      "oval-racing.js",
-      "underworld.css",
-      "underworld.js",
-      "poker.html",
-      "poker.js",
+      "*.html",
+      "*.js",
+      "*.css",
       "assets/**/*",
       "radio/**/*",
       "vendor/**/*",
       "desktop/**/*"
+    ],
+    "asarUnpack": [
+      "assets/audio/**/*"
     ],
     "linux": {
       "target": [

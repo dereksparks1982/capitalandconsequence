@@ -35,13 +35,29 @@ jobs:
       - name: Install desktop build dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Build Linux AppImage
-        run: npm run dist:linux
+      - name: Copy runtime web dependencies into the game
+        run: npm run prepare:runtime
 
-      - name: Upload private Linux alpha
+      - name: Build portable Linux directory
+        run: npm run pack:linux
+
+      - name: Add human-readable launcher
+        run: |
+          ln -s federal-electric "dist/linux-unpacked/Federal Electric"
+
+      - name: Smoke-test packaged executable
+        run: |
+          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --smoke-test
+
+      - name: Package standalone alpha
+        run: |
+          mv dist/linux-unpacked "dist/Federal Electric Standalone"
+          tar -C dist -czf "dist/Federal-Electric-0.5.0-alpha.1-linux-x64.tar.gz" "Federal Electric Standalone"
+
+      - name: Upload private Linux standalone alpha
         uses: actions/upload-artifact@v4
         with:
-          name: Federal-Electric-Linux-alpha
-          path: dist/*.AppImage
+          name: Federal-Electric-Linux-standalone
+          path: dist/Federal-Electric-0.5.0-alpha.1-linux-x64.tar.gz
           if-no-files-found: error
           retention-days: 14

@@ -830,7 +830,7 @@ const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.005;
 const TITLE_NIGHT_AMBIENCE_VOLUME=.14;
 const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.01;
-const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
+const TITLE_DAY_AMBIENCE_SRC='assets/audio/title-day-ambience.mp3?v=desktop1';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
 function titleMobileRadioOnly(){

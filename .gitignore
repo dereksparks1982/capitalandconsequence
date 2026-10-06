@@ -2,3 +2,5 @@ node_modules/
 dist/
 *.AppImage
 npm-debug.log*
+assets/title-map-1938.jpg
+assets/audio/title-day-ambience.mp3
