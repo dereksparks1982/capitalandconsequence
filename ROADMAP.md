@@ -458,12 +458,44 @@ Accepted final control state:
 - [x] The station-name/frequency display is the drag handle on desktop and touch devices; desktop uses the four-direction move cursor.
 - [x] Control order is previous station → station readout → next station → volume down → volume up → numeric volume → power.
 - [x] Volume changes in 5-point steps.
-- [x] Fresh desktop session starts at 40%; fresh mobile session starts at 20%; radio volume is not persisted across page reloads. iOS uses a Web Audio master gain so the in-game volume is actually applied, with the audio graph created/unlocked from the first user gesture.
+- [ ] **MOBILE RADIO REGRESSION:** desktop starts at 40%, but the iPhone/mobile radio startup is not currently accepted. The 20% HTML-media setting did not audibly reduce iPhone output, and the later Web Audio attenuation work caused the 610 AM starting title music to stop starting on mobile.
 - [x] Old floating station label and old speaker-area power hotspot are removed.
 - [x] Redundant radio controls are removed from the DEV panel.
 - [x] Mobile title audio suppresses city/street ambience, fan audio and clock ticking, leaving the radio/music path uncluttered.
 - [x] Desktop title ambience remains available.
 - [x] Final accepted radio-control baseline deployed successfully at `46d8b4d565cb1ee5e7f3695e9df40628fd4bf56a`.
+
+## Mobile radio regression handoff — 2026-10-06
+
+**Current status: OPEN / BROKEN ON IPHONE**
+
+Observed by Derek on a real iPhone:
+- all other title-screen sounds still work
+- the starting **610 AM · Federal Electric Network** title music does **not** start
+- changing the mobile radio number alone did not produce a noticeable loudness change before the regression
+- therefore do not keep treating this as only a 20% vs 50% setting problem
+
+Sequence that led here:
+1. `3af5c654` changed the mobile radio default to **20%** using the existing HTMLMediaElement `.volume` path.
+2. `9a62884e` changed desktop default to **40%** while keeping mobile at **20%**.
+3. Derek reported that iPhone loudness still sounded effectively unchanged.
+4. `5f30f40e` added an iOS Web Audio `AudioContext` + master `GainNode` and routed radio media elements through it so software attenuation would be real on iOS.
+5. Immediately after that change, Derek reported that the starting mobile title music no longer played at all, although other title sounds still worked.
+6. `e2f7eda4` tried to restore startup by deferring creation/routing of the Web Audio graph until the first user gesture. That deployment completed successfully, but Derek tested it and reported **the starting music is still absent**.
+
+Most likely failure boundary:
+- the regression is isolated to the radio path, not the whole title audio system
+- the new iOS Web Audio routing remains the prime suspect because it is the major radio-only change immediately preceding the failure
+- do not assume the displayed volume number proves the audible signal is being changed
+
+**Proposed next fix, in order:**
+1. Revert the iOS Web Audio radio-routing experiment from `5f30f40e` / `e2f7eda4` back to the known direct-media playback behavior from `9a62884e`.
+2. Deploy that single rollback and verify on Derek's iPhone that the 610 AM starting music plays again before doing any further volume work.
+3. Once startup is proven, solve iPhone loudness separately. Preferred robust direction: serve **mobile-specific pre-attenuated radio audio assets** (starting with the title theme) rather than putting autoplay-critical media behind an AudioContext. Offline attenuation changes the actual waveform level and is not dependent on iOS honoring `HTMLMediaElement.volume` or successfully resuming a Web Audio graph.
+4. Only after playback is stable should the mobile UI default be finalized. Do not chase 20% vs 50% while the track itself is failing to start.
+5. Preserve desktop at **40%** unless Derek changes it.
+
+Do not bundle this with unrelated gameplay work. First slice of the next thread should be **restore mobile radio startup only**.
 
 ## Title-screen radio network — 2026-10-05
 

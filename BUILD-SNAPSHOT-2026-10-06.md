@@ -2,7 +2,7 @@
 
 ## Build identity
 
-**v0.5.0 — CLOSED**
+**v0.5.0 — CLOSED EXCEPT FOR OPEN iPHONE RADIO REGRESSION**
 
 Accepted gameplay/code baseline before documentation closeout:
 `46d8b4d565cb1ee5e7f3695e9df40628fd4bf56a`
@@ -23,8 +23,9 @@ This snapshot closes the October 6 radio/title-control and factory-delegation bu
 - volume controls are **down → up → numeric value**
 - volume changes in 5-point steps
 - desktop fresh-load default: **40%**
-- mobile fresh-load default: **20%**
-- iPhone/iPadOS radio output uses a Web Audio master GainNode so the 20% game setting produces actual signal attenuation; the graph is created/unlocked on the first user gesture so the title track can start under iOS autoplay restrictions
+- desktop fresh-load default remains **40%**
+- mobile radio startup/volume is **OPEN**: the current iPhone build does not start the 610 AM title music
+- the failure appeared after routing radio audio through an iOS Web Audio GainNode; deferring that graph until first gesture did not fix the real-device failure
 - radio volume is session-only
 - old floating station label removed
 - old speaker-area power hotspot removed
@@ -96,15 +97,36 @@ Historical facts continue to be sourced where the game uses real people, institu
 
 Federal Electric's later mayoral path is explicit alternate history: the game's Washington retains the old presidentially appointed mayoralty so the player may eventually pursue appointment after building sufficient influence.
 
+## Open iPhone radio regression at handoff
+
+Real-device result:
+- other title-screen sounds work on iPhone
+- starting 610 AM title music does not start
+- latest attempted fix did not restore it
+
+Change history:
+- `3af5c654`: mobile nominal default 20%
+- `9a62884e`: desktop 40%, mobile 20%
+- `5f30f40e`: added iOS Web Audio GainNode attenuation; startup music then disappeared on iPhone
+- `e2f7eda4`: deferred gain graph until first gesture; deployed successfully, but iPhone startup music is still absent
+
+Proposed recovery:
+- first revert only the iOS Web Audio routing to the direct playback state from `9a62884e`
+- verify starting music on Derek's iPhone
+- then solve loudness independently, preferably with mobile-specific pre-attenuated audio files so attenuation is baked into the waveform and does not interfere with iOS autoplay
+- keep PC at 40%
+- do not combine this recovery with unrelated changes
+
 ## Known next-build targets
 
 Carried forward, not implemented in this closeout:
-1. broader fallible delegated-management judgment calls and incidents
-2. customer/cash/layoff/closure escalation from prolonged neglect
-3. Washington influence / power-broker progression
-4. later presidential contact and alternate-history mayor appointment path
-5. hand-curated GTA-style radio programming with announcers, IDs, commercials, news, static and secret content
-6. film-canister / Motion Picture work only after explicit approval of the exact title-art edit
+1. **restore iPhone starting radio music and then re-address mobile loudness without breaking playback**
+2. broader fallible delegated-management judgment calls and incidents
+3. customer/cash/layoff/closure escalation from prolonged neglect
+4. Washington influence / power-broker progression
+5. later presidential contact and alternate-history mayor appointment path
+6. hand-curated GTA-style radio programming with announcers, IDs, commercials, news, static and secret content
+7. film-canister / Motion Picture work only after explicit approval of the exact title-art edit
 
 ## Closeout
 
