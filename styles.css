@@ -1035,3 +1035,12 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-dev-radio-grid{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:3px}
 .title-dev-radio-tools button{min-width:0!important;min-height:24px!important;padding:3px 4px!important;text-align:center!important;font-size:8.5px!important}
 @media(max-width:700px){.title-dev-radio-tools button{font-size:8px!important}.title-dev-radio-grid{grid-template-columns:1fr 1.15fr 1fr}}
+
+
+/* v0.5-dev radio volume control */
+#globalRadioVolume{min-width:48px}
+.title-dev-radio-grid{grid-template-columns:1fr 1.25fr 1fr 1.1fr}
+@media(max-width:700px){
+ #globalRadioVolume{min-width:42px;padding-inline:4px}
+ .title-dev-radio-grid{grid-template-columns:1fr 1.15fr 1fr 1.05fr}
+}
