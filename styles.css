@@ -1012,3 +1012,18 @@ body.elephant-easter-egg-open{overflow:hidden}
 .fe-card-detail footer{margin-top:18px;padding-top:10px;border-top:1px solid #a68243;background:transparent;color:#6b5840;font:700 10px/1.2 'Courier New',monospace}
 @media(max-width:900px){.fe-collectible-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.fe-collectible-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fe-collectible-card{padding:7px;border-radius:11px}.fe-card-category{left:10px;right:10px;top:11px}.fe-card-face{inset:47px 13px 14px}.fe-card-face h4{font-size:16px}}
+
+
+/* v0.5-dev title hotspot editor */
+.title-dev-hotspot-tools{display:grid;gap:5px;padding:5px;border:1px solid rgba(181,140,72,.38);background:rgba(17,14,10,.72)}
+.title-dev-hotspot-tools select{width:100%;min-height:25px;padding:3px 5px;border:1px solid rgba(181,140,72,.55);background:#1f1a13;color:#ead39a;font:700 10px/1 Arial,sans-serif}
+.title-dev-hotspot-tools output{display:block;padding:4px 5px;background:#0f0d0a;color:#cdbb91;font:700 9px/1.25 'Courier New',monospace;text-align:center}
+.title-dev-hotspot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.title-dev-hotspot-size,.title-dev-hotspot-actions{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.title-dev-hotspot-tools button{min-width:0!important;min-height:23px!important;padding:3px 4px!important;text-align:center!important;font-size:9px!important}
+.title-dev-edit-hotspots .title-hotspot{cursor:move!important;touch-action:none}
+.title-dev-edit-hotspots .title-hotspot::before{opacity:1!important;box-shadow:none!important;border:2px dashed rgba(255,68,68,.98);inset:0!important;border-radius:1px}
+.title-dev-edit-hotspots .title-hotspot.title-dev-selected-hotspot::before{border-color:#ffe28e!important;background:rgba(255,220,90,.08)!important}
+.title-hotspot-resize-handle{display:none;position:absolute;right:-5px;bottom:-5px;width:13px;height:13px;border:2px solid #271b0c;background:#ffe28e;z-index:8;cursor:nwse-resize;pointer-events:auto}
+.title-dev-edit-hotspots .title-dev-selected-hotspot .title-hotspot-resize-handle{display:block}
+@media(max-width:700px){.title-dev-hotspot-tools button{font-size:8px!important}.title-hotspot-resize-handle{width:16px;height:16px;right:-7px;bottom:-7px}}
