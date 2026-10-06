@@ -157,7 +157,14 @@ function clockText(){const t=Math.max(0,Math.ceil(S.dayRemaining)),m=Math.floor(
 function businessOpen(){return S.phase==='day'}
 const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal',racing:'pastimes',washington:'pastimes'};
 function syncTopNavigation(id=document.querySelector('.tab.active')?.id||'desk'){const group=NAV_GROUP_BY_TAB[id]||id;document.querySelectorAll('nav button[data-nav-group]').forEach(btn=>btn.classList.toggle('active',btn.dataset.navGroup===group));document.querySelectorAll('.section-tabs button[data-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id))}
-function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));const tab=$('#'+id);if(tab)tab.classList.add('active');syncTopNavigation(id);if(id==='racing'&&!pastimeActivityState.legal)setPastimeActivity('legal','horse');if(id==='washington'&&!pastimeActivityState.illicit)setPastimeActivity('illicit','star')}
+function showTab(id){
+ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+ const tab=$('#'+id);if(tab)tab.classList.add('active');
+ syncTopNavigation(id);
+ setRadioLocationContext('office');
+ if(id==='racing'&&!pastimeActivityState.legal)setPastimeActivity('legal','horse');
+ if(id==='washington'&&!pastimeActivityState.illicit)setPastimeActivity('illicit','star');
+}
 const pastimeActivityState={legal:null,illicit:null};
 function setPastimeActivity(group,target=null){
  const panels=[...document.querySelectorAll('[data-activity-panel="'+group+'"]')],buttons=[...document.querySelectorAll('[data-activity-group="'+group+'"]')];
@@ -165,6 +172,7 @@ function setPastimeActivity(group,target=null){
  const wasOpen=!!(requested&&!requested.hidden&&pastimeActivityState[group]===target);
  panels.forEach(p=>p.hidden=true);buttons.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-expanded','false')});pastimeActivityState[group]=null;
  if(target&&!wasOpen&&requested){requested.hidden=false;pastimeActivityState[group]=target;const btn=buttons.find(b=>b.dataset.activityTarget===target);if(btn){btn.classList.add('active');btn.setAttribute('aria-expanded','true')}}
+ if(group==='illicit')setRadioLocationContext(pastimeActivityState.illicit==='star'?'star':'office');
 }
 window.isPastimeActivityOpen=(group,target)=>pastimeActivityState[group]===target;
 document.addEventListener('click',e=>{
@@ -771,6 +779,8 @@ const TITLE_RADIO_STATIONS=[
  {name:'Capital News Service',dial:'1010 AM',tracks:['assets/audio/station-5-newscast.mp3?v=20261004-news1'],duration:22831.584}
 ];
 let titleRadioAudio=null,titleRadioFadeTimer=null,titleRadioOff=false,titleRadioStationIndex=0,titleRadioTrackIndex=0,titleRadioAirStartAt=0,titleRadioAirSyncTimer=null;
+let titleRadioAutoTune=true,titleRadioLocationContext='title';
+const TITLE_RADIO_CONTEXT_STATIONS={title:0,office:4,star:3};
 const titleRadioBackgroundFeeds=new Map();
 let titleScreenDeskBreak=false;
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
@@ -972,20 +982,26 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower');
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
+ if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
+ if(devPower){
+  devPower.textContent='RADIO: '+(titleRadioOff?'OFF':'ON');
+  devPower.classList.toggle('is-on',!titleRadioOff);
+  devPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
+ }
  if(globalPower){
   globalPower.textContent=titleRadioOff?'OFF':'ON';
   globalPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
   globalPower.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
  }
 }
-function cycleTitleRadioStation(direction=1){
+function tuneTitleRadioStation(index,showLabel=true){
+ const next=((Math.floor(+index)||0)%TITLE_RADIO_STATIONS.length+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
- if(titleRadioAudio){titleRadioAudio.pause();if(titleRadioStationIndex===0){try{titleRadioAudio.currentTime=0}catch(e){}}}
+ if(titleRadioAudio){titleRadioAudio.pause();if(titleRadioStationIndex===0||next===0){try{titleRadioAudio.currentTime=0}catch(e){}}}
  for(const audio of titleRadioBackgroundFeeds.values()){audio.pause();audio.muted=true}
- titleRadioStationIndex=(titleRadioStationIndex+(direction<0?-1:1)+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;
- titleRadioTrackIndex=0;
+ titleRadioStationIndex=next;titleRadioTrackIndex=0;
  if(titleRadioStationIndex===0){
   updateTitleRadioAudibility();
   loadTitleRadioTrack(!titleRadioOff);
@@ -1000,7 +1016,22 @@ function cycleTitleRadioStation(direction=1){
   updateTitleRadioAudibility();
  }
  updateTitleRadioControls();
- showTitleRadioStationLabel();
+ if(showLabel)showTitleRadioStationLabel();
+}
+function cycleTitleRadioStation(direction=1){
+ tuneTitleRadioStation(titleRadioStationIndex+(direction<0?-1:1),true);
+}
+function setRadioLocationContext(context,force=false){
+ if(!Object.prototype.hasOwnProperty.call(TITLE_RADIO_CONTEXT_STATIONS,context))context='office';
+ const changed=titleRadioLocationContext!==context;
+ titleRadioLocationContext=context;
+ if(titleRadioAutoTune&&(changed||force))tuneTitleRadioStation(TITLE_RADIO_CONTEXT_STATIONS[context],true);
+ updateTitleDevPanel();
+}
+function toggleTitleRadioAutoTune(){
+ titleRadioAutoTune=!titleRadioAutoTune;
+ if(titleRadioAutoTune)setRadioLocationContext(titleRadioLocationContext,true);
+ updateTitleDevPanel();
 }
 function toggleTitleRadioPower(){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
@@ -1259,19 +1290,19 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
+function closeTitleScreen(){if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
  const screen=$('#titleScreen');if(!screen)return;
  save(true);
  titleScreenDeskBreak=true;
  screen.hidden=false;
- titleRadioStationIndex=0;titleRadioTrackIndex=0;titleRadioOff=false;
- if(titleRadioAudio){titleRadioAudio.pause();try{titleRadioAudio.currentTime=0}catch(e){}}
+ titleRadioLocationContext='office';
  startTitleEnvironment();
  startTitleClock();
  ensureTitleRadioControls();
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
  startTitleRadioBackgroundFeeds();
+ setRadioLocationContext('office',true);
  updateTitleRadioControls();
  syncTitleCityAmbience();
  syncTitleFanAudio();
@@ -1516,6 +1547,8 @@ function updateTitleDevPanel(){
  setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevEditHotspots',titleDevEditHotspots,'Edit Hotspots: '+(titleDevEditHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevOutsideNoise',titleDevOutsideNoise,'Outside Noise: '+(titleDevOutsideNoise?'ON':'OFF'));
+ setTitleDevButtonState('titleDevRadioAuto',titleRadioAutoTune,'Auto Tune: '+(titleRadioAutoTune?'ON':'OFF'));
+ updateTitleRadioControls();
  updateTitleHotspotReadout();
 }
 function toggleTitleEnvironmentDev(){
@@ -1589,6 +1622,7 @@ function resetTitleDevOverrides(){
  titleDevShowHotspots=false;
  titleDevEditHotspots=false;
  titleDevOutsideNoise=true;
+ titleRadioAutoTune=true;
  titleEnvironmentDevOverride=null;
  resetAllTitleHotspots();
  const screen=document.getElementById('titleScreen');
@@ -1648,6 +1682,10 @@ function initTitleDevPanel(){
  document.getElementById('titleDevHotspotTaller').onclick=()=>adjustTitleHotspot(0,0,0,.2);
  document.getElementById('titleDevHotspotSave').onclick=saveTitleHotspotLayout;
  document.getElementById('titleDevHotspotResetSelected').onclick=resetSelectedTitleHotspot;
+ document.getElementById('titleDevRadioPrev').onclick=()=>cycleTitleRadioStation(-1);
+ document.getElementById('titleDevRadioPower').onclick=toggleTitleRadioPower;
+ document.getElementById('titleDevRadioNext').onclick=()=>cycleTitleRadioStation(1);
+ document.getElementById('titleDevRadioAuto').onclick=toggleTitleRadioAutoTune;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
  updateTitleDevPanel();
@@ -2010,7 +2048,7 @@ function initTitleMapViewer(){
 function initTitleScreen(){
  const screen=$('#titleScreen');if(!screen)return;
  screen.hidden=false;
- titleRadioStationIndex=0;titleRadioTrackIndex=0;titleRadioOff=false;
+ titleRadioStationIndex=0;titleRadioTrackIndex=0;titleRadioOff=false;titleRadioLocationContext='title';
  startTitleEnvironment();
  startTitleClock();
  ensureTitleRadioControls();
@@ -2019,6 +2057,7 @@ function initTitleScreen(){
  titleRadioAirStartAt=Date.now();
  startTitleRadioBackgroundFeeds();
  loadTitleRadioTrack(false);
+ setRadioLocationContext('title',true);
  updateTitleRadioControls();
  startTitleRadio();
  initTitleMapViewer();
