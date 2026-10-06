@@ -1389,8 +1389,111 @@ function titleDCSunTimes(date){
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
 let titleEnvironmentDevOverride=null;
-let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevOutsideNoise=true;
+let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevEditHotspots=false,titleDevOutsideNoise=true;
 const TITLE_DEV_MONEY=999999999;
+const TITLE_HOTSPOT_LAYOUT_KEY='federalElectricTitleHotspotsV1';
+const TITLE_HOTSPOT_IDS=['titleContinue','titleProfile','titleOptions','titleArchives'];
+const titleHotspotDefaults=Object.create(null);
+let titleHotspotDrafts=Object.create(null),titleHotspotSelected='titleContinue',titleHotspotGesture=null;
+
+function titleHotspotElement(id){return TITLE_HOTSPOT_IDS.includes(id)?document.getElementById(id):null}
+function titleHotspotGeometry(id){
+ const el=titleHotspotElement(id),frame=el?.closest('.title-screen-frame');if(!el||!frame)return null;
+ if(titleHotspotDrafts[id])return Object.assign({},titleHotspotDrafts[id]);
+ const er=el.getBoundingClientRect(),fr=frame.getBoundingClientRect();
+ return {left:(er.left-fr.left)/fr.width*100,top:(er.top-fr.top)/fr.height*100,width:er.width/fr.width*100,height:er.height/fr.height*100};
+}
+function normalizeTitleHotspotGeometry(g){
+ const width=clamp(+g.width||2,2,40),height=clamp(+g.height||2,2,25);
+ return {left:clamp(+g.left||0,0,100-width),top:clamp(+g.top||0,0,100-height),width,height};
+}
+function applyTitleHotspotGeometry(id,g){
+ const el=titleHotspotElement(id);if(!el||!g)return;
+ const n=normalizeTitleHotspotGeometry(g);titleHotspotDrafts[id]=n;
+ el.style.left=n.left+'%';el.style.top=n.top+'%';el.style.width=n.width+'%';el.style.height=n.height+'%';el.style.transform='none';
+}
+function clearTitleHotspotInline(id){
+ const el=titleHotspotElement(id);if(!el)return;
+ for(const prop of ['left','top','width','height','transform'])el.style.removeProperty(prop);
+}
+function captureTitleHotspotDefaults(){
+ for(const id of TITLE_HOTSPOT_IDS){if(!titleHotspotDefaults[id])titleHotspotDefaults[id]=titleHotspotGeometry(id)}
+}
+function loadTitleHotspotLayout(){
+ captureTitleHotspotDefaults();
+ let saved=null;try{saved=JSON.parse(localStorage.getItem(TITLE_HOTSPOT_LAYOUT_KEY)||'null')}catch(e){}
+ if(!saved||typeof saved!=='object')return;
+ for(const id of TITLE_HOTSPOT_IDS){if(saved[id])applyTitleHotspotGeometry(id,saved[id])}
+}
+function saveTitleHotspotLayout(){
+ const payload={};
+ for(const id of TITLE_HOTSPOT_IDS){if(titleHotspotDrafts[id])payload[id]=normalizeTitleHotspotGeometry(titleHotspotDrafts[id])}
+ localStorage.setItem(TITLE_HOTSPOT_LAYOUT_KEY,JSON.stringify(payload));
+ const out=document.getElementById('titleDevHotspotReadout');if(out)out.dataset.saved='1';
+}
+function selectTitleHotspot(id){
+ if(!TITLE_HOTSPOT_IDS.includes(id))return;
+ titleHotspotSelected=id;
+ const select=document.getElementById('titleDevHotspotSelect');if(select&&select.value!==id)select.value=id;
+ document.querySelectorAll('.title-hotspot').forEach(el=>el.classList.toggle('title-dev-selected-hotspot',el.id===id));
+ updateTitleHotspotReadout();
+}
+function updateTitleHotspotReadout(){
+ const out=document.getElementById('titleDevHotspotReadout'),g=titleHotspotGeometry(titleHotspotSelected);if(!out||!g)return;
+ out.textContent='L '+g.left.toFixed(2)+' · T '+g.top.toFixed(2)+' · W '+g.width.toFixed(2)+' · H '+g.height.toFixed(2);
+}
+function adjustTitleHotspot(dx=0,dy=0,dw=0,dh=0){
+ const g=titleHotspotGeometry(titleHotspotSelected);if(!g)return;
+ applyTitleHotspotGeometry(titleHotspotSelected,{left:g.left+dx,top:g.top+dy,width:g.width+dw,height:g.height+dh});
+ updateTitleHotspotReadout();
+}
+function resetSelectedTitleHotspot(){
+ const id=titleHotspotSelected;delete titleHotspotDrafts[id];clearTitleHotspotInline(id);
+ updateTitleHotspotReadout();
+}
+function resetAllTitleHotspots(){
+ localStorage.removeItem(TITLE_HOTSPOT_LAYOUT_KEY);
+ titleHotspotDrafts=Object.create(null);
+ for(const id of TITLE_HOTSPOT_IDS)clearTitleHotspotInline(id);
+ updateTitleHotspotReadout();
+}
+function setTitleHotspotEditMode(on){
+ titleDevEditHotspots=!!on;
+ const screen=document.getElementById('titleScreen');
+ if(screen){screen.classList.toggle('title-dev-edit-hotspots',titleDevEditHotspots);if(titleDevEditHotspots)screen.classList.add('title-dev-show-hotspots')}
+ if(titleDevEditHotspots)titleDevShowHotspots=true;
+ selectTitleHotspot(titleHotspotSelected);
+ updateTitleDevPanel();
+}
+function initTitleHotspotEditor(){
+ loadTitleHotspotLayout();
+ for(const id of TITLE_HOTSPOT_IDS){
+  const el=titleHotspotElement(id);if(!el)continue;
+  if(!el.querySelector('.title-hotspot-resize-handle')){const h=document.createElement('span');h.className='title-hotspot-resize-handle';h.setAttribute('aria-hidden','true');el.appendChild(h)}
+  el.addEventListener('pointerdown',e=>{
+   if(!titleDevEditHotspots||e.button!==0)return;
+   e.preventDefault();e.stopImmediatePropagation();selectTitleHotspot(id);
+   const frame=el.closest('.title-screen-frame'),fr=frame.getBoundingClientRect(),g=titleHotspotGeometry(id);if(!g)return;
+   titleHotspotGesture={id,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,start:g,mode:e.target.closest('.title-hotspot-resize-handle')?'resize':'move',frameW:fr.width,frameH:fr.height};
+   el.setPointerCapture(e.pointerId);
+  },true);
+  el.addEventListener('pointermove',e=>{
+   const drag=titleHotspotGesture;if(!drag||drag.id!==id||drag.pointerId!==e.pointerId)return;
+   const dx=(e.clientX-drag.startX)/drag.frameW*100,dy=(e.clientY-drag.startY)/drag.frameH*100;
+   if(drag.mode==='resize')applyTitleHotspotGeometry(id,{left:drag.start.left,top:drag.start.top,width:drag.start.width+dx,height:drag.start.height+dy});
+   else applyTitleHotspotGeometry(id,{left:drag.start.left+dx,top:drag.start.top+dy,width:drag.start.width,height:drag.start.height});
+   updateTitleHotspotReadout();e.preventDefault();
+  });
+  const release=e=>{
+   const drag=titleHotspotGesture;if(!drag||drag.id!==id||drag.pointerId!==e.pointerId)return;
+   titleHotspotGesture=null;try{el.releasePointerCapture(e.pointerId)}catch(err){}e.preventDefault();e.stopPropagation();
+  };
+  el.addEventListener('pointerup',release,true);el.addEventListener('pointercancel',release,true);
+  el.addEventListener('click',e=>{if(titleDevEditHotspots){e.preventDefault();e.stopImmediatePropagation()}},true);
+ }
+ selectTitleHotspot(titleHotspotSelected);
+}
+
 
 function titlePlaythroughEnvironmentMode(){
  return titleEnvironmentDevOverride||(S.phase==='night'||S.phase==='report'?'night':'day');
@@ -1408,7 +1511,9 @@ function updateTitleDevPanel(){
  setTitleDevButtonState('titleDevInfiniteMoney',titleDevInfiniteMoney,'Infinite Money: '+(titleDevInfiniteMoney?'ON':'OFF'));
  setTitleDevButtonState('titleDevFreezeTime',titleDevFreezeTime,'Freeze Time: '+(titleDevFreezeTime?'ON':'OFF'));
  setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
+ setTitleDevButtonState('titleDevEditHotspots',titleDevEditHotspots,'Edit Hotspots: '+(titleDevEditHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevOutsideNoise',titleDevOutsideNoise,'Outside Noise: '+(titleDevOutsideNoise?'ON':'OFF'));
+ updateTitleHotspotReadout();
 }
 function toggleTitleEnvironmentDev(){
  const current=titlePlaythroughEnvironmentMode();
@@ -1441,8 +1546,10 @@ function toggleTitleDevHotspots(){
  titleDevShowHotspots=!titleDevShowHotspots;
  const screen=document.getElementById('titleScreen');
  if(screen)screen.classList.toggle('title-dev-show-hotspots',titleDevShowHotspots);
+ if(!titleDevShowHotspots&&titleDevEditHotspots)setTitleHotspotEditMode(false);
  updateTitleDevPanel();
 }
+function toggleTitleDevEditHotspots(){setTitleHotspotEditMode(!titleDevEditHotspots)}
 function restartTitleCityAmbienceFromDev(){
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
@@ -1468,6 +1575,7 @@ function toggleTitleDevOutsideNoise(){
  updateTitleDevPanel();
 }
 function resetTitleDevOverrides(){
+ if(!confirm('Reset all developer overrides, including saved title hotspot positions and sizes?'))return;
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
   S.companyCash=titleDevMoneySnapshot.companyCash;
   S.personalCash=titleDevMoneySnapshot.personalCash;
@@ -1476,10 +1584,12 @@ function resetTitleDevOverrides(){
  titleDevMoneySnapshot=null;
  titleDevFreezeTime=false;
  titleDevShowHotspots=false;
+ titleDevEditHotspots=false;
  titleDevOutsideNoise=true;
  titleEnvironmentDevOverride=null;
+ resetAllTitleHotspots();
  const screen=document.getElementById('titleScreen');
- if(screen)screen.classList.remove('title-dev-show-hotspots');
+ if(screen){screen.classList.remove('title-dev-show-hotspots');screen.classList.remove('title-dev-edit-hotspots')}
  updateTitleEnvironment();
  render();
  updateTitleDevPanel();
@@ -1523,6 +1633,18 @@ function initTitleDevPanel(){
  document.getElementById('titleDevInfiniteMoney').onclick=toggleTitleDevInfiniteMoney;
  document.getElementById('titleDevFreezeTime').onclick=toggleTitleDevFreezeTime;
  document.getElementById('titleDevHotspots').onclick=toggleTitleDevHotspots;
+ document.getElementById('titleDevEditHotspots').onclick=toggleTitleDevEditHotspots;
+ document.getElementById('titleDevHotspotSelect').onchange=e=>selectTitleHotspot(e.target.value);
+ document.getElementById('titleDevHotspotUp').onclick=()=>adjustTitleHotspot(0,-.2);
+ document.getElementById('titleDevHotspotLeft').onclick=()=>adjustTitleHotspot(-.2,0);
+ document.getElementById('titleDevHotspotDown').onclick=()=>adjustTitleHotspot(0,.2);
+ document.getElementById('titleDevHotspotRight').onclick=()=>adjustTitleHotspot(.2,0);
+ document.getElementById('titleDevHotspotNarrow').onclick=()=>adjustTitleHotspot(0,0,-.2,0);
+ document.getElementById('titleDevHotspotWiden').onclick=()=>adjustTitleHotspot(0,0,.2,0);
+ document.getElementById('titleDevHotspotShorter').onclick=()=>adjustTitleHotspot(0,0,0,-.2);
+ document.getElementById('titleDevHotspotTaller').onclick=()=>adjustTitleHotspot(0,0,0,.2);
+ document.getElementById('titleDevHotspotSave').onclick=saveTitleHotspotLayout;
+ document.getElementById('titleDevHotspotResetSelected').onclick=resetSelectedTitleHotspot;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
  updateTitleDevPanel();
@@ -1908,6 +2030,7 @@ function initTitleScreen(){
  document.addEventListener('keydown',syncTitleClockAudio,{once:true});
  const titleCabinetButtons=[$('#titleContinue'),$('#titleProfile'),$('#titleOptions'),$('#titleArchives')].filter(Boolean);
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
+ initTitleHotspotEditor();
  initTitleDevPanel();
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();
