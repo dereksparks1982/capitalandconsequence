@@ -15,7 +15,7 @@ The game now has a stronger presentation-editing and management foundation:
 
 - editable title hotspots with saved local geometry
 - compact persistent player radio controls
-- radio power, station, volume and context auto-tune controls in DEV PANEL
+- radio power, station, exact 0–100 volume slider and context auto-tune controls in DEV PANEL
 - iPhone radio architecture changed to one active feed at a time
 - desktop metadata prewarm for the large Capital Melody file
 - mobile audio mix moved toward louder radio / quieter street ambience
@@ -42,7 +42,7 @@ Factory delegation exists specifically so political/social play does not require
 - verify Reset Selected and confirmed Reset Overrides
 - verify iPhone radio can advance through all five stations repeatedly without locking
 - verify Capital Melody first-tune delay is improved on desktop
-- verify mobile radio LOW/MED/HIGH
+- verify mobile radio 0–100 slider and exact numeric readout
 - verify title startup always begins on station 1 theme from 0:00
 - verify Star Club context selects Capital Melody when Auto Tune is ON
 - verify manual tuning remains available afterward
