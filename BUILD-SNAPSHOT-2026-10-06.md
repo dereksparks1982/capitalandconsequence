@@ -2,61 +2,109 @@
 
 ## Build identity
 
-**v0.5.0-dev**
+**v0.5.0 — CLOSED**
 
-This snapshot opens the new Washington Power / delegation development line after the v0.4 closeout.
+Accepted gameplay/code baseline before documentation closeout:
+`46d8b4d565cb1ee5e7f3695e9df40628fd4bf56a`
 
-Current baseline before this refresh:
-`7724d5a94ca9d99d3562642174e6580eab449cca`
+GitHub Pages deployment for that baseline: **SUCCESS**
 
-## What changed from v0.4
+This snapshot closes the October 6 radio/title-control and factory-delegation build. The next development line is expected to be **v0.6.0-dev**, but no v0.6 gameplay changes are part of this closeout.
 
-The game now has a stronger presentation-editing and management foundation:
+## Major accepted changes since v0.4.0
 
-- editable title hotspots with saved local geometry
-- DEV panel hidden on mobile (900px and below); player radio controls remain available
-- compact persistent player radio controls
-- radio power, station, exact 0–100 volume slider and context auto-tune controls in DEV PANEL
-- iPhone radio architecture changed to one active feed at a time
-- desktop metadata prewarm for the large Capital Melody file
-- mobile audio mix moved toward louder radio / quieter street ambience
-- Star Club map label corrected
-- Foreman Sullivan delegation foundation
-- General Manager hire/dismiss and daily payroll
-- management alerts
-- serious delegated breakdowns can still fail
-- persistent management-neglect score that compounds unresolved problems into lower output and morale/discipline pressure
+### Player-facing radio
 
-## New long-form game direction
+- persistent radio stays fixed while gameplay pages scroll
+- draggable from the station frequency/name display
+- drag works with mouse/pointer and touch
+- desktop drag area uses the four-direction move cursor
+- previous and next station controls flank the readout
+- volume controls are **down → up → numeric value**
+- volume changes in 5-point steps
+- desktop fresh-load default: **75%**
+- small-screen/mobile fresh-load default: **50%**
+- radio volume is session-only
+- old floating station label removed
+- old speaker-area power hotspot removed
+- redundant DEV-panel radio controls removed
+- physical title-radio tuning dial remains interactive
 
-Federal Electric remains the core company, but the player may eventually become a Washington power broker and political figure.
+### Mobile audio simplification
 
-The alternate-history civic premise is explicit:
-Washington's presidentially appointed mayoralty survives into 1938 in this fictional timeline. The player may eventually pursue a presidential appointment as Mayor of Washington, D.C.
+At mobile/title widths, the title room suppresses:
+- city/street ambience
+- fan audio
+- clock ticking
 
-Factory delegation exists specifically so political/social play does not require manually starting the factory every morning, while fallible managers ensure the company can still suffer if neglected.
+The radio/music path remains available so one phone speaker is not carrying several competing ambience layers. Desktop retains the richer title-room soundscape.
 
-## Known test targets
+### DEV/title editing
 
-- verify hotspot editor on desktop and iPhone
-- verify saved hotspot geometry survives reload
-- verify Reset Selected and confirmed Reset Overrides
-- verify iPhone radio can advance through all five stations repeatedly without locking
-- verify Capital Melody first-tune delay is improved on desktop
-- verify mobile radio 0–100 slider and exact numeric readout
-- verify title startup always begins on station 1 theme from 0:00
-- verify Star Club context selects Capital Melody when Auto Tune is ON
-- verify manual tuning remains available afterward
-- verify Foreman Auto-Start at next Business Day
-- verify a serious breakdown still blocks automatic recovery when management fails
-- verify General Manager salary appears in company expenses
-- verify General Manager can sometimes contain serious away breakdowns
+- DEV panel remains desktop-only
+- title hotspot editor can select/move/resize CONTINUE, PROFILE, OPTIONS and ARCHIVES
+- fine movement/size controls remain available
+- hotspot geometry can be saved locally
+- individual reset and confirmed override reset remain available
+- approved title artwork itself was not redrawn for these controls
 
-## Next slice
+### Washington map
 
-Add broader fallible management judgment calls, then build the first Washington influence/political-progression state model. The neglect system exists now; customer loss, layoffs and closure remain later escalation layers.
+- six numbered location pins
+- always-visible labels
+- click-for-details cards
+- pan/zoom/reset
+- Edit Pins / Done Placing
+- local saved pin positions
+- **Star Club** naming retained for pin 2
 
+### Factory delegation / management
 
-### Radio control sizing correction
+- Foreman Sullivan routine morning auto-start foundation
+- explicit serious/non-routine holds
+- management alert system
+- paid General Manager
+- General Manager competence and reliability
+- delegated serious-breakdown containment can fail
+- management-neglect foundation
+- unresolved serious problems reduce output and can pressure morale/discipline
+- clean days and resolutions reduce neglect
 
-The visible player radio is now hard-sized on the actual `#globalRadioBar` DOM node and backed by final ID-specific CSS overrides. This avoids the earlier situation where edited class rules did not produce the expected live dimensions.
+Customer loss, layoffs, cash-pressure escalation and possible plant closure remain future work.
+
+## Gameplay systems preserved
+
+The closeout keeps the existing:
+- 4 turns/month and 372-turn main campaign
+- 60-minute Business Day + 60-minute Washington Night
+- Executive Desk / Factory / Markets & News / Journal / Pastimes structure
+- Warehouse/manual shipping model
+- production queue and production lots
+- Federal Exchange and stock history
+- Metropolitan Ledger and Archives
+- local profiles/autosave
+- horse, dog and midget-car racing
+- licensed boxing
+- poker and underworld systems
+- Daily Report
+- company/personal cash separation
+
+## Historical / alternate-history boundary
+
+Historical facts continue to be sourced where the game uses real people, institutions or events.
+
+Federal Electric's later mayoral path is explicit alternate history: the game's Washington retains the old presidentially appointed mayoralty so the player may eventually pursue appointment after building sufficient influence.
+
+## Known next-build targets
+
+Carried forward, not implemented in this closeout:
+1. broader fallible delegated-management judgment calls and incidents
+2. customer/cash/layoff/closure escalation from prolonged neglect
+3. Washington influence / power-broker progression
+4. later presidential contact and alternate-history mayor appointment path
+5. hand-curated GTA-style radio programming with announcers, IDs, commercials, news, static and secret content
+6. film-canister / Motion Picture work only after explicit approval of the exact title-art edit
+
+## Closeout
+
+This build is closed. Start the next build from `v0.5.0`, `HANDOFF-2026-10-06.md`, and this snapshot. Discussion from the closed build does not automatically authorize new repo changes.

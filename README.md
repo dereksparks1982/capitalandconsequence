@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current version: v0.5.0-dev**
+**Current version: v0.5.0**
 
 **Build an electrical empire in Washington, D.C., beginning in 1938.**
 
@@ -164,9 +164,10 @@ The things you ignore may continue without you.
 Federal Electric is actively being developed. The README is intentionally kept player-facing. Detailed implementation history, design decisions, build notes, and future plans live in the project documents:
 
 - [Roadmap](ROADMAP.md)
-- [Current build snapshot](BUILD-SNAPSHOT-2026-10-05.md)
-- [Current handoff](HANDOFF-2026-10-05.md)
-- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
+- [Current build snapshot](BUILD-SNAPSHOT-2026-10-06.md)
+- [Current handoff](HANDOFF-2026-10-06.md)
+- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-05.md)
+- [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
 - [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-03.md)
 - [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-02.md)
 - [Market design](MARKET-DESIGN.md)
@@ -226,14 +227,15 @@ Federal Electric opens on the approved 1930s executive-office title screen. The 
 The current build supports up to **three local profiles**, each with its own autosave. Existing browser progress is preserved by migrating the legacy save into **Profile 1** the first time the profile system runs.
 
 Current title-screen interactions include:
-- the lower radio dial for tuning and the separate radio power hotspot
+- a persistent player-facing radio bar with previous/next station, power, 5-point volume controls, numeric volume readout, and drag-to-move behavior from the station-name/frequency display
+- the physical desk-radio tuning dial remains interactive, while the old floating station label and speaker-area power hotspot have been retired
 - a clickable Metropolitan Ledger hotspot
 - the framed 1938 Washington, D.C. wall map, which opens a full pan-and-zoom viewer with numbered location pins, always-visible labels, click-for-details cards, and a session tool for dragging/saving pin positions locally
 - the live Washington clock and the approved title-room day/night environment
-- a draggable, collapsible session-only developer panel for day/night preview, infinite money, freeze time, hotspot display, and outside-noise on/off testing
+- a draggable, collapsible desktop-only developer panel for day/night preview, infinite money, freeze time, hotspot display/editing, and outside-noise testing; redundant radio controls have been removed from the DEV panel
 
 The title-screen Metropolitan Ledger currently costs **3¢** the first time its edition is opened by the most recently played profile. The charge comes from **Personal Cash**, not Company Cash. That edition is then recorded as purchased for that profile and can be reopened without another charge.
 
 The title menu is now consolidated as **Continue → Profile → Options → Archives**. **Profile** combines loading, creating, and deleting local profiles in one drawer. **Options** replaces Settings and is reserved for future game/presentation choices. **Archives** is present as the fourth drawer and is reserved for the profile-specific record of acquired newspapers, collectible cards, people, places, and other unlocked material.
 
-The title-screen radio currently exposes five frequencies: **Federal Electric Network (610 AM)**, **Capital Signal (540 AM)**, **Capital Radio Theatre (720 AM)**, **Capital Melody (880 AM)**, and **Capital News Service (1010 AM)**. The title theme remains the exception that restarts from the beginning when tuned back in. The live-style stations advance from a shared on-air clock, and Stations 2–4 can substitute separate nighttime programming. The title soundscape also includes independent city/street ambience, fan, clock, filing-cabinet, and newspaper sounds; the global PAUSE control stops the title audio together.
+The radio currently exposes five frequencies: **Federal Electric Network (610 AM)**, **Capital Signal (540 AM)**, **Capital Radio Theatre (720 AM)**, **Capital Melody (880 AM)**, and **Capital News Service (1010 AM)**. The title theme remains the exception that restarts from the beginning when tuned back in. Live-style stations advance from a shared on-air clock. Radio volume is session-only: a fresh desktop load begins at **75%**, while a fresh small-screen/mobile load begins at **50%**, and the player adjusts it in 5-point steps. On mobile, title-room city ambience, fan audio, and clock ticking are suppressed so the radio is not competing with several background sounds through one speaker. Desktop ambience remains intact.

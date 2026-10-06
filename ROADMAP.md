@@ -107,7 +107,7 @@ Next v0.3 passes:
 - pause still returns to Executive Desk and disables/grays out gameplay navigation and controls
 - existing gameplay systems and section IDs were retained; this slice reorganizes access without rewriting mechanics
 
-## v0.4 — Company Operations — CURRENT
+## v0.4 — Company Operations — CLOSED MILESTONE
 
 - **4 playable business turns per calendar month**; the numbered main campaign runs January 1938 through September 1945 for **372 turns**, after which the player may continue the same save in unlimited free play — IMPLEMENTED FOUNDATION
 - **Warehouse separation:** production creates inventory, contracts create obligations, and shipping connects the two — IMPLEMENTED
@@ -155,9 +155,9 @@ Next engineering slice after this closed build remains the first unchecked stabi
 - [x] Audit and rebalance light-bulb unit economics, payroll, contract prices, and 1938-scale costs. 1938 electrical-manufacturing wage anchor is 80¢/hour; raw-material inventory now uses production-stock units rather than treating bulk commodity prices as per-bulb costs.
 
 
-## v0.5 — Living America / Washington Power
+## v0.5 — Living America / Washington Power — CLOSED BUILD
 
-Current development build: **v0.5.0-dev**
+Closed release: **v0.5.0** · accepted gameplay baseline `46d8b4d565cb1ee5e7f3695e9df40628fd4bf56a`
 
 - [x] Begin factory delegation foundation with Foreman Sullivan routine morning auto-start, explicit non-routine holds, and management alerts.
 - [x] Add researched paid General Manager / executive management hiring, compensation and competence traits. The first General Manager uses the 1939 Census median annual income for male year-round full-time managers/officials/proprietors ($2,254) as the pay anchor, converted to a Business-Day wage; competence and reliability are explicit simulation traits and serious breakdown handling can still fail.
@@ -175,8 +175,14 @@ Current development build: **v0.5.0-dev**
 - source/provenance records for historical facts
 - economy affecting markets, materials, demand and credit
 
-## v0.6 — Washington Network
+## v0.6 — Washington Network — NEXT BUILD
 
+Carry-forward engineering from the v0.5 closeout:
+- broaden fallible delegated-management decisions and incidents
+- extend management neglect into customer loss, cash pressure, layoffs and possible plant closure after balancing
+- begin the Washington influence / political-progression state model
+
+Planned network expansion:
 - bankers, lawyers, journalists, politicians, police, lobbyists and industrialists
 - persistent NPC memory and hidden motives
 - clubs, hotels, dinners, affairs, favors, grudges and rivalries
@@ -444,6 +450,20 @@ Approved next work:
 - [ ] Returning for another showing requires another ticket and begins a new showing from the start.
 - [ ] Archives may preserve a ticket stub, poster/program entry, viewing date or attendance record after a movie has been seen, but the archive does not provide free replay.
 - [ ] Only films/assets whose U.S. rights status has been individually verified may be bundled or served by the project.
+
+## v0.5 radio / title control closeout — 2026-10-06
+
+Accepted final control state:
+- [x] Persistent radio bar remains fixed on screen while the page scrolls.
+- [x] The station-name/frequency display is the drag handle on desktop and touch devices; desktop uses the four-direction move cursor.
+- [x] Control order is previous station → station readout → next station → volume down → volume up → numeric volume → power.
+- [x] Volume changes in 5-point steps.
+- [x] Fresh desktop session starts at 75%; fresh small-screen/mobile session starts at 50%; radio volume is not persisted across page reloads.
+- [x] Old floating station label and old speaker-area power hotspot are removed.
+- [x] Redundant radio controls are removed from the DEV panel.
+- [x] Mobile title audio suppresses city/street ambience, fan audio and clock ticking, leaving the radio/music path uncluttered.
+- [x] Desktop title ambience remains available.
+- [x] Final accepted radio-control baseline deployed successfully at `46d8b4d565cb1ee5e7f3695e9df40628fd4bf56a`.
 
 ## Title-screen radio network — 2026-10-05
 
