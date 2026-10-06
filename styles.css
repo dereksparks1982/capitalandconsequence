@@ -1072,9 +1072,6 @@ body.elephant-easter-egg-open{overflow:hidden}
 .global-radio-volume-control input[type="range"]{width:100%;min-width:0;margin:0;accent-color:#c59a52}
 .global-radio-volume-control output{min-width:2.2ch;text-align:right;font:700 8px/1 'Courier New',monospace}
 .title-dev-radio-grid{grid-template-columns:1fr 1.25fr 1fr}
-.title-dev-radio-volume-control{display:grid;grid-template-columns:auto 1fr 3ch;align-items:center;gap:5px;padding:4px 5px;border:1px solid rgba(181,140,72,.45);background:#15120e;color:#e5cf98;font:700 9px/1 'Courier New',monospace}
-.title-dev-radio-volume-control input[type="range"]{width:100%;min-width:0;margin:0;accent-color:#c59a52}
-.title-dev-radio-volume-control output{text-align:right}
 @media(max-width:700px){
  .global-radio-volume-control{
   flex:0 0 58px;
@@ -1118,132 +1115,124 @@ body.elephant-easter-egg-open{overflow:hidden}
 @media(max-width:700px){.general-manager-box{display:grid}.general-manager-box button{width:100%}}
 
 
-/* Final radio controls — aligned player bar + readable desktop DEV slider */
+/* Final player radio controls — near original size, modestly trimmed */
 #globalRadioBar{
  position:fixed!important;
  left:50%!important;
- bottom:max(7px,env(safe-area-inset-bottom))!important;
+ bottom:max(8px,env(safe-area-inset-bottom))!important;
  transform:translateX(-50%)!important;
  z-index:2100000!important;
  display:grid!important;
- grid-template-columns:24px minmax(0,1fr) 32px 92px 24px!important;
+ grid-template-columns:36px minmax(0,1fr) 42px 112px 36px!important;
  align-items:center!important;
- width:360px!important;
- max-width:calc(100vw - 48px)!important;
- height:28px!important;
- min-height:28px!important;
- padding:1px!important;
- gap:2px!important;
- border:1px solid #8d6d3b!important;
- border-radius:3px!important;
+ width:500px!important;
+ max-width:calc(100vw - 28px)!important;
+ height:40px!important;
+ min-height:40px!important;
+ padding:3px!important;
+ gap:3px!important;
+ border:2px solid #8d6d3b!important;
+ border-radius:5px!important;
  box-sizing:border-box!important;
 }
 #globalRadioBar>button{
  min-width:0!important;
  width:100%!important;
- height:24px!important;
- min-height:24px!important;
+ height:32px!important;
+ min-height:32px!important;
  padding:0!important;
  margin:0!important;
- font-size:9px!important;
- line-height:1!important;
+ font:bold 11px/1 'Courier New',monospace!important;
  box-sizing:border-box!important;
 }
 #globalRadioBar .global-radio-readout{
  min-width:0!important;
  width:100%!important;
- height:24px!important;
- min-height:24px!important;
- padding:0 4px!important;
+ height:32px!important;
+ min-height:32px!important;
+ padding:2px 6px!important;
  margin:0!important;
  display:flex!important;
  flex-direction:column!important;
  justify-content:center!important;
  box-sizing:border-box!important;
 }
-#globalRadioBar .global-radio-readout span{font-size:5.5px!important;line-height:1!important;letter-spacing:.08em!important}
-#globalRadioBar .global-radio-readout b{margin:1px 0 0!important;font-size:7.5px!important;line-height:1!important}
-#globalRadioBar .global-radio-volume-control{
- width:100%!important;
- height:24px!important;
- min-height:24px!important;
- padding:0 3px!important;
- margin:0!important;
- display:grid!important;
- grid-template-columns:16px minmax(0,1fr) 26px!important;
- align-items:center!important;
- gap:2px!important;
- box-sizing:border-box!important;
- font-size:6.5px!important;
+#globalRadioBar .global-radio-readout span{
+ font-size:7.5px!important;
+ line-height:1!important;
+ letter-spacing:.14em!important;
+}
+#globalRadioBar .global-radio-readout b{
+ margin:2px 0 0!important;
+ font-size:10.5px!important;
  line-height:1!important;
 }
+#globalRadioBar .global-radio-volume-control{
+ width:100%!important;
+ height:32px!important;
+ min-height:32px!important;
+ padding:2px 5px!important;
+ margin:0!important;
+ display:grid!important;
+ grid-template-columns:20px minmax(0,1fr) 28px!important;
+ align-items:center!important;
+ gap:4px!important;
+ box-sizing:border-box!important;
+ font:700 8px/1 'Courier New',monospace!important;
+}
+#globalRadioBar .global-radio-volume-control span{display:block!important}
 #globalRadioBar .global-radio-volume-control input[type="range"]{
  width:100%!important;
  min-width:0!important;
- height:16px!important;
+ height:18px!important;
  margin:0!important;
  padding:0!important;
- align-self:center!important;
 }
 #globalRadioBar .global-radio-volume-control output{
  display:block!important;
- width:26px!important;
- min-width:26px!important;
- margin:0!important;
+ width:28px!important;
+ min-width:28px!important;
  text-align:right!important;
- font:700 8px/1 'Courier New',monospace!important;
-}
-@media(min-width:901px){
- .title-dev-radio-volume-control{
-  display:grid!important;
-  grid-template-columns:44px minmax(0,1fr) 34px!important;
-  align-items:center!important;
-  gap:6px!important;
-  width:100%!important;
-  min-height:36px!important;
-  padding:6px 7px!important;
-  box-sizing:border-box!important;
-  font:700 11px/1 'Courier New',monospace!important;
- }
- .title-dev-radio-volume-control input[type="range"]{
-  width:100%!important;
-  min-width:0!important;
-  height:20px!important;
-  margin:0!important;
-  padding:0!important;
- }
- .title-dev-radio-volume-control output{
-  display:block!important;
-  width:34px!important;
-  min-width:34px!important;
-  text-align:right!important;
-  font:700 11px/1 'Courier New',monospace!important;
- }
+ font:700 9px/1 'Courier New',monospace!important;
 }
 @media(max-width:900px){
  .title-dev-panel{display:none!important}
 }
 @media(max-width:700px){
  #globalRadioBar{
-  grid-template-columns:22px minmax(0,1fr) 28px 74px 22px!important;
-  width:280px!important;
-  max-width:calc(100vw - 72px)!important;
-  height:24px!important;
-  min-height:24px!important;
-  gap:1px!important;
+  grid-template-columns:30px minmax(0,1fr) 36px 92px 30px!important;
+  width:min(350px,calc(100vw - 40px))!important;
+  max-width:calc(100vw - 40px)!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:2px!important;
+  gap:2px!important;
+  border-width:1px!important;
  }
- #globalRadioBar>button{height:22px!important;min-height:22px!important;font-size:8px!important}
- #globalRadioBar .global-radio-readout{height:22px!important;min-height:22px!important;padding:0 2px!important}
- #globalRadioBar .global-radio-readout span{display:none!important}
- #globalRadioBar .global-radio-readout b{font-size:7px!important}
+ #globalRadioBar>button{
+  height:28px!important;
+  min-height:28px!important;
+  font-size:10px!important;
+ }
+ #globalRadioBar .global-radio-readout{
+  height:28px!important;
+  min-height:28px!important;
+  padding:1px 4px!important;
+ }
+ #globalRadioBar .global-radio-readout span{font-size:6.5px!important}
+ #globalRadioBar .global-radio-readout b{font-size:9px!important}
  #globalRadioBar .global-radio-volume-control{
-  height:22px!important;
-  min-height:22px!important;
-  padding:0 2px!important;
-  grid-template-columns:minmax(0,1fr) 24px!important;
-  gap:1px!important;
+  height:28px!important;
+  min-height:28px!important;
+  padding:1px 3px!important;
+  grid-template-columns:minmax(0,1fr) 26px!important;
+  gap:2px!important;
  }
  #globalRadioBar .global-radio-volume-control span{display:none!important}
- #globalRadioBar .global-radio-volume-control input[type="range"]{height:14px!important}
- #globalRadioBar .global-radio-volume-control output{width:24px!important;min-width:24px!important;font-size:7px!important}
+ #globalRadioBar .global-radio-volume-control input[type="range"]{height:16px!important}
+ #globalRadioBar .global-radio-volume-control output{
+  width:26px!important;
+  min-width:26px!important;
+  font-size:8px!important;
+ }
 }

@@ -1115,7 +1115,7 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower'),devVolume=$('#titleDevRadioVolume'),devVolumeValue=$('#titleDevRadioVolumeValue');
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devPower){
@@ -1128,11 +1128,6 @@ function updateTitleRadioControls(){
   globalVolume.setAttribute('aria-valuetext',titleRadioVolumePercent+' percent');
  }
  if(globalVolumeValue)globalVolumeValue.textContent=String(titleRadioVolumePercent);
- if(devVolume){
-  devVolume.value=String(titleRadioVolumePercent);
-  devVolume.setAttribute('aria-valuetext',titleRadioVolumePercent+' percent');
- }
- if(devVolumeValue)devVolumeValue.textContent=String(titleRadioVolumePercent);
  if(globalPower){
   globalPower.textContent=titleRadioOff?'OFF':'ON';
   globalPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
@@ -1828,7 +1823,6 @@ function initTitleDevPanel(){
  document.getElementById('titleDevRadioPrev').onclick=()=>cycleTitleRadioStation(-1);
  document.getElementById('titleDevRadioPower').onclick=toggleTitleRadioPower;
  document.getElementById('titleDevRadioNext').onclick=()=>cycleTitleRadioStation(1);
- document.getElementById('titleDevRadioVolume').addEventListener('input',e=>setTitleRadioVolumePercent(e.target.value));
  document.getElementById('titleDevRadioAuto').onclick=toggleTitleRadioAutoTune;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
