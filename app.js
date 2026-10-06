@@ -772,9 +772,36 @@ function stopTitleCityAmbience(reset=true){
 
 const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_MOBILE_VOLUME=.50;
-function titleRadioVolume(){
+const TITLE_RADIO_VOLUME_KEY='federalElectricRadioVolumeV1';
+const TITLE_RADIO_VOLUME_LEVELS=[
+ {key:'low',label:'LOW',short:'L',factor:.65},
+ {key:'med',label:'MED',short:'M',factor:1},
+ {key:'high',label:'HIGH',short:'H',factor:1.35}
+];
+let titleRadioVolumeIndex=1;
+try{
+ const savedVolume=localStorage.getItem(TITLE_RADIO_VOLUME_KEY);
+ const savedIndex=TITLE_RADIO_VOLUME_LEVELS.findIndex(v=>v.key===savedVolume);
+ if(savedIndex>=0)titleRadioVolumeIndex=savedIndex;
+}catch(e){}
+function titleRadioBaseVolume(){
  const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
  return mobile?TITLE_RADIO_MOBILE_VOLUME:TITLE_RADIO_VOLUME;
+}
+function titleRadioVolume(){
+ const level=TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex]||TITLE_RADIO_VOLUME_LEVELS[1];
+ return clamp(titleRadioBaseVolume()*level.factor,0,1);
+}
+function applyTitleRadioVolume(){
+ const volume=titleRadioVolume();
+ if(titleRadioAudio)titleRadioAudio.volume=volume;
+ for(const audio of titleRadioBackgroundFeeds.values())audio.volume=volume;
+ updateTitleRadioControls();
+}
+function cycleTitleRadioVolume(){
+ titleRadioVolumeIndex=(titleRadioVolumeIndex+1)%TITLE_RADIO_VOLUME_LEVELS.length;
+ try{localStorage.setItem(TITLE_RADIO_VOLUME_KEY,TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex].key)}catch(e){}
+ applyTitleRadioVolume();
 }
 const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
@@ -1001,13 +1028,22 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower'),devVolume=$('#titleDevRadioVolume');
+ const volumeLevel=TITLE_RADIO_VOLUME_LEVELS[titleRadioVolumeIndex]||TITLE_RADIO_VOLUME_LEVELS[1];
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devPower){
   devPower.textContent='RADIO: '+(titleRadioOff?'OFF':'ON');
   devPower.classList.toggle('is-on',!titleRadioOff);
   devPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
+ }
+ if(globalVolume){
+  globalVolume.textContent='VOL '+volumeLevel.short;
+  globalVolume.setAttribute('aria-label','Radio volume '+volumeLevel.label.toLowerCase()+'. Press to change.');
+ }
+ if(devVolume){
+  devVolume.textContent='VOL: '+volumeLevel.label;
+  devVolume.setAttribute('aria-label','Radio volume '+volumeLevel.label.toLowerCase()+'. Press to change.');
  }
  if(globalPower){
   globalPower.textContent=titleRadioOff?'OFF':'ON';
@@ -1704,6 +1740,7 @@ function initTitleDevPanel(){
  document.getElementById('titleDevRadioPrev').onclick=()=>cycleTitleRadioStation(-1);
  document.getElementById('titleDevRadioPower').onclick=toggleTitleRadioPower;
  document.getElementById('titleDevRadioNext').onclick=()=>cycleTitleRadioStation(1);
+ document.getElementById('titleDevRadioVolume').onclick=cycleTitleRadioVolume;
  document.getElementById('titleDevRadioAuto').onclick=toggleTitleRadioAutoTune;
  document.getElementById('titleDevOutsideNoise').onclick=toggleTitleDevOutsideNoise;
  document.getElementById('titleDevReset').onclick=resetTitleDevOverrides;
@@ -1839,7 +1876,7 @@ const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:
 const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV1';
 const TITLE_MAP_LOCATION_DEFAULTS=[
  {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
- {id:'star',n:2,name:"Madam Star's Star Club",area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
+ {id:'star',n:2,name:'Star Club',area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
  {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue.'},
  {id:'workingPoker',n:4,name:'Neighborhood Game',area:'Navy Yard / Southeast',x:.5826,y:.6322,description:'The lower-stakes working-class poker room.'},
  {id:'commercePoker',n:5,name:'Commerce Club',area:'Downtown / Pennsylvania Avenue',x:.4536,y:.5088,description:'A respectable downtown club hosting the middle-stakes business poker game.'},
@@ -2103,10 +2140,11 @@ function initTitleScreen(){
  titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
  titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
  $('#titleRadioPower').onclick=toggleTitleRadioPower;
- const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower');
+ const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower'),globalRadioVolume=$('#globalRadioVolume');
  if(globalRadioPrev)globalRadioPrev.onclick=()=>cycleTitleRadioStation(-1);
  if(globalRadioNext)globalRadioNext.onclick=()=>cycleTitleRadioStation(1);
  if(globalRadioPower)globalRadioPower.onclick=toggleTitleRadioPower;
+ if(globalRadioVolume)globalRadioVolume.onclick=cycleTitleRadioVolume;
  const titleNewspaperButton=$('#titleNewspaperM');
  titleNewspaperButton.addEventListener('pointerdown',primeTitleNewspaperRustle);
  titleNewspaperButton.onclick=openTitleNewspaper;
