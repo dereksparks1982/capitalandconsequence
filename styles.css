@@ -951,7 +951,36 @@ body.elephant-easter-egg-open{overflow:hidden}
 .global-radio-readout span{color:#bca77d;font:700 9px/1 'Courier New',monospace;letter-spacing:.18em}
 .global-radio-readout b{margin-top:3px;overflow:hidden;color:#f1dfb7;font:700 12px/1.15 Georgia,'Times New Roman',serif;text-overflow:ellipsis;white-space:nowrap}
 #globalRadioPower[aria-pressed="false"]{color:#d69a8f;border-color:#8b554e}
-@media(max-width:700px){.global-radio-bar{width:calc(100vw - 28px);max-width:430px;min-height:38px;bottom:max(7px,env(safe-area-inset-bottom));padding:3px;gap:3px}.global-radio-bar button{min-width:36px;padding:4px 6px;font-size:11px}.global-radio-readout{padding:2px 4px}.global-radio-readout span{font-size:7.5px}.global-radio-readout b{font-size:10px}}
+@media(max-width:700px){
+ .global-radio-bar{
+  width:min(330px,calc(100vw - 64px));
+  max-width:330px;
+  min-height:28px;
+  bottom:max(6px,env(safe-area-inset-bottom));
+  padding:2px;
+  gap:2px;
+  border-width:1px;
+  border-radius:3px;
+ }
+ .global-radio-bar button{
+  min-width:30px;
+  height:28px;
+  padding:2px 4px;
+  font-size:10px;
+ }
+ .global-radio-readout{
+  padding:1px 3px;
+ }
+ .global-radio-readout span{
+  font-size:6.5px;
+  letter-spacing:.12em;
+ }
+ .global-radio-readout b{
+  margin-top:1px;
+  font-size:8.5px;
+  line-height:1;
+ }
+}
 
 
 /* v0.4.0 active profile indicator */
@@ -1047,9 +1076,16 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-dev-radio-volume-control input[type="range"]{width:100%;min-width:0;margin:0;accent-color:#c59a52}
 .title-dev-radio-volume-control output{text-align:right}
 @media(max-width:700px){
- .global-radio-volume-control{flex-basis:82px;grid-template-columns:1fr 2.4ch;padding:2px 4px}
+ .global-radio-volume-control{
+  flex:0 0 68px;
+  height:28px;
+  grid-template-columns:1fr 2.1ch;
+  gap:2px;
+  padding:1px 3px;
+ }
  .global-radio-volume-control span{display:none}
- .global-radio-volume-control output{font-size:9px}
+ .global-radio-volume-control input[type="range"]{height:18px}
+ .global-radio-volume-control output{min-width:2.1ch;font-size:8px}
  .title-dev-radio-grid{grid-template-columns:1fr 1.15fr 1fr}
 }
 
