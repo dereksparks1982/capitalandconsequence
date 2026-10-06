@@ -944,40 +944,40 @@ body.elephant-easter-egg-open{overflow:hidden}
 
 
 /* v0.4.0 persistent radio control strip */
-.global-radio-bar{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2100000;display:flex;align-items:stretch;gap:4px;width:min(560px,calc(100vw - 18px));min-height:44px;padding:5px;border:2px solid #8d6d3b;border-radius:5px;background:linear-gradient(180deg,#34291c,#1c1711);color:#f1dfb7;box-shadow:0 5px 18px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,235,190,.18);font-family:'Courier New',monospace}
-.global-radio-bar button{flex:0 0 auto;min-width:44px;padding:5px 9px;border:1px solid #9b7a45;background:#2b251c;color:#f3dfb4;font:bold 13px/1 'Courier New',monospace}
+.global-radio-bar{position:fixed;left:50%;bottom:max(7px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2100000;display:flex;align-items:stretch;gap:2px;width:min(430px,calc(100vw - 36px));min-height:30px;padding:2px;border:1px solid #8d6d3b;border-radius:3px;background:linear-gradient(180deg,#34291c,#1c1711);color:#f1dfb7;box-shadow:0 3px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,235,190,.16);font-family:'Courier New',monospace}
+.global-radio-bar button{flex:0 0 auto;min-width:32px;height:30px;padding:2px 5px;border:1px solid #9b7a45;background:#2b251c;color:#f3dfb4;font:bold 10px/1 'Courier New',monospace}
 .global-radio-bar button:hover,.global-radio-bar button:focus-visible{outline:1px solid #f0d69b;background:#473824}
-.global-radio-readout{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:3px 8px;border:1px inset #655437;background:#151714;text-align:center}
-.global-radio-readout span{color:#bca77d;font:700 9px/1 'Courier New',monospace;letter-spacing:.18em}
-.global-radio-readout b{margin-top:3px;overflow:hidden;color:#f1dfb7;font:700 12px/1.15 Georgia,'Times New Roman',serif;text-overflow:ellipsis;white-space:nowrap}
+.global-radio-readout{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:1px 4px;border:1px inset #655437;background:#151714;text-align:center}
+.global-radio-readout span{color:#bca77d;font:700 7px/1 'Courier New',monospace;letter-spacing:.13em}
+.global-radio-readout b{margin-top:1px;overflow:hidden;color:#f1dfb7;font:700 9px/1 Georgia,'Times New Roman',serif;text-overflow:ellipsis;white-space:nowrap}
 #globalRadioPower[aria-pressed="false"]{color:#d69a8f;border-color:#8b554e}
 @media(max-width:700px){
  .global-radio-bar{
-  width:min(330px,calc(100vw - 64px));
-  max-width:330px;
-  min-height:28px;
+  width:min(300px,calc(100vw - 72px));
+  max-width:300px;
+  min-height:26px;
   bottom:max(6px,env(safe-area-inset-bottom));
-  padding:2px;
-  gap:2px;
+  padding:1px;
+  gap:1px;
   border-width:1px;
   border-radius:3px;
  }
  .global-radio-bar button{
-  min-width:30px;
-  height:28px;
-  padding:2px 4px;
-  font-size:10px;
+  min-width:27px;
+  height:26px;
+  padding:1px 3px;
+  font-size:9px;
  }
  .global-radio-readout{
-  padding:1px 3px;
+  padding:1px 2px;
  }
  .global-radio-readout span{
-  font-size:6.5px;
-  letter-spacing:.12em;
+  font-size:6px;
+  letter-spacing:.1em;
  }
  .global-radio-readout b{
   margin-top:1px;
-  font-size:8.5px;
+  font-size:7.5px;
   line-height:1;
  }
 }
@@ -1067,21 +1067,21 @@ body.elephant-easter-egg-open{overflow:hidden}
 
 
 /* v0.5-dev exact radio volume sliders */
-.global-radio-volume-control{flex:0 0 112px;display:grid;grid-template-columns:auto 1fr 2.4ch;align-items:center;gap:4px;padding:3px 5px;border:1px solid #9b7a45;background:#211c16;color:#f3dfb4;font:700 9px/1 'Courier New',monospace}
+.global-radio-volume-control{flex:0 0 82px;display:grid;grid-template-columns:auto 1fr 2.2ch;align-items:center;gap:2px;padding:1px 3px;border:1px solid #9b7a45;background:#211c16;color:#f3dfb4;font:700 7px/1 'Courier New',monospace}
 .global-radio-volume-control span{letter-spacing:.08em}
 .global-radio-volume-control input[type="range"]{width:100%;min-width:0;margin:0;accent-color:#c59a52}
-.global-radio-volume-control output{min-width:2.4ch;text-align:right;font:700 10px/1 'Courier New',monospace}
+.global-radio-volume-control output{min-width:2.2ch;text-align:right;font:700 8px/1 'Courier New',monospace}
 .title-dev-radio-grid{grid-template-columns:1fr 1.25fr 1fr}
 .title-dev-radio-volume-control{display:grid;grid-template-columns:auto 1fr 3ch;align-items:center;gap:5px;padding:4px 5px;border:1px solid rgba(181,140,72,.45);background:#15120e;color:#e5cf98;font:700 9px/1 'Courier New',monospace}
 .title-dev-radio-volume-control input[type="range"]{width:100%;min-width:0;margin:0;accent-color:#c59a52}
 .title-dev-radio-volume-control output{text-align:right}
 @media(max-width:700px){
  .global-radio-volume-control{
-  flex:0 0 68px;
-  height:28px;
-  grid-template-columns:1fr 2.1ch;
-  gap:2px;
-  padding:1px 3px;
+  flex:0 0 58px;
+  height:26px;
+  grid-template-columns:1fr 2ch;
+  gap:1px;
+  padding:1px 2px;
  }
  .global-radio-volume-control span{display:none}
  .global-radio-volume-control input[type="range"]{height:18px}
