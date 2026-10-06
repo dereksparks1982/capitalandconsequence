@@ -6,8 +6,8 @@
 
 This snapshot opens the new Washington Power / delegation development line after the v0.4 closeout.
 
-Branch head before snapshot documentation:
-`384c7eaf95f5c2fb115c125914b693b851f641e6`
+Current baseline before this refresh:
+`7724d5a94ca9d99d3562642174e6580eab449cca`
 
 ## What changed from v0.4
 
@@ -24,6 +24,7 @@ The game now has a stronger presentation-editing and management foundation:
 - General Manager hire/dismiss and daily payroll
 - management alerts
 - serious delegated breakdowns can still fail
+- persistent management-neglect score that compounds unresolved problems into lower output and morale/discipline pressure
 
 ## New long-form game direction
 
@@ -52,4 +53,4 @@ Factory delegation exists specifically so political/social play does not require
 
 ## Next slice
 
-Add broader fallible management judgment calls and compounding consequences for ignored problems.
+Add broader fallible management judgment calls, then build the first Washington influence/political-progression state model. The neglect system exists now; customer loss, layoffs and closure remain later escalation layers.
