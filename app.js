@@ -879,13 +879,15 @@ const TITLE_RADIO_VOLUME=.38;
 const TITLE_RADIO_MOBILE_VOLUME=.50;
 const TITLE_RADIO_VOLUME_KEY='federalElectricRadioVolumePercentV2';
 function defaultTitleRadioVolumePercent(){
- const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
- return Math.round((mobile?TITLE_RADIO_MOBILE_VOLUME:TITLE_RADIO_VOLUME)*100);
+ return 75;
 }
 let titleRadioVolumePercent=defaultTitleRadioVolumePercent();
 try{
- const saved=Number(localStorage.getItem(TITLE_RADIO_VOLUME_KEY));
- if(Number.isFinite(saved)&&saved>=0&&saved<=100)titleRadioVolumePercent=Math.round(saved);
+ const rawSaved=localStorage.getItem(TITLE_RADIO_VOLUME_KEY);
+ if(rawSaved!==null){
+  const saved=Number(rawSaved);
+  if(Number.isFinite(saved)&&saved>=0&&saved<=100)titleRadioVolumePercent=Math.round(saved);
+ }
 }catch(e){}
 function titleRadioVolume(){
  return clamp(titleRadioVolumePercent/100,0,1);
