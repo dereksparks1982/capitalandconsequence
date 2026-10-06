@@ -722,9 +722,9 @@ $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').oncli
 document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
-const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.02;
+const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.01;
 const TITLE_NIGHT_AMBIENCE_VOLUME=.14;
-const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.05;
+const TITLE_NIGHT_AMBIENCE_MOBILE_VOLUME=.025;
 const TITLE_DAY_AMBIENCE_SRC='https://cdn.freesound.org/previews/479/479574_2524442-lq.mp3';
 const TITLE_NIGHT_AMBIENCE_SRC='assets/audio/freesound_community-street-at-night-with-cars-49378.mp3?v=20261004-night3';
 let titleCityAmbienceAudio=null,titleCityAmbienceMode='';
@@ -771,6 +771,11 @@ function stopTitleCityAmbience(reset=true){
 }
 
 const TITLE_RADIO_VOLUME=.38;
+const TITLE_RADIO_MOBILE_VOLUME=.50;
+function titleRadioVolume(){
+ const mobile=window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
+ return mobile?TITLE_RADIO_MOBILE_VOLUME:TITLE_RADIO_VOLUME;
+}
 const TITLE_RADIO_STATIONS=[
  {name:'Federal Electric Network',dial:'610 AM',tracks:['assets/audio/sunflower-slow-drag.ogg?v=20261003-title2']},
  {name:'Capital Signal',dial:'540 AM',tracks:['assets/audio/radio-static-station.mp3?v=20261004-radio1'],nightTracks:['assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1','assets/audio/capital-signal-night-message-01.ogg?v=20261004-night1','assets/audio/545962__cloud-10__radio-static-2.wav?v=20261004-night1']},
@@ -810,7 +815,7 @@ function configureTitleRadioFeedProgram(index,audio,force=false){
  audio.loop=program.loop;
  audio.src=program.tracks[0];
  audio.load();
- audio.volume=TITLE_RADIO_VOLUME;
+ audio.volume=titleRadioVolume();
  audio.muted=muted;
  if(!S.paused&&titleRadioStationAvailable(index)){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -826,7 +831,7 @@ function advanceTitleRadioFeed(index,audio){
  audio.loop=false;
  audio.src=program.tracks[next];
  audio.load();
- audio.volume=TITLE_RADIO_VOLUME;
+ audio.volume=titleRadioVolume();
  if(!S.paused&&titleRadioStationAvailable(index)){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
@@ -853,7 +858,7 @@ function ensureTitleRadioAudio(){
  const src=station&&station.tracks&&station.tracks[0]?station.tracks[0]:'';
  titleRadioAudio=new Audio(src);
  titleRadioAudio.preload='auto';
- titleRadioAudio.volume=TITLE_RADIO_VOLUME;
+ titleRadioAudio.volume=titleRadioVolume();
  titleRadioAudio.dataset.titleRadioSource=src;
  if(src)titleRadioAudio.load();
  titleRadioAudio.addEventListener('ended',()=>{
@@ -877,7 +882,7 @@ function loadTitleRadioTrack(playNow=false){
   audio.dataset.titleRadioSource=src;
   audio.load();
  }
- audio.volume=TITLE_RADIO_VOLUME;
+ audio.volume=titleRadioVolume();
  try{audio.currentTime=0}catch(e){}
  if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -929,7 +934,7 @@ function ensureTitleRadioBackgroundFeed(index){
  audio.dataset.titleRadioTrack='0';
  audio.preload='auto';
  audio.loop=program.loop;
- audio.volume=TITLE_RADIO_VOLUME;
+ audio.volume=titleRadioVolume();
  audio.muted=true;
  audio.addEventListener('loadedmetadata',()=>forceTitleRadioFeedToAir(audio));
  audio.addEventListener('ended',()=>advanceTitleRadioFeed(index,audio));
@@ -950,7 +955,7 @@ function startTitleRadioBackgroundFeeds(){
 function updateTitleRadioAudibility(){
  for(const [index,audio] of titleRadioBackgroundFeeds){
   configureTitleRadioFeedProgram(index,audio);
-  audio.volume=TITLE_RADIO_VOLUME;
+  audio.volume=titleRadioVolume();
   const selected=index===titleRadioStationIndex&&!titleRadioOff&&!S.paused&&titleRadioStationAvailable(index);
   audio.muted=!selected;
   if(!selected){audio.pause();continue}
@@ -966,7 +971,7 @@ function startTitleRadio(){
  const audio=ensureTitleRadioAudio();
  if(!audio.src)loadTitleRadioTrack(false);
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
- audio.volume=TITLE_RADIO_VOLUME;
+ audio.volume=titleRadioVolume();
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
 let titleRadioLabelTimer=null;
@@ -1076,7 +1081,7 @@ function stopTitleRadio(fade=true){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  const audio=titleRadioAudio;
  const finish=()=>{
-  if(audio){audio.pause();try{audio.currentTime=0}catch(e){}audio.volume=TITLE_RADIO_VOLUME}
+  if(audio){audio.pause();try{audio.currentTime=0}catch(e){}audio.volume=titleRadioVolume()}
   for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true;try{feed.currentTime=0}catch(e){}}
   if(titleRadioAirSyncTimer){clearInterval(titleRadioAirSyncTimer);titleRadioAirSyncTimer=null}
   titleRadioAirStartAt=0;
