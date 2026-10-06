@@ -1115,7 +1115,7 @@ function updateTitleRadioControls(){
  const knob=$('#titleRadioKnob'),power=$('#titleRadioPower'),station=currentTitleRadioStation();
  if(knob)knob.setAttribute('aria-label','Tune to next radio station. Current: '+(station.dial?station.dial+' ':'')+station.name);
  if(power){power.setAttribute('aria-pressed',titleRadioOff?'true':'false');power.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off')}
- const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolume=$('#globalRadioVolume'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
+ const globalStation=$('#globalRadioStation'),globalPower=$('#globalRadioPower'),globalVolumeUp=$('#globalRadioVolumeUp'),globalVolumeDown=$('#globalRadioVolumeDown'),globalVolumeValue=$('#globalRadioVolumeValue'),devReadout=$('#titleDevRadioReadout'),devPower=$('#titleDevRadioPower');
  if(globalStation)globalStation.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devReadout)devReadout.textContent=(station.dial?station.dial+' · ':'')+station.name;
  if(devPower){
@@ -1123,11 +1123,9 @@ function updateTitleRadioControls(){
   devPower.classList.toggle('is-on',!titleRadioOff);
   devPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
  }
- if(globalVolume){
-  globalVolume.value=String(titleRadioVolumePercent);
-  globalVolume.setAttribute('aria-valuetext',titleRadioVolumePercent+' percent');
- }
  if(globalVolumeValue)globalVolumeValue.textContent=String(titleRadioVolumePercent);
+ if(globalVolumeUp)globalVolumeUp.disabled=titleRadioVolumePercent>=100;
+ if(globalVolumeDown)globalVolumeDown.disabled=titleRadioVolumePercent<=0;
  if(globalPower){
   globalPower.textContent=titleRadioOff?'OFF':'ON';
   globalPower.setAttribute('aria-pressed',titleRadioOff?'false':'true');
@@ -2222,11 +2220,12 @@ function initTitleScreen(){
  titleRadioKnob.addEventListener('pointerdown',cycleTitleRadioStation);
  titleRadioKnob.addEventListener('click',e=>{if(e.detail===0)cycleTitleRadioStation()});
  $('#titleRadioPower').onclick=toggleTitleRadioPower;
- const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower'),globalRadioVolume=$('#globalRadioVolume');
+ const globalRadioPrev=$('#globalRadioPrev'),globalRadioNext=$('#globalRadioNext'),globalRadioPower=$('#globalRadioPower'),globalRadioVolumeUp=$('#globalRadioVolumeUp'),globalRadioVolumeDown=$('#globalRadioVolumeDown');
  if(globalRadioPrev)globalRadioPrev.onclick=()=>cycleTitleRadioStation(-1);
  if(globalRadioNext)globalRadioNext.onclick=()=>cycleTitleRadioStation(1);
+ if(globalRadioVolumeUp)globalRadioVolumeUp.onclick=()=>setTitleRadioVolumePercent(titleRadioVolumePercent+5);
+ if(globalRadioVolumeDown)globalRadioVolumeDown.onclick=()=>setTitleRadioVolumePercent(titleRadioVolumePercent-5);
  if(globalRadioPower)globalRadioPower.onclick=toggleTitleRadioPower;
- if(globalRadioVolume)globalRadioVolume.addEventListener('input',e=>setTitleRadioVolumePercent(e.target.value));
  const titleNewspaperButton=$('#titleNewspaperM');
  titleNewspaperButton.addEventListener('pointerdown',primeTitleNewspaperRustle);
  titleNewspaperButton.onclick=openTitleNewspaper;

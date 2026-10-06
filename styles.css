@@ -1171,23 +1171,46 @@ body.elephant-easter-egg-open{overflow:hidden}
  width:100%!important;
  height:32px!important;
  min-height:32px!important;
- padding:2px 5px!important;
+ padding:2px 4px!important;
  margin:0!important;
  display:grid!important;
  grid-template-columns:20px minmax(0,1fr) 28px!important;
  align-items:center!important;
  gap:4px!important;
  box-sizing:border-box!important;
+ border:1px solid #9b7a45!important;
+ background:#211c16!important;
+ color:#f3dfb4!important;
  font:700 8px/1 'Courier New',monospace!important;
 }
-#globalRadioBar .global-radio-volume-control span{display:block!important}
-#globalRadioBar .global-radio-volume-control input[type="range"]{
- width:100%!important;
+#globalRadioBar .global-radio-volume-control>span{display:block!important;letter-spacing:.08em!important}
+#globalRadioBar .global-radio-volume-buttons{
+ display:grid!important;
+ grid-template-columns:1fr 1fr!important;
+ align-items:stretch!important;
+ gap:2px!important;
  min-width:0!important;
- height:18px!important;
+ height:24px!important;
+}
+#globalRadioBar .global-radio-volume-buttons button{
+ min-width:0!important;
+ width:100%!important;
+ height:24px!important;
+ min-height:24px!important;
  margin:0!important;
  padding:0!important;
+ border:1px solid #9b7a45!important;
+ background:#2b251c!important;
+ color:#f3dfb4!important;
+ font:bold 10px/1 'Courier New',monospace!important;
+ box-sizing:border-box!important;
 }
+#globalRadioBar .global-radio-volume-buttons button:hover,
+#globalRadioBar .global-radio-volume-buttons button:focus-visible{
+ outline:1px solid #f0d69b!important;
+ background:#473824!important;
+}
+#globalRadioBar .global-radio-volume-buttons button:disabled{opacity:.4!important}
 #globalRadioBar .global-radio-volume-control output{
  display:block!important;
  width:28px!important;
@@ -1228,8 +1251,13 @@ body.elephant-easter-egg-open{overflow:hidden}
   grid-template-columns:minmax(0,1fr) 26px!important;
   gap:2px!important;
  }
- #globalRadioBar .global-radio-volume-control span{display:none!important}
- #globalRadioBar .global-radio-volume-control input[type="range"]{height:16px!important}
+ #globalRadioBar .global-radio-volume-control>span{display:none!important}
+ #globalRadioBar .global-radio-volume-buttons{height:24px!important;gap:2px!important}
+ #globalRadioBar .global-radio-volume-buttons button{
+  height:24px!important;
+  min-height:24px!important;
+  font-size:9px!important;
+ }
  #globalRadioBar .global-radio-volume-control output{
   width:26px!important;
   min-width:26px!important;
