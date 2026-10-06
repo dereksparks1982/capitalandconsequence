@@ -1104,6 +1104,48 @@ function updateTitleRadioControls(){
   globalPower.setAttribute('aria-label',titleRadioOff?'Turn radio on':'Turn radio off');
  }
 }
+function initGlobalRadioDrag(){
+ const bar=$('#globalRadioBar'),handle=bar?.querySelector('.global-radio-readout');
+ if(!bar||!handle)return;
+ let drag=null;
+ const place=(left,top)=>{
+  const rect=bar.getBoundingClientRect(),margin=4;
+  const maxLeft=Math.max(margin,window.innerWidth-rect.width-margin);
+  const maxTop=Math.max(margin,window.innerHeight-rect.height-margin);
+  const x=clamp(left,margin,maxLeft),y=clamp(top,margin,maxTop);
+  bar.style.setProperty('left',x+'px','important');
+  bar.style.setProperty('top',y+'px','important');
+  bar.style.setProperty('bottom','auto','important');
+  bar.style.setProperty('transform','none','important');
+ };
+ handle.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='touch'&&e.button!==0)return;
+  const rect=bar.getBoundingClientRect();
+  drag={pointerId:e.pointerId,offsetX:e.clientX-rect.left,offsetY:e.clientY-rect.top};
+  try{handle.setPointerCapture(e.pointerId)}catch(err){}
+  bar.classList.add('is-dragging');
+  e.preventDefault();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(!drag||drag.pointerId!==e.pointerId)return;
+  place(e.clientX-drag.offsetX,e.clientY-drag.offsetY);
+  e.preventDefault();
+ });
+ const release=e=>{
+  if(!drag||drag.pointerId!==e.pointerId)return;
+  drag=null;
+  bar.classList.remove('is-dragging');
+  try{handle.releasePointerCapture(e.pointerId)}catch(err){}
+  e.preventDefault();
+ };
+ handle.addEventListener('pointerup',release);
+ handle.addEventListener('pointercancel',release);
+ window.addEventListener('resize',()=>{
+  if(!bar.style.top)return;
+  const rect=bar.getBoundingClientRect();
+  place(rect.left,rect.top);
+ });
+}
 function tuneTitleRadioStation(index){
  const next=((Math.floor(+index)||0)%TITLE_RADIO_STATIONS.length+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
@@ -2171,6 +2213,7 @@ function initTitleScreen(){
  titleCabinetButtons.forEach(button=>button.addEventListener('pointerdown',playTitleFilingCabinetOpen));
  initTitleHotspotEditor();
  initTitleDevPanel();
+ initGlobalRadioDrag();
  prewarmHeavyTitleRadioOnDesktop();
  $('#titleContinue').onclick=continueFromTitle;
  $('#titleProfile').onclick=()=>renderProfileManager();

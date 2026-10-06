@@ -1107,6 +1107,15 @@ body.elephant-easter-egg-open{overflow:hidden}
  line-height:1!important;
  text-align:center!important;
 }
+#globalRadioBar .global-radio-readout{
+ cursor:grab!important;
+ touch-action:none!important;
+ user-select:none!important;
+ -webkit-user-select:none!important;
+}
+#globalRadioBar.is-dragging .global-radio-readout{
+ cursor:grabbing!important;
+}
 #globalRadioBar .global-radio-volume-control{
  width:100%!important;
  height:32px!important;
