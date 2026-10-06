@@ -879,91 +879,17 @@ function stopTitleCityAmbience(reset=true){
  titleCityAmbienceAudio.volume=titleCityAmbienceVolume(titleEnvironmentIsDay()?'day':'night');
 }
 
-function titleRadioIOSFamily(){
- const ua=navigator.userAgent||'';
- return /iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-}
-function titleRadioMobileDevice(){
- const ua=navigator.userAgent||'';
- if(titleRadioIOSFamily()||/Android|Mobile/i.test(ua))return true;
- return !!(window.matchMedia&&window.matchMedia('(max-width:900px) and (pointer:coarse)').matches);
-}
-let titleRadioAudioContext=null,titleRadioMasterGain=null,titleRadioSoftwareGainUnlocked=false;
-const titleRadioRoutedElements=new WeakSet();
-function ensureTitleRadioSoftwareGain(){
- if(!titleRadioIOSFamily()||!titleRadioSoftwareGainUnlocked)return null;
- const AudioCtx=window.AudioContext||window.webkitAudioContext;
- if(!AudioCtx)return null;
- try{
-  if(!titleRadioAudioContext)titleRadioAudioContext=new AudioCtx();
-  if(!titleRadioMasterGain){
-   titleRadioMasterGain=titleRadioAudioContext.createGain();
-   titleRadioMasterGain.connect(titleRadioAudioContext.destination);
-  }
-  return titleRadioMasterGain;
- }catch(e){return null}
-}
-function routeTitleRadioElement(audio){
- if(!audio)return false;
- const gain=ensureTitleRadioSoftwareGain();
- if(!gain||!titleRadioAudioContext)return false;
- if(!titleRadioRoutedElements.has(audio)){
-  try{
-   const source=titleRadioAudioContext.createMediaElementSource(audio);
-   source.connect(gain);
-   titleRadioRoutedElements.add(audio);
-  }catch(e){return false}
- }
- return true;
-}
 function titleRadioDefaultVolumePercent(){
- return titleRadioMobileDevice()?20:40;
+ return window.matchMedia&&window.matchMedia('(max-width:700px)').matches?20:40;
 }
 let titleRadioVolumePercent=titleRadioDefaultVolumePercent();
 function titleRadioVolume(){
  return clamp(titleRadioVolumePercent/100,0,1);
 }
-function setTitleRadioElementLevel(audio,level=titleRadioVolume()){
- if(!audio)return;
- const volume=clamp(level,0,1);
- if(routeTitleRadioElement(audio)){
-  try{audio.volume=1}catch(e){}
-  if(titleRadioMasterGain&&titleRadioAudioContext){
-   titleRadioMasterGain.gain.setValueAtTime(volume,titleRadioAudioContext.currentTime);
-  }
- }else{
-  try{audio.volume=volume}catch(e){}
- }
-}
-function resumeTitleRadioSoftwareGain(){
- const gain=ensureTitleRadioSoftwareGain();
- if(!gain||!titleRadioAudioContext)return;
- gain.gain.setValueAtTime(titleRadioVolume(),titleRadioAudioContext.currentTime);
- if(titleRadioAudioContext.state==='suspended'){
-  const p=titleRadioAudioContext.resume();
-  if(p&&typeof p.catch==='function')p.catch(()=>{});
- }
-}
-function unlockTitleRadioSoftwareGain(){
- if(!titleRadioIOSFamily())return;
- titleRadioSoftwareGainUnlocked=true;
- const gain=ensureTitleRadioSoftwareGain();
- if(!gain||!titleRadioAudioContext)return;
- if(titleRadioAudio)routeTitleRadioElement(titleRadioAudio);
- for(const audio of titleRadioBackgroundFeeds.values())routeTitleRadioElement(audio);
- gain.gain.setValueAtTime(titleRadioVolume(),titleRadioAudioContext.currentTime);
- if(titleRadioAudioContext.state!=='running'){
-  const p=titleRadioAudioContext.resume();
-  if(p&&typeof p.catch==='function')p.catch(()=>{});
- }
-}
 function applyTitleRadioVolume(){
  const volume=titleRadioVolume();
- if(titleRadioAudio)setTitleRadioElementLevel(titleRadioAudio,volume);
- for(const audio of titleRadioBackgroundFeeds.values())setTitleRadioElementLevel(audio,volume);
- if(titleRadioMasterGain&&titleRadioAudioContext){
-  titleRadioMasterGain.gain.setValueAtTime(volume,titleRadioAudioContext.currentTime);
- }
+ if(titleRadioAudio)titleRadioAudio.volume=volume;
+ for(const audio of titleRadioBackgroundFeeds.values())audio.volume=volume;
  updateTitleRadioControls();
 }
 function setTitleRadioVolumePercent(value){
@@ -1037,7 +963,7 @@ function ensureTitleRadioAudio(){
  const src=station&&station.tracks&&station.tracks[0]?station.tracks[0]:'';
  titleRadioAudio=new Audio(src);
  titleRadioAudio.preload='auto';
- setTitleRadioElementLevel(titleRadioAudio);
+ titleRadioAudio.volume=titleRadioVolume();
  titleRadioAudio.dataset.titleRadioSource=src;
  if(src)titleRadioAudio.load();
  titleRadioAudio.addEventListener('ended',()=>{
@@ -1061,7 +987,7 @@ function loadTitleRadioTrack(playNow=false){
   audio.dataset.titleRadioSource=src;
   audio.load();
  }
- setTitleRadioElementLevel(audio);
+ audio.volume=titleRadioVolume();
  try{audio.currentTime=0}catch(e){}
  if(playNow&&titleRadioStationIndex===0&&!titleRadioOff&&titleScreenVisible()&&!S.paused){
   const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -1117,7 +1043,7 @@ function ensureTitleRadioBackgroundFeed(index,preloadMode='auto'){
  audio.dataset.titleRadioTrack='0';
  audio.preload=preloadMode;
  audio.loop=program.loop;
- setTitleRadioElementLevel(audio);
+ audio.volume=titleRadioVolume();
  audio.muted=true;
  audio.addEventListener('loadedmetadata',()=>forceTitleRadioFeedToAir(audio));
  audio.addEventListener('ended',()=>advanceTitleRadioFeed(index,audio));
@@ -1135,7 +1061,6 @@ function prewarmHeavyTitleRadioOnDesktop(){
  }
 }
 function startTitleRadioBackgroundFeeds(){
- resumeTitleRadioSoftwareGain();
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
  startTitleRadioAirSync();
  if(titleRadioStationIndex<=0||titleRadioOff||S.paused)return;
@@ -1149,7 +1074,7 @@ function startTitleRadioBackgroundFeeds(){
 function updateTitleRadioAudibility(){
  for(const [index,audio] of titleRadioBackgroundFeeds){
   configureTitleRadioFeedProgram(index,audio);
-  setTitleRadioElementLevel(audio);
+  audio.volume=titleRadioVolume();
   const selected=index===titleRadioStationIndex&&!titleRadioOff&&!S.paused&&titleRadioStationAvailable(index);
   audio.muted=!selected;
   if(!selected){audio.pause();continue}
@@ -1159,14 +1084,13 @@ function updateTitleRadioAudibility(){
 }
 function startTitleRadio(){
  if(S.paused)return;
- resumeTitleRadioSoftwareGain();
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(titleRadioOff||titleRadioStationIndex!==0)return;
  const audio=ensureTitleRadioAudio();
  if(!audio.src)loadTitleRadioTrack(false);
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
- setTitleRadioElementLevel(audio);
+ audio.volume=titleRadioVolume();
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
 function updateTitleRadioControls(){
@@ -1257,7 +1181,6 @@ function setRadioLocationContext(context,force=false){
  updateTitleDevPanel();
 }
 function toggleTitleRadioPower(){
- resumeTitleRadioSoftwareGain();
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  titleRadioOff=!titleRadioOff;
  if(titleRadioOff){
@@ -1287,7 +1210,6 @@ function pauseTitleAudio(){
  for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true}
 }
 function resumeTitleAudio(){
- resumeTitleRadioSoftwareGain();
  if(titleScreenVisible()){
   syncTitleCityAmbience();
   syncTitleFanAudio();
@@ -1301,14 +1223,14 @@ function stopTitleRadio(fade=true){
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  const audio=titleRadioAudio;
  const finish=()=>{
-  if(audio){audio.pause();try{audio.currentTime=0}catch(e){}setTitleRadioElementLevel(audio)}
+  if(audio){audio.pause();try{audio.currentTime=0}catch(e){}audio.volume=titleRadioVolume()}
   for(const feed of titleRadioBackgroundFeeds.values()){feed.pause();feed.muted=true;try{feed.currentTime=0}catch(e){}}
   if(titleRadioAirSyncTimer){clearInterval(titleRadioAirSyncTimer);titleRadioAirSyncTimer=null}
   titleRadioAirStartAt=0;
  };
  if(!audio||!fade||audio.paused){finish();return}
- const start=titleRadioVolume(),steps=12;let step=0;
- titleRadioFadeTimer=setInterval(()=>{step++;setTitleRadioElementLevel(audio,Math.max(0,start*(1-step/steps)));if(step>=steps){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null;finish()}},50);
+ const start=Math.max(0,audio.volume),steps=12;let step=0;
+ titleRadioFadeTimer=setInterval(()=>{step++;audio.volume=Math.max(0,start*(1-step/steps));if(step>=steps){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null;finish()}},50);
 }
 function openTitleDialog(title,html){
  const dialog=$('#titleDialog'),heading=$('#titleDialogHeading'),body=$('#titleDialogBody');
@@ -2280,8 +2202,6 @@ function initTitleScreen(){
  updateTitleRadioControls();
  startTitleRadio();
  initTitleMapViewer();
- document.addEventListener('pointerdown',unlockTitleRadioSoftwareGain,{once:true,capture:true});
- document.addEventListener('keydown',unlockTitleRadioSoftwareGain,{once:true,capture:true});
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
  screen.addEventListener('pointerdown',startTitleRadioBackgroundFeeds,{once:true});
