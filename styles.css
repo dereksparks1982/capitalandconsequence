@@ -1116,3 +1116,69 @@ body.elephant-easter-egg-open{overflow:hidden}
 .general-manager-box span{font:700 11px/1.2 'Courier New',monospace;color:#2f3e50}
 .general-manager-box small{color:#6d604a}
 @media(max-width:700px){.general-manager-box{display:grid}.general-manager-box button{width:100%}}
+
+
+/* Exact live player-radio dimensions. Keep at end so it wins. */
+#globalRadioBar{
+ width:360px!important;
+ max-width:calc(100vw - 48px)!important;
+ min-height:24px!important;
+ height:26px!important;
+ padding:1px!important;
+ gap:1px!important;
+ border-width:1px!important;
+ border-radius:2px!important;
+ box-sizing:border-box!important;
+}
+#globalRadioBar>button{
+ min-width:24px!important;
+ width:24px!important;
+ height:24px!important;
+ min-height:24px!important;
+ padding:0!important;
+ font-size:9px!important;
+ box-sizing:border-box!important;
+}
+#globalRadioBar #globalRadioPower{
+ min-width:30px!important;
+ width:30px!important;
+}
+#globalRadioBar .global-radio-readout{
+ padding:0 3px!important;
+ min-height:24px!important;
+ height:24px!important;
+ box-sizing:border-box!important;
+}
+#globalRadioBar .global-radio-readout span{font-size:5.5px!important;line-height:1!important;letter-spacing:.08em!important}
+#globalRadioBar .global-radio-readout b{margin-top:1px!important;font-size:7.5px!important;line-height:1!important}
+#globalRadioBar .global-radio-volume-control{
+ flex:0 0 70px!important;
+ width:70px!important;
+ height:24px!important;
+ min-height:24px!important;
+ padding:0 2px!important;
+ gap:1px!important;
+ box-sizing:border-box!important;
+ font-size:6px!important;
+}
+#globalRadioBar .global-radio-volume-control output{font-size:7px!important;min-width:2ch!important}
+#globalRadioBar .global-radio-volume-control input[type="range"]{height:14px!important}
+@media(max-width:700px){
+ #globalRadioBar{
+  width:280px!important;
+  max-width:calc(100vw - 72px)!important;
+  height:24px!important;
+  min-height:22px!important;
+ }
+ #globalRadioBar>button{
+  min-width:22px!important;
+  width:22px!important;
+  height:22px!important;
+  min-height:22px!important;
+ }
+ #globalRadioBar #globalRadioPower{min-width:27px!important;width:27px!important}
+ #globalRadioBar .global-radio-readout{height:22px!important;min-height:22px!important;padding:0 2px!important}
+ #globalRadioBar .global-radio-readout span{display:none!important}
+ #globalRadioBar .global-radio-readout b{font-size:7px!important}
+ #globalRadioBar .global-radio-volume-control{flex-basis:56px!important;width:56px!important;height:22px!important;min-height:22px!important}
+}
