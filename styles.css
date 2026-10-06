@@ -1157,15 +1157,12 @@ body.elephant-easter-egg-open{overflow:hidden}
  justify-content:center!important;
  box-sizing:border-box!important;
 }
-#globalRadioBar .global-radio-readout span{
- font-size:7.5px!important;
- line-height:1!important;
- letter-spacing:.14em!important;
-}
 #globalRadioBar .global-radio-readout b{
- margin:2px 0 0!important;
+ margin:0!important;
+ width:100%!important;
  font-size:10.5px!important;
  line-height:1!important;
+ text-align:center!important;
 }
 #globalRadioBar .global-radio-volume-control{
  width:100%!important;
@@ -1242,7 +1239,6 @@ body.elephant-easter-egg-open{overflow:hidden}
   min-height:28px!important;
   padding:1px 4px!important;
  }
- #globalRadioBar .global-radio-readout span{font-size:6.5px!important}
  #globalRadioBar .global-radio-readout b{font-size:9px!important}
  #globalRadioBar .global-radio-volume-control{
   height:28px!important;
@@ -1250,6 +1246,7 @@ body.elephant-easter-egg-open{overflow:hidden}
   padding:1px 3px!important;
   grid-template-columns:minmax(0,1fr) 26px!important;
   gap:2px!important;
+  transform:translateY(-1px)!important;
  }
  #globalRadioBar .global-radio-volume-control>span{display:none!important}
  #globalRadioBar .global-radio-volume-buttons{height:24px!important;gap:2px!important}
@@ -1262,5 +1259,6 @@ body.elephant-easter-egg-open{overflow:hidden}
   width:26px!important;
   min-width:26px!important;
   font-size:8px!important;
+  text-align:center!important;
  }
 }
