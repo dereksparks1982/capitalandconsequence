@@ -160,7 +160,7 @@ Next engineering slice after this closed build remains the first unchecked stabi
 Current development build: **v0.5.0-dev**
 
 - [x] Begin factory delegation foundation with Foreman Sullivan routine morning auto-start, explicit non-routine holds, and management alerts.
-- [ ] Add researched paid General Manager / executive management hiring, compensation and competence traits.
+- [x] Add researched paid General Manager / executive management hiring, compensation and competence traits. The first General Manager uses the 1939 Census median annual income for male year-round full-time managers/officials/proprietors ($2,254) as the pay anchor, converted to a Business-Day wage; competence and reliability are explicit simulation traits and serious breakdown handling can still fail.
 - [ ] Let delegated management make fallible decisions: repair delays, purchasing errors, labor disputes, missed deadlines and judgment calls can still reach the owner.
 - [ ] Make unresolved management problems compound into lower output, lost customers, cash pressure, layoffs and eventually possible plant closure rather than turning delegation into passive guaranteed income.
 - [ ] Build a Washington influence / power-broker progression fed by business reputation, clubs, press, police, bankers, lobbyists, officials and political contacts.
