@@ -14,6 +14,7 @@ Current baseline before this refresh:
 The game now has a stronger presentation-editing and management foundation:
 
 - editable title hotspots with saved local geometry
+- DEV panel hidden on mobile (900px and below); player radio controls remain available
 - compact persistent player radio controls
 - radio power, station, exact 0–100 volume slider and context auto-tune controls in DEV PANEL
 - iPhone radio architecture changed to one active feed at a time
