@@ -1443,9 +1443,28 @@ function toggleTitleDevHotspots(){
  if(screen)screen.classList.toggle('title-dev-show-hotspots',titleDevShowHotspots);
  updateTitleDevPanel();
 }
+function restartTitleCityAmbienceFromDev(){
+ const audio=ensureTitleCityAmbience();
+ const mode=titleEnvironmentIsDay()?'day':'night';
+ const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
+ if(titleCityAmbienceMode!==mode||audio.src!==new URL(src,document.baseURI).href){
+  audio.pause();
+  titleCityAmbienceMode=mode;
+  audio.src=src;
+  audio.load();
+  try{audio.currentTime=0}catch(e){}
+ }
+ audio.loop=true;
+ audio.muted=false;
+ audio.volume=titleCityAmbienceVolume(mode);
+ if(titleScreenVisible()&&!S.paused&&titleDevOutsideNoise){
+  const p=audio.play();
+  if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
+}
 function toggleTitleDevOutsideNoise(){
  titleDevOutsideNoise=!titleDevOutsideNoise;
- if(titleDevOutsideNoise)syncTitleCityAmbience();else stopTitleCityAmbience(false);
+ if(titleDevOutsideNoise)restartTitleCityAmbienceFromDev();else stopTitleCityAmbience(false);
  updateTitleDevPanel();
 }
 function resetTitleDevOverrides(){
