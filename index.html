@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="preload" href="assets/audio/sunflower-slow-drag.ogg?v=20261003-title2" as="audio" type="audio/ogg"><link rel="stylesheet" href="styles.css?v=20261005-cardarchive1"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Federal Electric</title><link rel="preload" href="assets/audio/sunflower-slow-drag.ogg?v=20261003-title2" as="audio" type="audio/ogg"><link rel="stylesheet" href="styles.css?v=20261006-hotspoteditor1"><link rel="stylesheet" href="racing.css?v=20261002-multilap1"><link rel="stylesheet" href="boxing.css?v=20261002-fightworld3"><link rel="stylesheet" href="underworld.css?v=20261002-liveunderground1"></head>
 <body><div id="titleScreen" class="title-screen" aria-label="Federal Electric title screen">
   <div class="title-screen-frame">
     <img id="titleOfficeBackground" class="title-screen-art" src="assets/federal-electric-office-day.webp?v=20261003-dc1" alt="Washington, D.C. executive office">
@@ -13,6 +13,32 @@
         <button id="titleDevInfiniteMoney" type="button" aria-pressed="false">Infinite Money: OFF</button>
         <button id="titleDevFreezeTime" type="button" aria-pressed="false">Freeze Time: OFF</button>
         <button id="titleDevHotspots" type="button" aria-pressed="false">Show Hotspots: OFF</button>
+        <button id="titleDevEditHotspots" type="button" aria-pressed="false">Edit Hotspots: OFF</button>
+        <div class="title-dev-hotspot-tools">
+          <select id="titleDevHotspotSelect" aria-label="Selected title hotspot">
+            <option value="titleContinue">CONTINUE</option>
+            <option value="titleProfile">PROFILE</option>
+            <option value="titleOptions">OPTIONS</option>
+            <option value="titleArchives">ARCHIVES</option>
+          </select>
+          <output id="titleDevHotspotReadout">L 0 · T 0 · W 0 · H 0</output>
+          <div class="title-dev-hotspot-grid" aria-label="Move selected hotspot">
+            <button id="titleDevHotspotUp" type="button" aria-label="Move selected hotspot up">↑</button>
+            <button id="titleDevHotspotLeft" type="button" aria-label="Move selected hotspot left">←</button>
+            <button id="titleDevHotspotDown" type="button" aria-label="Move selected hotspot down">↓</button>
+            <button id="titleDevHotspotRight" type="button" aria-label="Move selected hotspot right">→</button>
+          </div>
+          <div class="title-dev-hotspot-size">
+            <button id="titleDevHotspotNarrow" type="button">Width −</button>
+            <button id="titleDevHotspotWiden" type="button">Width +</button>
+            <button id="titleDevHotspotShorter" type="button">Height −</button>
+            <button id="titleDevHotspotTaller" type="button">Height +</button>
+          </div>
+          <div class="title-dev-hotspot-actions">
+            <button id="titleDevHotspotSave" type="button">Save Hotspots</button>
+            <button id="titleDevHotspotResetSelected" type="button">Reset Selected</button>
+          </div>
+        </div>
         <button id="titleDevOutsideNoise" type="button" aria-pressed="true">Outside Noise: ON</button>
         <button id="titleDevReset" class="title-dev-reset" type="button">Reset Overrides</button>
         <small>Session only · drag this header</small>
@@ -125,4 +151,4 @@
 <div class="activity-panel" data-activity-panel="illicit" data-activity-name="cock" hidden><div class="activity-panel-head"><b>Cockfighting</b><button class="activity-close" data-activity-close="illicit" aria-label="Close Cockfighting">×</button></div><div class="sheet"><article id="cockfightCard" class="underground-card"><h4>Cockfighting</h4><p class="muted">Invitation required.</p></article></div></div>
 <p id="underworldNote"></p></section>
 </main><div id="dailyReportOverlay" class="daily-report-overlay" hidden><section class="daily-report-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · PRIVATE</div><h2>Daily Report</h2><h3 id="dailyReportDate"></h3><div id="dailyReportBody"></div><button id="beginNextDay">Retire for the Night</button></section></div><div id="campaignEndOverlay" class="campaign-end-overlay" hidden><section class="campaign-end-card"><div class="daily-report-stamp">FEDERAL ELECTRIC · CAMPAIGN RECORD</div><h2>Main Campaign Complete</h2><h3>372 Turns · January 1938 – September 1945</h3><div id="campaignEndBody"></div><div class="campaign-end-actions"><button id="continueEmpire" type="button">Continue Empire</button><button id="campaignNewGame" type="button" class="danger">Start New Game</button></div></section></div>
-<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="app.js?v=20261005-outsiderearm1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>
+<footer>Federal Electric · Internal Executive Papers · <span id="dateFoot"></span></footer><script src="app.js?v=20261006-hotspoteditor1"></script><script src="racing.js?v=20261002-multilap1"></script><script src="oval-racing.js?v=20261002-multilap1"></script><script src="boxing.js?v=20261002-pastimes-tabs1"></script><script src="underworld.js?v=20261002-liveunderground1"></script></body></html>
