@@ -1108,7 +1108,7 @@ body.elephant-easter-egg-open{overflow:hidden}
  text-align:center!important;
 }
 #globalRadioBar .global-radio-readout{
- cursor:grab!important;
+ cursor:move!important;
  touch-action:none!important;
  user-select:none!important;
  -webkit-user-select:none!important;
