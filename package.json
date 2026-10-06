@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron .",
     "pack:linux": "electron-builder --linux dir --x64",
-    "dist:linux": "electron-builder --linux AppImage --x64"
+    "dist:linux": "electron-builder --linux AppImage --x64 --publish never"
   },
   "devDependencies": {
     "electron": "44.5.1",
@@ -45,5 +45,6 @@
       "category": "Game",
       "executableName": "federal-electric"
     }
-  }
+  },
+  "author": "Elderred Softworks LLC"
 }
