@@ -55,3 +55,8 @@ Factory delegation exists specifically so political/social play does not require
 ## Next slice
 
 Add broader fallible management judgment calls, then build the first Washington influence/political-progression state model. The neglect system exists now; customer loss, layoffs and closure remain later escalation layers.
+
+
+### Radio control sizing correction
+
+The visible player radio is now hard-sized on the actual `#globalRadioBar` DOM node and backed by final ID-specific CSS overrides. This avoids the earlier situation where edited class rules did not produce the expected live dimensions.
