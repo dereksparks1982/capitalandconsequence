@@ -888,10 +888,10 @@ function titleRadioMobileDevice(){
  if(titleRadioIOSFamily()||/Android|Mobile/i.test(ua))return true;
  return !!(window.matchMedia&&window.matchMedia('(max-width:900px) and (pointer:coarse)').matches);
 }
-let titleRadioAudioContext=null,titleRadioMasterGain=null;
+let titleRadioAudioContext=null,titleRadioMasterGain=null,titleRadioSoftwareGainUnlocked=false;
 const titleRadioRoutedElements=new WeakSet();
 function ensureTitleRadioSoftwareGain(){
- if(!titleRadioIOSFamily())return null;
+ if(!titleRadioIOSFamily()||!titleRadioSoftwareGainUnlocked)return null;
  const AudioCtx=window.AudioContext||window.webkitAudioContext;
  if(!AudioCtx)return null;
  try{
@@ -940,6 +940,19 @@ function resumeTitleRadioSoftwareGain(){
  if(!gain||!titleRadioAudioContext)return;
  gain.gain.setValueAtTime(titleRadioVolume(),titleRadioAudioContext.currentTime);
  if(titleRadioAudioContext.state==='suspended'){
+  const p=titleRadioAudioContext.resume();
+  if(p&&typeof p.catch==='function')p.catch(()=>{});
+ }
+}
+function unlockTitleRadioSoftwareGain(){
+ if(!titleRadioIOSFamily())return;
+ titleRadioSoftwareGainUnlocked=true;
+ const gain=ensureTitleRadioSoftwareGain();
+ if(!gain||!titleRadioAudioContext)return;
+ if(titleRadioAudio)routeTitleRadioElement(titleRadioAudio);
+ for(const audio of titleRadioBackgroundFeeds.values())routeTitleRadioElement(audio);
+ gain.gain.setValueAtTime(titleRadioVolume(),titleRadioAudioContext.currentTime);
+ if(titleRadioAudioContext.state!=='running'){
   const p=titleRadioAudioContext.resume();
   if(p&&typeof p.catch==='function')p.catch(()=>{});
  }
@@ -2267,8 +2280,8 @@ function initTitleScreen(){
  updateTitleRadioControls();
  startTitleRadio();
  initTitleMapViewer();
- document.addEventListener('pointerdown',resumeTitleRadioSoftwareGain,{once:true,capture:true});
- document.addEventListener('keydown',resumeTitleRadioSoftwareGain,{once:true,capture:true});
+ document.addEventListener('pointerdown',unlockTitleRadioSoftwareGain,{once:true,capture:true});
+ document.addEventListener('keydown',unlockTitleRadioSoftwareGain,{once:true,capture:true});
  screen.addEventListener('pointerdown',startTitleRadio,{once:true});
  document.addEventListener('keydown',startTitleRadio,{once:true});
  screen.addEventListener('pointerdown',startTitleRadioBackgroundFeeds,{once:true});

@@ -24,7 +24,7 @@ This snapshot closes the October 6 radio/title-control and factory-delegation bu
 - volume changes in 5-point steps
 - desktop fresh-load default: **40%**
 - mobile fresh-load default: **20%**
-- iPhone/iPadOS radio output uses a Web Audio master GainNode so the 20% game setting produces actual signal attenuation
+- iPhone/iPadOS radio output uses a Web Audio master GainNode so the 20% game setting produces actual signal attenuation; the graph is created/unlocked on the first user gesture so the title track can start under iOS autoplay restrictions
 - radio volume is session-only
 - old floating station label removed
 - old speaker-area power hotspot removed
