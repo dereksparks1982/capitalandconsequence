@@ -47,7 +47,7 @@ jobs:
 
       - name: Smoke-test packaged executable
         run: |
-          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --smoke-test
+          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --no-sandbox --smoke-test
 
       - name: Package standalone alpha
         run: |
