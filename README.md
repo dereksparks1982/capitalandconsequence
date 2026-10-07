@@ -164,7 +164,8 @@ The things you ignore may continue without you.
 Federal Electric is actively being developed. The README is intentionally kept player-facing. Detailed implementation history, design decisions, build notes, and future plans live in the project documents:
 
 - [Roadmap](ROADMAP.md)
-- [Current build snapshot](BUILD-SNAPSHOT-2026-10-06.md)
+- [Current build snapshot](BUILD-SNAPSHOT-2026-10-07.md)
+- [Previous build snapshot](BUILD-SNAPSHOT-2026-10-06.md)
 - [Current handoff](HANDOFF-2026-10-06.md)
 - [Previous build snapshot](BUILD-SNAPSHOT-2026-10-05.md)
 - [Earlier build snapshot](BUILD-SNAPSHOT-2026-10-04.md)
@@ -239,3 +240,10 @@ The title-screen Metropolitan Ledger currently costs **3¢** the first time its 
 The title menu is now consolidated as **Continue → Profile → Options → Archives**. **Profile** combines loading, creating, and deleting local profiles in one drawer. **Options** replaces Settings and is reserved for future game/presentation choices. **Archives** is present as the fourth drawer and is reserved for the profile-specific record of acquired newspapers, collectible cards, people, places, and other unlocked material.
 
 The radio currently exposes five frequencies: **Federal Electric Network (610 AM)**, **Capital Signal (540 AM)**, **Capital Radio Theatre (720 AM)**, **Capital Melody (880 AM)**, and **Capital News Service (1010 AM)**. The title theme remains the exception that restarts from the beginning when tuned back in. Live-style stations advance from a shared on-air clock. Desktop radio starts at **40%**. Mobile radio volume is still being stabilized. **Known iPhone regression at this handoff:** after the October 6 Web Audio attenuation work, the starting 610 AM title music no longer starts on mobile, even though the other title-screen sounds still work. Treat this as a radio-startup regression rather than simply a volume-number problem. The next build should restore reliable mobile radio startup first, then solve loudness without reintroducing this failure. Mobile title-room city ambience, fan audio, and clock ticking remain suppressed; desktop ambience remains intact.
+
+
+## v0.6.0-alpha.1 — Standalone Washington foundation
+
+Federal Electric now has a reusable Washington city/location registry that is separate from any single playable character. Existing map locations can open neutral room shells through **Go There**, the developer panel can teleport directly to registered locations and rooms, and normal travel maintains a saved current-location record without letting DEV teleport rewrite it.
+
+The Linux standalone pipeline now audits gameplay runtime references for offline operation, verifies local save storage across a renderer reload, checks the packaged desktop layout for horizontal overflow, tests a real local poker popup, and writes crash/load diagnostics to a local **Federal-Electric.log** file. These are desktop-development safeguards, not telemetry.

@@ -185,7 +185,13 @@ Closed release: **v0.5.0** · accepted gameplay baseline `46d8b4d565cb1ee5e7f369
 - [x] Register **White House**, **Washington Arena**, **Washington Airport**, and **Metropolitan Police** as additional city locations even though their final map pins/interiors are not assigned.
 - [x] Add a neutral **placeholder room shell** so locations can exist and be tested before artwork is commissioned.
 - [x] Add **DEV PANEL location + room teleport controls** that bypass normal discovery/access rules for testing.
-- [ ] Connect normal player travel from map locations into the room framework.
+- [x] Connect the existing Washington map location cards into the same room framework with a player-facing **Go There** action.
+- [x] Persist a character/story current-location record separately from DEV teleport state.
+- [x] Add reusable room navigation furniture: Return to Map, Return to Executive Office, and an internal room directory ready for multi-room locations.
+- [x] Keep DEV teleport free and non-destructive to the saved character location.
+- [x] Add a packaged-runtime offline audit so gameplay assets/scripts cannot silently regain remote dependencies.
+- [x] Expand the Linux smoke test to verify packaged DOM/city registration, renderer localStorage persistence across reload, desktop-width overflow, and a real local poker popup.
+- [x] Add local desktop diagnostics for startup, failed loads, renderer/process crashes and renderer console errors. No telemetry or network reporting.
 - [ ] Add story/player-specific discovery, invitations, influence gates, travel time and access rules outside the city registry.
 - [ ] Add final room artwork only after individual locations are approved.
 - [ ] Reuse the same Washington city registry for future playable characters and separate stories.
