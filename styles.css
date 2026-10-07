@@ -891,7 +891,7 @@ body.elephant-easter-egg-open{overflow:hidden}
  color:#e6d8b7;
  font:13px/1.35 Georgia,serif;
 }
-.title-map-location-card button{
+#titleMapLocationClose{
  position:absolute;
  top:5px;
  right:6px;
@@ -906,6 +906,17 @@ body.elephant-easter-egg-open{overflow:hidden}
  font:bold 20px/1 Georgia,serif;
  cursor:pointer;
 }
+.title-map-location-actions{display:flex;justify-content:flex-end;margin-top:10px}
+#titleMapLocationTravel{
+ min-width:92px;
+ padding:6px 10px;
+ border:1px solid #b99455;
+ background:#6f2528;
+ color:#fff1cf;
+ font:700 11px/1.1 'Courier New',monospace;
+ cursor:pointer;
+}
+#titleMapLocationTravel:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:700px){
  .title-map-marker{transform:translate(-14px,-14px)}
  .title-map-marker-pin{width:28px;height:28px;flex-basis:28px}
@@ -1277,4 +1288,20 @@ body.elephant-easter-egg-open{overflow:hidden}
  .city-room-placeholder{min-height:0;padding:28px 18px}
  .city-room-placeholder h3{font-size:26px}
  .city-room-placeholder>p{font-size:14px}
+}
+
+
+/* v0.6.0-dev standalone stabilization */
+.city-room-directory{display:flex;gap:5px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid #725d3f;background:#b9aa8d}
+.city-room-directory[hidden]{display:none}
+.city-room-directory button{padding:5px 9px;background:#efe5cf;border:1px solid #6f6047;font:700 11px/1.1 'Courier New',monospace}
+.city-room-directory button.active{background:#142b4a;color:#fffaf0;border-color:#142b4a}
+.city-room-actions{gap:8px;flex-wrap:wrap}
+.city-room-actions button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:1220px) and (min-width:701px){
+ .daybar{gap:5px;padding-left:7px;padding-right:7px;font-size:12px;letter-spacing:.02em}
+ .daybar span{padding:3px 5px}
+ #headerCompanyCash,#headerPersonalCash{min-width:80px}
+ .primary-nav{gap:3px}
+ .primary-nav>button{padding-left:6px;padding-right:6px}
 }

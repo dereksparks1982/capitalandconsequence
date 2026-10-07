@@ -105,6 +105,9 @@
           <strong id="titleMapLocationName"></strong>
           <span id="titleMapLocationArea"></span>
           <p id="titleMapLocationDescription"></p>
+          <div class="title-map-location-actions">
+            <button id="titleMapLocationTravel" type="button">Go There</button>
+          </div>
         </aside>
       </div>
       <div id="titleMapHelp" class="title-map-help">Mouse wheel to zoom · click and drag to move</div>
@@ -121,6 +124,7 @@
       </div>
       <button id="cityRoomClose" type="button" aria-label="Close room">×</button>
     </div>
+    <div id="cityRoomDirectory" class="city-room-directory" aria-label="Rooms at this location" hidden></div>
     <div class="city-room-placeholder">
       <span class="city-room-placeholder-tag">PLACEHOLDER ROOM SHELL · NO ARTWORK ASSIGNED</span>
       <h3 id="cityRoomName">Room</h3>
@@ -128,6 +132,7 @@
       <p class="city-room-framework-note">This shell is part of the reusable Washington city framework. Story-specific access, people, events and artwork can be layered onto the same location later.</p>
     </div>
     <div class="city-room-actions">
+      <button id="cityRoomReturnMap" type="button">Return to Map</button>
       <button id="cityRoomReturnOffice" type="button">Return to Executive Office</button>
     </div>
   </section>

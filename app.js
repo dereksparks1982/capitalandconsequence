@@ -18,7 +18,7 @@ const stockSeed=[
 ['ACC','American Consumer Corp.','Consumer',25.15,.028,.038],['HHA','Household & Home Appliances','Consumer',19.45,.020,.048],['USG','United Soap & Goods','Consumer',23.75,.032,.033],['RTA','Republic Tobacco & Allied','Consumer',34.50,.045,.035]
 ];
 let SAVE_KEY='federalElectricSave';
-const APP_VERSION='v0.5.0', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1938=.80, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1938*WORKDAY_HOURS, MANAGER_ANNUAL_WAGE_1939=2254, WORKDAYS_PER_YEAR=260, GENERAL_MANAGER_DAILY_WAGE=Math.round(MANAGER_ANNUAL_WAGE_1939/WORKDAYS_PER_YEAR*100)/100;
+const APP_VERSION='v0.6.0-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1938=.80, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1938*WORKDAY_HOURS, MANAGER_ANNUAL_WAGE_1939=2254, WORKDAYS_PER_YEAR=260, GENERAL_MANAGER_DAILY_WAGE=Math.round(MANAGER_ANNUAL_WAGE_1939/WORKDAYS_PER_YEAR*100)/100;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},tungsten:{name:'Tungsten',unitPrice:.018}};
 function unitCash(n){return '$'+Number(n).toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}
@@ -88,10 +88,10 @@ function makeContractOffer(){
  const suggestedPrice=+(grade.price*guideAdj*win.priceMult).toFixed(3);
  return {id:'FE-'+String(nextContractNumber()).padStart(3,'0'),customer:customer[0],product:'Electric Light Bulbs',requestedQuality:grade.quality,requestedQualityName:grade.qualityName,requestedQuantity:quantity,suggestedPrice,quality:grade.quality,qualityName:grade.qualityName,quantity,delivered:0,completed:0,productionQuantity:quantity,productionPolicy:'normal',productionState:'queued',price:suggestedPrice,status:'offered',deadlineClass:win.deadlineClass,deadlineTurns:win.turns,deadlineTurnSerial,deadlineDate:contractDeadlineDate(deadlineTurnSerial),deadline:contractDeadlineLabel(deadlineTurnSerial,win.deadlineClass),deadlineMonth:monthKey(contractDeadlineDate(deadlineTurnSerial)),deadlinePassed:false,relationship:customer[1],customerTrait:customer[2],history:0,productionSeconds,negotiation:{rounds:0,counter:null,lastProposal:null}};
 }
-const initial=()=>({version:13,gameDate:'1938-01-03',turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:50000,dayStartPersonalCash:12000,dailyReport:null,companyCash:50000,personalCash:12000,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:80,machinery:92,workforce:{present:80,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,delegation:{foremanAutoStart:false,alerts:[],managementNeglect:0,lastNeglectTurn:0,generalManager:{hired:false,name:'General Manager',competence:72,reliability:70,dailyWage:GENERAL_MANAGER_DAILY_WAGE}},lineHoldReason:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,tungsten:3500},lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1938 balancing weak demand against hopes for renewed industrial activity.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},collectibleCards:[],notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1938-01',raidDays:rollRaidDays('1938-01-03'),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:'1938-01-03',pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
+const initial=()=>({version:14,gameDate:'1938-01-03',turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:50000,dayStartPersonalCash:12000,dailyReport:null,currentLocation:{locationId:'factory',roomId:'executive-office'},companyCash:50000,personalCash:12000,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:80,machinery:92,workforce:{present:80,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,delegation:{foremanAutoStart:false,alerts:[],managementNeglect:0,lastNeglectTurn:0,generalManager:{hired:false,name:'General Manager',competence:72,reliability:70,dailyWage:GENERAL_MANAGER_DAILY_WAGE}},lineHoldReason:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,tungsten:3500},lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1938 balancing weak demand against hopes for renewed industrial activity.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},collectibleCards:[],notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1938-01',raidDays:rollRaidDays('1938-01-03'),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:'1938-01-03',pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
 let S=initial(), marketTimer=null, clockTimer=null, autosaveTimer=null, selectedStockTicker=null;
 const stockTradeQuantityDrafts=Object.create(null);
-function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:13});if(!x.gameDate){fresh.gameDate='1938-01-03';fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks();for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
+function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:14});if(!x.gameDate){fresh.gameDate='1938-01-03';fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks();for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
  fresh.turnSerial=Number.isFinite(+x.turnSerial)?Math.max(1,Math.floor(+x.turnSerial)):1;
  fresh.campaignCompleted=!!x.campaignCompleted;fresh.campaignEndPending=!!x.campaignEndPending;fresh.endlessMode=!!x.endlessMode;
  fresh.inventoryByGrade=Object.assign({economy:0,standard:0,long:0},x.inventoryByGrade||{});
@@ -110,6 +110,7 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  fresh.delegation.generalManager.hired=!!fresh.delegation.generalManager.hired;
  fresh.delegation.generalManager.dailyWage=GENERAL_MANAGER_DAILY_WAGE;
  fresh.lineHoldReason=x.lineHoldReason||null;
+ fresh.currentLocation=normalizeCurrentLocation(x.currentLocation);
  fresh.customerHistory=x.customerHistory||{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}};
  for(const c of fresh.contracts.concat(fresh.contractOffers)){if(c.product==='Electric Lamps')c.product='Electric Light Bulbs';if(!fresh.customerHistory[c.customer])fresh.customerHistory[c.customer]={completed:0,rejected:0,late:0,discounted:0,partial:0};if(c.customerTrait==null)c.customerTrait=(contractCustomers.find(v=>v[0]===c.customer)||[])[2]||'balanced';if(c.producedQuality==null)c.producedQuality=c.quality;if(!Number.isFinite(+c.delivered))c.delivered=(c.status==='delivered'||c.status==='delivered-discount')?Math.max(0,+c.quantity||0):0;if(!Number.isFinite(+c.productionQuantity)||+c.productionQuantity<1)c.productionQuantity=Math.max(1,+c.quantity||1);if(!c.productionPolicy)c.productionPolicy='normal';if(!c.deadlineMonth)c.deadlineMonth=monthKey(fresh.gameDate);if(!Number.isFinite(+c.deadlineTurnSerial))c.deadlineTurnSerial=campaignSerialForMonthEnd(c.deadlineMonth);if(!c.deadlineClass)c.deadlineClass='STANDARD';if(!Number.isFinite(+c.deadlineTurns))c.deadlineTurns=Math.max(1,c.deadlineTurnSerial-fresh.turnSerial+1);c.deadlineDate=c.deadlineDate||contractDeadlineDate(c.deadlineTurnSerial);c.deadlineMonth=monthKey(c.deadlineDate);c.deadline=contractDeadlineLabel(c.deadlineTurnSerial,c.deadlineClass);c.deadlinePassed=!!c.deadlinePassed;if(!Number.isFinite(+c.lastLatePenaltyTurn))c.lastLatePenaltyTurn=0;if(c.status==='production'||c.status==='complete')c.status='accepted';if(!c.productionState)c.productionState=(c.status==='delivered'||c.status==='delivered-discount')?'complete':(+c.completed>=+c.productionQuantity?'complete':'queued');if(c.status==='offered'){if(c.requestedQuantity==null)c.requestedQuantity=c.quantity;if(c.requestedQuality==null)c.requestedQuality=c.quality;if(c.requestedQualityName==null)c.requestedQualityName=contractGrade(c.requestedQuality).qualityName;if(c.suggestedPrice==null)c.suggestedPrice=+c.price||contractGrade(c.requestedQuality).price;if(!c.negotiation)c.negotiation={rounds:0,counter:null,lastProposal:null}}if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}
  fresh.productionQueue=(x.productionQueue||fresh.contracts.filter(c=>c.productionState==='queued'||c.productionState==='running'||c.productionState==='paused').map(c=>c.id)).filter(id=>{const c=fresh.contracts.find(v=>v.id===id);return c&&c.status!=='delivered'&&c.status!=='delivered-discount'&&(+c.completed||0)<(+c.productionQuantity||+c.quantity||1)});
@@ -1572,11 +1573,19 @@ let titleEnvironmentDevOverride=null;
 let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevEditHotspots=false,titleDevOutsideNoise=true;
 const TITLE_DEV_MONEY=999999999;
 
-let cityRoomSession={locationId:null,roomId:null,dev:false};
+let cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
 
 function federalCity(){return window.FederalElectricCity||null}
 function cityLocation(locationId){return federalCity()?.getLocation?.(locationId)||null}
 function cityRoom(locationId,roomId){return federalCity()?.getRoom?.(locationId,roomId)||null}
+function normalizeCurrentLocation(value){
+ const fallback={locationId:'factory',roomId:'executive-office'};
+ const location=cityLocation(value?.locationId||fallback.locationId)||cityLocation(fallback.locationId);
+ if(!location)return fallback;
+ const room=cityRoom(location.id,value?.roomId||location.defaultRoom);
+ return {locationId:location.id,roomId:room?.id||location.defaultRoom||location.rooms?.[0]?.id||''};
+}
+function currentCityLocation(){return normalizeCurrentLocation(S.currentLocation)}
 
 function titleDevPopulateRooms(locationId,preferredRoomId=''){
  const roomSelect=document.getElementById('titleDevRoomSelect');
@@ -1600,54 +1609,106 @@ function titleDevPopulateLocations(){
  for(const location of city.listLocations()){
   const option=document.createElement('option');option.value=location.id;option.textContent=location.name;select.appendChild(option);
  }
+ const current=currentCityLocation();
  if(previous&&cityLocation(previous))select.value=previous;
  else if(cityRoomSession.locationId&&cityLocation(cityRoomSession.locationId))select.value=cityRoomSession.locationId;
+ else if(cityLocation(current.locationId))select.value=current.locationId;
  else select.value='factory';
- titleDevPopulateRooms(select.value,cityRoomSession.locationId===select.value?cityRoomSession.roomId:'');
+ titleDevPopulateRooms(select.value,cityRoomSession.locationId===select.value?cityRoomSession.roomId:(current.locationId===select.value?current.roomId:''));
 }
 function updateTitleDevCityControls(){
  const status=document.getElementById('titleDevRoomStatus');
  if(!status)return;
- if(!cityRoomSession.locationId){status.textContent='No room open';return}
- const location=cityLocation(cityRoomSession.locationId),room=cityRoom(cityRoomSession.locationId,cityRoomSession.roomId);
- status.textContent=(location?.name||cityRoomSession.locationId)+' · '+(room?.name||cityRoomSession.roomId||'room');
+ const current=currentCityLocation();
+ if(cityRoomSession.locationId){
+  const location=cityLocation(cityRoomSession.locationId),room=cityRoom(cityRoomSession.locationId,cityRoomSession.roomId);
+  status.textContent=(cityRoomSession.dev?'DEV · ':'')+(location?.name||cityRoomSession.locationId)+' · '+(room?.name||cityRoomSession.roomId||'room');
+  return;
+ }
+ const location=cityLocation(current.locationId),room=cityRoom(current.locationId,current.roomId);
+ status.textContent='Saved · '+(location?.name||current.locationId)+' · '+(room?.name||current.roomId);
+}
+function renderCityRoomDirectory(location,activeRoomId){
+ const directory=document.getElementById('cityRoomDirectory');if(!directory)return;
+ directory.innerHTML='';
+ const rooms=Array.isArray(location?.rooms)?location.rooms:[];
+ directory.hidden=rooms.length<=1;
+ if(rooms.length<=1)return;
+ for(const room of rooms){
+  const button=document.createElement('button');
+  button.type='button';
+  button.textContent=room.name;
+  button.classList.toggle('active',room.id===activeRoomId);
+  button.onclick=()=>openCityRoom(location.id,room.id,{dev:cityRoomSession.dev,source:cityRoomSession.source});
+  directory.appendChild(button);
+ }
 }
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);if(!location)return false;
  const room=cityRoom(locationId,roomId||location.defaultRoom);if(!room)return false;
  const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return false;
+ const dev=!!options.dev,source=options.source||'dev';
  closeTitleDialog();closeTitleMap();
- cityRoomSession={locationId:location.id,roomId:room.id,dev:!!options.dev};
+ cityRoomSession={locationId:location.id,roomId:room.id,dev,source};
+ if(!dev){
+  S.currentLocation={locationId:location.id,roomId:room.id};
+  save(true);
+ }
  document.getElementById('cityRoomLocationName').textContent=location.name;
  document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
  document.getElementById('cityRoomName').textContent=room.name;
  document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
+ renderCityRoomDirectory(location,room.id);
+ const mapButton=document.getElementById('cityRoomReturnMap');
+ const mapped=!!TITLE_MAP_LOCATIONS.find(v=>v.id===location.id);
+ if(mapButton){
+  mapButton.disabled=!mapped;
+  mapButton.textContent=mapped?'Return to Map':'No Map Pin Yet';
+ }
  overlay.hidden=false;
  document.body.classList.add('city-room-open');
+ setRadioLocationContext(location.radioContext||'office');
  updateTitleDevCityControls();
  return true;
 }
 function closeCityRoom(){
  const overlay=document.getElementById('cityRoomOverlay');if(overlay)overlay.hidden=true;
  document.body.classList.remove('city-room-open');
- cityRoomSession={locationId:null,roomId:null,dev:false};
+ cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
+ setRadioLocationContext('office');
  updateTitleDevCityControls();
+}
+function returnCityRoomToMap(){
+ const locationId=cityRoomSession.locationId;
+ if(!locationId||!TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))return;
+ closeCityRoom();
+ openTitleMap();
+ requestAnimationFrame(()=>openTitleMapLocation(locationId));
+}
+function returnCityRoomToOffice(){
+ if(!cityRoomSession.dev){
+  S.currentLocation={locationId:'factory',roomId:'executive-office'};
+  save(true);
+ }
+ closeCityRoom();
 }
 function openSelectedTitleDevRoom(){
  const locationId=document.getElementById('titleDevLocationSelect')?.value;
  const roomId=document.getElementById('titleDevRoomSelect')?.value;
- if(locationId)openCityRoom(locationId,roomId,{dev:true});
+ if(locationId)openCityRoom(locationId,roomId,{dev:true,source:'dev'});
 }
 function initCityRoomUI(){
  const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return;
  document.getElementById('cityRoomClose').onclick=closeCityRoom;
- document.getElementById('cityRoomReturnOffice').onclick=closeCityRoom;
+ document.getElementById('cityRoomReturnMap').onclick=returnCityRoomToMap;
+ document.getElementById('cityRoomReturnOffice').onclick=returnCityRoomToOffice;
  overlay.addEventListener('click',e=>{if(e.target===overlay)closeCityRoom()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeCityRoom()});
 }
 window.FE_CITY={
- openRoom:(locationId,roomId)=>openCityRoom(locationId,roomId,{dev:false}),
+ openRoom:(locationId,roomId)=>openCityRoom(locationId,roomId,{dev:false,source:'game'}),
  closeRoom:closeCityRoom,
+ currentLocation:()=>currentCityLocation(),
  listLocations:()=>federalCity()?.listLocations?.()||[]
 };
 
@@ -2055,7 +2116,7 @@ const TITLE_MAP_LOCATION_DEFAULTS=(window.FederalElectricCity?.mapLocations?.()|
  {id:'embassyPoker',n:6,name:'Embassy Room',area:'Dupont / Massachusetts Avenue',x:.3928,y:.3602,description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.'}
 ]).map(v=>Object.assign({},v));
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
-let titleMapPinEdit=false,titleMapPinDrag=null;
+let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 
 function loadTitleMapLocationLayout(){
  let saved=null;
@@ -2117,13 +2178,27 @@ function titleMapPositionMarkers(){
 }
 function closeTitleMapLocation(){
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
+ titleMapSelectedLocationId=null;
 }
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
+ titleMapSelectedLocationId=id;
  $('#titleMapLocationName').textContent=location.name;
  $('#titleMapLocationArea').textContent=location.area;
  $('#titleMapLocationDescription').textContent=location.description;
+ const travel=$('#titleMapLocationTravel');
+ if(travel){
+  const ready=!!activeProfileId();
+  travel.disabled=!ready;
+  travel.textContent=ready?'Go There':'Profile Required';
+  travel.dataset.locationId=id;
+ }
  card.hidden=false;
+}
+function travelFromTitleMap(){
+ const id=titleMapSelectedLocationId||$('#titleMapLocationTravel')?.dataset.locationId;
+ if(!id||!activeProfileId())return;
+ openCityRoom(id,null,{dev:false,source:'map'});
 }
 function buildTitleMapMarkers(){
  const layer=$('#titleMapMarkers');if(!layer)return;
@@ -2229,6 +2304,7 @@ function initTitleMapViewer(){
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMap;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
+ $('#titleMapLocationTravel').onclick=travelFromTitleMap;
  $('#titleMapEditPins').onclick=toggleTitleMapPinEditor;
  $('#titleMapResetPins').onclick=()=>{if(confirm('Reset all six map pins to their original approximate positions?'))resetTitleMapLocationLayout()};
  $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
