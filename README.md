@@ -247,3 +247,7 @@ The radio currently exposes five frequencies: **Federal Electric Network (610 AM
 Federal Electric now has a reusable Washington city/location registry that is separate from any single playable character. Existing map locations can open neutral room shells through **Go There**, the developer panel can teleport directly to registered locations and rooms, and normal travel maintains a saved current-location record without letting DEV teleport rewrite it.
 
 The Linux standalone pipeline now audits gameplay runtime references for offline operation, verifies local save storage across a renderer reload, checks the packaged desktop layout for horizontal overflow, tests a real local poker popup, and writes crash/load diagnostics to a local **Federal-Electric.log** file. These are desktop-development safeguards, not telemetry.
+
+
+### Artwork folders (v0.6.4 source candidate)
+All game visuals are organized in [`assets/artwork/`](assets/artwork/README.md), separately from audio. Run `npm run prepare:runtime` then `npm run audit:artwork` to validate generated and relocated artwork paths. This housekeeping slice is source only.

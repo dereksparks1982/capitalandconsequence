@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..');
+const moved=["assets/artwork/branding/banners/federal-electric-banner-animals.png","assets/artwork/branding/logos/federal-electric-logo-overlay.webp","assets/artwork/branding/logos/federal-electric-logo.png","assets/artwork/branding/logos/federal-electric-logo.webp","assets/artwork/branding/logos/federal-electric-wordmark.png","assets/artwork/branding/stamps/confidential-stamp-158.webp","assets/artwork/branding/stamps/confidential-stamp-approved.webp","assets/artwork/branding/stamps/confidential-stamp-final.webp","assets/artwork/branding/stamps/confidential-stamp.png","assets/artwork/branding/stamps/confidential-stamp.svg","assets/artwork/effects/elephant-shock-easter-egg.gif","assets/artwork/locations/offices/federal-electric-office-day.webp","assets/artwork/locations/offices/federal-electric-office-night.png","assets/artwork/locations/offices/federal-electric-office-night.webp","assets/artwork/locations/offices/federal-electric-title-screen.png","assets/artwork/newspapers/1938-munich-accord-newspaper.webp"];
+const old=["assets/1938-munich-accord-newspaper.webp","assets/confidential-stamp-158.webp","assets/confidential-stamp-approved.webp","assets/confidential-stamp-final.webp","assets/confidential-stamp.png","assets/confidential-stamp.svg","assets/elephant-shock-easter-egg.gif","assets/federal-electric-banner-animals.png","assets/federal-electric-logo-overlay.webp","assets/federal-electric-logo.png","assets/federal-electric-logo.webp","assets/federal-electric-office-day.webp","assets/federal-electric-office-night.png","assets/federal-electric-office-night.webp","assets/federal-electric-title-screen.png","assets/federal-electric-wordmark.png"];
+const sources=['app.js','index.html','styles.css','city.js','paper-doll.js','paper-doll.css','poker.html','poker.js','boxing.js','racing.js','oval-racing.js','underworld.js','radio/radio-engine.js','radio/stations.js','desktop/prepare-runtime-assets.cjs','desktop/main.cjs'];
+const errors=[];
+const exists=(rel)=>{try{const s=fs.statSync(path.join(root,rel));return s.isFile()&&s.size>0}catch(_){return false}};
+for(const p of old)if(fs.existsSync(path.join(root,p)))errors.push('Stale root artwork: '+p);
+for(const p of [...moved,'assets/artwork/maps/title-map-1938.jpg'])if(!exists(p))errors.push('Missing artwork: '+p);
+const pattern=new RegExp('assets/artwork/[a-zA-Z0-9_./-]+[.](?:png|webp|jpg|jpeg|svg|gif)','g');
+for(const file of sources){const txt=fs.readFileSync(path.join(root,file),'utf8');for(const p of old)if(txt.includes(p))errors.push(file+' old path: '+p);for(const p of txt.match(pattern)||[])if(!exists(p))errors.push(file+' missing path: '+p)}
+if(errors.length){console.error('Artwork audit FAILED:\n'+[...new Set(errors)].join('\n'));process.exit(1)}
+console.log('Artwork audit passed: '+moved.length+' exact artwork relocations + downloaded map and live references.');

@@ -1,6 +1,6 @@
 {
   "name": "federal-electric",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "private": true,
   "description": "Federal Electric desktop alpha",
   "main": "desktop/main.cjs",
@@ -10,7 +10,8 @@
     "start": "electron .",
     "pack:linux": "electron-builder --linux dir --x64 --publish never",
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never",
-    "audit:offline": "node desktop/check-offline-runtime.cjs"
+    "audit:offline": "node desktop/check-offline-runtime.cjs",
+    "audit:artwork": "node desktop/check-artwork-paths.cjs"
   },
   "devDependencies": {
     "electron": "44.5.1",

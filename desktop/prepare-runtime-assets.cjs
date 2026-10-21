@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 
 const assets = [
   {
-    path: path.join(root, 'assets', 'title-map-1938.jpg'),
+    path: path.join(root, 'assets', 'artwork', 'maps', 'title-map-1938.jpg'),
     url: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/1938_Pictorial_Map_of_Washington_D.C._-_Geographicus_-_WashingtonDC-traster-1938.jpg'
   },
   {

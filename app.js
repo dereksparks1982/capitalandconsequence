@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.3-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.4-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1270,7 +1270,7 @@ function closeTitleDialog(){const dialog=$('#titleDialog');if(dialog){const clos
 const TITLE_NEWSPAPER_PRICE=.03;
 const TITLE_NEWSPAPER_EDITION='1938-09-30';
 const TITLE_NEWSPAPER_CATALOG={
- '1938-09-30':{id:'1938-09-30',kind:'image',dateLabel:'September 30, 1938',headline:'EUROPE WATCHES MUNICH ACCORD',image:'assets/1938-munich-accord-newspaper.webp?v=20261004-news1'}
+ '1938-09-30':{id:'1938-09-30',kind:'image',dateLabel:'September 30, 1938',headline:'EUROPE WATCHES MUNICH ACCORD',image:'assets/artwork/newspapers/1938-munich-accord-newspaper.webp?v=20261004-news1'}
 };
 const TITLE_NEWSPAPER_RUSTLE_VOLUME=.18;
 const TITLE_FILING_CABINET_OPEN_SRC='assets/audio/filing-cabinet-open.mp3?v=20261004-cabinet1';
@@ -1559,8 +1559,8 @@ const TITLE_CLOCK_TIME_ZONE='America/New_York';
 const TITLE_DC_LAT=38.9072;
 const TITLE_DC_LON=-77.0369;
 const TITLE_OFFICE_IMAGES={
- day:'assets/federal-electric-office-day.webp?v=20261003-dc1',
- night:'assets/federal-electric-office-night.png?v=20261004-approved3'
+ day:'assets/artwork/locations/offices/federal-electric-office-day.webp?v=20261003-dc1',
+ night:'assets/artwork/locations/offices/federal-electric-office-night.png?v=20261004-approved3'
 };
 const titleClockFormatter=new Intl.DateTimeFormat('en-US',{
  timeZone:TITLE_CLOCK_TIME_ZONE,
@@ -2541,7 +2541,7 @@ window.addEventListener('pagehide',()=>save(true));
 
  const knocks=[];
  let shockMode=false,overlay=null,rod=null,lastX=innerWidth*.72,lastY=70;
- const asset='assets/elephant-shock-easter-egg.gif?v=20261003-shockrod1';
+ const asset='assets/artwork/effects/elephant-shock-easter-egg.gif?v=20261003-shockrod1';
 
  function ensureRod(){
   if(rod)return rod;

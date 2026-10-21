@@ -636,3 +636,12 @@ Authoritative station behavior:
 - [ ] Connect the pictured eight slots to an equippable inventory, persistent storage and item rules in later explicitly approved slices. Do not assign pocket capacities without a design decision.
 - [x] Increase all CURRENT development version labels and future manual package filenames to **0.6.3**. GitHub Actions packaging remains manual-only; no executable should be produced for this slice.
 - [ ] Actual desktop runtime test of **P**, **Escape**, X and both pocket popups after artwork is installed and the next approved Linux candidate is packaged.
+
+
+## v0.6.4 — Source-only artwork maintenance (2026-10-21)
+- [x] A distinct new slice following v0.6.3 paper doll. Increment version with each slice.
+- [x] Organize all 16 loose images into categorized `assets/artwork/` subdirectories with their original binary hashes and alternate variants preserved.
+- [x] Set up future folders for paper dolls, garments, accessories, UI, maps, objects, pockets, and locations.
+- [x] Update all active image references and downloaded Washington map destination.
+- [x] Add a maintenance artwork-path audit after the preparation step and before packaging.
+- [x] Keep Linux packaging manually triggered; no executable or accepted release created.
