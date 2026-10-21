@@ -663,3 +663,13 @@ Authoritative station behavior:
 - [x] Reuse the existing player location persistence, room directory and map-travel mechanisms so the home can be visited and the currently occupied room saved.
 - [x] Existing pins 1–11 keep their IDs, default coordinates, and saved per-profile placement records. No migration wipes or rewrites previous pin data.
 - [x] v0.6.6 source only; manual packaging and acceptance still pending.
+
+
+## v0.6.7 — M-key Washington map access, source only (2026-10-21)
+
+- [x] **M** opens/closes the map from live gameplay, office/title hub, or an occupied city room. The map opens independently of the paper doll.
+- [x] When opened from a room, the room closes visually while map is open, then closing the map restores **that same room and location**. No teleport and no new save position.
+- [x] When opened from hidden/live gameplay, closing the map restores live gameplay instead of leaving the title office visible.
+- [x] Ignore M while typing, in a modal report/dialog, or while the P-key paper doll is open. Preserve default action of the map's close X and Escape.
+- [x] Add packaged Electron smoke assertions for M from the factory, M from the Home bedroom, and return-to-location behavior. Candidate must still pass the full Linux run with no warnings/errors.
+- [x] Increment to **0.6.7** and do not auto-package on push.

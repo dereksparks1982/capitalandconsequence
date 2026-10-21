@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.6-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.7-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -2161,6 +2161,7 @@ function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()
 const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(v=>Object.assign({},v));
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
+let titleMapOpenedFromGame=false;
 
 function loadTitleMapLocationLayout(){
  // Start from fixed defaults so each profile has independent, predictable pin positions.
@@ -2335,13 +2336,16 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
- // The map must work even after loading a saved room with the title art hidden.
- // Display it above the game, without treating this as a paused main menu.
+ // Remember whether the map was opened over live gameplay so closing it
+ // restores the exact interface rather than leaving an unexpected title office.
+ const viewer=$('#titleMapViewer');
+ if(!viewer)return;
+ if(viewer.hidden)titleMapOpenedFromGame=!!$('#titleScreen')?.hidden;
  const screen=$('#titleScreen');
  if(screen?.hidden){screen.hidden=false;titleScreenDeskBreak=true;}
  loadTitleMapLocationLayout();
  renderUnpinnedCityDirectory();
- const viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewer||!viewport||!img)return;
+ const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img)return;
  viewer.hidden=false;
  document.body.classList.add('title-map-open');
  const ready=()=>requestAnimationFrame(()=>{titleMapReset();viewport.focus()});
@@ -2349,6 +2353,7 @@ function openTitleMap(){
 }
 function closeTitleMap(){
  const viewer=$('#titleMapViewer');if(viewer)viewer.hidden=true;
+ titleMapOpenedFromGame=false;
  closeTitleMapLocation();
  document.body.classList.remove('title-map-open');
  titleMapState.pointerId=null;
@@ -2357,11 +2362,42 @@ function closeTitleMap(){
 // The map is not a teleport: closing it away from Federal Electric returns to
 // the location where the player is standing, rather than exposing the office.
 function closeTitleMapOrReturnToLocation(){
+ const restoreGame=titleMapOpenedFromGame;
  closeTitleMap();
  const current=currentCityLocation();
  if(activeProfileId()&&current.locationId!=='factory'){
   openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
+ }else if(restoreGame){
+  // The map was opened from the live business/game interface.
+  titleScreenDeskBreak=false;
+  closeTitleScreen();
  }
+}
+function toggleTitleMapShortcut(){
+ const viewer=$('#titleMapViewer');
+ if(!viewer)return;
+ if(!viewer.hidden){closeTitleMapOrReturnToLocation();return;}
+ const room=$('#cityRoomOverlay');
+ if(room&&!room.hidden){
+  if(cityRoomSession.dev){closeCityRoom();openTitleMap();}
+  else returnCityRoomToMap();
+  return;
+ }
+ openTitleMap();
+}
+function isMapShortcutTyping(target){
+ return !!(target?.closest?.('input, textarea, select, [contenteditable], [role="textbox"]'));
+}
+function initMapShortcut(){
+ document.addEventListener('keydown',event=>{
+  if(event.code!=='KeyM'&&String(event.key).toLowerCase()!=='m')return;
+  if(event.repeat||event.altKey||event.ctrlKey||event.metaKey||isMapShortcutTyping(event.target))return;
+  if(window.FE_PAPER_DOLL?.isOpen?.())return;
+  if(!$('#titleDialog')?.hidden||!$('#dailyReportOverlay')?.hidden||!$('#campaignEndOverlay')?.hidden)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  toggleTitleMapShortcut();
+ },true);
 }
 function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
@@ -2415,6 +2451,7 @@ function checkCityOpportunity(locationId){
 function initTitleMapViewer(){
  const open=$('#titleDcMap'),viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport');
  if(!open||!viewer||!viewport)return;
+ initMapShortcut();
  loadTitleMapLocationLayout();
  buildTitleMapMarkers();
  updateTitleMapPinEditor();

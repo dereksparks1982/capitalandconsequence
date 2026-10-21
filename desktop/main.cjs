@@ -176,6 +176,48 @@ async function runSmokeTest(win) {
       throw new Error('Paper doll artwork / controls smoke test failed: '+JSON.stringify(paperDollTest));
     }
 
+    // Map key works at the office, inside a city room, and from hidden
+    // gameplay. Closing it must never change the player's saved location.
+    const mapKeyTest=await win.webContents.executeJavaScript(`(() => {
+      const oldProfile=localStorage.getItem('federalElectricActiveProfile');
+      const oldPlace=S.currentLocation?{...S.currentLocation}:null;
+      const oldDeskBreak=titleScreenDeskBreak;
+      const screen=document.getElementById('titleScreen');
+      const room=document.getElementById('cityRoomOverlay');
+      const map=document.getElementById('titleMapViewer');
+      const oldScreenHidden=screen.hidden;
+      const out={};
+      const pressM=()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'m',code:'KeyM',bubbles:true,cancelable:true}));
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-map-hotkey');
+        closeCityRoom();closeTitleMap();screen.hidden=true;
+        S.currentLocation={locationId:'factory',roomId:'executive-office'};
+        pressM();
+        out.openFromGame=!map.hidden;
+        pressM();
+        out.closeRestoresGame=map.hidden&&screen.hidden&&FE_CITY.currentLocation().locationId==='factory';
+        screen.hidden=false;
+        openCityRoom('home','bedroom',{source:'smoke',dev:false});
+        out.atHome=FE_CITY.currentLocation().locationId==='home'&&FE_CITY.currentLocation().roomId==='bedroom';
+        pressM();
+        out.openFromHome=!map.hidden&&room.hidden;
+        pressM();
+        out.closeRestoresBedroom=map.hidden&&!room.hidden&&FE_CITY.currentLocation().roomId==='bedroom';
+        returnCityRoomToOffice();
+      }finally{
+        closeTitleMap();closeCityRoom();screen.hidden=oldScreenHidden;
+        S.currentLocation=oldPlace||{locationId:'factory',roomId:'executive-office'};
+        titleScreenDeskBreak=oldDeskBreak;
+        if(oldProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldProfile);
+        localStorage.removeItem('federalElectricProfile___smoke-map-hotkey');
+      }
+      return out;
+    })()`);
+    if(!mapKeyTest.openFromGame||!mapKeyTest.closeRestoresGame||!mapKeyTest.atHome||!mapKeyTest.openFromHome||!mapKeyTest.closeRestoresBedroom){
+      throw new Error('M shortcut location regression: '+JSON.stringify(mapKeyTest));
+    }
+
     const cityTravel=await win.webContents.executeJavaScript(`(() => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');
