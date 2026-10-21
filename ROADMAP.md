@@ -684,3 +684,14 @@ Authoritative station behavior:
 - [x] Add player-location smoke checks: an item placed in household storage stays there when moving to another room and is inaccessible remotely. The test item exists only in temporary test state.
 - [ ] Decide physical pocket capacity, container sizes, item acquisition and item transfer rules before enabling pickup, pocket filling, wardrobe swaps, or remotely moving items. No unapproved storage/cheating/ID mechanics are live.
 - [x] Increment to **0.6.8**; keep packaging manual-only.
+
+
+## v0.6.9 — Residential property progression groundwork, source only (2026-10-21)
+
+- [x] Add a four-stage **non-purchasable housing catalog**: the current modest Capitol Hill rowhouse, a larger townhouse, a grand city residence, and a country estate. Only the current home is mapped; all future addresses await approval, not fake pins.
+- [x] Give every profile a residence ledger in its save: current starter residence, **undetermined** ownership/rental status, and empty purchased-properties, staff and improvements records. Existing saves migrate without an imaginary property purchase.
+- [x] Display a simple **Household Register** in the Home Front Room, showing residence, tenure and household additions. Bedroom/kitchen/storage remain their own rooms.
+- [x] Prepare separate upgrade and household-service categories: larger accommodations, better sanitation and comfort, servants' entrances and quarters, doorman/porter, butler, cook, housekeeper, gardener, driver, and visitor/reputation effects.
+- [x] Record **no invented prices, upkeep, wages, automatic purchases or hiring** until research and player choice; property wealth must use Personal Cash, not automatically company funds.
+- [x] Extend offline dependency audit and add smoke checks for catalog, unknown starting tenure, and correct front-room ledger display.
+- [x] Version **0.6.9**, source only. No executable, automatic build, or release acceptance.

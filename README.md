@@ -251,3 +251,8 @@ The Linux standalone pipeline now audits gameplay runtime references for offline
 
 ### Artwork folders (v0.6.4 source candidate)
 All game visuals are organized in [`assets/artwork/`](assets/artwork/README.md), separately from audio. Run `npm run prepare:runtime` then `npm run audit:artwork` to validate generated and relocated artwork paths. This housekeeping slice is source only.
+
+
+### Personal residence (v0.6.9 source)
+
+The game starts with a Capitol Hill Home pin and separate rooms. A household ledger in the front room records the character's primary residence but does not assume the property is owned or rented. Future larger properties, domestic amenities and staffed door service are defined as progression categories; prices, addresses and purchase mechanics remain unimplemented pending research. The project is still a source-only candidate.

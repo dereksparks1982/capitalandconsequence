@@ -248,6 +248,33 @@ async function runSmokeTest(win) {
     })()`);
     if(Object.entries(effectsTest).some(([,value])=>value!==true))throw new Error('Personal effects regression: '+JSON.stringify(effectsTest));
 
+    const housingTest=await win.webContents.executeJavaScript(`(() => {
+      const originalHousing=S.housing,oldProfile=localStorage.getItem('federalElectricActiveProfile');
+      const oldLocation=S.currentLocation?{...S.currentLocation}:null;
+      const out={};
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-housing');
+        S.housing={version:1,primaryResidenceId:'capitol-hill-rowhouse',tenure:'undetermined',properties:[],staff:[],improvements:[]};
+        out.fourTiers=FE_HOUSING.listTiers().length===4;
+        out.noInventedPrices=FE_HOUSING.listTiers().every(p=>p.purchasePrice===null&&p.upkeep===null);
+        out.initialTermsUnspecified=FE_HOUSING.currentHousehold().tenure==='undetermined';
+        out.noUnownedProperty=FE_HOUSING.currentHousehold().properties.length===0;
+        S.currentLocation={locationId:'home',roomId:'front-room'};
+        FE_HOUSING.renderHouseholdRecord('home','front-room');
+        out.frontRoomHasLedger=!document.getElementById('cityRoomHouseholdRecord').hidden;
+        FE_HOUSING.renderHouseholdRecord('home','bedroom');
+        out.bedroomDoesNotHaveLedger=document.getElementById('cityRoomHouseholdRecord').hidden;
+        out.newSaveHasBaseline=initial().housing?.primaryResidenceId==='capitol-hill-rowhouse';
+      }finally{
+        S.housing=originalHousing;
+        S.currentLocation=oldLocation;
+        if(oldProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldProfile);
+      }
+      return out;
+    })()`);
+    if(Object.entries(housingTest).some(([,value])=>value!==true))throw new Error('Housing groundwork smoke regression: '+JSON.stringify(housingTest));
+
     const cityTravel=await win.webContents.executeJavaScript(`(() => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');
