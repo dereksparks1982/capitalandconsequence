@@ -1,0 +1,25 @@
+/* Federal Electric v0.6.3, approved art wrapper and two pocket containers.
+   No replacement drawing or clothing customisation is introduced. */
+.fe-paper-doll{position:fixed;inset:0;z-index:3000000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,8,6,.89)}
+.fe-paper-doll[hidden]{display:none}
+.fe-paper-doll__panel{position:relative;width:min(750px,96vw);max-height:96vh;overflow:auto;padding:0 12px 16px;border:3px double #ae8b4c;background:#1b1712;color:#f6e8c7;box-shadow:0 20px 85px #000}
+.fe-paper-doll__header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 4px;border-bottom:1px solid #967342}
+.fe-paper-doll__header h2{margin:0;color:#f6e8c7;font:bold 21px Georgia,serif;letter-spacing:.03em;text-transform:none;border:0}
+.fe-paper-doll__header small{display:block;margin-top:3px;color:#cfbc96;font:11px Georgia,serif}
+.fe-paper-doll__close,.fe-paper-doll__pocket-head button{width:40px;height:40px;flex:none;background:#30261a;color:#f7e8ce;border:1px solid #c9a46a;font:bold 25px Arial,sans-serif;cursor:pointer}
+.fe-paper-doll__figure{position:relative;display:flex;align-items:center;justify-content:center;min-height:260px;padding:8px;overflow:auto}
+.fe-paper-doll__figure img{display:block;max-width:100%;max-height:min(69vh,650px);object-fit:contain}
+.fe-paper-doll__figure img[hidden]{display:none}
+.fe-paper-doll__missing{max-width:400px;margin:36px 10px;padding:24px;border:1px dashed #b59b70;color:#d8c9ae;text-align:center;font:15px/1.5 Georgia,serif}
+.fe-paper-doll__missing[hidden]{display:none}
+.fe-paper-doll__pocket-actions{display:flex;justify-content:center;gap:16px;margin:8px 0 0}
+.fe-paper-doll__pocket-actions button{min-width:130px;min-height:42px;border:1px solid #bea06b;background:#33291d;color:#faebcd;font:16px Georgia,serif;cursor:pointer}
+.fe-paper-doll__pocket-actions button[aria-expanded="true"]{background:#77552d}
+.fe-paper-doll__pocket{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(310px,85vw);border:3px double #624c30;background:#dfceb0;color:#261e15;box-shadow:0 12px 48px rgba(0,0,0,.72)}
+.fe-paper-doll__pocket[hidden]{display:none}
+.fe-paper-doll__pocket-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;background:#594329;color:#f9eccb}
+.fe-paper-doll__pocket-head h3{margin:0;color:#f9eccb;font:bold 19px Georgia,serif}
+.fe-paper-doll__pocket-head button{width:31px;height:31px;font-size:20px}
+.fe-paper-doll__pocket-interior{min-height:120px;padding:20px 16px;background:repeating-linear-gradient(90deg,rgba(99,70,40,.04) 0,rgba(99,70,40,.04) 2px,transparent 2px,transparent 14px),#e8ddc7}
+.fe-paper-doll__pocket-interior p{margin:18px 0;text-align:center;color:#66523c;font:italic 16px Georgia,serif}
+@media (max-width:520px){.fe-paper-doll{padding:5px}.fe-paper-doll__panel{width:100%;max-height:98vh}.fe-paper-doll__figure{min-height:180px}.fe-paper-doll__header h2{font-size:18px}.fe-paper-doll__pocket-actions button{min-width:0;width:44%}}

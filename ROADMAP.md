@@ -625,3 +625,14 @@ Authoritative station behavior:
 - **Cards and dice**: a player may choose to conceal an ace, palmed card or loaded die where physically possible. The item creates an *opportunity* for cheating but never guarantees success; discovery can cause ejection, reputational harm, debts or other plausible consequences. No universal morality bar.
 - **Second nightlife venue**: develop a socially distinct, seedier adult Washington nightlife club with its own owner, clientele, social usefulness and risks, not just a recolor of Madam Star's. The user's joking working name “Gay Toney's Club” is **not finalized**; decide a setting-appropriate original name when developing the location. Sexuality isn't a good/bad game statistic.
 - Keep the current placeholder for the second nightclub until design is approved; no new artwork, characters, inventory UI, or mechanics silently added by this documentation.
+
+
+## v0.6.3 source slice — 2026-10-21 (NO EXECUTABLE)
+
+- [x] Give **P** a dedicated paper-doll overlay. Press **P** again, **Escape**, or its **X** to close it, without dismissing the underlying map or room.
+- [x] Keep the current paper-doll appearance fixed; do not enable wardrobe swaps or equipped-item changes yet. The approved design specifies **eight slots**: shirt, trousers, shoes, left ring, right ring, watch, left pocket, right pocket.
+- [x] Clicking either **pocket** opens a small, separate container-style **pocket inventory**, not an actual chest. The initial pocket containers are empty, pending the item and capacity systems.
+- [ ] **Artwork import blocker:** the exact previously approved, bordered paper-doll PNG is not currently in the source repository or attached as an accessible paper-doll image in this handoff. Import it UNALTERED at `assets/federal-electric-paper-doll-approved.png`. The new overlay deliberately shows a missing-art notice instead of substituting an unauthorized drawing.
+- [ ] Connect the pictured eight slots to an equippable inventory, persistent storage and item rules in later explicitly approved slices. Do not assign pocket capacities without a design decision.
+- [x] Increase all CURRENT development version labels and future manual package filenames to **0.6.3**. GitHub Actions packaging remains manual-only; no executable should be produced for this slice.
+- [ ] Actual desktop runtime test of **P**, **Escape**, X and both pocket popups after artwork is installed and the next approved Linux candidate is packaged.

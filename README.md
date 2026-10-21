@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current version: v0.5.0**
+**Current source development version: v0.6.3 (unpackaged, unaccepted)**
 
 **Build an electrical empire in Washington, D.C., beginning in 1938.**
 
