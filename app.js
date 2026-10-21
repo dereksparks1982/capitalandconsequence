@@ -2141,14 +2141,9 @@ const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:
 // overrides remain untouched for recovery but must not hide the corrected placements.
 const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV2';
 function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()||'unassigned')}
-const TITLE_MAP_LOCATION_DEFAULTS=(window.FederalElectricCity?.mapLocations?.()||[
- {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
- {id:'star',n:2,name:'Star Club',area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
- {id:'races',n:3,name:'Capital Race Grounds',area:'East of the Anacostia',x:.8087,y:.5315,description:'Federal Electric’s horse-racing and dog-racing venue.'},
- {id:'workingPoker',n:4,name:'Neighborhood Game',area:'Navy Yard / Southeast',x:.5826,y:.6322,description:'The lower-stakes working-class poker room.'},
- {id:'commercePoker',n:5,name:'Commerce Club',area:'Downtown / Pennsylvania Avenue',x:.4536,y:.5088,description:'A respectable downtown club hosting the middle-stakes business poker game.'},
- {id:'embassyPoker',n:6,name:'Embassy Room',area:'Dupont / Massachusetts Avenue',x:.3928,y:.3602,description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.'}
-]).map(v=>Object.assign({},v));
+// The city registry is the single source of truth; missing city.js must not
+// silently fall back to six obsolete, geographically incorrect map pins.
+const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(v=>Object.assign({},v));
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 
