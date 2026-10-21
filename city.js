@@ -8,11 +8,11 @@
   {
    id:'factory',
    name:'Federal Electric Factory',
-   area:'Ivy City / New York Avenue NE',
+   area:'Ivy City / New York Avenue NE near Fenwick Street',
    category:'company',
    radioContext:'office',
    description:'Federal Electric works and company offices in the northeast industrial corridor.',
-   map:{n:1,x:.6101,y:.3778},
+   map:{n:1,x:.6150,y:.3830},
    defaultRoom:'executive-office',
    rooms:[
     {id:'executive-office',name:'Executive Office',description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'}
@@ -21,11 +21,11 @@
   {
    id:'star',
    name:'Star Club',
-   area:'14th Street / Logan–Thomas Circle',
+   area:'Surviving Hay-Adams houses · 16th and H Streets NW',
    category:'social',
    radioContext:'star',
    description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.',
-   map:{n:2,x:.4203,y:.4081},
+   map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
     {id:'star-room',name:'Star Room',description:'Placeholder room shell for the Star Club. Final artwork and the club’s internal room layout have not been assigned yet.'}
@@ -34,10 +34,10 @@
   {
    id:'races',
    name:'Capital Race Grounds',
-   area:'East of the Anacostia',
+   area:'Benning Race Track · Kenilworth Avenue and Jay Street NE',
    category:'sport',
    description:'Federal Electric’s horse-racing and dog-racing venue.',
-   map:{n:3,x:.8087,y:.5315},
+   map:{n:3,x:.8110,y:.4920},
    defaultRoom:'grounds',
    rooms:[
     {id:'grounds',name:'Race Grounds',description:'Placeholder room shell for the Capital Race Grounds. Final venue artwork and internal spaces remain future work.'}
@@ -46,10 +46,10 @@
   {
    id:'workingPoker',
    name:'Neighborhood Game',
-   area:'Navy Yard / Southeast',
+   area:'Colonial Village · northern Washington (provisional site)',
    category:'social',
    description:'The lower-stakes working-class poker room.',
-   map:{n:4,x:.5826,y:.6322},
+   map:{n:4,x:.3930,y:.0900},
    defaultRoom:'card-room',
    rooms:[
     {id:'card-room',name:'Neighborhood Card Room',description:'Placeholder room shell for the lower-stakes neighborhood poker game.'}
@@ -58,10 +58,10 @@
   {
    id:'commercePoker',
    name:'Commerce Club',
-   area:'Downtown / Pennsylvania Avenue',
+   area:'Washington-Hoover Airport · hangar, Arlington, Virginia',
    category:'social',
-   description:'A respectable Washington club hosting the middle-stakes business poker game.',
-   map:{n:5,x:.4536,y:.5088},
+   description:'The Commerce Club meets once a week in an airport hangar for a pilots’ and businessmen’s poker game.',
+   map:{n:5,x:.3000,y:.6460},
    defaultRoom:'club-room',
    rooms:[
     {id:'club-room',name:'Commerce Club Room',description:'Placeholder room shell for the Commerce Club. Final artwork and room arrangement remain unassigned.'}
@@ -70,10 +70,10 @@
   {
    id:'embassyPoker',
    name:'Embassy Room',
-   area:'Dupont / Massachusetts Avenue',
+   area:'Chevy Chase Club · 6100 Connecticut Avenue, Chevy Chase, Maryland',
    category:'social',
    description:'The invitation-only elite poker room serving wealthy and diplomatic Washington.',
-   map:{n:6,x:.3928,y:.3602},
+   map:{n:6,x:.2430,y:.1600},
    defaultRoom:'embassy-room',
    rooms:[
     {id:'embassy-room',name:'Embassy Room',description:'Placeholder room shell for the invitation-only elite poker room.'}
@@ -81,9 +81,9 @@
   },
   {
    id:'oldChinatown',name:'Old Chinatown',
-   area:'Pennsylvania Avenue NW / 4th Street NW',category:'social',
+   area:'Old Chinatown · Pennsylvania Avenue NW, 4th–7th Streets',category:'social',
    description:'Shops and meeting places in Washington’s early Chinese-American neighborhood.',
-   map:null,defaultRoom:'market-street',
+   map:{n:7,x:.5080,y:.4890},defaultRoom:'market-street',
    rooms:[{id:'market-street',name:'Market Street',description:'A street of stores and small businesses. Artwork remains unassigned.'}],
    people:[
     {id:'li-wen',name:'Li Wen',language:'zh-Hant',dialogue:[
@@ -98,9 +98,9 @@
   },
   {
    id:'russianTradeHall',name:'Russian Trade Hall',
-   area:'Washington, D.C. · merchant district',category:'social',
+   area:'Dupont Circle · Massachusetts Avenue NW (proposed hall)',category:'social',
    description:'An informal meeting place for visiting engineers, merchants and diplomats of Imperial Russia.',
-   map:null,defaultRoom:'meeting-hall',
+   map:{n:8,x:.3720,y:.3580},defaultRoom:'meeting-hall',
    rooms:[{id:'meeting-hall',name:'Meeting Hall',description:'A meeting hall for visiting Russian merchants, without finished artwork.'}],
    people:[
     {id:'pavel-orlov',name:'Pavel Orlov',language:'ru',dialogue:[
@@ -114,10 +114,10 @@
    ]
   },
   {
-   id:'washingtonFairgrounds',name:'Washington Fairgrounds',
-   area:'Washington, D.C. · exposition district',category:'fair',availableFrom:'1893-01-01',
+   id:'washingtonFairgrounds',name:'D.C. World’s Fair',
+   area:'National Mall · Smithsonian grounds (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',
    description:'The future grounds of the alternate-history 1893 World’s Columbian Exposition.',
-   map:null,defaultRoom:'fairgrounds',
+   map:{n:9,x:.4700,y:.5660},defaultRoom:'fairgrounds',
    rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
   },
   {
@@ -126,6 +126,26 @@
    description:'Another Washington social circle whose proprietor will contrast with Madam Star.',
    map:null,defaultRoom:'main-room',
    rooms:[{id:'main-room',name:'Main Room',description:'Reserved placeholder room. Name, owner and artwork remain undecided.'}]
+  },
+  {
+   id:'capitolAirport',
+   name:'Capitol Airport',
+   area:'North of Benning Race Track · eastern Washington',
+   category:'transport',
+   description:'The Capitol Airport aviation site, separately chosen for the map; not the Washington-Hoover hangar used by Commerce Club.',
+   map:{n:10,x:.8140,y:.3950},
+   defaultRoom:'airport-office',
+   rooms:[{id:'airport-office',name:'Airport Office',description:'Placeholder aviation office. Interior art and aviation activities are not yet assigned.'}]
+  },
+  {
+   id:'universityMaryland',
+   name:'University of Maryland',
+   area:'College Park campus · Maryland',
+   category:'education',
+   description:'College Park campus and the player’s connections to its electrical engineering program.',
+   map:{n:11,x:.7620,y:.0800},
+   defaultRoom:'engineering-hall',
+   rooms:[{id:'engineering-hall',name:'Engineering Hall',description:'Placeholder university room for research, professors, and electrical-engineering contacts.'}]
   },
   {
    id:'whiteHouse',
