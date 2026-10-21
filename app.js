@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.11-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.12-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1705,6 +1705,7 @@ function renderCityRoomDirectory(location,activeRoomId){
 }
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);if(!location)return false;
+ if(!options.dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id))return false;
  if(location.id==='factory'&&!options.dev){
   closeTitleMap();
   returnCityRoomToOffice();
@@ -1724,6 +1725,7 @@ function openCityRoom(locationId,roomId,options={}){
  document.getElementById('cityRoomName').textContent=room.name;
  document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
  renderCityRoomPeople(location);
+ if(window.FE_VENUES?.renderRoomOpportunities)window.FE_VENUES.renderRoomOpportunities(location.id);
  if(window.FE_PERSONAL_EFFECTS?.renderRoomStorage)window.FE_PERSONAL_EFFECTS.renderRoomStorage(location.id,room.id);
  if(window.FE_HOUSING?.renderHouseholdRecord)window.FE_HOUSING.renderHouseholdRecord(location.id,room.id);
  const encounter=document.getElementById('cityRoomEncounter');if(encounter)encounter.textContent=!dev?checkCityOpportunity(location.id):'';
@@ -1774,7 +1776,13 @@ function initCityRoomUI(){
  overlay.addEventListener('click',e=>{if(e.target===overlay)closePlayerRoom()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closePlayerRoom()});
 }
+function openLocalVenueActivity(id){
+ const v=window.FE_VENUES?.get?.(id);
+ if(!v||!window.FE_VENUES.canUse(id)||!v.group||!v.panel)return false;
+ closeCityRoom();showTab(v.group==='legal'?'racing':'washington');setPastimeActivity(v.group,v.panel);return true;
+}
 window.FE_CITY={
+ openLocalActivity:openLocalVenueActivity,
  openRoom:(locationId,roomId)=>openCityRoom(locationId,roomId,{dev:false,source:'game'}),
  closeRoom:returnCityRoomToMap,
  currentLocation:()=>currentCityLocation(),
@@ -2426,7 +2434,7 @@ function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
  out.innerHTML='';
  const active=!!activeProfileId(),year=S.gameDate;
- for(const loc of city.listLocations().filter(loc=>!loc.map&&(!loc.availableFrom||year>=loc.availableFrom))){
+ for(const loc of city.listLocations().filter(loc=>!loc.map&&!loc.hiddenFromDirectory&&!loc.plannedOnly&&(!loc.availableFrom||year>=loc.availableFrom))){
   const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
   button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
   button.onclick=()=>openCityRoom(loc.id,null,{dev:false,source:'map'});

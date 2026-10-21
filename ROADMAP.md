@@ -715,3 +715,11 @@ Authoritative station behavior:
 - [x] Consolidate decisions on continuous autosave, restricted legal/illegal gambling, venue-specific games, future animal contests, mounts, travel, property ownership and wealth in a world-rules design document.
 - [x] Distinguish already-playable older sports/poker modules from **future** location gating, historic time/distance research and legal-game lists.
 - [x] Increment to v0.6.11. No executable or accepted release.
+
+
+## v0.6.12 — Venue-specific opportunities, source-only
+- [x] Register dog track, future motor circuit, planning-only casino and concealed private contests as distinct **unpinned** places; no invented map pixels.
+- [x] Keep the 12 approved map pins unchanged, preserve concealment and dates, and add opportunity listings and enter-activity buttons to rooms.
+- [x] Clearly label unapproved baccarat, blackjack and roulette as **planning only**, with no wagers.
+- [x] Add source checks for physical access, secret site and date gating. Global legacy pastime actions require further enforcement.
+- [x] Increment v0.6.12; no executable produced.

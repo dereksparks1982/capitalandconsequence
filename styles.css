@@ -1326,3 +1326,11 @@ body.elephant-easter-egg-open{overflow:hidden}
 .city-room-household-record dt{font-weight:bold}
 .city-room-household-record dd{margin:0}
 .city-room-household-record p{font-size:12px;color:#66523c;margin:12px 0 0}
+
+/* v0.6.12 room-local opportunity shell */
+.city-room-opportunities{max-width:620px;margin:12px auto;padding:12px;background:#eee0c5;color:#332414;border:2px double #806741;text-align:left}
+.city-room-opportunities[hidden]{display:none}
+.city-room-opportunities h4{margin:0 0 8px;font:700 17px Georgia,serif}
+.city-room-opportunity{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid #bea783}
+.city-room-opportunity span{flex:1}
+.city-room-opportunity button{background:#443420;color:#f6ebd5;border:1px solid #8a7652;padding:7px}

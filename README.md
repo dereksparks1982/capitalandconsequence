@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.11-dev · unaccepted, source-only · October 21, 2026**
+**Current development source: v0.6.12-dev · unaccepted, source-only · October 21, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,11 +15,11 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.11-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.12-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
 
-Each distinct source slice increments the patch number: 0.6.6 added Home, 0.6.7 the M-key map, 0.6.8 personal storage, 0.6.9 housing, 0.6.10 source regression checks, and this 0.6.11 documentation refresh. Packaging stays manual-only. Candidate validation, acceptance, commit/tag and release are separate steps.
+Each distinct source slice increments the patch number: 0.6.6 added Home, 0.6.7 the M-key map, 0.6.8 personal storage, 0.6.9 housing, 0.6.10 source regression checks, and this 0.6.11 documentation refresh and 0.6.12 venue scaffolding. Packaging stays manual-only. Candidate validation, acceptance, commit/tag and release are separate steps.
 
 ## The world and the clock
 
@@ -57,7 +57,7 @@ Existing gameplay includes horse/dog/midget-car racing, boxing, three social pok
 
 **Planned alternate-Washington policy:** only specifically licensed wagers/games are legal; private poker, unauthorized house games and prohibited animal contests remain underground. **The exact approved card-game list is not settled.** Baccarat / chemin de fer, seen in *GoldenEye*, is a candidate for a permitted game, **not a poker variant**. Five-card poker, roulette and blackjack are candidates for restricted backrooms pending rules decisions.
 
-Every activity should eventually require physically reaching its venue, meeting access requirements, and respecting time and outcomes. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
+Venue opportunity records and some room-access gates now exist. Every activity should eventually require physically reaching its venue, meeting access requirements, and respecting time and outcomes. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
 
 ## Personal mobility and persistent consequences
 

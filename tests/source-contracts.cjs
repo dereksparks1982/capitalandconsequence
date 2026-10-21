@@ -8,21 +8,21 @@ const root=path.resolve(__dirname,'..');
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8');
 const pkg=JSON.parse(read('package.json'));
 const citySource=read('city.js'),appSource=read('app.js');
-const housingSource=read('housing.js'),effectsSource=read('personal-effects.js');
+const housingSource=read('housing.js'),effectsSource=read('personal-effects.js'),venuesSource=read('venue-opportunities.js');
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.10','Current package version is v0.6.10');
-check(appSource.includes("APP_VERSION='v0.6.10-dev'"),'Game masthead uses v0.6.10');
-check(read('build-linux.sh').includes('0.6.10'),'Local packaging uses the same number');
+check(pkg.version==='0.6.12','Current package version is v0.6.12');
+check(appSource.includes("APP_VERSION='v0.6.12-dev'"),'Game masthead uses v0.6.12');
+check(read('build-linux.sh').includes('0.6.12'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.10-linux-x64.tar.gz'),'Manual workflow archives v0.6.10');
+check(workflow.includes('0.6.12-linux-x64.tar.gz'),'Manual workflow archives v0.6.12');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -82,4 +82,13 @@ housing.renderHouseholdRecord('home','bedroom');
 check(elements.cityRoomHouseholdRecord.hidden,'Bedroom hides property register');
 check(appSource.includes('fresh.personalEffects={version:1,items:[]}')&&appSource.includes('fresh.housing={'),'Save migrations preserve personal systems');
 check(appSource.includes('function initMapShortcut()')&&appSource.includes('function closeTitleMapOrReturnToLocation()'),'M key map and return flow installed');
+const vc={window:{FederalElectricCity:city},S:{gameDate:'1890-01-02',underworld:{privateFightsUnlocked:false,cockfightsUnlocked:false}},activeProfileId:()=>profile,currentCityLocation:()=>current,document:doc};
+vm.runInNewContext(venuesSource,vc,{filename:'venue-opportunities.js'});
+current={locationId:'races',roomId:'grounds'};
+check(vc.window.FE_VENUES.canUse('horse-racing'),'Must attend racetrack to enter races');
+current={locationId:'home',roomId:'bedroom'};
+check(!vc.window.FE_VENUES.canUse('horse-racing'),'No remote horse racing');
+check(!vc.window.FE_VENUES.canEnterLocation('licensedGamingHall'),'Unapproved casino locked');
+check(!vc.window.FE_VENUES.canEnterLocation('cockfightingDen'),'Undiscovered illegal site locked');
+check(!vc.window.FE_VENUES.canEnterLocation('capitalSpeedway'),'Motor track closed in 1890');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
