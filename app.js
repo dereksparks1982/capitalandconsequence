@@ -19,9 +19,12 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.0-alpha.2-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1938=.80, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1938*WORKDAY_HOURS, MANAGER_ANNUAL_WAGE_1939=2254, WORKDAYS_PER_YEAR=260, GENERAL_MANAGER_DAILY_WAGE=Math.round(MANAGER_ANNUAL_WAGE_1939/WORKDAYS_PER_YEAR*100)/100;
+const APP_VERSION='v0.6.0-alpha.2-candidate', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
-const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},tungsten:{name:'Tungsten',unitPrice:.018}};
+const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
+function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
+function periodRadioAvailable(){return S.gameDate>='1938-01-01'}
+function stockAvailableInYear(ticker,sector,year){return year>=({Automotive:1896,Aviation:1910}[sector]||1890) && !(ticker==='NRT'&&year<1920) && !(ticker==='RMI'&&year<1910) && !(ticker==='HHA'&&year<1900)}
 function unitCash(n){return '$'+Number(n).toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}
 const contractCustomers=[
  ['Capital Hardware & Supply Co.','Existing customer','balanced'],['Potomac Hotel Supply','Commercial buyer','forgiving'],['District Lighting & Fixture Co.','Regional distributor','strict'],['Chesapeake Mercantile Co.','Wholesale buyer','price'],['National Home Stores','Retail chain','quality'],['Columbia Property Management','Property operator','impatient']
@@ -36,13 +39,13 @@ function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCod
 function seededUnit(key){return (hashString(key)%1000000)/1000000}
 function businessDaysBefore(iso,count){const out=[],d=new Date(iso+'T12:00:00');while(out.length<count){d.setDate(d.getDate()-1);if(d.getDay()!==0&&d.getDay()!==6)out.unshift(d.toISOString().slice(0,10))}return out}
 function openingGapFor(ticker,iso,vol){let gap=(seededUnit(ticker+'|open|'+iso)-.5)*Math.min(.018,.004+vol*.18);if(Math.abs(gap)<.0008)gap=gap<0?-.0008:.0008;return gap}
-function makeStockHistory(ticker,openingPrice,vol,count=STOCK_HISTORY_DAYS){
- const dates=businessDaysBefore(CAMPAIGN_START_DATE,count),gap=openingGapFor(ticker,CAMPAIGN_START_DATE,vol);
+function makeStockHistory(ticker,openingPrice,vol,count=STOCK_HISTORY_DAYS,startISO=CAMPAIGN_START_DATE){
+ const dates=businessDaysBefore(startISO,count),gap=openingGapFor(ticker,startISO,vol);
  let p=Math.max(1,Math.round((openingPrice/(1+gap))*100)/100),back=[];
  for(let i=dates.length-1;i>=0;i--){back.push({date:dates[i],close:+p.toFixed(2)});const move=(seededUnit(ticker+'|history|'+dates[i])-.5)*vol*.35;p=Math.max(1,p/(1+move))}
  return back.reverse();
 }
-function makeStocks(){return Object.fromEntries(stockSeed.map(([ticker,name,sector,price,yieldRate,vol])=>{const history=makeStockHistory(ticker,price,vol),prevClose=history[history.length-1].close;return [ticker,{name,sector,price,hiddenPrice:price,prev:prevClose,prevClose,open:price,yieldRate,vol,history}]}))}
+function makeStocks(startISO=CAMPAIGN_START_DATE){return Object.fromEntries(stockSeed.map(([ticker,name,sector,price,yieldRate,vol])=>{const history=makeStockHistory(ticker,price,vol,STOCK_HISTORY_DAYS,startISO),prevClose=history[history.length-1].close;return [ticker,{name,sector,price,hiddenPrice:price,prev:prevClose,prevClose,open:price,yieldRate,vol,history}]}))}
 function mergeStockHistory(seedHistory,savedHistory){
  const byDate=new Map();
  for(const v of Array.isArray(seedHistory)?seedHistory:[]){if(v&&v.date&&Number.isFinite(+v.close))byDate.set(v.date,{date:v.date,close:+v.close})}
@@ -56,9 +59,9 @@ function businessTurnDatesForMonth(iso){
  if(weekdays.length<=TURNS_PER_MONTH)return weekdays;
  const out=[];for(let i=0;i<TURNS_PER_MONTH;i++){const idx=Math.round(i*(weekdays.length-1)/(TURNS_PER_MONTH-1)),date=weekdays[idx];if(!out.includes(date))out.push(date)}return out;
 }
-function campaignDateForTurn(serial){
- const turn=Math.max(1,Math.floor(serial)),monthIndex=Math.floor((turn-1)/TURNS_PER_MONTH),slot=(turn-1)%TURNS_PER_MONTH,d=new Date(CAMPAIGN_START_YEAR,monthIndex,1,12,0,0),key=String(d.getFullYear())+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01',dates=businessTurnDatesForMonth(key);
- return dates[Math.min(slot,dates.length-1)];
+function campaignDateForTurn(serial,startYear=CAMPAIGN_START_YEAR){
+ const turn=Math.max(1,Math.floor(serial)),monthIndex=Math.floor((turn-1)/TURNS_PER_MONTH),slot=(turn-1)%TURNS_PER_MONTH,d=new Date(startYear,monthIndex,1,12,0,0),key=String(d.getFullYear())+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01',dates=businessTurnDatesForMonth(key);
+ return startYear===1890&&monthIndex===0&&slot===0?CAMPAIGN_START_DATE:dates[Math.min(slot,dates.length-1)];
 }
 function nextBusinessTurn(iso){
  const current=businessTurnDatesForMonth(iso),next=current.find(d=>d>iso);if(next)return next;
@@ -68,18 +71,18 @@ function nextBusinessTurn(iso){
 function turnNumberForDate(iso){const dates=businessTurnDatesForMonth(iso);let best=0;for(let i=0;i<dates.length;i++){if(dates[i]<=iso)best=i;else break}return Math.min(TURNS_PER_MONTH,best+1)}
 function deadlineLabel(key){const p=key.split('-').map(Number),d=new Date(p[0],p[1]-1,1,12,0,0);return 'End of '+d.toLocaleDateString('en-US',{month:'long',year:'numeric'})+' · Turn '+TURNS_PER_MONTH}
 function monthKey(iso){return iso.slice(0,7)}
-function campaignSerialForMonthEnd(key){const p=key.split('-').map(Number),monthIndex=(p[0]-CAMPAIGN_START_YEAR)*12+(p[1]-1);return Math.max(1,monthIndex*TURNS_PER_MONTH+TURNS_PER_MONTH)}
-function contractDeadlineDate(serial){return campaignDateForTurn(Math.max(1,serial))}
-function contractDeadlineLabel(serial,deadlineClass='STANDARD'){const iso=contractDeadlineDate(serial),d=new Date(iso+'T12:00:00'),date=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),turnLabel=S?.endlessMode?'Turn '+serial:'Turn '+serial+'/'+CAMPAIGN_TURNS;return deadlineClass==='SAME DAY'?'TODAY · '+date+' · '+turnLabel:date+' · '+turnLabel}
+function campaignSerialForMonthEnd(key,startYear=CAMPAIGN_START_YEAR){const p=key.split('-').map(Number),monthIndex=(p[0]-startYear)*12+(p[1]-1);return Math.max(1,monthIndex*TURNS_PER_MONTH+TURNS_PER_MONTH)}
+function contractDeadlineDate(serial,startYear=CAMPAIGN_START_YEAR){return campaignDateForTurn(Math.max(1,serial),startYear)}
+function contractDeadlineLabel(serial,deadlineClass='STANDARD',startYear=CAMPAIGN_START_YEAR){const iso=contractDeadlineDate(serial,startYear),d=new Date(iso+'T12:00:00'),date=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),turnLabel=S?.endlessMode?'Turn '+serial:'Turn '+serial+'/'+CAMPAIGN_TURNS;return deadlineClass==='SAME DAY'?'TODAY · '+date+' · '+turnLabel:date+' · '+turnLabel}
 function chooseContractWindow(quantity){const roll=Math.random();if(roll<.08)return {deadlineClass:'SAME DAY',turns:1,priceMult:1.2};if(roll<.18)return {deadlineClass:'RUSH',turns:2,priceMult:1.12};if(quantity>=15000)return {deadlineClass:'MAJOR',turns:12,priceMult:1.04};if(quantity>=8000)return {deadlineClass:'LARGE',turns:8,priceMult:1.035};if(quantity>=5000)return {deadlineClass:'EXTENDED',turns:6,priceMult:1.025};return {deadlineClass:'STANDARD',turns:4,priceMult:1}}
 function rollRaidDays(iso){const d=new Date(iso+'T12:00:00'),y=d.getFullYear(),m=d.getMonth(),days=new Date(y,m+1,0).getDate(),count=1+Math.floor(Math.random()*2),set=new Set();while(set.size<count){const n=1+Math.floor(Math.random()*days),x=new Date(y,m,n);if(x.getDay()!==0)set.add(n)}return [...set].sort((a,b)=>a-b)}
 function rollStarRaidTurn(serial){return Math.max(1,Math.floor(serial||1))+16+Math.floor(Math.random()*17)}
-function starRaidDateForTurn(serial){return campaignDateForTurn(Math.max(1,Math.floor(serial||1)))}
+function starRaidDateForTurn(serial,startYear=CAMPAIGN_START_YEAR){return campaignDateForTurn(Math.max(1,Math.floor(serial||1)),startYear)}
 function pokerRisk(circle){return circle==='working'?.012:circle==='middle'?.007:.003}
-const starterContract=()=>({id:'FE-001',customer:'Capital Hardware & Supply Co.',product:'Electric Light Bulbs',quality:'standard',qualityName:'Standard Service',quantity:1000,delivered:0,completed:0,productionQuantity:1000,productionPolicy:'normal',productionState:'queued',price:.15,status:'accepted',deadlineClass:'STANDARD',deadlineTurns:4,deadlineTurnSerial:4,deadlineDate:campaignDateForTurn(4),deadline:'End of January 1938 · Turn 4/372',deadlineMonth:'1938-01',deadlinePassed:false,relationship:'Existing customer',history:0,productionSeconds:600});
+const starterContract=()=>({id:'FE-001',customer:'Capital Hardware & Supply Co.',product:'Electric Light Bulbs',quality:'standard',qualityName:'Standard Service',quantity:1000,delivered:0,completed:0,productionQuantity:1000,productionPolicy:'normal',productionState:'queued',price:.15,status:'accepted',deadlineClass:'STANDARD',deadlineTurns:4,deadlineTurnSerial:4,deadlineDate:campaignDateForTurn(4),deadline:'End of January 1890 · Turn 4/372',deadlineMonth:'1890-01',deadlinePassed:false,relationship:'Existing customer',history:0,productionSeconds:600});
 function nextContractNumber(){return Math.max(1,...S.contracts.concat(S.contractOffers||[]).map(x=>+(String(x.id||'').replace(/\D/g,''))||0))+1}
 function contractGrade(q){return contractGrades.find(g=>g.quality===q)||contractGrades[1]}
-function contractRunSeconds(qty){return Math.max(600,Math.ceil(Math.max(1,qty)/1000)*600)}
+function contractRunSeconds(qty){return Math.max(600,Math.ceil(Math.max(1,qty)/1000)*2400)}
 function makeContractOffer(){
  const sizeRoll=Math.random();
  const quantity=sizeRoll<.34?1000+Math.floor(Math.random()*7)*250:sizeRoll<.67?3000+Math.floor(Math.random()*9)*250:sizeRoll<.9?6000+Math.floor(Math.random()*13)*500:12500+Math.floor(Math.random()*16)*500;
@@ -87,12 +90,12 @@ function makeContractOffer(){
  const customer=contractCustomers[Math.floor(Math.random()*contractCustomers.length)],grade=contractGrades[Math.floor(Math.random()*contractGrades.length)],hist=S.customerHistory?.[customer[0]],loyalty=hist?(hist.completed*2-hist.rejected*2-hist.late):0;
  const guideAdj=.98+Math.random()*.07+Math.max(-.035,Math.min(.045,loyalty*.005));
  const suggestedPrice=+(grade.price*guideAdj*win.priceMult).toFixed(3);
- return {id:'FE-'+String(nextContractNumber()).padStart(3,'0'),customer:customer[0],product:'Electric Light Bulbs',requestedQuality:grade.quality,requestedQualityName:grade.qualityName,requestedQuantity:quantity,suggestedPrice,quality:grade.quality,qualityName:grade.qualityName,quantity,delivered:0,completed:0,productionQuantity:quantity,productionPolicy:'normal',productionState:'queued',price:suggestedPrice,status:'offered',deadlineClass:win.deadlineClass,deadlineTurns:win.turns,deadlineTurnSerial,deadlineDate:contractDeadlineDate(deadlineTurnSerial),deadline:contractDeadlineLabel(deadlineTurnSerial,win.deadlineClass),deadlineMonth:monthKey(contractDeadlineDate(deadlineTurnSerial)),deadlinePassed:false,relationship:customer[1],customerTrait:customer[2],history:0,productionSeconds,negotiation:{rounds:0,counter:null,lastProposal:null}};
+ return {id:'FE-'+String(nextContractNumber()).padStart(3,'0'),customer:customer[0],product:'Electric Light Bulbs',requestedQuality:grade.quality,requestedQualityName:grade.qualityName,requestedQuantity:quantity,suggestedPrice,quality:grade.quality,qualityName:grade.qualityName,quantity,delivered:0,completed:0,productionQuantity:quantity,productionPolicy:'normal',productionState:'queued',price:suggestedPrice,status:'offered',deadlineClass:win.deadlineClass,deadlineTurns:win.turns,deadlineTurnSerial,deadlineDate:contractDeadlineDate(deadlineTurnSerial,S.campaignStartYear),deadline:contractDeadlineLabel(deadlineTurnSerial,win.deadlineClass,S.campaignStartYear),deadlineMonth:monthKey(contractDeadlineDate(deadlineTurnSerial,S.campaignStartYear)),deadlinePassed:false,relationship:customer[1],customerTrait:customer[2],history:0,productionSeconds,negotiation:{rounds:0,counter:null,lastProposal:null}};
 }
-const initial=()=>({version:14,gameDate:CAMPAIGN_START_DATE,turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:50000,dayStartPersonalCash:12000,dailyReport:null,currentLocation:{locationId:'factory',roomId:'executive-office'},companyCash:50000,personalCash:12000,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:80,machinery:92,workforce:{present:80,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,delegation:{foremanAutoStart:false,alerts:[],managementNeglect:0,lastNeglectTurn:0,generalManager:{hired:false,name:'General Manager',competence:72,reliability:70,dailyWage:GENERAL_MANAGER_DAILY_WAGE}},lineHoldReason:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,tungsten:3500},lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1890 as electric lighting finds new commercial customers.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},collectibleCards:[],notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1890-01',raidDays:rollRaidDays(CAMPAIGN_START_DATE),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:CAMPAIGN_START_DATE,pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
+const initial=()=>({version:15,campaignStartYear:CAMPAIGN_START_YEAR,gameDate:CAMPAIGN_START_DATE,turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:false,phase:'day',dayRemaining:DAY_SECONDS,paused:false,dayStartCompanyCash:5000,dayStartPersonalCash:600,dailyReport:null,currentLocation:{locationId:'factory',roomId:'executive-office'},companyCash:5000,personalCash:600,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:12,machinery:92,workforce:{present:12,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,delegation:{foremanAutoStart:false,alerts:[],managementNeglect:0,lastNeglectTurn:0,generalManager:{hired:false,name:'General Manager',competence:72,reliability:70,dailyWage:GENERAL_MANAGER_DAILY_WAGE}},lineHoldReason:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,carbon:3500,tungsten:0},standingSalesTotal:0,cityOpportunities:[],lastRevenue:0,lastExpenses:0,ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'INDUSTRY WATCHES RECOVERY WITH CAUTION',story:'Manufacturers enter 1890 as electric lighting finds new commercial customers.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},collectibleCards:[],notes:[],contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1890-01',raidDays:rollRaidDays(CAMPAIGN_START_DATE),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:CAMPAIGN_START_DATE,pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[starterContract()],contractOffers:[],productionQueue:['FE-001'],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
 let S=initial(), marketTimer=null, clockTimer=null, autosaveTimer=null, selectedStockTicker=null;
 const stockTradeQuantityDrafts=Object.create(null);
-function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:14});if(!x.gameDate){fresh.gameDate=CAMPAIGN_START_DATE;fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks();for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
+function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:15});fresh.campaignStartYear=Number.isInteger(+x.campaignStartYear)?+x.campaignStartYear:(String(x.gameDate||'')>='1938-01-01'?1938:CAMPAIGN_START_YEAR);fresh.materials=Object.assign({copper:6000,glass:6000,carbon:3500,tungsten:0},x.materials||{});fresh.cityOpportunities=Array.isArray(x.cityOpportunities)?x.cityOpportunities:[];if(!x.gameDate){fresh.gameDate=CAMPAIGN_START_DATE;fresh.dayRemaining=DAY_SECONDS}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.paused=!!x.paused;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks(fresh.campaignStartYear===1938?'1938-01-03':CAMPAIGN_START_DATE);for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio();for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial,fresh.campaignStartYear);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
  fresh.turnSerial=Number.isFinite(+x.turnSerial)?Math.max(1,Math.floor(+x.turnSerial)):1;
  fresh.campaignCompleted=!!x.campaignCompleted;fresh.campaignEndPending=!!x.campaignEndPending;fresh.endlessMode=!!x.endlessMode;
  fresh.inventoryByGrade=Object.assign({economy:0,standard:0,long:0},x.inventoryByGrade||{});
@@ -113,7 +116,7 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  fresh.lineHoldReason=x.lineHoldReason||null;
  fresh.currentLocation=normalizeCurrentLocation(x.currentLocation);
  fresh.customerHistory=x.customerHistory||{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}};
- for(const c of fresh.contracts.concat(fresh.contractOffers)){if(c.product==='Electric Lamps')c.product='Electric Light Bulbs';if(!fresh.customerHistory[c.customer])fresh.customerHistory[c.customer]={completed:0,rejected:0,late:0,discounted:0,partial:0};if(c.customerTrait==null)c.customerTrait=(contractCustomers.find(v=>v[0]===c.customer)||[])[2]||'balanced';if(c.producedQuality==null)c.producedQuality=c.quality;if(!Number.isFinite(+c.delivered))c.delivered=(c.status==='delivered'||c.status==='delivered-discount')?Math.max(0,+c.quantity||0):0;if(!Number.isFinite(+c.productionQuantity)||+c.productionQuantity<1)c.productionQuantity=Math.max(1,+c.quantity||1);if(!c.productionPolicy)c.productionPolicy='normal';if(!c.deadlineMonth)c.deadlineMonth=monthKey(fresh.gameDate);if(!Number.isFinite(+c.deadlineTurnSerial))c.deadlineTurnSerial=campaignSerialForMonthEnd(c.deadlineMonth);if(!c.deadlineClass)c.deadlineClass='STANDARD';if(!Number.isFinite(+c.deadlineTurns))c.deadlineTurns=Math.max(1,c.deadlineTurnSerial-fresh.turnSerial+1);c.deadlineDate=c.deadlineDate||contractDeadlineDate(c.deadlineTurnSerial);c.deadlineMonth=monthKey(c.deadlineDate);c.deadline=contractDeadlineLabel(c.deadlineTurnSerial,c.deadlineClass);c.deadlinePassed=!!c.deadlinePassed;if(!Number.isFinite(+c.lastLatePenaltyTurn))c.lastLatePenaltyTurn=0;if(c.status==='production'||c.status==='complete')c.status='accepted';if(!c.productionState)c.productionState=(c.status==='delivered'||c.status==='delivered-discount')?'complete':(+c.completed>=+c.productionQuantity?'complete':'queued');if(c.status==='offered'){if(c.requestedQuantity==null)c.requestedQuantity=c.quantity;if(c.requestedQuality==null)c.requestedQuality=c.quality;if(c.requestedQualityName==null)c.requestedQualityName=contractGrade(c.requestedQuality).qualityName;if(c.suggestedPrice==null)c.suggestedPrice=+c.price||contractGrade(c.requestedQuality).price;if(!c.negotiation)c.negotiation={rounds:0,counter:null,lastProposal:null}}if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}
+ for(const c of fresh.contracts.concat(fresh.contractOffers)){if(c.product==='Electric Lamps')c.product='Electric Light Bulbs';if(!fresh.customerHistory[c.customer])fresh.customerHistory[c.customer]={completed:0,rejected:0,late:0,discounted:0,partial:0};if(c.customerTrait==null)c.customerTrait=(contractCustomers.find(v=>v[0]===c.customer)||[])[2]||'balanced';if(c.producedQuality==null)c.producedQuality=c.quality;if(!Number.isFinite(+c.delivered))c.delivered=(c.status==='delivered'||c.status==='delivered-discount')?Math.max(0,+c.quantity||0):0;if(!Number.isFinite(+c.productionQuantity)||+c.productionQuantity<1)c.productionQuantity=Math.max(1,+c.quantity||1);if(!c.productionPolicy)c.productionPolicy='normal';if(!c.deadlineMonth)c.deadlineMonth=monthKey(fresh.gameDate);if(!Number.isFinite(+c.deadlineTurnSerial))c.deadlineTurnSerial=campaignSerialForMonthEnd(c.deadlineMonth,fresh.campaignStartYear);if(!c.deadlineClass)c.deadlineClass='STANDARD';if(!Number.isFinite(+c.deadlineTurns))c.deadlineTurns=Math.max(1,c.deadlineTurnSerial-fresh.turnSerial+1);c.deadlineDate=c.deadlineDate||contractDeadlineDate(c.deadlineTurnSerial,fresh.campaignStartYear);c.deadlineMonth=monthKey(c.deadlineDate);c.deadline=contractDeadlineLabel(c.deadlineTurnSerial,c.deadlineClass,fresh.campaignStartYear);c.deadlinePassed=!!c.deadlinePassed;if(!Number.isFinite(+c.lastLatePenaltyTurn))c.lastLatePenaltyTurn=0;if(c.status==='production'||c.status==='complete')c.status='accepted';if(!c.productionState)c.productionState=(c.status==='delivered'||c.status==='delivered-discount')?'complete':(+c.completed>=+c.productionQuantity?'complete':'queued');if(c.status==='offered'){if(c.requestedQuantity==null)c.requestedQuantity=c.quantity;if(c.requestedQuality==null)c.requestedQuality=c.quality;if(c.requestedQualityName==null)c.requestedQualityName=contractGrade(c.requestedQuality).qualityName;if(c.suggestedPrice==null)c.suggestedPrice=+c.price||contractGrade(c.requestedQuality).price;if(!c.negotiation)c.negotiation={rounds:0,counter:null,lastProposal:null}}if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}
  fresh.productionQueue=(x.productionQueue||fresh.contracts.filter(c=>c.productionState==='queued'||c.productionState==='running'||c.productionState==='paused').map(c=>c.id)).filter(id=>{const c=fresh.contracts.find(v=>v.id===id);return c&&c.status!=='delivered'&&c.status!=='delivered-discount'&&(+c.completed||0)<(+c.productionQuantity||+c.quantity||1)});
  fresh.activeContractId=fresh.productionQueue.includes(x.activeContractId)?x.activeContractId:null;fresh.lineStatus=x.lineStatus||'idle';fresh.lineMessage=x.lineMessage||'No production run is running.';fresh.lastProductionQuality=x.lastProductionQuality||null;
  for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
@@ -252,11 +255,14 @@ function marketIndex(){const current=Object.values(S.stocks).reduce((a,x)=>a+x.p
 function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 function render(){
+ document.body.classList.toggle('pre-radio-era',!periodRadioAvailable());
+ document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1930-01-01');
+ if(!periodRadioAvailable()){if(titleRadioAudio)titleRadioAudio.pause();for(const feed of titleRadioBackgroundFeeds.values())feed.pause()}
  $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day Early':S.phase==='night'?'Retire Early':'Daily Report Open';endBtn.disabled=S.phase==='report'};
  updateCashHeader();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
- $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
+ $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
  renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();renderTreasury();renderDailyReport();renderCampaignEnd();applyPauseLock();syncTopNavigation()
 }
 function wagerBucket(bets){
@@ -319,7 +325,7 @@ function renderCampaignEnd(){
  if(!S.campaignEndPending||S.endlessMode){panel.hidden=true;return}
  panel.hidden=false;
  const body=$('#campaignEndBody');if(body)body.innerHTML='<div class="campaign-end-grid">'+
- '<article><b>Main campaign</b><span>January 1890 – September 1897</span></article>'+
+ '<article><b>Main campaign</b><span>January '+S.campaignStartYear+' – September '+(S.campaignStartYear+7)+'</span></article>'+
  '<article><b>Turns completed</b><span>'+CAMPAIGN_TURNS+'</span></article>'+
  '<article><b>Company value</b><span>'+money(companyValueEstimate())+'</span></article>'+
  '<article><b>Company cash</b><span>'+money(S.companyCash)+'</span></article>'+
@@ -381,7 +387,7 @@ function renderDelegation(){
  if(status)status.innerHTML+='<small>Management neglect: '+neglect+'/12 · '+neglectLabel+' · output factor '+Math.round(managementNeglectFactor()*100)+'%</small>';
  const gm=d.generalManager||{},gmStatus=$('#generalManagerStatus'),gmTerms=$('#generalManagerTerms'),gmToggle=$('#generalManagerToggle');
  if(gmStatus)gmStatus.textContent=gm.hired?'HIRED · COMPETENCE '+Math.round(gm.competence||0)+'/100 · RELIABILITY '+Math.round(gm.reliability||0)+'/100':'VACANT';
- if(gmTerms)gmTerms.textContent='1939 manager-income anchor · '+cash(gm.dailyWage||GENERAL_MANAGER_DAILY_WAGE)+' per Business Day';
+ if(gmTerms)gmTerms.textContent='1890 manager salary · '+cash(gm.dailyWage||GENERAL_MANAGER_DAILY_WAGE)+' per Business Day';
  if(gmToggle){gmToggle.textContent=gm.hired?'Dismiss General Manager':'Hire General Manager';gmToggle.classList.toggle('danger',gm.hired)}
  if(alerts){
   const rows=(d.alerts||[]).slice().reverse().map(a=>'<article class="management-alert '+escapeHtml(a.severity||'attention')+'"><div><b>'+escapeHtml((a.type||'management').toUpperCase())+'</b><small>'+escapeHtml(a.date||'')+'</small></div><p>'+escapeHtml(a.text||'')+'</p><button type="button" onclick="dismissManagementAlert(\''+escapeHtml(a.id)+'\')">Acknowledge</button></article>').join('');
@@ -483,7 +489,7 @@ function proposalFromInputs(id){
 }
 function finalizeContractOffer(x,terms,source){
  S.contractOffers=S.contractOffers.filter(o=>o.id!==x.id);
- x.quantity=terms.quantity;x.quality=terms.quality;x.qualityName=contractGrade(terms.quality).qualityName;x.price=terms.price;x.completed=0;x.delivered=0;x.productionQuantity=terms.quantity;x.productionPolicy='normal';x.productionState='queued';x.status='accepted';if(!Number.isFinite(+x.deadlineTurnSerial)){const win=chooseContractWindow(terms.quantity);x.deadlineClass=win.deadlineClass;x.deadlineTurns=win.turns;x.deadlineTurnSerial=(S.turnSerial||1)+win.turns-1}x.deadlineDate=contractDeadlineDate(x.deadlineTurnSerial);x.deadlineMonth=monthKey(x.deadlineDate);x.deadline=contractDeadlineLabel(x.deadlineTurnSerial,x.deadlineClass||'STANDARD');x.deadlinePassed=false;x.productionSeconds=contractRunSeconds(terms.quantity);x.producedQuality=x.quality;x.negotiation={...(x.negotiation||{}),counter:null};
+ x.quantity=terms.quantity;x.quality=terms.quality;x.qualityName=contractGrade(terms.quality).qualityName;x.price=terms.price;x.completed=0;x.delivered=0;x.productionQuantity=terms.quantity;x.productionPolicy='normal';x.productionState='queued';x.status='accepted';if(!Number.isFinite(+x.deadlineTurnSerial)){const win=chooseContractWindow(terms.quantity);x.deadlineClass=win.deadlineClass;x.deadlineTurns=win.turns;x.deadlineTurnSerial=(S.turnSerial||1)+win.turns-1}x.deadlineDate=contractDeadlineDate(x.deadlineTurnSerial,S.campaignStartYear);x.deadlineMonth=monthKey(x.deadlineDate);x.deadline=contractDeadlineLabel(x.deadlineTurnSerial,x.deadlineClass||'STANDARD',S.campaignStartYear);x.deadlinePassed=false;x.productionSeconds=contractRunSeconds(terms.quantity);x.producedQuality=x.quality;x.negotiation={...(x.negotiation||{}),counter:null};
  S.contracts.push(x);S.productionQueue.push(x.id);if(!S.customerHistory[x.customer])S.customerHistory[x.customer]={completed:0,rejected:0,late:0,discounted:0,partial:0};
  S.notes.push({date:displayDate(),text:x.customer+' and Federal Electric agreed to '+terms.quantity.toLocaleString()+' '+x.qualityName+' light bulbs at '+cash(terms.price)+' per unit under '+x.id+'. Delivery is due by '+x.deadline+'.',source:'contract negotiation'});
  note(x.id+' accepted at '+cash(terms.price)+'/unit and added to the production queue'+(source==='counter'?' from the customer counteroffer.':'.'));save();render();
@@ -534,7 +540,7 @@ function selectedProductionGrade(c){
 }
 function productionVariableUnitCost(q){
  const cfg=productionCfg(q)||productionCfg('standard');
- return cfg.c*MATERIAL_MARKET.copper.unitPrice+cfg.g*MATERIAL_MARKET.glass.unitPrice+cfg.t*MATERIAL_MARKET.tungsten.unitPrice+cfg.cost;
+ return cfg.c*MATERIAL_MARKET.copper.unitPrice+cfg.g*MATERIAL_MARKET.glass.unitPrice+cfg.t*MATERIAL_MARKET[filamentMaterial()].unitPrice+cfg.cost;
 }
 function productionQualityProfile(c){
  const w=S.workforce||{},policy=productionPolicyCfg(c),base=clamp((w.skill||68)*.32+(w.morale||73)*.16+(w.discipline||81)*.17+S.machinery*.35,45,99),internal=clamp((100-base)*.0007*policy.defects,.002,.06),latent=clamp((100-base)*.00025*policy.defects,.0005,.025),qc=clamp(100-internal*150-latent*200,70,99.8);return {internal,latent,qc}
@@ -554,7 +560,7 @@ function advanceProduction(seconds,away=false){if(!businessOpen())return;const x
   S.lineMessage=gm?.hired?'A serious line breakdown exceeded the General Manager\'s handling authority. Production is stopped pending your decision.':'The line broke down while you were away. Foreman Sullivan needs your authorization before repairs can continue.';
   addManagementAlert('breakdown',S.lineMessage,'critical');
  }
-}}const target=productionTarget(x),remaining=Math.max(0,target-(+x.completed||0)),factor=(S.machinery/92)*workforceProductionFactor()*productionPolicyCfg(x).speed,rate=target/productionRunSeconds(x)*factor,desired=Math.min(remaining,rate*effective),selectedGrade=selectedProductionGrade(x),cfg=productionCfg(selectedGrade),qp=productionQualityProfile(x),yieldRate=Math.max(.85,1-qp.internal),possible=Math.min(desired,S.materials.copper*yieldRate/cfg.c,S.materials.glass*yieldRate/cfg.g,S.materials.tungsten*yieldRate/cfg.t,S.companyCash*yieldRate/cfg.cost);if(possible<=0){S.lineStatus='awaiting';S.lineHoldReason='materials-or-cash';x.productionState='paused';S.lineMessage='Production stopped for lack of materials or operating cash.';addManagementAlert('production',S.lineMessage,'critical');return}const gross=possible/yieldRate,rejected=Math.max(0,gross-possible);S.materials.copper=Math.max(0,S.materials.copper-gross*cfg.c);S.materials.glass=Math.max(0,S.materials.glass-gross*cfg.g);S.materials.tungsten=Math.max(0,S.materials.tungsten-gross*cfg.t);const cost=gross*cfg.cost;S.companyCash-=cost;S.lastExpenses+=cost;x.completed=(+x.completed||0)+possible;addFinishedUnits(x,selectedGrade,possible,rejected,qp.qc,qp.latent);if(x.completed>=target-.01){x.completed=target;S.productionQueue=S.productionQueue.filter(id=>id!==x.id);S.activeContractId=null;x.productionState='complete';S.lineMessage='Production run '+x.id+' complete. '+Math.floor(target).toLocaleString()+' finished units are in Warehouse inventory. Nothing has been shipped automatically.';startNextQueued()}renderMaterialStocks();renderFactory();renderWarehouse();renderContracts()}
+}}const filamentKey=filamentMaterial();const target=productionTarget(x),remaining=Math.max(0,target-(+x.completed||0)),factor=(S.machinery/92)*workforceProductionFactor()*productionPolicyCfg(x).speed,rate=target/productionRunSeconds(x)*factor,desired=Math.min(remaining,rate*effective),selectedGrade=selectedProductionGrade(x),cfg=productionCfg(selectedGrade),qp=productionQualityProfile(x),yieldRate=Math.max(.85,1-qp.internal),possible=Math.min(desired,S.materials.copper*yieldRate/cfg.c,S.materials.glass*yieldRate/cfg.g,S.materials[filamentKey]*yieldRate/cfg.t,S.companyCash*yieldRate/cfg.cost);if(possible<=0){S.lineStatus='awaiting';S.lineHoldReason='materials-or-cash';x.productionState='paused';S.lineMessage='Production stopped for lack of materials or operating cash.';addManagementAlert('production',S.lineMessage,'critical');return}const gross=possible/yieldRate,rejected=Math.max(0,gross-possible);S.materials.copper=Math.max(0,S.materials.copper-gross*cfg.c);S.materials.glass=Math.max(0,S.materials.glass-gross*cfg.g);S.materials[filamentKey]=Math.max(0,S.materials[filamentKey]-gross*cfg.t);const cost=gross*cfg.cost;S.companyCash-=cost;S.lastExpenses+=cost;x.completed=(+x.completed||0)+possible;addFinishedUnits(x,selectedGrade,possible,rejected,qp.qc,qp.latent);if(x.completed>=target-.01){x.completed=target;S.productionQueue=S.productionQueue.filter(id=>id!==x.id);S.activeContractId=null;x.productionState='complete';S.lineMessage='Production run '+x.id+' complete. '+Math.floor(target).toLocaleString()+' finished units are in Warehouse inventory. Nothing has been shipped automatically.';startNextQueued()}renderMaterialStocks();renderFactory();renderWarehouse();renderContracts()}
 function takeWarehouseUnits(grade,qty){let left=qty;const allocations=[];for(const lot of (S.finishedLots||[])){if(lot.quality!==grade||(lot.available||0)<=0)continue;const take=Math.min(left,Math.floor(lot.available));if(take<=0)continue;lot.available-=take;allocations.push({lotId:lot.id,qty:take,latentDefectRate:lot.latentDefectRate||0});left-=take;if(left<=0)break}const taken=qty-left;if(taken>0)S.inventoryByGrade[grade]=Math.max(0,(S.inventoryByGrade[grade]||0)-taken);return {taken,allocations}}
 function returnWarehouseUnits(grade,allocations){let total=0;for(const a of allocations){let lot=(S.finishedLots||[]).find(l=>l.id===a.lotId);if(!lot){lot={id:a.lotId,quality:grade,qualityName:contractGrade(grade).qualityName,product:'Electric Light Bulbs',available:0,produced:0,rejected:0,qc:90,latentDefectRate:a.latentDefectRate||.006,producedDate:S.gameDate};S.finishedLots.push(lot)}lot.available=(lot.available||0)+a.qty;total+=a.qty}S.inventoryByGrade[grade]=(S.inventoryByGrade[grade]||0)+total}
 function scheduleQualityClaim(x,qty,allocations){
@@ -624,7 +630,7 @@ function renderTradeEstimate(k){const el=$('#estimate_'+k);if(!el)return;const q
 function renderStocks(){
  snapshotStockTradeQuantities();
  const q=$('#stockSearch').value.trim().toLowerCase(),sector=$('#sectorFilter').value,closed=!businessOpen();
- const rows=Object.entries(S.stocks).filter(([k,x])=>(sector==='All'||x.sector===sector)&&(!q||k.toLowerCase().includes(q)||x.name.toLowerCase().includes(q)));
+ const rows=Object.entries(S.stocks).filter(([k,x])=>stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))&&(sector==='All'||x.sector===sector)&&(!q||k.toLowerCase().includes(q)||x.name.toLowerCase().includes(q)));
  $('#stocks').innerHTML=rows.map(([k,x])=>{
    const basis=Number.isFinite(+x.prevClose)&&+x.prevClose>0?+x.prevClose:(+x.prev||x.open),quote=S.phase==='day'?x.open:x.price,ch=(quote/basis-1)*100,p=S.portfolio[k],dis=closed?' disabled':'',sellDis=(closed||!p.shares)?' disabled':'';
    return '<tr><td><button class="stock-ticker-link" onclick="showStockDetail(\''+k+'\')">'+k+'</button></td><td><button class="stock-name-link" onclick="showStockDetail(\''+k+'\')">'+escapeHtml(x.name)+'</button></td><td>'+x.sector+'</td><td>$'+quote.toFixed(2)+'</td><td class="'+(ch>=0?'gain':'loss')+'">'+signed(ch)+'</td><td>'+(x.yieldRate*100).toFixed(1)+'%</td><td>'+p.shares+'</td><td><div class="trade-box"><input id="qty_'+k+'" type="number" min="1" step="1" value="10" oninput="renderTradeEstimate(\''+k+'\')"'+dis+'><div class="trade-buttons"><button onclick="trade(\''+k+'\',1)"'+dis+'>Buy</button><button onclick="trade(\''+k+'\',-1)"'+dis+'>Sell</button><button onclick="sellAll(\''+k+'\')"'+sellDis+'>Sell All</button></div><small id="estimate_'+k+'"></small></div></td></tr>'
@@ -649,9 +655,9 @@ function stockChartSvg(series,label){
 }
 function renderStockDetail(){
  const box=$('#stockDetail');if(!box)return;
- if(!selectedStockTicker||!S.stocks[selectedStockTicker]){box.hidden=true;box.innerHTML='';return}
+ if(!selectedStockTicker||!S.stocks[selectedStockTicker]||!stockAvailableInYear(selectedStockTicker,S.stocks[selectedStockTicker].sector,+S.gameDate.slice(0,4))){box.hidden=true;box.innerHTML='';return}
  const k=selectedStockTicker,x=S.stocks[k],series=stockHistorySeries(k),quote=S.phase==='day'?x.open:x.price,basis=x.prevClose||x.prev||quote,day=(quote/basis-1)*100,start=series[0]?.close||quote,range=(quote/start-1)*100,vals=series.map(v=>v.close),recordHigh=Math.max(...vals),recordLow=Math.min(...vals),ledgerRows=series.slice().reverse(),firstDate=series[0]?.date||S.gameDate,lastDate=series[series.length-1]?.date||S.gameDate;
- box.hidden=false;box.innerHTML='<div class="stock-detail-head"><div><span class="tag">'+k+'</span><h3>'+escapeHtml(x.name)+'</h3><p class="fine">Security Record · seeded quotation history begins before Federal Electric opens on January 3, 1938. Completed game sessions are added to the same record.</p></div><button onclick="closeStockDetail()">Close Record</button></div><div class="stock-detail-stats stock-detail-stats-six"><span><b>Published quote</b>$'+quote.toFixed(2)+'</span><span><b>Prior close</b>$'+Number(basis).toFixed(2)+'</span><span><b>Day</b><i class="'+(day>=0?'gain':'loss')+'">'+signed(day)+'</i></span><span><b>Record move</b><i class="'+(range>=0?'gain':'loss')+'">'+signed(range)+'</i></span><span><b>Record high</b>$'+recordHigh.toFixed(2)+'</span><span><b>Record low</b>$'+recordLow.toFixed(2)+'</span></div><div class="stock-history-period"><b>History shown:</b> '+firstDate+' through '+lastDate+' · '+series.length+' quoted sessions</div>'+stockChartSvg(series,x.name)+'<div class="table-wrap stock-history-ledger"><table><thead><tr><th>Date</th><th>Close / Published Quote</th><th>Change</th></tr></thead><tbody>'+ledgerRows.map(r=>{const idx=series.findIndex(v=>v.date===r.date),prev=idx>0?series[idx-1].close:null,ch=prev?(r.close/prev-1)*100:null;return '<tr><td>'+r.date+'</td><td>$'+r.close.toFixed(2)+'</td><td class="'+(ch==null?'':ch>=0?'gain':'loss')+'">'+(ch==null?'—':signed(ch))+'</td></tr>'}).join('')+'</tbody></table></div>';
+ box.hidden=false;box.innerHTML='<div class="stock-detail-head"><div><span class="tag">'+k+'</span><h3>'+escapeHtml(x.name)+'</h3><p class="fine">Security Record · seeded quotation history begins before Federal Electric opens on its starting date. Completed game sessions are added to the same record.</p></div><button onclick="closeStockDetail()">Close Record</button></div><div class="stock-detail-stats stock-detail-stats-six"><span><b>Published quote</b>$'+quote.toFixed(2)+'</span><span><b>Prior close</b>$'+Number(basis).toFixed(2)+'</span><span><b>Day</b><i class="'+(day>=0?'gain':'loss')+'">'+signed(day)+'</i></span><span><b>Record move</b><i class="'+(range>=0?'gain':'loss')+'">'+signed(range)+'</i></span><span><b>Record high</b>$'+recordHigh.toFixed(2)+'</span><span><b>Record low</b>$'+recordLow.toFixed(2)+'</span></div><div class="stock-history-period"><b>History shown:</b> '+firstDate+' through '+lastDate+' · '+series.length+' quoted sessions</div>'+stockChartSvg(series,x.name)+'<div class="table-wrap stock-history-ledger"><table><thead><tr><th>Date</th><th>Close / Published Quote</th><th>Change</th></tr></thead><tbody>'+ledgerRows.map(r=>{const idx=series.findIndex(v=>v.date===r.date),prev=idx>0?series[idx-1].close:null,ch=prev?(r.close/prev-1)*100:null;return '<tr><td>'+r.date+'</td><td>$'+r.close.toFixed(2)+'</td><td class="'+(ch==null?'':ch>=0?'gain':'loss')+'">'+(ch==null?'—':signed(ch))+'</td></tr>'}).join('')+'</tbody></table></div>';
 }
 window.showStockDetail=k=>{if(S.paused)return;selectedStockTicker=k;renderStockDetail()}
 window.closeStockDetail=()=>{selectedStockTicker=null;renderStockDetail()}
@@ -696,6 +702,19 @@ window.advanceWorldTime=(seconds,away=false)=>{
 function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
 function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'}}
+// Modest recurring local lighting sales cover normal labor without risky expansion.
+function settleStandingTrade(){
+ if(S.campaignStartYear!==1890)return;
+ const units=240,grade=productionCfg('standard'),filament=filamentMaterial();
+ const inputs={copper:grade.c*units,glass:grade.g*units,[filament]:grade.t*units};
+ const materialsCost=Object.entries(inputs).reduce((total,[key,qty])=>total+qty*MATERIAL_MARKET[key].unitPrice,0);
+ const overhead=grade.cost*units,required=materialsCost+overhead;
+ if(S.companyCash<required){addManagementAlert('standing-sales','Routine local lighting orders were missed: operating cash could not cover materials.','attention');return}
+ for(const [key,qty] of Object.entries(inputs)){S.materials[key]=(S.materials[key]||0)+qty;S.materials[key]-=qty}
+ const sales=units*contractGrades[1].price;
+ S.companyCash+=sales-required;S.lastRevenue+=sales;S.lastExpenses+=required;
+ S.standingSalesTotal=(+S.standingSalesTotal||0)+units;
+}
 function closeBusinessDay(manual=false){
  if(S.phase!=='day')return;
  const shiftRun=activeContract();
@@ -706,6 +725,7 @@ function closeBusinessDay(manual=false){
  if(window.finishUnderworldDay)window.finishUnderworldDay();
  finishDayContracts();
  for(const [ticker,x] of Object.entries(S.stocks)){const close=Number.isFinite(+x.hiddenPrice)?+x.hiddenPrice:+x.price;x.price=close;if(!Array.isArray(x.history))x.history=[];const last=x.history[x.history.length-1];if(last&&last.date===S.gameDate)last.close=close;else x.history.push({date:S.gameDate,close});if(x.history.length>260)x.history=x.history.slice(-260);x.prev=x.prevClose}
+ settleStandingTrade();
  const workerPayroll=S.workers*WORKER_DAILY_WAGE,managerPayroll=S.delegation?.generalManager?.hired?(S.delegation.generalManager.dailyWage||GENERAL_MANAGER_DAILY_WAGE):0,payroll=workerPayroll+managerPayroll;
  S.companyCash-=payroll;S.lastExpenses+=payroll;
  if(managerPayroll>0)S.notes.push({date:displayDate(),text:'General Manager salary paid: '+cash(managerPayroll)+'.',source:'company payroll'});
@@ -730,7 +750,7 @@ function closeNight(manual=false){
   }
   S.starRaidOccurred=true;
   S.starNextRaidTurnSerial=rollStarRaidTurn(S.turnSerial||1);
-  S.starNextRaidDate=starRaidDateForTurn(S.starNextRaidTurnSerial);
+  S.starNextRaidDate=starRaidDateForTurn(S.starNextRaidTurnSerial,S.campaignStartYear);
  }
  if(!S.dailyReport)S.dailyReport={iso:S.gameDate,date:displayDate(),openingCompanyCash:S.dayStartCompanyCash,openingPersonalCash:S.dayStartPersonalCash,revenue:0,expenses:0,companyClose:S.companyCash,personalAtClose:S.personalCash};
  S.dailyReport.companyEnd=S.companyCash;S.dailyReport.personalEnd=S.personalCash;S.dailyReport.portfolioEnd=portfolioValue();S.dailyReport.ownerDistributions=S.ownerDistributionsToday||0;S.dailyReport.divertedFunds=S.divertedToday||0;S.dailyReport.unaccountedFunds=S.unaccountedFunds||0;S.dailyReport.accountingExposure=accountingExposure();
@@ -739,7 +759,7 @@ function closeNight(manual=false){
 function beginNextDay(){
  if(S.phase!=='report')return;
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
- archiveToday();const old=S.gameDate,next=S.endlessMode?nextBusinessTurn(S.gameDate):campaignDateForTurn((S.turnSerial||1)+1);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;payMonthlyDividends(old,S.gameDate);
+ archiveToday();const old=S.gameDate,next=S.endlessMode?nextBusinessTurn(S.gameDate):campaignDateForTurn((S.turnSerial||1)+1,S.campaignStartYear);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;payMonthlyDividends(old,S.gameDate);
  S.phase='day';S.dayRemaining=BUSINESS_DAY_SECONDS;
  for(const [ticker,x] of Object.entries(S.stocks)){const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
@@ -762,7 +782,7 @@ $('#startProduction').onclick=()=>{if(!businessOpen())return note('The works are
 $('#resumeProduction').onclick=()=>{if(!businessOpen())return note('The works are closed for the night.');if(S.lineStatus!=='awaiting')return;const x=activeContract();if(x)x.productionState='running';const priorHold=S.lineHoldReason;S.lineStatus='running';S.lineHoldReason=null;if(['breakdown','materials-or-cash'].includes(priorHold))easeManagementNeglect(.5);S.lineMessage='Executive authorization received. The line is running again.';note(S.lineMessage);save();render()}
 const pauseProduction=$('#pauseProduction');if(pauseProduction)pauseProduction.onclick=window.pauseActiveProduction;
 const abandonProduction=$('#abandonProduction');if(abandonProduction)abandonProduction.onclick=window.abandonProductionRun;
-$('#maintain').onclick=()=>{if(!businessOpen())return note('Regular works maintenance authorization resumes next Business Day.');if(S.companyCash<750)return note('Insufficient company cash.');S.companyCash-=750;S.lastExpenses+=750;S.machinery=clamp(S.machinery+12,0,100);save();render()}
+$('#maintain').onclick=()=>{if(!businessOpen())return note('Regular works maintenance authorization resumes next Business Day.');if(S.companyCash<80)return note('Insufficient company cash.');S.companyCash-=80;S.lastExpenses+=80;S.machinery=clamp(S.machinery+12,0,100);save();render()}
 $('#endDay').onclick=()=>{if(S.phase==='day'){if(confirm('Close the current business day early and begin Washington Night?'))closeBusinessDay(true)}else if(S.phase==='night'){if(confirm('Retire early and review the Daily Report?'))closeNight(true)}}
 const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
@@ -855,6 +875,7 @@ function titleEnvironmentIsDay(){
  return !!(bg&&bg.dataset.mode==='day');
 }
 function syncTitleCityAmbience(){
+ if(!periodRadioAvailable()){stopTitleCityAmbience(false);return}
  if(titleMobileRadioOnly()){stopTitleCityAmbience(false);return}
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
@@ -1063,6 +1084,7 @@ function prewarmHeavyTitleRadioOnDesktop(){
  }
 }
 function startTitleRadioBackgroundFeeds(){
+ if(!periodRadioAvailable())return;
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
  startTitleRadioAirSync();
  if(titleRadioStationIndex<=0||titleRadioOff||S.paused)return;
@@ -1074,6 +1096,7 @@ function startTitleRadioBackgroundFeeds(){
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
 function updateTitleRadioAudibility(){
+ if(!periodRadioAvailable()){for(const audio of titleRadioBackgroundFeeds.values()){audio.muted=true;audio.pause()}return}
  for(const [index,audio] of titleRadioBackgroundFeeds){
   configureTitleRadioFeedProgram(index,audio);
   audio.volume=titleRadioVolume();
@@ -1085,7 +1108,7 @@ function updateTitleRadioAudibility(){
  }
 }
 function startTitleRadio(){
- if(S.paused)return;
+ if(S.paused||!periodRadioAvailable())return;
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(titleRadioOff||titleRadioStationIndex!==0)return;
@@ -1152,6 +1175,7 @@ function initGlobalRadioDrag(){
  });
 }
 function tuneTitleRadioStation(index){
+ if(!periodRadioAvailable())return;
  const next=((Math.floor(+index)||0)%TITLE_RADIO_STATIONS.length+TITLE_RADIO_STATIONS.length)%TITLE_RADIO_STATIONS.length;
  if(titleRadioFadeTimer){clearInterval(titleRadioFadeTimer);titleRadioFadeTimer=null}
  if(titleRadioAudio){titleRadioAudio.pause();if(titleRadioStationIndex===0||next===0){try{titleRadioAudio.currentTime=0}catch(e){}}}
@@ -1659,6 +1683,8 @@ function openCityRoom(locationId,roomId,options={}){
  document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
  document.getElementById('cityRoomName').textContent=room.name;
  document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
+ renderCityRoomPeople(location);
+ const encounter=document.getElementById('cityRoomEncounter');if(encounter)encounter.textContent=!dev?checkCityOpportunity(location.id):'';
  renderCityRoomDirectory(location,room.id);
  const mapButton=document.getElementById('cityRoomReturnMap');
  const mapped=!!TITLE_MAP_LOCATIONS.find(v=>v.id===location.id);
@@ -2283,6 +2309,7 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
+ renderUnpinnedCityDirectory();
  const viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewer||!viewport||!img)return;
  viewer.hidden=false;
  document.body.classList.add('title-map-open');
@@ -2295,6 +2322,55 @@ function closeTitleMap(){
  document.body.classList.remove('title-map-open');
  titleMapState.pointerId=null;
  const viewport=$('#titleMapViewport');if(viewport)viewport.classList.remove('is-dragging');
+}
+function renderUnpinnedCityDirectory(){
+ const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
+ out.innerHTML='';
+ const active=!!activeProfileId(),year=S.gameDate;
+ for(const loc of city.listLocations().filter(loc=>!loc.map&&(!loc.availableFrom||year>=loc.availableFrom))){
+  const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
+  button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
+  button.onclick=()=>openCityRoom(loc.id,null,{dev:false,source:'map'});
+  out.appendChild(button);
+ }
+}
+let conversationPage=0;
+function renderCityRoomPeople(location){
+ const panel=document.getElementById('cityRoomPeople'),output=document.getElementById('cityRoomDialogue');
+ if(!panel||!output)return;
+ panel.innerHTML='';output.innerHTML='';
+ for(const npc of location.people||[]){
+  const button=document.createElement('button');button.type='button';button.textContent=npc.name;
+  button.onclick=()=>{
+   conversationPage=0;output.innerHTML='';
+   const article=document.createElement('article');article.lang=npc.language||'en';
+   const paragraph=document.createElement('p');article.appendChild(paragraph);
+   const next=document.createElement('button');next.type='button';article.appendChild(next);
+   const lines=npc.dialogue||[];
+   const draw=()=>{paragraph.textContent=lines[conversationPage]||'';next.textContent=conversationPage+1>=lines.length?'End Conversation':'Continue'};
+   next.onclick=()=>{if(conversationPage+1>=lines.length){output.innerHTML='';return}conversationPage++;draw()};
+   output.appendChild(article);draw();
+   // Reading a paragraph never flags comprehension, records a hint or unlocks a lead.
+  };
+  panel.appendChild(button);
+ }
+}
+function checkCityOpportunity(locationId){
+ if(S.paused||S.phase!=='day'||S.campaignStartYear!==1890)return '';
+ const opportunities=[
+  {id:'russian-messenger-1890',location:'races',turn:3,earliest:1800,customer:'Volga Trade Delegation',text:'A visiting Russian merchant’s courier has arrived with a request for electric lamps.'},
+  {id:'chinese-merchant-1890',location:'commercePoker',turn:4,earliest:1800,customer:'District Lantern Merchants',text:'A Chinese-American merchant is seeking a lighting supplier before departing.'}
+ ];
+ const event=opportunities.find(v=>v.location===locationId&&v.turn===S.turnSerial&&S.dayRemaining>=v.earliest);
+ if(!event||S.cityOpportunities?.includes(event.id))return '';
+ if(!Array.isArray(S.cityOpportunities))S.cityOpportunities=[];
+ S.cityOpportunities.push(event.id);
+ const offer=makeContractOffer();offer.id='FE-'+String(nextContractNumber()+100).padStart(3,'0');
+ offer.customer=event.customer;offer.relationship='Introduced in person';offer.customerTrait='balanced';
+ S.contractOffers.push(offer);
+ S.notes.push({date:displayDate(),source:'business introduction',text:event.text+' An offer was left with the Contracts Department.'});
+ save(true);
+ return event.text+' A new offer is waiting in Contracts.';
 }
 function initTitleMapViewer(){
  const open=$('#titleDcMap'),viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport');

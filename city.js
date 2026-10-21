@@ -80,6 +80,54 @@
    ]
   },
   {
+   id:'oldChinatown',name:'Old Chinatown',
+   area:'Pennsylvania Avenue NW / 4th Street NW',category:'social',
+   description:'Shops and meeting places in Washington’s early Chinese-American neighborhood.',
+   map:null,defaultRoom:'market-street',
+   rooms:[{id:'market-street',name:'Market Street',description:'A street of stores and small businesses. Artwork remains unassigned.'}],
+   people:[
+    {id:'li-wen',name:'Li Wen',language:'zh-Hant',dialogue:[
+     '一月第四次營業日的早上，去商業俱樂部。那裡有人想買一批電燈泡。',
+     '那位買主中午前就會離開華盛頓。'
+    ]},
+    {id:'chen-mei',name:'Chen Mei',language:'en',dialogue:[
+     'This is a small neighborhood, but our merchants know their customers.',
+     'Some visitors speak English. Others prefer their own language.'
+    ]}
+   ]
+  },
+  {
+   id:'russianTradeHall',name:'Russian Trade Hall',
+   area:'Washington, D.C. · merchant district',category:'social',
+   description:'An informal meeting place for visiting engineers, merchants and diplomats of Imperial Russia.',
+   map:null,defaultRoom:'meeting-hall',
+   rooms:[{id:'meeting-hall',name:'Meeting Hall',description:'A meeting hall for visiting Russian merchants, without finished artwork.'}],
+   people:[
+    {id:'pavel-orlov',name:'Pavel Orlov',language:'ru',dialogue:[
+     'Во время третьего рабочего дня января на ипподроме появится посыльный с важным заказом.',
+     'Он уедет до полудня. Если хотите получить заказ, приходите пораньше.'
+    ]},
+    {id:'anna-petrovna',name:'Anna Petrovna',language:'en',dialogue:[
+     'I was born in Russia. Winter here is nothing compared with what I remember from the motherland.',
+     'Not every visitor from Russia wishes to tell you about home.'
+    ]}
+   ]
+  },
+  {
+   id:'washingtonFairgrounds',name:'Washington Fairgrounds',
+   area:'Washington, D.C. · exposition district',category:'fair',availableFrom:'1893-01-01',
+   description:'The future grounds of the alternate-history 1893 World’s Columbian Exposition.',
+   map:null,defaultRoom:'fairgrounds',
+   rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
+  },
+  {
+   id:'secondNightclub',name:'Second Nightclub',
+   area:'Washington, D.C.',category:'social',
+   description:'Another Washington social circle whose proprietor will contrast with Madam Star.',
+   map:null,defaultRoom:'main-room',
+   rooms:[{id:'main-room',name:'Main Room',description:'Reserved placeholder room. Name, owner and artwork remain undecided.'}]
+  },
+  {
    id:'whiteHouse',
    name:'White House',
    area:'1600 Pennsylvania Avenue NW',
@@ -105,6 +153,7 @@
   },
   {
    id:'washingtonAirport',
+   availableFrom:'1910-01-01',
    name:'Washington Airport',
    area:'Washington, D.C.',
    category:'transport',
@@ -134,6 +183,7 @@
   const copy=Object.assign({},location);
   copy.map=location.map?Object.assign({},location.map):null;
   copy.rooms=location.rooms.map(copyRoom);
+  if(location.people)copy.people=location.people.map(p=>({...p,dialogue:[...(p.dialogue||[])]}));
   return copy;
  }
  function listLocations(){return LOCATIONS.map(copyLocation)}

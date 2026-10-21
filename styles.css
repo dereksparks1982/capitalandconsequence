@@ -1305,3 +1305,9 @@ body.elephant-easter-egg-open{overflow:hidden}
  .primary-nav{gap:3px}
  .primary-nav>button{padding-left:6px;padding-right:6px}
 }
+
+/* 1890 candidate: keep later technology unlockable without showing it in 1890. */
+.pre-radio-era #globalRadioBar,.pre-radio-era #titleRadioKnob{display:none!important}
+.pre-car-racing-era [data-activity-target="car"],.pre-car-racing-era [data-activity-panel="legal"][data-activity-name="car"]{display:none!important}
+.title-map-unpinned-directory{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px}.title-map-unpinned-directory button{font-size:13px}
+#cityRoomPeople{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}#cityRoomPeople button{padding:8px 14px}#cityRoomDialogue{font-size:17px;line-height:1.7;padding:8px 0}#cityRoomDialogue button{display:block;margin-top:12px}

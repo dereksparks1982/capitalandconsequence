@@ -97,11 +97,14 @@ jobs:
         run: |
           mv dist/linux-unpacked "dist/Federal Electric Standalone"
           tar -C dist -czf "dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz" "Federal Electric Standalone"
+          (cd dist && sha256sum Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz > Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz.sha256)
 
       - name: Upload private Linux standalone alpha
         uses: actions/upload-artifact@v4
         with:
           name: Federal-Electric-Linux-standalone-v0.6.0-alpha.2
-          path: dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz
+          path: |
+            dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz
+            dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz.sha256
           if-no-files-found: error
           retention-days: 14
