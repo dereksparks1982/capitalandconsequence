@@ -1265,7 +1265,7 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-dev-city-tools button{min-height:25px!important;text-align:center!important}
 .title-dev-city-tools output{display:block;overflow:hidden;padding:4px 5px;background:#0f0d0a;color:#bfb18f;font:700 8px/1.2 'Courier New',monospace;text-overflow:ellipsis;white-space:nowrap}
 
-.city-room-overlay{position:fixed;inset:0;z-index:1800000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(8,10,13,.88);backdrop-filter:blur(2px)}
+.city-room-overlay{position:fixed;inset:0;z-index:2100000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(8,10,13,.88);backdrop-filter:blur(2px)}
 .city-room-overlay[hidden]{display:none}
 .city-room-shell{width:min(1040px,calc(100vw - 48px));min-height:min(640px,calc(100vh - 48px));display:flex;flex-direction:column;border:4px double #8c744d;background:#d8cfbb;color:#172238;box-shadow:0 18px 60px rgba(0,0,0,.72)}
 .city-room-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:18px 20px 15px;border-bottom:5px solid #8b1e2d;background:#142b4a;color:#fffaf0}

@@ -131,6 +131,53 @@ async function runSmokeTest(win) {
     const persisted=await win.webContents.executeJavaScript(`localStorage.getItem('__federalElectricSmokePersistence')`);
     if(persisted!=='ok') throw new Error('localStorage did not survive a full renderer reload');
 
+    // Test actual map -> Go There -> room visibility and already-here guard
+    // inside the packaged Electron renderer, not just existence of DOM nodes.
+    const cityTravel=await win.webContents.executeJavaScript(`(() => {
+      const room=document.getElementById('cityRoomOverlay');
+      const title=document.getElementById('titleScreen');
+      const map=document.getElementById('titleMapViewer');
+      const go=document.getElementById('titleMapLocationTravel');
+      const previousProfile=localStorage.getItem('federalElectricActiveProfile');
+      const previousState=S.currentLocation ? {...S.currentLocation} : null;
+      const previousDeskBreak=titleScreenDeskBreak;
+      const before=window.FederalElectricCity.getLocation('oldChinatown');
+      const context={hasRoom:!!before?.rooms?.length,previousProfile};
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-navigation');
+        title.hidden=false;
+        openTitleMap();
+        openTitleMapLocation('oldChinatown');
+        context.beforeGoVisible=!go.hidden;
+        travelFromTitleMap();
+        context.savedLocation=window.FE_CITY.currentLocation().locationId;
+        context.roomVisible=!room.hidden && getComputedStyle(room).display!=='none';
+        context.roomAboveTitle=Number(getComputedStyle(room).zIndex)>Number(getComputedStyle(title).zIndex);
+        context.mapClosed=map.hidden;
+        returnCityRoomToMap();
+        openTitleMapLocation('oldChinatown');
+        context.sameLocationButtonHidden=go.hidden;
+        context.mapReturned=!map.hidden;
+        openTitleMapLocation('russianTradeHall');
+        travelFromTitleMap();
+        context.secondDestination=window.FE_CITY.currentLocation().locationId;
+        context.secondRoomVisible=!room.hidden && getComputedStyle(room).display!=='none';
+        returnCityRoomToOffice();
+        context.officeRestored=window.FE_CITY.currentLocation().locationId==='factory' && room.hidden;
+      }finally{
+        closeTitleMap();closeCityRoom();title.hidden=true;
+        S.currentLocation=previousState||{locationId:'factory',roomId:'executive-office'};
+        titleScreenDeskBreak=previousDeskBreak;
+        if(previousProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',previousProfile);
+        localStorage.removeItem('federalElectricProfile___smoke-navigation');
+      }
+      return context;
+    })()`);
+    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonHidden||!cityTravel.mapReturned||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored){
+      throw new Error('Map navigation/room visibility regression: '+JSON.stringify(cityTravel));
+    }
+
     const layout=await win.webContents.executeJavaScript(`(() => {
       const title=document.getElementById('titleScreen'); if(title) title.hidden=true;
       const day=document.querySelector('.daybar')?.getBoundingClientRect();

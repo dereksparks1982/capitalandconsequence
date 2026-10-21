@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.0-alpha.2-candidate', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.2-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -937,7 +937,7 @@ const TITLE_RADIO_CONTEXT_STATIONS={title:0,office:4,star:3};
 const titleRadioBackgroundFeeds=new Map();
 let titleScreenDeskBreak=false;
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
-function titleScreenBlocksSimulation(){return titleScreenVisible()&&!titleScreenDeskBreak}
+function titleScreenBlocksSimulation(){return titleScreenVisible()&&!titleScreenDeskBreak&&!document.body.classList.contains('city-room-open')&&!document.body.classList.contains('title-map-open')}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
 function titleRadioStationAvailable(index){
  const station=TITLE_RADIO_STATIONS[index];
@@ -1470,6 +1470,11 @@ function openTitleNewspaper(){
 function closeTitleScreen(){if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
  const screen=$('#titleScreen');if(!screen)return;
+ const current=currentCityLocation();
+ if(current.locationId!=='factory'){
+  openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
+  return;
+ }
  save(true);
  titleScreenDeskBreak=true;
  screen.hidden=false;
@@ -1514,12 +1519,16 @@ function createProfile(name){
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
  profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
+function showSavedCityLocation(){
+ const current=currentCityLocation();
+ if(current.locationId!=='factory')openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
+}
 function loadProfileById(id){
  const p=readProfiles().find(v=>v.id===id);if(!p)return;
  setActiveProfileId(id);
  const raw=localStorage.getItem(SAVE_KEY);
  try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}
- selectedStockTicker=null;save(true);render();closeTitleScreen();
+ selectedStockTicker=null;save(true);render();closeTitleScreen();showSavedCityLocation();
 }
 function deleteProfileById(id){
  const profiles=readProfiles(),p=profiles.find(v=>v.id===id);if(!p)return;
@@ -1537,6 +1546,7 @@ function continueFromTitle(){
   titleScreenDeskBreak=false;
   closeTitleScreen();
   render();
+  showSavedCityLocation();
   return;
  }
  const profiles=readProfiles(),active=activeProfileId();
@@ -1674,6 +1684,11 @@ function renderCityRoomDirectory(location,activeRoomId){
 }
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);if(!location)return false;
+ if(location.id==='factory'&&!options.dev){
+  closeTitleMap();
+  returnCityRoomToOffice();
+  return true;
+ }
  const room=cityRoom(locationId,roomId||location.defaultRoom);if(!room)return false;
  const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return false;
  const dev=!!options.dev,source=options.source||'dev';
@@ -1691,10 +1706,9 @@ function openCityRoom(locationId,roomId,options={}){
  const encounter=document.getElementById('cityRoomEncounter');if(encounter)encounter.textContent=!dev?checkCityOpportunity(location.id):'';
  renderCityRoomDirectory(location,room.id);
  const mapButton=document.getElementById('cityRoomReturnMap');
- const mapped=!!TITLE_MAP_LOCATIONS.find(v=>v.id===location.id);
  if(mapButton){
-  mapButton.disabled=!mapped;
-  mapButton.textContent=mapped?'Return to Map':'No Map Pin Yet';
+  mapButton.disabled=false;
+  mapButton.textContent='Return to Map';
  }
  overlay.hidden=false;
  document.body.classList.add('city-room-open');
@@ -1711,10 +1725,10 @@ function closeCityRoom(){
 }
 function returnCityRoomToMap(){
  const locationId=cityRoomSession.locationId;
- if(!locationId||!TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))return;
+ if(!locationId)return;
  closeCityRoom();
  openTitleMap();
- requestAnimationFrame(()=>openTitleMapLocation(locationId));
+ if(TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))requestAnimationFrame(()=>openTitleMapLocation(locationId));
 }
 function returnCityRoomToOffice(){
  if(!cityRoomSession.dev){
@@ -1730,15 +1744,16 @@ function openSelectedTitleDevRoom(){
 }
 function initCityRoomUI(){
  const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return;
- document.getElementById('cityRoomClose').onclick=closeCityRoom;
+ const closePlayerRoom=()=>cityRoomSession.dev?closeCityRoom():returnCityRoomToMap();
+ document.getElementById('cityRoomClose').onclick=closePlayerRoom;
  document.getElementById('cityRoomReturnMap').onclick=returnCityRoomToMap;
  document.getElementById('cityRoomReturnOffice').onclick=returnCityRoomToOffice;
- overlay.addEventListener('click',e=>{if(e.target===overlay)closeCityRoom()});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeCityRoom()});
+ overlay.addEventListener('click',e=>{if(e.target===overlay)closePlayerRoom()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closePlayerRoom()});
 }
 window.FE_CITY={
  openRoom:(locationId,roomId)=>openCityRoom(locationId,roomId,{dev:false,source:'game'}),
- closeRoom:closeCityRoom,
+ closeRoom:returnCityRoomToMap,
  currentLocation:()=>currentCityLocation(),
  listLocations:()=>federalCity()?.listLocations?.()||[]
 };
@@ -2234,6 +2249,8 @@ function openTitleMapLocation(id){
 function travelFromTitleMap(){
  const id=titleMapSelectedLocationId||$('#titleMapLocationTravel')?.dataset.locationId;
  if(!id||!activeProfileId())return;
+ if(currentCityLocation().locationId===id)return;
+ titleScreenDeskBreak=true;
  openCityRoom(id,null,{dev:false,source:'map'});
 }
 function buildTitleMapMarkers(){
@@ -2318,7 +2335,10 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
- // Refresh from the active profile when opening the map after changing profiles.
+ // The map must work even after loading a saved room with the title art hidden.
+ // Display it above the game, without treating this as a paused main menu.
+ const screen=$('#titleScreen');
+ if(screen?.hidden){screen.hidden=false;titleScreenDeskBreak=true;}
  loadTitleMapLocationLayout();
  renderUnpinnedCityDirectory();
  const viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewer||!viewport||!img)return;

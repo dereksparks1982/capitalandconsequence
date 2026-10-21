@@ -1,6 +1,6 @@
 # Federal Electric Roadmap
 
-Federal Electric is a long-save historical industrial, financial, social, and political life simulation beginning in Washington, D.C. in 1938.
+Federal Electric is a long-save historical industrial, financial, social, and political life simulation beginning in Washington, D.C. in 1890, with later decades and locations unlocked as history progresses.
 
 ## Locked rules
 
@@ -594,3 +594,34 @@ Authoritative station behavior:
 - [ ] Preserve the GTA-style rule that stations feel continuously on-air while the player may manually tune at any location.
 - [ ] Keep location context as a suggested/default station only; player tuning always remains available.
 - [ ] The title-screen context always opens on 610 AM Federal Electric Network with the approved title theme beginning from 0:00; the player may tune away afterward.
+ 
+
+## v0.6.2 source-slice plan — 2026-10-21 (NO EXECUTABLE YET)
+
+- [x] Version identity must read **0.6.2** throughout the app, package metadata, workflow filenames, candidate draft labels and local packaging script. This is a new development candidate, not an accepted release.
+- [x] Map **Go There** navigates to a distinct city room placeholder, not back to the Federal Electric title-office image. The room overlay must render above the title screen and map.
+- [x] If the player's current location matches the selected map pin, **hide Go There**. Use an explicit **Return to Map** action for viewing other locations.
+- [x] Closing a location via X, Escape, or backdrop returns to the map instead of revealing the office while the player's saved position still says another city location.
+- [x] Saved out-of-office location is restored visibly on profile load and on resume. Going back to Federal Electric deliberately restores the executive office. Non-pinned registered rooms are accessible from the city directory.
+- [x] Add smoke-test assertions that navigate to Old Chinatown and Russian Trade Hall, check the room is above the title artwork, verify the same-location button is hidden, and confirm the return route.
+- [x] **Do not package on each push.** GitHub Actions Linux workflow is manual-only while 0.6.2 accumulates source slices. Existing backups and draft releases are preserved.
+- [ ] Test and package executable only after several slices and **explicit approval**. Smoke test and acceptance criteria must pass end to end; warnings are errors.
+
+### World scale, time and travel (later source slice)
+
+- Research and record real historic street/site locations and distances for Washington and surrounding regions. Map pin pixel placement is separate from underlying geographic coordinates.
+- Distances are measured **from the player's actual current location**, not automatically from the Federal Electric office.
+- Travel duration depends on route, distance, era, transport choice (walking, carriage, hired horse cab, streetcar, later automobiles), time of day, and weather.
+- Route travel consumes the same ongoing world clock as factory work and city socializing. Possible events include road obstructions, a horse losing a shoe, weather, an accident, a local acquaintance, or an unexpected business opportunity; no guaranteed highwayman or forced combat.
+- Do not implement arbitrary travel minutes or random encounter probabilities before the real geography and time scale are reviewed.
+
+### Persistent personal world, residence and equipment (design proposal, not implemented)
+
+- **“Half-Life on paper”**: a first-person-feeling, persistent, location-aware interactive world communicated through paper surfaces, layered room art, dialogue, objects and consequences rather than rendering continuous 3D scenery. The world and clock continue outside the executive desk.
+- **Home / apartment**: the player must have somewhere to live in Washington. Plan an addressable residence and rooms, housing expense, privacy, changing clothes, keeping possessions, resting, social encounters, and the possibility of staying with acquaintances on occasion. Do not assume residence at the office or an automatically available bed at a club.
+- **Ultima Online-style paper doll**: visually equip period garments and hand-held or worn items. Outfit slots and worn layers must have consistent physical rules. Wardrobe affects access and how people react, not a superficial stat bonus.
+- **On-person inventory**: pockets, hands, bags, weight/bulk and concealment determine what fits. Items have locations and ownership; objects not carried remain in the apartment, office, rented storage, or wherever dropped. No magical shared inventory between locations.
+- **Venue etiquette**: upscale rooms such as the Embassy Room may require suitable evening clothing and invitation. Changing attire is a real action and requires access to stored garments.
+- **Cards and dice**: a player may choose to conceal an ace, palmed card or loaded die where physically possible. The item creates an *opportunity* for cheating but never guarantees success; discovery can cause ejection, reputational harm, debts or other plausible consequences. No universal morality bar.
+- **Second nightlife venue**: develop a socially distinct, seedier adult Washington nightlife club with its own owner, clientele, social usefulness and risks, not just a recolor of Madam Star's. The user's joking working name “Gay Toney's Club” is **not finalized**; decide a setting-appropriate original name when developing the location. Sexuality isn't a good/bad game statistic.
+- Keep the current placeholder for the second nightclub until design is approved; no new artwork, characters, inventory UI, or mechanics silently added by this documentation.

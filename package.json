@@ -1,6 +1,6 @@
 {
   "name": "federal-electric",
-  "version": "0.6.0-alpha.2",
+  "version": "0.6.2",
   "private": true,
   "description": "Federal Electric desktop alpha",
   "main": "desktop/main.cjs",
