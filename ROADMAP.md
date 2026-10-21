@@ -654,3 +654,12 @@ Authoritative station behavior:
 - [x] Add actual packaged renderer checks for PNG decoding, P, Escape, X and both pocket windows.
 - [x] Increment all current candidate identities from 0.6.4 to **0.6.5**. Packaging still requires manual invocation.
 - [ ] Linux candidate package, upload/checksum and smoke test remain **unverified** until manually executed; do not mark this release accepted until end-to-end tests pass without errors or warnings.
+
+
+## v0.6.6 — Home pin and addressable residence rooms (source slice)
+
+- [x] Add new pin **12: Our Home** as a modest middle-class Capitol Hill rowhouse, proposed near Eastern Market at 7th and C Streets SE. Coordinates are an editable first placement on the existing temporary map, not a surveyed historical position.
+- [x] Home has independently addressable blank Front Room, Bedroom, Kitchen and Household Storage rooms; no interior art, new belongings or rent/ownership mechanics invented.
+- [x] Reuse the existing player location persistence, room directory and map-travel mechanisms so the home can be visited and the currently occupied room saved.
+- [x] Existing pins 1–11 keep their IDs, default coordinates, and saved per-profile placement records. No migration wipes or rewrites previous pin data.
+- [x] v0.6.6 source only; manual packaging and acceptance still pending.

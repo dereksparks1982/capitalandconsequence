@@ -148,6 +148,21 @@
    rooms:[{id:'engineering-hall',name:'Engineering Hall',description:'Placeholder university room for research, professors, and electrical-engineering contacts.'}]
   },
   {
+   id:'home',
+   name:'Our Home',
+   area:'Capitol Hill · near Eastern Market, 7th and C Streets SE (proposed)',
+   category:'residence',
+   description:'A modest middle-class brick rowhouse in Capitol Hill. The household and furnishings have not yet been decided.',
+   map:{n:12,x:.6190,y:.5800},
+   defaultRoom:'front-room',
+   rooms:[
+    {id:'front-room',name:'Front Room',description:'An unfurnished placeholder for the sitting room of the player’s Washington home.'},
+    {id:'bedroom',name:'Bedroom',description:'A private room reserved for sleeping, dressing, and personal belongings. No furnishings assigned yet.'},
+    {id:'kitchen',name:'Kitchen',description:'A household kitchen shell, awaiting period-accurate furnishings and domestic routines.'},
+    {id:'storage',name:'Household Storage',description:'An addressable storage room. Personal possessions will remain here only when a storage system is implemented.'}
+   ]
+  },
+  {
    id:'whiteHouse',
    name:'White House',
    area:'1600 Pennsylvania Avenue NW',
