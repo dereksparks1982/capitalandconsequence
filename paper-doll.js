@@ -1,10 +1,9 @@
-/* Federal Electric v0.6.3: source-only paper doll interaction shell.
-   The approved illustration must be placed at the documented asset path.
-   Do not substitute or regenerate the approved drawing. */
+/* Federal Electric v0.6.5: approved paper doll PNG and two placeholder pocket windows.
+   Original illustration is unchanged; dressing and item persistence come later. */
 (function () {
   'use strict';
 
-  const IMAGE_PATH = 'assets/federal-electric-paper-doll-approved.png';
+  const IMAGE_PATH = 'assets/artwork/characters/paperdolls/paperdoll.png';
   let overlay = null;
   let pocket = null;
   let lastFocus = null;
@@ -23,7 +22,7 @@
         '</header>' +
         '<div class="fe-paper-doll__figure">' +
           '<img id="fePaperDollArtwork" alt="Approved Federal Electric character paper doll with equipped clothing and accessories" src="' + IMAGE_PATH + '">' +
-          '<p id="fePaperDollArtworkMissing" class="fe-paper-doll__missing" role="status" hidden>The approved paper-doll artwork has not been added to the game assets yet. No replacement illustration is being used.</p>' +
+          '<p id="fePaperDollArtworkMissing" class="fe-paper-doll__missing" role="status" hidden>The approved paper-doll artwork is missing. Check the installed game files.</p>' +
         '</div>' +
         '<div class="fe-paper-doll__pocket-actions" aria-label="Clothing pockets">' +
           '<button type="button" data-pocket="left" aria-label="Open left pocket">Left Pocket</button>' +

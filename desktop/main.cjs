@@ -133,6 +133,49 @@ async function runSmokeTest(win) {
 
     // Test actual map -> Go There -> room visibility and already-here guard
     // inside the packaged Electron renderer, not just existence of DOM nodes.
+    // Verify the approved image is physically inside the package and its
+    // actual renderer content loads. Test both keyboard routes, the X and
+    // the separate left/right empty pocket containers without changing a save.
+    const paperDollTest=await win.webContents.executeJavaScript(`(async () => {
+      const oldProfile=localStorage.getItem('federalElectricActiveProfile');
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-paper-doll');
+        FE_PAPER_DOLL.open();
+        const root=document.getElementById('fePaperDoll');
+        const img=document.getElementById('fePaperDollArtwork');
+        const pocket=document.getElementById('fePaperDollPocket');
+        const imageReady=await new Promise(resolve=>{
+          if(img.complete)return resolve(img.naturalWidth>0);
+          const end=()=>resolve(img.naturalWidth>0);
+          img.addEventListener('load',end,{once:true});
+          img.addEventListener('error',()=>resolve(false),{once:true});
+          setTimeout(()=>resolve(false),5000);
+        });
+        const out={imageReady,source:img.getAttribute('src'),open:!root.hidden};
+        FE_PAPER_DOLL.openPocket('left');
+        out.leftPocket=!pocket.hidden&&document.getElementById('fePaperDollPocketTitle').textContent==='Left Pocket';
+        FE_PAPER_DOLL.openPocket('right');
+        out.rightPocket=!pocket.hidden&&document.getElementById('fePaperDollPocketTitle').textContent==='Right Pocket';
+        document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true,cancelable:true}));
+        out.escapeClosed=root.hidden;
+        document.dispatchEvent(new KeyboardEvent('keydown',{key:'p',code:'KeyP',bubbles:true,cancelable:true}));
+        out.pOpens=!root.hidden;
+        document.dispatchEvent(new KeyboardEvent('keydown',{key:'p',code:'KeyP',bubbles:true,cancelable:true}));
+        out.pCloses=root.hidden;
+        FE_PAPER_DOLL.open();
+        document.getElementById('fePaperDollClose').click();
+        out.xCloses=root.hidden;
+        return out;
+      }finally{
+        FE_PAPER_DOLL.close();
+        if(oldProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldProfile);
+      }
+    })()`);
+    if(!paperDollTest.imageReady||paperDollTest.source!=='assets/artwork/characters/paperdolls/paperdoll.png'||!paperDollTest.open||!paperDollTest.leftPocket||!paperDollTest.rightPocket||!paperDollTest.escapeClosed||!paperDollTest.pOpens||!paperDollTest.pCloses||!paperDollTest.xCloses){
+      throw new Error('Paper doll artwork / controls smoke test failed: '+JSON.stringify(paperDollTest));
+    }
+
     const cityTravel=await win.webContents.executeJavaScript(`(() => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');

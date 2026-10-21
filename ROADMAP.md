@@ -645,3 +645,12 @@ Authoritative station behavior:
 - [x] Update all active image references and downloaded Washington map destination.
 - [x] Add a maintenance artwork-path audit after the preparation step and before packaging.
 - [x] Keep Linux packaging manually triggered; no executable or accepted release created.
+
+
+## v0.6.5 — Approved paper doll artwork integration (2026-10-21)
+
+- [x] Wire the original uploaded `assets/artwork/characters/paperdolls/paperdoll.png` into the already implemented P-key equipment screen. **No image regeneration or edit**; the separate original `Steampunk Paper Doll Equipment Screen.png` stays untouched.
+- [x] Keep the approved character and displayed slots fixed. P toggles, Escape and X close, and each of the two pocket buttons opens its own initially empty pocket window. No draggable clothing or persistent item storage in this slice.
+- [x] Add actual packaged renderer checks for PNG decoding, P, Escape, X and both pocket windows.
+- [x] Increment all current candidate identities from 0.6.4 to **0.6.5**. Packaging still requires manual invocation.
+- [ ] Linux candidate package, upload/checksum and smoke test remain **unverified** until manually executed; do not mark this release accepted until end-to-end tests pass without errors or warnings.
