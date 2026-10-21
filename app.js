@@ -2354,6 +2354,15 @@ function closeTitleMap(){
  titleMapState.pointerId=null;
  const viewport=$('#titleMapViewport');if(viewport)viewport.classList.remove('is-dragging');
 }
+// The map is not a teleport: closing it away from Federal Electric returns to
+// the location where the player is standing, rather than exposing the office.
+function closeTitleMapOrReturnToLocation(){
+ closeTitleMap();
+ const current=currentCityLocation();
+ if(activeProfileId()&&current.locationId!=='factory'){
+  openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
+ }
+}
 function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
  out.innerHTML='';
@@ -2410,7 +2419,7 @@ function initTitleMapViewer(){
  buildTitleMapMarkers();
  updateTitleMapPinEditor();
  open.onclick=openTitleMap;
- $('#titleMapClose').onclick=closeTitleMap;
+ $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
  $('#titleMapLocationTravel').onclick=travelFromTitleMap;
  $('#titleMapEditPins').onclick=toggleTitleMapPinEditor;
@@ -2418,7 +2427,7 @@ function initTitleMapViewer(){
  $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
  $('#titleMapZoomIn').onclick=()=>titleMapZoom(1.4);
  $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
- viewer.addEventListener('click',e=>{if(e.target===viewer)closeTitleMap()});
+ viewer.addEventListener('click',e=>{if(e.target===viewer)closeTitleMapOrReturnToLocation()});
  viewport.addEventListener('click',e=>{if(e.target===viewport)closeTitleMapLocation()});
  viewport.addEventListener('wheel',e=>{e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
@@ -2453,7 +2462,7 @@ function initTitleMapViewer(){
    titleMapClamp();titleMapApply();
   }
  });
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)closeTitleMap()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)closeTitleMapOrReturnToLocation()});
  window.addEventListener('resize',()=>{if(!viewer.hidden)titleMapReset()});
 }
 

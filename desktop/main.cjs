@@ -158,6 +158,9 @@ async function runSmokeTest(win) {
         openTitleMapLocation('oldChinatown');
         context.sameLocationButtonHidden=go.hidden;
         context.mapReturned=!map.hidden;
+        closeTitleMapOrReturnToLocation();
+        context.mapCloseRestoresRoom=!room.hidden && window.FE_CITY.currentLocation().locationId==='oldChinatown';
+        returnCityRoomToMap();
         openTitleMapLocation('russianTradeHall');
         travelFromTitleMap();
         context.secondDestination=window.FE_CITY.currentLocation().locationId;
@@ -174,7 +177,7 @@ async function runSmokeTest(win) {
       }
       return context;
     })()`);
-    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonHidden||!cityTravel.mapReturned||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored){
+    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonHidden||!cityTravel.mapReturned||!cityTravel.mapCloseRestoresRoom||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored){
       throw new Error('Map navigation/room visibility regression: '+JSON.stringify(cityTravel));
     }
 
