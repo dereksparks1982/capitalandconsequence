@@ -733,3 +733,11 @@ Authoritative station behavior:
 - [x] Register planned-only superintendent office, ward and administrative room shells, blocked from normal map entry until researched and approved.
 - [x] Document budgets, patient/staff persistence, inspections, records, corruption and morality as future systems in the dedicated asylum integration brief.
 - [x] Increment v0.6.13; no executable and no completion claim for an asylum simulator.
+
+
+## v0.6.14 — Three lives / shared Washington route foundation, source-only
+- [x] Document the proposed Businessman/Tycoon, Police/Private Eye, and Criminal/Outlaw routes, with a serial-killer thriller as *optional and undecided*, not mandatory for every criminal.
+- [x] Add an independent route registry and a route display in new-profile creation. Current industrialist remains the only playable route; no false launch promises for future campaigns.
+- [x] Interpret older saves as the industrialist automatically. Keep all existing saved progress and the approved business paper doll untouched.
+- [x] Reserve shared city/world data with unique character-specific knowledge, money, and story state per profile. Shared city content is not automatically synchronized across multiple profiles.
+- [x] Add source contract checks and align version 0.6.14. No packaged binary.

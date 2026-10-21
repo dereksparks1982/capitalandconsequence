@@ -1338,3 +1338,9 @@ body.elephant-easter-egg-open{overflow:hidden}
 /* v0.6.13 institutional venture conceptual record */
 #asylumVenture{border-left:3px double #846a41}
 #asylumVentureStatus{font-weight:700}
+
+/* v0.6.14 character route preview in new-profile form */
+.title-character-choices{margin:12px 0;padding:10px;border:1px solid #9c8259;background:#f0e5ce;color:#2e2416}
+.title-character-choices p{margin:0 0 8px;font-size:13px}
+.title-character-route{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 3px;border-top:1px solid #c2ac87}
+.title-character-route small{font-size:11px}

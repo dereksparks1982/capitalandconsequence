@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.13-dev · unaccepted, source-only · October 21, 2026**
+**Current development source: v0.6.14-dev · unaccepted, source-only · October 21, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,7 +15,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.13-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.14-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
 
@@ -59,6 +59,10 @@ Existing gameplay includes horse/dog/midget-car racing, boxing, three social pok
 
 Venue opportunity records and some room-access gates now exist. Every activity should eventually require physically reaching its venue, meeting access requirements, and respecting time and outcomes. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
 
+## Three lives in one Washington (future direction)
+
+The existing businessman/tycoon remains the only playable starting character. Profile creation now previews two **future** protagonists: a police/private-investigator route and a criminal/outlaw route. An optional darker thriller branch has not been agreed as mandatory gameplay. They would inhabit the **same city registry and setting**, each with separate personal knowledge, contacts and forward-moving autosave. Read [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
+
 ## Possible institutional venture: Blackwood Asylum
 
 A new, **planning-only** prospect proposes integrating the earlier Victorian-era asylum management concept as a separate Washington institution. Buying a controlling interest, investing as a minority shareholder, or running it as an appointed superintendent are possible future paths, subject to governance research. A read-only Info entry and empty per-profile institutional ledger exist; **there is no playable asylum acquisition, staff, patient or treatment management yet**. The separate Soviet Moroz Asylum concept is not being transplanted unchanged into 1890. See [Asylum integration design](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md).
@@ -90,6 +94,6 @@ The source suite verifies registry, personal storage and housing contracts. Pack
 
 Work ahead: survey Washington road distances, legal-versus-illicit activity venue gates, persistent horses/carriages, approved travel time/cost rules, irrevocable-event autosaves, richer room layers, historically researched housing prices and staff, dress etiquette and character-specific reputation.
 
-Detailed specifications and decisions live in [Roadmap](ROADMAP.md), [World rules and opportunity design](WORLD-RULES-2026-10-21.md), [Blackwood Asylum integration](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md), [1890 conversion brief](DESIGN-1890-CONVERSION-2026-10-21.md), [Historical notes](HISTORICAL-NOTES.md), [Design decisions](DECISIONS.md), [Artwork organization](assets/artwork/README.md) and the [build snapshots](BUILD-SNAPSHOT-2026-10-07.md). Older snapshots preserve historical status; their version numbers and 1938 assumptions are not the current development state.
+Detailed specifications and decisions live in [Roadmap](ROADMAP.md), [World rules and opportunity design](WORLD-RULES-2026-10-21.md), [Blackwood Asylum integration](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md), [character routes](CHARACTER-ROUTES-DESIGN-2026-10-21.md), [1890 conversion brief](DESIGN-1890-CONVERSION-2026-10-21.md), [Historical notes](HISTORICAL-NOTES.md), [Design decisions](DECISIONS.md), [Artwork organization](assets/artwork/README.md) and the [build snapshots](BUILD-SNAPSHOT-2026-10-07.md). Older snapshots preserve historical status; their version numbers and 1938 assumptions are not the current development state.
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**

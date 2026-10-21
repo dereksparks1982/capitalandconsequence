@@ -60,3 +60,8 @@ Approved for the README and in-game Help. No change to approved title-screen art
 - Future purchase, managing-superintendent appointment or investment in a fictional Washington asylum is under consideration. Legal ownership form, site, governing board, licensing, budget and costs remain undecided.
 - Inspired by prior Blackwood (Victorian) and Moroz/Cherny Bor (Soviet) concepts. **Moroz's Soviet historical context does not move into 1890 D.C.**
 - Healthcare institution must have independent accounts, staff/patients as individuals, case records, inspections and meaningful consequences. Source: [ASLYUM-INTEGRATION-DESIGN-2026-10-21.md](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md).
+
+
+## Multiple protagonists (proposed)
+- Three route directions: industrialist, law enforcement / private investigator, criminal / outlaw; serial-killer story optional and undecided.
+- Share the persistent Washington location and venue registry, but not personal accounts, known secrets or save slots. Distinct character profiles have independent persistent worlds.

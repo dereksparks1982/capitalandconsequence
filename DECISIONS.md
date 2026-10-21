@@ -385,3 +385,7 @@ The game is a persistent Washington life-sim anchored by the factory. **One forw
 Horse/carriage possessions must remain at real saved locations when abandoned; exceptions (escape, theft, wandering or return) happen only as recorded world events. Travel will distinguish walking, riding and carriage by real-site distance and eventual route/time model. Expand residences from rowhouse to staffed townhouses, mansions and estates; no assumed ownership or invented prices.
 
 Alternate Washington permits **some licensed gambling only**; the final game-specific allowed-card list remains undecided. Underground games and illicit animal contests require particular venues and relationships. *GoldenEye* uses baccarat/chemin de fer, not poker. Proposed cricket/beetle/snake contests remain research/approval work. Detailed legal status, site access and implementation limits are in [WORLD-RULES-2026-10-21.md](WORLD-RULES-2026-10-21.md).
+
+
+## 2026-10-21 — Proposed three-story Washington structure
+The player suggested three selectable character stories: **businessman/tycoon**, **police/private investigator**, and **criminal** with an optional serial-killer angle. This is a **proposed direction**, not approval of three finished protagonists or mandatory serial-killer play. The current businessman and paper doll stay in place. Each future role should use the same city but have its own knowledge, contacts, story, clothing and personal resources. See [CHARACTER-ROUTES-DESIGN-2026-10-21.md](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
