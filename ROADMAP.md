@@ -750,3 +750,12 @@ Authoritative station behavior:
 - [x] Severe crimes remain potential fictional **investigations**, not automatic certainty or mandatory player crimes. No graphic violence or operational new minigame.
 - [x] Add source tests against double-processing and hidden arc leakage. Existing 3-profile limit and factory character preserved.
 - [x] v0.6.15 committed as source only; no packaged executable.
+
+
+## v0.6.16 — Physical horses and carriages (source-only)
+- [x] Give each individual owned horse/carriage a persistent ID, type, name, condition, status, home location and **last recorded actual location**. New saves have zero assets; no free horse is created.
+- [x] Provide record-based relocation and status-event functions with unique event IDs, autosaves and no replaying/re-rolling the same move or theft.
+- [x] Explicit stolen/missing status, recorded recovery and physical origin checks. Assets cannot relocate simply because the player opens another city room.
+- [x] Add a simple read-only personal transport register to the Info screen; no fabricated purchases, hire fees, animal names, stable costs or ownership transfers.
+- [x] Add source contracts for co-location checks, stolen/missing assets and unique recovery events. Full travel/vehicle binding is a later slice.
+- [x] Increment v0.6.16; no packaged executable.

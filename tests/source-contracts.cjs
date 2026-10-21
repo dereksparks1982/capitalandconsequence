@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.15','Current package version is v0.6.15');
-check(appSource.includes("APP_VERSION='v0.6.15-dev'"),'Game masthead uses v0.6.15');
-check(read('build-linux.sh').includes('0.6.15'),'Local packaging uses the same number');
+check(pkg.version==='0.6.16','Current package version is v0.6.16');
+check(appSource.includes("APP_VERSION='v0.6.16-dev'"),'Game masthead uses v0.6.16');
+check(read('build-linux.sh').includes('0.6.16'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.15-linux-x64.tar.gz'),'Manual workflow archives v0.6.15');
+check(workflow.includes('0.6.16-linux-x64.tar.gz'),'Manual workflow archives v0.6.16');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -117,4 +117,13 @@ check(lives.advance(16).length===0&&JSON.stringify(livingCtx.S.otherLives.histor
 check(livingCtx.S.otherLives.actors.criminal.stage===1,'Criminal background actor advances');
 check(livingCtx.S.otherLives.actors.investigator.stage===1,'Detective background actor advances');
 check(lives.publicHistory().every(x=>!x.arc),'Private arc not exposed in public news');
+const mt={window:{},S:{turnSerial:1,transport:{version:1,assets:[{id:'h',kind:'horse',name:'Test Horse',locationId:'home',status:'stabled',condition:100,homeLocationId:'home'}],events:[]}},save:()=>{}};
+vm.runInNewContext(read('mobility.js'),mt,{filename:'mobility.js'});
+const horse=mt.window.FE_TRANSPORT;
+check(horse.at('home').length===1&&horse.at('races').length===0,'Horse remains where actually stored');
+check(horse.arrive('h','factory','races','journey-1')===false,'Cannot move horse from remote location');
+check(horse.arrive('h','home','races','journey-1')===true,'Explicit horse journey moves the asset');
+check(horse.arrive('h','home','races','journey-1')===false,'Recorded trip not repeatable');
+check(horse.incident('h','stolen','theft-1')===true&&horse.at('races').length===0,'Stolen horse is not automatically available');
+check(horse.incident('h','returned','recovery-1','home')===true&&horse.at('home').length===1,'Recovered horse moves only with explicit event');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

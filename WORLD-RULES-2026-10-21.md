@@ -71,3 +71,8 @@ Approved for the README and in-game Help. No change to approved title-screen art
 - Background actor careers progress with the shared world clock and are stored per active profile; there is no offline simulation while the game is closed.
 - The criminal may become a petty thief, underworld organizer, suspected serial offender, or another path; the detective may rise professionally, enter private work or public life, or become compromised. These are **separate seeded outcomes**.
 - Newspaper content communicates public reporting rather than omniscient facts. Never reveal confidential actor arcs or treat allegations as proof.
+
+
+## Mount record implementation, v0.6.16
+- Owned horses/carriages have persistent individual records and last-known locations; there is no free starting horse or teleporting retrieval.
+- Incident and movement operations have unique recorded IDs and autosave; randomized escape/theft incidents are not yet live. New horse purchases, rentals, costs and route-based movement still require follow-up slices.
