@@ -2137,7 +2137,10 @@ function toggleTitleFan(){
 }
 
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
-const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV1';
+// V2 intentionally restores the approved geographical defaults; stale V1 browser pin
+// overrides remain untouched for recovery but must not hide the corrected placements.
+const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV2';
+function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()||'unassigned')}
 const TITLE_MAP_LOCATION_DEFAULTS=(window.FederalElectricCity?.mapLocations?.()||[
  {id:'factory',n:1,name:'Federal Electric Factory',area:'Ivy City / New York Avenue NE',x:.6101,y:.3778,description:'Federal Electric works and company offices in the northeast industrial corridor.'},
  {id:'star',n:2,name:'Star Club',area:'14th Street / Logan–Thomas Circle',x:.4203,y:.4081,description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.'},
@@ -2150,8 +2153,13 @@ const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v)
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 
 function loadTitleMapLocationLayout(){
+ // Start from fixed defaults so each profile has independent, predictable pin positions.
+ TITLE_MAP_LOCATIONS.forEach((location,i)=>{
+  location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
+  location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
+ });
  let saved=null;
- try{saved=JSON.parse(localStorage.getItem(TITLE_MAP_LAYOUT_KEY)||'null')}catch(e){}
+ try{saved=JSON.parse(localStorage.getItem(titleMapStorageKey())||'null')}catch(e){}
  if(!saved||typeof saved!=='object')return;
  for(const location of TITLE_MAP_LOCATIONS){
   const p=saved[location.id];
@@ -2163,10 +2171,10 @@ function loadTitleMapLocationLayout(){
 function saveTitleMapLocationLayout(){
  const saved={};
  for(const location of TITLE_MAP_LOCATIONS)saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6)};
- localStorage.setItem(TITLE_MAP_LAYOUT_KEY,JSON.stringify(saved));
+ localStorage.setItem(titleMapStorageKey(),JSON.stringify(saved));
 }
 function resetTitleMapLocationLayout(){
- localStorage.removeItem(TITLE_MAP_LAYOUT_KEY);
+ localStorage.removeItem(titleMapStorageKey());
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
@@ -2220,7 +2228,9 @@ function openTitleMapLocation(id){
  const travel=$('#titleMapLocationTravel');
  if(travel){
   const ready=!!activeProfileId();
-  travel.disabled=!ready;
+  const alreadyHere=ready&&currentCityLocation()?.locationId===id;
+  travel.hidden=alreadyHere;
+  travel.disabled=!ready||alreadyHere;
   travel.textContent=ready?'Go There':'Profile Required';
   travel.dataset.locationId=id;
  }
@@ -2313,6 +2323,8 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
+ // Refresh from the active profile when opening the map after changing profiles.
+ loadTitleMapLocationLayout();
  renderUnpinnedCityDirectory();
  const viewer=$('#titleMapViewer'),viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewer||!viewport||!img)return;
  viewer.hidden=false;
@@ -2387,7 +2399,7 @@ function initTitleMapViewer(){
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
  $('#titleMapLocationTravel').onclick=travelFromTitleMap;
  $('#titleMapEditPins').onclick=toggleTitleMapPinEditor;
- $('#titleMapResetPins').onclick=()=>{if(confirm('Reset all six map pins to their original approximate positions?'))resetTitleMapLocationLayout()};
+ $('#titleMapResetPins').onclick=()=>{if(confirm('Reset all '+TITLE_MAP_LOCATIONS.length+' map pins to their agreed default locations for this profile?'))resetTitleMapLocationLayout()};
  $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
  $('#titleMapZoomIn').onclick=()=>titleMapZoom(1.4);
  $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
