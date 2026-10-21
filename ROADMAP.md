@@ -210,6 +210,30 @@ Planned network expansion:
 - raids, investigations and scandals
 - government procurement and influence
 
+## 2026-10-21 — Washington map site restoration (code candidate; not accepted)
+
+The map's six original code defaults had never been reconciled with the October 5 venue decisions. The later 1890 slice registered Chinatown, a Russian meeting hall and World’s Fair grounds as unpinned rooms. Two earlier requested pin locations, Capitol Airport and the University of Maryland, were missing.
+
+The city registry now supplies **eleven numbered map pins**. The original six IDs and numbers remain stable, but their default **positions and area descriptions are intentionally changed**, not preserved:
+
+1. Federal Electric Factory: Ivy City, New York Avenue NE near Fenwick Street.
+2. Star Club: surviving Hay-Adams houses, 16th and H Streets NW. Pin label stays “Star Club”; Madam Star is in details.
+3. Capital Race Grounds: Benning Race Track, around Kenilworth Avenue and Jay Street NE; alternate-history operation.
+4. Neighborhood Game: Colonial Village, northern Washington; **provisional placement**, not an earlier confirmed user choice.
+5. Commerce Club: the weekly pilots’ poker game inside a Washington-Hoover Airport hangar in Arlington; no separate Washington-Hoover pin.
+6. Embassy Room: Chevy Chase Club, 6100 Connecticut Avenue, Chevy Chase, Maryland.
+7. Old Chinatown: original Pennsylvania Avenue NW community by Center Market.
+8. Russian Trade Hall: proposed Dupont Circle / Massachusetts Avenue NW setting.
+9. D.C. World’s Fair: proposed Smithsonian / National Mall grounds for the alternate-history 1893 fair.
+10. Capitol Airport: north of the Benning track, separately from Washington-Hoover.
+11. University of Maryland: College Park campus, for the electrical-engineering connection.
+
+All eleven are registered with placeholder rooms and default fractional map-image coordinates. These coordinates were estimated against the current historic-map presentation based on the previously agreed sites; **the exact old locally dragged pixels were not stored in Git**. Further in-game fine adjustment remains possible.
+
+The new V2 pin layout saves separately per profile. It deliberately does not import obsolete V1 coordinates, which would overwrite the restored defaults; V1 data is left intact for recovery. Opening the map reloads the active profile's coordinates; Reset Pins affects that profile only. **Go There** is hidden when the player is already at the selected location. The White House remains unpinned.
+
+Source files: `city.js`, `app.js`, `index.html`. These are source changes only. No new Linux binary was built or accepted by this documentation change.
+
 ## v0.7 — The Gathering Storm / Arsenal
 
 - European war and rearmament
