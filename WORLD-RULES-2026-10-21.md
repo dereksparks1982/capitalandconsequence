@@ -1,0 +1,56 @@
+# Federal Electric: Persistent Washington & House Rules
+Date: 2026-10-21
+Scope: 1890 alternate-history source development. This document distinguishes **confirmed direction**, **proposals pending research**, and **working code**.
+
+## Motto (exact agreed wording)
+Federal Electric is the company you own.
+Washington is the world you inhabit.
+
+Approved for the README and in-game Help. No change to approved title-screen art without a separate art instruction.
+
+## Progression, saves and irreversible consequences (confirmed direction)
+- One continuous **autosave per profile**, not a GTA V-style list of revertable save slots. Current code allows three separate profiles for independent games.
+- The existing 5-second autosave remains a background safety net; any irreversible activity outcome, purchase, move, theft or lost item should additionally commit on the decisive event itself.
+- A losing gambling result, discovered cheating, horse loss or accident, a paid fare and a transaction cannot be undone by picking an earlier in-game save. Avoid save/load UI controls that offer rollback.
+- A local file can be externally edited; do not claim tamper-proofness. Developer tooling is strictly separate from ordinary play and acceptance testing.
+- If an outcome is random, resolve and record it **once**, then display the recorded result again upon reopening that venue. Prevent duplicate claims and rerolls by reopening a screen.
+- No offline time simulation.
+
+## City and venue access (confirmed direction, implementation pending)
+- The player has a physical current location and room; activity actions must eventually require that location or legitimately booked remote participation. Races, betting windows and gambling rooms should not be accessible simply by opening a global tab.
+- Horse racing is only at its grounds; racing beyond the proposed initial site must get its **own** registry location. Dog racing, boxing, gambling halls and illegal animal contests likewise require their own venues.
+- Different rooms have **unique opportunities**, not one interchangeable gambling menu. Information, potential winnings, social access, career leads, risks and clientele depend on the venue.
+- Some spaces require an invitation from a specific NPC after developing a relationship. No automatic access granted solely for entering Chinatown.
+- Respect person-specific memory and actual social circles, rather than a single universal morality score.
+
+## Alternative Washington gaming regulations (proposals, NOT fully authorized game law)
+- **Legal by license/venue**: proposed pari-mutuel or local bookmaking at approved racing grounds, and a **short allowed list of games** in approved gambling rooms.
+- **Private/underground**: unauthorized poker including the more interesting five-card varieties, high-stakes rooms, some roulette/blackjack variants, and illegal animal contests.
+- *GoldenEye* depicts **baccarat / chemin de fer**, not a poker variant. It is a candidate for the restricted licensed selection; exact legality awaits decision.
+- Distinguish licensing, age/admission, forbidden games, limits, inspections, police risk and historical law from the alternate-history rules. Regulations should become editable policy state so civic decisions can change them.
+- Neither the mere presence of high-stakes gambling nor being Chinese makes a character illicit by default.
+- Prohibited animal contests, including cockfighting, dogfighting and possible historically researched cricket/beetle/snake contests, remain optional, invitation-based activities. For unfamiliar cultural practices, verify documented context before adding them; do not presume snake fighting was a standard historical Chinese pastime.
+
+## Mounts, carriages, and travel (confirmed direction; no fabricated data)
+- A mount/carriage has a unique identity, actual position, condition and status. Do not auto-spawn a horse at the destination or at the player's current location.
+- Tethered/stabled/left-behind mounts remain where last recorded until a discrete, saved incident changes their status; theft, escape or a return home should be possible **but not constant**.
+- Owning a carriage requires maintaining and locating that carriage as well as a compatible available horse/driver; hired carriages are separate services.
+- Walking, horse riding and carriage travel have different journey lengths in the shared world clock. The departure location is the player's actual location, not automatically Federal Electric.
+- Determine **real local street/site locations and route length** first, then transport speed, weather/traffic, schedule and occasional discrete incidents. A simplified distance placeholder must be labeled an estimate; do not present fictional map-image coordinates as measured street mileage.
+- Do not silently change the 60-minute day / 60-minute night timing.
+
+## Home and economic progression (confirmed direction)
+- Start with the four-room modest Capitol Hill rowhouse, currently with ownership/rental terms intentionally undetermined.
+- Larger townhouses, mansions and country estates should permit more rooms, facilities, social receptions, staff quarters, service entrances and doorman/porter access. Staff have wages, rooms, schedules and their own social relationships. Properties require ongoing upkeep.
+- Acquiring and improving homes requires a real personal-money transaction and creates a persistent deed/ownership entry; the business does not automatically pay for the player's mansion.
+- Price levels, staff wages, taxes, facilities and actual historical address research must precede purchases. No fake property upgrade button that claims success before these mechanics exist.
+
+## The character and personal property (confirmed direction)
+- Approved paper doll: fixed original artwork, eight illustrated slots: shirt, trousers, shoes, left ring, right ring, watch, left and right pocket. P toggles; Escape and X close.
+- Pockets open separate small containers. The future physical item system distinguishes **worn, personally carried, left at home, left at office, left at other locations**. No teleported global stash.
+- Wallet, calling cards, identification, birth/baptism/marriage records, passport applications, deeds and family papers are possible documents with individually acquired provenance, location and purpose, not items magically added to everyone.
+- Wearing the right clothes should matter for society invitations; sleeves/rigged gaming props may confer opportunity and detection risk rather than guaranteed success.
+
+## Development policy
+- Main branch only. Every separate source slice has a new version. No package on pushes.
+- Source-only commits are not tested Linux binaries. Acceptance only follows fully green packaging/smoke checks, user validation and explicit approval.

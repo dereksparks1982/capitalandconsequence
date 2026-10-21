@@ -705,3 +705,13 @@ Authoritative station behavior:
 - [x] Arrange for the manual Linux workflow to run this suite **before** dependency installation and packaging, failing the workflow on any assertion failure.
 - [x] Increment development identity to **0.6.10**, keeping archive/checksum/draft candidate labels consistent. No executable produced during this slice.
 - [ ] The full Electron smoke test, runtime sound diagnostics, and a real Linux binary still require the next separately authorized manual executable build. Zero warnings/errors is the acceptance criterion.
+
+
+## v0.6.11 — Player-facing README correction & authoritative world rules (source-only)
+
+- [x] Update README for the actual **1890 alternate-history Linux-first** direction, current v0.6.11 source status, 12 Washington pins, Home, paper doll, household tiers and missing future travel/venue gates. Preserve the original player-facing factory/life-simulation introduction.
+- [x] Remove misleading link to obsolete GitHub Pages as current play option and avoid claims that the untested v0.6.x game is already packaged.
+- [x] Record the exact motto in both README and the existing in-game Help text; no new title art or banner.
+- [x] Consolidate decisions on continuous autosave, restricted legal/illegal gambling, venue-specific games, future animal contests, mounts, travel, property ownership and wealth in a world-rules design document.
+- [x] Distinguish already-playable older sports/poker modules from **future** location gating, historic time/distance research and legal-game lists.
+- [x] Increment to v0.6.11. No executable or accepted release.

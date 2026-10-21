@@ -371,3 +371,17 @@ This file records decisions that should not drift silently during development.
 - The ambience stops when the title environment becomes night and stops when the player leaves the title screen.
 - Current source: craigsmith, **R25-11-1930s Urban Traffic**, Freesound sound 479574, CC0.
 - Future mobile audio work may use device-specific gain/EQ/compression, but Federal Electric will not attempt to choose a particular physical phone speaker; output routing remains browser/OS controlled.
+
+
+## 2026-10-21 — World motto, autosaves, gaming and travel
+
+**Approved exact motto:**
+
+> Federal Electric is the company you own.  
+> Washington is the world you inhabit.
+
+The game is a persistent Washington life-sim anchored by the factory. **One forward-only autosave per profile** and decisive-event autosaves, with no selectable old saves/reroll facility in ordinary play. Existing separate player profiles are not rollback points.
+
+Horse/carriage possessions must remain at real saved locations when abandoned; exceptions (escape, theft, wandering or return) happen only as recorded world events. Travel will distinguish walking, riding and carriage by real-site distance and eventual route/time model. Expand residences from rowhouse to staffed townhouses, mansions and estates; no assumed ownership or invented prices.
+
+Alternate Washington permits **some licensed gambling only**; the final game-specific allowed-card list remains undecided. Underground games and illicit animal contests require particular venues and relationships. *GoldenEye* uses baccarat/chemin de fer, not poker. Proposed cricket/beetle/snake contests remain research/approval work. Detailed legal status, site access and implementation limits are in [WORLD-RULES-2026-10-21.md](WORLD-RULES-2026-10-21.md).
