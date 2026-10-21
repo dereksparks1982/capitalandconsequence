@@ -778,3 +778,12 @@ Authoritative station behavior:
 - [x] Enter a venue activity from its own room shell without having the auto-open default panel toggle it closed.
 - [x] Keep existing scheduled races/fights processing offscreen; being absent blocks entering/wagering, not the world event itself.
 - [x] Add source contracts and version v0.6.18. No binary, runtime test pending.
+
+
+## v0.6.19 — Honest travel and distance groundwork, source-only
+- [x] Define four future transportation modes: walking, personally owned horse, owned carriage with a suitable horse, and hired carriage. Horse/carriage modes require assets actually present at departure; hired service has no unapproved invented fare.
+- [x] Add a verified-route table that intentionally contains **no fake street mileage or speed assumptions**. All city-to-city times/miles remain null until historically grounded site and road research.
+- [x] Keep existing Go There navigation usable as **explicit provisional direct movement** (no journey clock charge), and clearly warn this is temporary on each map place card.
+- [x] Record every player location change as a provisional journey with origin/destination and turn, together with the same per-profile autosave. A direct move never teleports a left-behind horse or carriage.
+- [x] Add source checks for mode availability, no fake durations, no free horse, route records and already-here protection.
+- [x] Increment v0.6.19. Actual walking/riding/carriage trip costs and incidents remain future work. No executable.

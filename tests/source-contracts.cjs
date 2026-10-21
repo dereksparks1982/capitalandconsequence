@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.18','Current package version is v0.6.18');
-check(appSource.includes("APP_VERSION='v0.6.18-dev'"),'Game masthead uses v0.6.18');
-check(read('build-linux.sh').includes('0.6.18'),'Local packaging uses the same number');
+check(pkg.version==='0.6.19','Current package version is v0.6.19');
+check(appSource.includes("APP_VERSION='v0.6.19-dev'"),'Game masthead uses v0.6.19');
+check(read('build-linux.sh').includes('0.6.19'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.18-linux-x64.tar.gz'),'Manual workflow archives v0.6.18');
+check(workflow.includes('0.6.19-linux-x64.tar.gz'),'Manual workflow archives v0.6.19');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -138,4 +138,16 @@ check(read('boxing.js').includes("canUse('boxing')"),'Boxing requires Washington
 check(read('underworld.js').includes("canUse('private-fight')")&&read('underworld.js').includes("canUse('cockfight')"),'Private contests require invitation-only venues');
 check(appSource.includes("window.FE_VENUES?.canUse(venue)"),'Simulated poker cannot bypass card venue');
 check(appSource.includes('window.FE_VENUES?.canEnterLocation?.(loc.id)'),'Discovered secret sites appear only after unlock');
+const travelS={turnSerial:5,transport:{version:2,assets:[],events:[],journeys:[]}};
+const tctx={window:{FederalElectricCity:city,FE_TRANSPORT:{at:()=>[]}},S:travelS};
+vm.runInNewContext(read('journey-planner.js'),tctx,{filename:'journey-planner.js'});
+const travel=tctx.window.FE_TRAVEL;
+check(travel.modes.length===4,'Four distinct proposed transportation modes');
+check(travel.plan('home','races','walk').status==='route-survey-pending','No unverified route time invented');
+check(travel.plan('home','races','walk').miles===null,'No invented mileage');
+check(travel.plan('home','races','horse').status==='no-horse-here','Riding requires a horse present at origin');
+check(travel.plan('home','races','owned-carriage').status==='no-team-and-carriage-here','Carriage requires team at origin');
+check(travel.recordProvisional('home','races')===true&&travelS.transport.journeys.length===1,'Direct old navigation produces labeled journey record');
+check(travelS.transport.journeys[0].minutes===null&&travelS.transport.journeys[0].mode===null,'Provisional movement cannot claim verified time or horse');
+check(travel.plan('home','home','walk').status==='invalid','Cannot travel to same location');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

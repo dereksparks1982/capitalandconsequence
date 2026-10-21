@@ -5,7 +5,7 @@
 'use strict';
 const STATUSES=Object.freeze(['tethered','stabled','traveling','missing','stolen','in-care']);
 function ensure(){
- if(!S.transport||typeof S.transport!=='object')S.transport={version:1,assets:[],events:[]};
+ if(!S.transport||typeof S.transport!=='object')S.transport={version:2,assets:[],events:[],journeys:[]};
  if(!Array.isArray(S.transport.assets))S.transport.assets=[];
  if(!Array.isArray(S.transport.events))S.transport.events=[];
  return S.transport;

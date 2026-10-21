@@ -87,3 +87,9 @@ Approved for the README and in-game Help. No change to approved title-screen art
 ## Venue location enforcement (v0.6.18)
 - Betting actions now check the character's current location, not just visible UI controls. Remote horse/dog/car racing, boxing, underground contests, Star Club socializing and poker activity shortcuts are blocked in ordinary play.
 - Hidden underworld venues enter the private unpinned directory only after discovery, never via public map labels. The selected activity UI closes appropriately upon travel.
+
+
+## Travel planner foundation (v0.6.19)
+- Future modes are walk, owned horse, owned carriage with horse, or hired carriage. Walking is possible without equipment; riding requires an actual local horse and carriages require local assets.
+- Verified road mileage / historical travel time are **unknown** and remain null, not guessed from artwork coordinates. Existing Go There remains provisional instant movement until route research and timing approval.
+- Every provisional relocation is recorded in the same autosave. No horse, carriage, or driver follows the player unless a later validated journey transfers them.
