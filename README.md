@@ -256,3 +256,8 @@ All game visuals are organized in [`assets/artwork/`](assets/artwork/README.md),
 ### Personal residence (v0.6.9 source)
 
 The game starts with a Capitol Hill Home pin and separate rooms. A household ledger in the front room records the character's primary residence but does not assume the property is owned or rented. Future larger properties, domestic amenities and staffed door service are defined as progression categories; prices, addresses and purchase mechanics remain unimplemented pending research. The project is still a source-only candidate.
+
+
+### Source regression checks (v0.6.10)
+
+Run `npm run test:source` before a Linux candidate build. This runs offline, uses only Node's built-in assert/vm/filesystem modules, and checks the city, Home, household registry, location-bound pockets, version consistency and paper-doll asset path. Actual Electron smoke testing remains a separate later packaging step.

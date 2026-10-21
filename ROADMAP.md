@@ -695,3 +695,13 @@ Authoritative station behavior:
 - [x] Record **no invented prices, upkeep, wages, automatic purchases or hiring** until research and player choice; property wealth must use Personal Cash, not automatically company funds.
 - [x] Extend offline dependency audit and add smoke checks for catalog, unknown starting tenure, and correct front-room ledger display.
 - [x] Version **0.6.9**, source only. No executable, automatic build, or release acceptance.
+
+
+## v0.6.10 — Pre-executable source QA, source-only (2026-10-21)
+
+- [x] Add `npm run test:source` with a dependency-free Node contract suite validating 12 unique map pins, Home rooms, approved paper-doll path, profile-bound pockets/household storage access, housing tiers and front-room ledger.
+- [x] The tests check version consistency, correct script loading order, no loose artwork, and that Linux packaging remains manually triggered.
+- [x] Parse all new JavaScript modules and Electron main code as part of the test; verify the baseline save migration code includes housing and personal effects.
+- [x] Arrange for the manual Linux workflow to run this suite **before** dependency installation and packaging, failing the workflow on any assertion failure.
+- [x] Increment development identity to **0.6.10**, keeping archive/checksum/draft candidate labels consistent. No executable produced during this slice.
+- [ ] The full Electron smoke test, runtime sound diagnostics, and a real Linux binary still require the next separately authorized manual executable build. Zero warnings/errors is the acceptance criterion.
