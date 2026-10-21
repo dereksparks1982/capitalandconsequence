@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.16','Current package version is v0.6.16');
-check(appSource.includes("APP_VERSION='v0.6.16-dev'"),'Game masthead uses v0.6.16');
-check(read('build-linux.sh').includes('0.6.16'),'Local packaging uses the same number');
+check(pkg.version==='0.6.17','Current package version is v0.6.17');
+check(appSource.includes("APP_VERSION='v0.6.17-dev'"),'Game masthead uses v0.6.17');
+check(read('build-linux.sh').includes('0.6.17'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.16-linux-x64.tar.gz'),'Manual workflow archives v0.6.16');
+check(workflow.includes('0.6.17-linux-x64.tar.gz'),'Manual workflow archives v0.6.17');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -126,4 +126,9 @@ check(horse.arrive('h','home','races','journey-1')===true,'Explicit horse journe
 check(horse.arrive('h','home','races','journey-1')===false,'Recorded trip not repeatable');
 check(horse.incident('h','stolen','theft-1')===true&&horse.at('races').length===0,'Stolen horse is not automatically available');
 check(horse.incident('h','returned','recovery-1','home')===true&&horse.at('home').length===1,'Recovered horse moves only with explicit event');
+check(!appSource.includes('pokerTestClicks')&&!appSource.includes('pokerTestReset'),'Seven-click table bypass removed');
+check(appSource.includes('window.FE_POKER_AUTHORIZE=')&&appSource.includes('window.FE_POKER_SETTLE='),'One-use poker settlement installed');
+check(read('poker.html').includes('No active poker session'),'Unreserved popup does not deal');
+check(appSource.includes('S.personalCash-=stake')&&appSource.includes('S.personalCash+=entry.stake+delta'),'Poker stake escrow and settlement');
+check(appSource.includes('fresh.pokerSessions=')&&appSource.includes('outcomeEvents.push'),'Poker save migration and outcome ledger');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

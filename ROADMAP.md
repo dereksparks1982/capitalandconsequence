@@ -759,3 +759,12 @@ Authoritative station behavior:
 - [x] Add a simple read-only personal transport register to the Info screen; no fabricated purchases, hire fees, animal names, stable costs or ownership transfers.
 - [x] Add source contracts for co-location checks, stolen/missing assets and unique recovery events. Full travel/vehicle binding is a later slice.
 - [x] Increment v0.6.16; no packaged executable.
+
+
+## v0.6.17 — Poker autosave / no-reroll source slice
+- [x] Remove legacy seven-click poker unlock/forced popup shortcut. Real invitation and physical venue checks remain in the standard play path.
+- [x] Charge played poker stakes immediately into per-profile escrow, with one-use saved session tokens. Blocked popups refund the reservation. Only an authorized opener can deal a game, and a reloaded token cannot authorize again.
+- [x] Save settlements and outcome IDs, release the bankroll exactly once, and ignore duplicate settlement callbacks.
+- [x] Add source checks to detect reopening the exploit. Unfinished popup sessions may forfeit reserved stakes; full crash-resume play requires future design.
+- [x] No in-game rollback saves, no unearned card-room privileges. Local file edits and developer tools are outside normal play and not tamper-proof.
+- [x] v0.6.17; source-only, no executable.

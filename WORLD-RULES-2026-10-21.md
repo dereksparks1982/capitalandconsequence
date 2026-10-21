@@ -76,3 +76,9 @@ Approved for the README and in-game Help. No change to approved title-screen art
 ## Mount record implementation, v0.6.16
 - Owned horses/carriages have persistent individual records and last-known locations; there is no free starting horse or teleporting retrieval.
 - Incident and movement operations have unique recorded IDs and autosave; randomized escape/theft incidents are not yet live. New horse purchases, rentals, costs and route-based movement still require follow-up slices.
+
+
+## Poker one-use settlement (v0.6.17)
+- Existing seven-click table unlock bypass is removed. Entering poker requires an earned invitation (where necessary) and the correct venue.
+- Real played poker now reserves Personal Cash in an immediate autosave. Popup access is one-use, and each settlement has a unique ID to stop repeated payouts. Incomplete sessions can forfeit the stake; full recovery is not implemented yet.
+- This prevents ordinary save UI rollback/reroll; users can still intentionally edit local files or use development tools.
