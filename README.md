@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.17-dev · unaccepted, source-only · October 21, 2026**
+**Current development source: v0.6.18-dev · unaccepted, source-only · October 21, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,7 +15,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.17-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.18-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
 
@@ -57,7 +57,7 @@ Existing gameplay includes horse/dog/midget-car racing, boxing, three social pok
 
 **Planned alternate-Washington policy:** only specifically licensed wagers/games are legal; private poker, unauthorized house games and prohibited animal contests remain underground. **The exact approved card-game list is not settled.** Baccarat / chemin de fer, seen in *GoldenEye*, is a candidate for a permitted game, **not a poker variant**. Five-card poker, roulette and blackjack are candidates for restricted backrooms pending rules decisions.
 
-Venue opportunity records and some room-access gates now exist. Every activity should eventually require physically reaching its venue, meeting access requirements, and respecting time and outcomes. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
+Venue opportunity records and **location checks for existing wagering and club actions** now require the player to reach their proper rooms. Specific invitations, time windows and outcomes still matter. The future casino game list remains undecided. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
 
 ## Three lives in one Washington (future direction)
 

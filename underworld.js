@@ -91,6 +91,7 @@ function unlock(kind,source,silent=false){
 window.unlockPrivateFightsFromBoxing=(source='a boxing contact')=>{const changed=unlock('private',source);if(changed){render();setNote('A contact from the fight crowd has given you access to private prizefights.')}return changed};
 
 function askBookie(){
+ if(!window.FE_VENUES?.canUse('star'))return setNote('You must be at the Star Club to ask for underground introductions.');
  const u=ensureState();if(!S.contacts.bookie?.met)return setNote('You do not know a bookmaker well enough to ask.');
  if(!spendLeadTime())return;u.bookieAskedDate=S.gameDate;
  const r=Math.random();let msg='';
@@ -101,11 +102,13 @@ function askBookie(){
  setNote(msg);S.notes.push({date:displayDate(),text:msg,source:'Eddie Doyle'});save(true);render();
 }
 function askPromoter(){
+ if(!window.FE_VENUES?.canUse('star'))return setNote('You must be at the Star Club to ask for underground introductions.');
  if(!S.contacts.promoter?.met)return setNote('You have not met a fight promoter who can make that introduction.');
  if(!spendLeadTime())return;
  const changed=unlock('private','Marty Kane');setNote(changed?'Marty Kane quietly gives you an invitation to a private prizefight.':'Marty Kane confirms the next private prizefight: '+eventTime(S.underworld.events.privateFight)+'.');render();
 }
 function askMadam(){
+ if(!window.FE_VENUES?.canUse('star'))return setNote('You must be at the Star Club to ask for underground introductions.');
  const u=ensureState();if(!S.contacts.madamStar?.met||S.contacts.madamStar.trust<2)return setNote('Madam Star does not know you well enough to share that kind of information.');
  if(!spendLeadTime())return;u.starAskedDate=S.gameDate;
  let msg;if(!u.cockfightsUnlocked&&Math.random()<.55){unlock('cock','Madam Star');msg='Madam Star gives you a discreet introduction to a cockfighting circle.'}
@@ -114,6 +117,7 @@ function askMadam(){
  setNote(msg);S.notes.push({date:displayDate(),text:msg,source:'Madam Star'});save(true);render();
 }
 function placePrivateBet(){
+ if(!window.FE_VENUES?.canUse('private-fight'))return setNote('A private prizefight requires your presence at its concealed venue.');
  const u=ensureState(),e=u.events.privateFight;if(!u.privateFightsUnlocked)return;
  if(e.result)return setNote('That private fight is already over.');
  if(S.phase===e.phase&&S.dayRemaining<=e.threshold)return setNote('Betting is closed for that private fight.');
@@ -122,6 +126,7 @@ function placePrivateBet(){
  S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};save(true);render();setNote('Private-fight wager accepted on '+pf(id).name+' · '+cash(wager)+'.');
 }
 function placeCockBet(){
+ if(!window.FE_VENUES?.canUse('cockfight'))return setNote('You must visit the private cockfighting venue.');
  const u=ensureState(),e=u.events.cockfight;if(!u.cockfightsUnlocked)return;
  if(e.result)return setNote('That cockfight is already over.');
  if(S.phase===e.phase&&S.dayRemaining<=e.threshold)return setNote('Betting is closed for that match.');

@@ -768,3 +768,13 @@ Authoritative station behavior:
 - [x] Add source checks to detect reopening the exploit. Unfinished popup sessions may forfeit reserved stakes; full crash-resume play requires future design.
 - [x] No in-game rollback saves, no unearned card-room privileges. Local file edits and developer tools are outside normal play and not tamper-proof.
 - [x] v0.6.17; source-only, no executable.
+
+
+## v0.6.18 — Make game activities physically local (source-only)
+- [x] Disable inaccessible Pastimes tabs unless the player is at that exact venue. The default global category remains readable, but no remote betting panel opens. Location buttons and small notices show why.
+- [x] Add checks **inside wager actions** for horse racing, dog racing, midget cars, licensed boxing, private fights, cockfighting, and simulated/played poker; stop spending cash from the factory office via old global shortcuts.
+- [x] Keep Star Club visits and face-to-face underground introductions local to Madam Star's building.
+- [x] Discovered underground sites now appear in the map's unpinned private-location directory only after actual unlock/invitation progress; planned casinos remain unavailable.
+- [x] Enter a venue activity from its own room shell without having the auto-open default panel toggle it closed.
+- [x] Keep existing scheduled races/fights processing offscreen; being absent blocks entering/wagering, not the world event itself.
+- [x] Add source contracts and version v0.6.18. No binary, runtime test pending.

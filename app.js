@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.17-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.18-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -223,15 +223,27 @@ function showTab(id){
  setRadioLocationContext('office');
  if(id==='racing'&&!pastimeActivityState.legal)setPastimeActivity('legal','horse');
  if(id==='washington'&&!pastimeActivityState.illicit)setPastimeActivity('illicit','star');
+ if(id==='washington')renderWashington();
 }
 const pastimeActivityState={legal:null,illicit:null};
+function canEnterPastime(group,target){
+ const venues=window.FE_VENUES;
+ if(!venues||!activeProfileId())return false;
+ const map={legal:{horse:['horse-racing'],dog:['dog-racing'],car:['midget-racing'],boxing:['boxing']},illicit:{star:['star'],leads:['star'],poker:['working-poker','commerce-poker','embassy-poker'],private:['private-fight'],cock:['cockfight']}};
+ return (map[group]?.[target]||[]).some(id=>venues.canUse(id));
+}
+
 function setPastimeActivity(group,target=null){
  const panels=[...document.querySelectorAll('[data-activity-panel="'+group+'"]')],buttons=[...document.querySelectorAll('[data-activity-group="'+group+'"]')];
  const requested=target?document.querySelector('[data-activity-panel="'+group+'"][data-activity-name="'+target+'"]'):null;
  const wasOpen=!!(requested&&!requested.hidden&&pastimeActivityState[group]===target);
+ const canShow=!!(target&&canEnterPastime(group,target));
  panels.forEach(p=>p.hidden=true);buttons.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-expanded','false')});pastimeActivityState[group]=null;
- if(target&&!wasOpen&&requested){requested.hidden=false;pastimeActivityState[group]=target;const btn=buttons.find(b=>b.dataset.activityTarget===target);if(btn){btn.classList.add('active');btn.setAttribute('aria-expanded','true')}}
+ if(target&&!wasOpen&&requested&&canShow){requested.hidden=false;pastimeActivityState[group]=target;const btn=buttons.find(b=>b.dataset.activityTarget===target);if(btn){btn.classList.add('active');btn.setAttribute('aria-expanded','true')}}
  if(group==='illicit')setRadioLocationContext(pastimeActivityState.illicit==='star'?'star':'office');
+ const notice=document.getElementById(group==='legal'?'legalSportsNotice':'illicitActivitiesNotice');
+ if(notice)notice.textContent=target&&!canShow?'You must visit the correct Washington venue (and have any required invitation) to enter this activity. Use M to travel.':'Closing a panel does not pause the world clock or cancel events.';
+ buttons.forEach(b=>{const id=b.dataset.activityTarget;b.disabled=!canEnterPastime(group,id);b.title=b.disabled?'Visit the venue to participate':''});
 }
 window.isPastimeActivityOpen=(group,target)=>pastimeActivityState[group]===target;
 document.addEventListener('click',e=>{
@@ -862,6 +874,7 @@ const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCo
 $('#archiveEdition').onclick=()=>{archiveToday();save();renderArchive();note('Edition placed in the archive.')}
 $('#addNote').onclick=()=>{const text=$('#noteText').value.trim(),source=$('#noteSource').value.trim();if(!text)return;S.notes.push({date:displayDate(),text,source});$('#noteText').value='';$('#noteSource').value='';save();renderNotes()}
 function visitStar(seconds,price,encounterChance,trustGain,period){
+ if(!window.FE_VENUES?.canUse('star'))return $('#starNote').textContent='Visit the Star Club in Washington to spend time there.';
  if(S.phase==='report')return $('#starNote').textContent='The day is already closed. Review the Daily Report.';
  if(period==='day'&&S.phase!=='day')return $('#starNote').textContent='Those daytime visits are no longer available tonight.';
  if(period==='night'&&S.phase!=='night')return $('#starNote').textContent='Evening visits become available after the closing bell.';
@@ -937,7 +950,9 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed)=>{
  return true;
 };
 function pokerSimSeconds(circle){return circle==='working'?300:circle==='middle'?600:1500}
-function simulatePoker(circle,stake){if(S.pokerDay!==S.gameDate){S.pokerDay=S.gameDate;S.pokerPlayed={working:0,middle:0,elite:0}}if(!pokerAccess(circle)){$('#pokerNote').textContent=circle==='working'?'The Neighborhood Game is open.':circle==='middle'?'Meet Eddie Doyle at the Star Club to get into the Commerce Club.':'An Embassy Room invitation is required.';return}if(S.pokerPlayed[circle]>=pokerLimit(circle))return $('#pokerNote').textContent='No more '+pokerCircleName(circle)+' sessions are available today.';if(S.personalCash<stake)return $('#pokerNote').textContent='You need '+cash(stake)+' personal cash for this table.';const simSeconds=pokerSimSeconds(circle);if(S.dayRemaining<simSeconds)return $('#pokerNote').textContent='There is not enough business-day time remaining for this simulation.';S.pokerPlayed[circle]++;const hands=6+Math.floor(Math.random()*10),swing={working:5,middle:18,elite:80}[circle];let delta=0;for(let i=0;i<hands;i++){const r=Math.random();delta+=r<.43?-swing*(.25+Math.random()*.85):r<.83?swing*(.2+Math.random()*.7):swing*(.8+Math.random()*1.7)}delta=Math.round(delta);delta=clamp(delta,-Math.min(stake,S.personalCash),stake*2);recordPokerResult(circle,delta,hands,true,simSeconds)}
+function simulatePoker(circle,stake){
+ const venue={working:'working-poker',middle:'commerce-poker',elite:'embassy-poker'}[circle];
+ if(!venue||!window.FE_VENUES?.canUse(venue))return $('#pokerNote').textContent='Visit the appropriate card room to play.';if(S.pokerDay!==S.gameDate){S.pokerDay=S.gameDate;S.pokerPlayed={working:0,middle:0,elite:0}}if(!pokerAccess(circle)){$('#pokerNote').textContent=circle==='working'?'The Neighborhood Game is open.':circle==='middle'?'Meet Eddie Doyle at the Star Club to get into the Commerce Club.':'An Embassy Room invitation is required.';return}if(S.pokerPlayed[circle]>=pokerLimit(circle))return $('#pokerNote').textContent='No more '+pokerCircleName(circle)+' sessions are available today.';if(S.personalCash<stake)return $('#pokerNote').textContent='You need '+cash(stake)+' personal cash for this table.';const simSeconds=pokerSimSeconds(circle);if(S.dayRemaining<simSeconds)return $('#pokerNote').textContent='There is not enough business-day time remaining for this simulation.';S.pokerPlayed[circle]++;const hands=6+Math.floor(Math.random()*10),swing={working:5,middle:18,elite:80}[circle];let delta=0;for(let i=0;i<hands;i++){const r=Math.random();delta+=r<.43?-swing*(.25+Math.random()*.85):r<.83?swing*(.2+Math.random()*.7):swing*(.8+Math.random()*1.7)}delta=Math.round(delta);delta=clamp(delta,-Math.min(stake,S.personalCash),stake*2);recordPokerResult(circle,delta,hands,true,simSeconds)}
 window.FE_POKER_CLOCK=()=>Math.max(0,S.dayRemaining);
 function pokerButton(circle,stake){return playPokerCircle(circle,stake)}
 $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').onclick=()=>pokerButton('middle',100);$('#pokerElite').onclick=()=>pokerButton('elite',500);$('#simPokerWorking').onclick=()=>simulatePoker('working',25);$('#simPokerMiddle').onclick=()=>simulatePoker('middle',100);$('#simPokerElite').onclick=()=>simulatePoker('elite',500);
@@ -1795,6 +1810,7 @@ function openCityRoom(locationId,roomId,options={}){
  document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
  document.getElementById('cityRoomName').textContent=room.name;
  document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
+ setPastimeActivity('legal',null);setPastimeActivity('illicit',null);
  renderCityRoomPeople(location);
  if(window.FE_VENUES?.renderRoomOpportunities)window.FE_VENUES.renderRoomOpportunities(location.id);
  if(window.FE_PERSONAL_EFFECTS?.renderRoomStorage)window.FE_PERSONAL_EFFECTS.renderRoomStorage(location.id,room.id);
@@ -1850,7 +1866,9 @@ function initCityRoomUI(){
 function openLocalVenueActivity(id){
  const v=window.FE_VENUES?.get?.(id);
  if(!v||!window.FE_VENUES.canUse(id)||!v.group||!v.panel)return false;
- closeCityRoom();showTab(v.group==='legal'?'racing':'washington');setPastimeActivity(v.group,v.panel);return true;
+ closeCityRoom();showTab(v.group==='legal'?'racing':'washington');
+ if(pastimeActivityState[v.group]!==v.panel)setPastimeActivity(v.group,v.panel);
+ return true;
 }
 window.FE_CITY={
  openLocalActivity:openLocalVenueActivity,
@@ -2505,7 +2523,7 @@ function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
  out.innerHTML='';
  const active=!!activeProfileId(),year=S.gameDate;
- for(const loc of city.listLocations().filter(loc=>!loc.map&&!loc.hiddenFromDirectory&&!loc.plannedOnly&&(!loc.availableFrom||year>=loc.availableFrom))){
+ for(const loc of city.listLocations().filter(loc=>!loc.map&&!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id))&&(!loc.availableFrom||year>=loc.availableFrom))){
   const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
   button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
   button.onclick=()=>openCityRoom(loc.id,null,{dev:false,source:'map'});

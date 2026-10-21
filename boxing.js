@@ -136,6 +136,7 @@ window.finishBoxingNight=()=>{
  save(true);
 };
 function placeBet(id){
+ if(!window.FE_VENUES?.canUse('boxing'))return setNote('Visit Washington Arena to wager on boxing.');
  if(S.phase!=='night')return setNote('Licensed boxing betting opens during Washington Night.');
  const card=ensureState(),bout=card.bouts[id],d=boutDef(id);
  if(!d||bout.result||S.dayRemaining<=d.threshold)return setNote('Betting is closed for '+d.label+'.');

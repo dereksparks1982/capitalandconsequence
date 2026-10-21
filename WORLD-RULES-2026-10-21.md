@@ -82,3 +82,8 @@ Approved for the README and in-game Help. No change to approved title-screen art
 - Existing seven-click table unlock bypass is removed. Entering poker requires an earned invitation (where necessary) and the correct venue.
 - Real played poker now reserves Personal Cash in an immediate autosave. Popup access is one-use, and each settlement has a unique ID to stop repeated payouts. Incomplete sessions can forfeit the stake; full recovery is not implemented yet.
 - This prevents ordinary save UI rollback/reroll; users can still intentionally edit local files or use development tools.
+
+
+## Venue location enforcement (v0.6.18)
+- Betting actions now check the character's current location, not just visible UI controls. Remote horse/dog/car racing, boxing, underground contests, Star Club socializing and poker activity shortcuts are blocked in ordinary play.
+- Hidden underworld venues enter the private unpinned directory only after discovery, never via public map labels. The selected activity UI closes appropriately upon travel.

@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.17','Current package version is v0.6.17');
-check(appSource.includes("APP_VERSION='v0.6.17-dev'"),'Game masthead uses v0.6.17');
-check(read('build-linux.sh').includes('0.6.17'),'Local packaging uses the same number');
+check(pkg.version==='0.6.18','Current package version is v0.6.18');
+check(appSource.includes("APP_VERSION='v0.6.18-dev'"),'Game masthead uses v0.6.18');
+check(read('build-linux.sh').includes('0.6.18'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.17-linux-x64.tar.gz'),'Manual workflow archives v0.6.17');
+check(workflow.includes('0.6.18-linux-x64.tar.gz'),'Manual workflow archives v0.6.18');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -131,4 +131,11 @@ check(appSource.includes('window.FE_POKER_AUTHORIZE=')&&appSource.includes('wind
 check(read('poker.html').includes('No active poker session'),'Unreserved popup does not deal');
 check(appSource.includes('S.personalCash-=stake')&&appSource.includes('S.personalCash+=entry.stake+delta'),'Poker stake escrow and settlement');
 check(appSource.includes('fresh.pokerSessions=')&&appSource.includes('outcomeEvents.push'),'Poker save migration and outcome ledger');
+check(appSource.includes('function canEnterPastime(')&&appSource.includes('b.disabled=!canEnterPastime(group,id)'),'Global pastimes require correct local venue');
+check(read('racing.js').includes("canUse('horse-racing')"),'Horse wagers only at racetrack');
+check(read('oval-racing.js').includes("canUse(venue)"),'Dog/midget wagers require specific venues');
+check(read('boxing.js').includes("canUse('boxing')"),'Boxing requires Washington Arena');
+check(read('underworld.js').includes("canUse('private-fight')")&&read('underworld.js').includes("canUse('cockfight')"),'Private contests require invitation-only venues');
+check(appSource.includes("window.FE_VENUES?.canUse(venue)"),'Simulated poker cannot bypass card venue');
+check(appSource.includes('window.FE_VENUES?.canEnterLocation?.(loc.id)'),'Discovered secret sites appear only after unlock');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

@@ -128,6 +128,7 @@ function nextRace(){
  const m=ensureState();for(const d of SCHEDULE){if(!m.races[d.id].result)return d}return null;
 }
 function placeBet(raceId){
+ if(!window.FE_VENUES?.canUse('horse-racing'))return setRaceNote('You must be at Capital Race Grounds to wager.');
  const d=raceDef(raceId);if(!d)return;
  const m=ensureState(),r=m.races[d.id];updateQualifiers();
  if(!r.participants.length)return setRaceNote('The field for '+d.label+' has not been established yet.');
