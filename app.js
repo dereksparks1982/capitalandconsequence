@@ -705,14 +705,18 @@ function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(
 // Modest recurring local lighting sales cover normal labor without risky expansion.
 function settleStandingTrade(){
  if(S.campaignStartYear!==1890)return;
- const units=240,grade=productionCfg('standard'),filament=filamentMaterial();
+ const units=Math.min(240,Math.max(0,Math.floor(capacity()*.45))),grade=productionCfg('standard'),filament=filamentMaterial();
+ if(!units)return;
  const inputs={copper:grade.c*units,glass:grade.g*units,[filament]:grade.t*units};
  const materialsCost=Object.entries(inputs).reduce((total,[key,qty])=>total+qty*MATERIAL_MARKET[key].unitPrice,0);
  const overhead=grade.cost*units,required=materialsCost+overhead;
  if(S.companyCash<required){addManagementAlert('standing-sales','Routine local lighting orders were missed: operating cash could not cover materials.','attention');return}
  for(const [key,qty] of Object.entries(inputs)){S.materials[key]=(S.materials[key]||0)+qty;S.materials[key]-=qty}
  const sales=units*contractGrades[1].price;
- S.companyCash+=sales-required;S.lastRevenue+=sales;S.lastExpenses+=required;
+ const routineService=S.machinery>=85?.75:0;
+ if(S.companyCash<required+routineService)return;
+ S.companyCash+=sales-required-routineService;S.lastRevenue+=sales;S.lastExpenses+=required+routineService;
+ if(routineService)S.machinery=clamp(S.machinery+.7,20,100);
  S.standingSalesTotal=(+S.standingSalesTotal||0)+units;
 }
 function closeBusinessDay(manual=false){
