@@ -1311,3 +1311,9 @@ body.elephant-easter-egg-open{overflow:hidden}
 .pre-car-racing-era [data-activity-target="car"],.pre-car-racing-era [data-activity-panel="legal"][data-activity-name="car"]{display:none!important}
 .title-map-unpinned-directory{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px}.title-map-unpinned-directory button{font-size:13px}
 #cityRoomPeople{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}#cityRoomPeople button{padding:8px 14px}#cityRoomDialogue{font-size:17px;line-height:1.7;padding:8px 0}#cityRoomDialogue button{display:block;margin-top:12px}
+
+/* v0.6.8 location-bound belongings panel: the existing room art remains untouched. */
+.city-room-personal-storage{width:min(580px,95%);margin:12px auto;padding:15px;background:#f7eedb;border:2px double #816c4d;color:#291c12;text-align:left}
+.city-room-personal-storage[hidden]{display:none}
+.city-room-personal-storage h4{margin:0 0 8px;color:#392b19;font:700 17px Georgia,serif}
+.city-room-personal-storage ul{margin:6px 0;padding-left:22px}

@@ -81,6 +81,18 @@
     pocket.hidden = false;
     document.getElementById('fePaperDollPocketTitle').textContent =
       side === 'left' ? 'Left Pocket' : 'Right Pocket';
+    const interior=pocket.querySelector('.fe-paper-doll__pocket-interior');
+    if(interior){
+      interior.replaceChildren();
+      const entries=window.FE_PERSONAL_EFFECTS?.list?.(side+'-pocket')||[];
+      if(!entries.length){
+        const notice=document.createElement('p');notice.textContent='This pocket is empty.';interior.appendChild(notice);
+      }else{
+        const list=document.createElement('ul');
+        for(const item of entries){const row=document.createElement('li');row.textContent=item.name;list.appendChild(row)}
+        interior.appendChild(list);
+      }
+    }
     overlay.querySelectorAll('[data-pocket]').forEach(function (b) {
       b.setAttribute('aria-expanded', String(b.dataset.pocket === side));
     });

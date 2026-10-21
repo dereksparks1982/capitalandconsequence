@@ -218,6 +218,36 @@ async function runSmokeTest(win) {
       throw new Error('M shortcut location regression: '+JSON.stringify(mapKeyTest));
     }
 
+    // Check personal effects are empty by default, attached to the save,
+    // and cannot be retrieved from another city location.
+    const effectsTest=await win.webContents.executeJavaScript(`(() => {
+      const original=S.personalEffects;
+      const place=S.currentLocation?{...S.currentLocation}:null;
+      const oldProfile=localStorage.getItem('federalElectricActiveProfile');
+      const out={};
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-effects');
+        S.personalEffects={version:1,items:[]};
+        S.currentLocation={locationId:'home',roomId:'storage'};
+        out.emptyHome=FE_PERSONAL_EFFECTS.list('home-storage').length===0;
+        out.canInspectHome=FE_PERSONAL_EFFECTS.isAccessible('home-storage');
+        S.personalEffects.items.push({id:'__test',name:'Test Document',kind:'document',container:'home-storage'});
+        out.storedAtHome=FE_PERSONAL_EFFECTS.list('home-storage').length===1;
+        S.currentLocation={locationId:'home',roomId:'bedroom'};
+        out.noRemoteStorage=!FE_PERSONAL_EFFECTS.isAccessible('home-storage')&&FE_PERSONAL_EFFECTS.list('home-storage').length===0;
+        out.pocketsAccessible=FE_PERSONAL_EFFECTS.isAccessible('left-pocket')&&FE_PERSONAL_EFFECTS.isAccessible('right-pocket');
+        out.itemRemainsInPlace=S.personalEffects.items[0].container==='home-storage';
+        out.saveSchema=initial().personalEffects?.version===1&&initial().personalEffects.items.length===0;
+      }finally{
+        S.personalEffects=original;
+        S.currentLocation=place;
+        if(oldProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldProfile);
+      }
+      return out;
+    })()`);
+    if(Object.entries(effectsTest).some(([,value])=>value!==true))throw new Error('Personal effects regression: '+JSON.stringify(effectsTest));
+
     const cityTravel=await win.webContents.executeJavaScript(`(() => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');

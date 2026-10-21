@@ -673,3 +673,14 @@ Authoritative station behavior:
 - [x] Ignore M while typing, in a modal report/dialog, or while the P-key paper doll is open. Preserve default action of the map's close X and Escape.
 - [x] Add packaged Electron smoke assertions for M from the factory, M from the Home bedroom, and return-to-location behavior. Candidate must still pass the full Linux run with no warnings/errors.
 - [x] Increment to **0.6.7** and do not auto-package on push.
+
+
+## v0.6.8 — Personal effects and location-bound storage foundation, source only
+
+- [x] Store a **versioned personal-effects record inside each profile's existing saved game**, not a shared inventory key. Brand-new profiles have empty possessions; existing profiles migrate without being assigned fictional birth certificates, passports, wallets or other documents.
+- [x] Define separate left and right physical pockets, household storage, and future office storage. Both pocket lists can be consulted anywhere; household storage is only accessible while in the Home storage room, and office storage only at the factory office.
+- [x] Update each paper doll pocket window to read its own physical container; both continue to display **empty** until actual items are obtained.
+- [x] Add a plain household-storage view to the existing Home Storage placeholder room. No new image, clothing or room artwork is introduced.
+- [x] Add player-location smoke checks: an item placed in household storage stays there when moving to another room and is inaccessible remotely. The test item exists only in temporary test state.
+- [ ] Decide physical pocket capacity, container sizes, item acquisition and item transfer rules before enabling pickup, pocket filling, wardrobe swaps, or remotely moving items. No unapproved storage/cheating/ID mechanics are live.
+- [x] Increment to **0.6.8**; keep packaging manual-only.
