@@ -65,3 +65,9 @@ Approved for the README and in-game Help. No change to approved title-screen art
 ## Multiple protagonists (proposed)
 - Three route directions: industrialist, law enforcement / private investigator, criminal / outlaw; serial-killer story optional and undecided.
 - Share the persistent Washington location and venue registry, but not personal accounts, known secrets or save slots. Distinct character profiles have independent persistent worlds.
+
+
+## Living unplayed characters
+- Background actor careers progress with the shared world clock and are stored per active profile; there is no offline simulation while the game is closed.
+- The criminal may become a petty thief, underworld organizer, suspected serial offender, or another path; the detective may rise professionally, enter private work or public life, or become compromised. These are **separate seeded outcomes**.
+- Newspaper content communicates public reporting rather than omniscient facts. Never reveal confidential actor arcs or treat allegations as proof.

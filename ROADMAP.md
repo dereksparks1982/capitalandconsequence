@@ -741,3 +741,12 @@ Authoritative station behavior:
 - [x] Interpret older saves as the industrialist automatically. Keep all existing saved progress and the approved business paper doll untouched.
 - [x] Reserve shared city/world data with unique character-specific knowledge, money, and story state per profile. Shared city content is not automatically synchronized across multiple profiles.
 - [x] Add source contract checks and align version 0.6.14. No packaged binary.
+
+
+## v0.6.15 — Autonomous lives for unplayed protagonists (source-only)
+- [x] Begin a **profile-specific** simulation of the investigator and criminal while the industrialist is playable. Each actor receives a stable seeded path: public service, private detective, politics, or misconduct investigation; petty criminal, organized crime, suspected serial offender, or quiet underground.
+- [x] Advance background actors only on the shared numbered business-turn clock (currently one milestone every 16 turns). Recorded paths and milestones survive saves and cannot reroll on screen reopening.
+- [x] Public information can surface in the *next morning's* Metropolitan Ledger; private path details remain in world state and are not revealed through public news.
+- [x] Severe crimes remain potential fictional **investigations**, not automatic certainty or mandatory player crimes. No graphic violence or operational new minigame.
+- [x] Add source tests against double-processing and hidden arc leakage. Existing 3-profile limit and factory character preserved.
+- [x] v0.6.15 committed as source only; no packaged executable.

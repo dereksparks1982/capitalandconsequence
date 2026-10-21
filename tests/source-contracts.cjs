@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.14','Current package version is v0.6.14');
-check(appSource.includes("APP_VERSION='v0.6.14-dev'"),'Game masthead uses v0.6.14');
-check(read('build-linux.sh').includes('0.6.14'),'Local packaging uses the same number');
+check(pkg.version==='0.6.15','Current package version is v0.6.15');
+check(appSource.includes("APP_VERSION='v0.6.15-dev'"),'Game masthead uses v0.6.15');
+check(read('build-linux.sh').includes('0.6.15'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.14-linux-x64.tar.gz'),'Manual workflow archives v0.6.14');
+check(workflow.includes('0.6.15-linux-x64.tar.gz'),'Manual workflow archives v0.6.15');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -107,4 +107,14 @@ check(routes.canStart('industrialist'),'Existing factory story remains playable'
 check(!routes.canStart('investigator')&&!routes.canStart('criminal'),'Undeveloped routes cannot enter broken campaigns');
 check(routes.normalize('unknown')==='industrialist','Old saves migrate to executive');
 check(routes.get('industrialist').paperDoll==='assets/artwork/characters/paperdolls/paperdoll.png','Approved paper doll unchanged');
+const livingCtx={window:{},S:{otherLives:{version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]},characterRoute:'industrialist',headline:'ORDINARY DAILY BUSINESS',societyStory:''},activeProfileId:()=>profile};
+vm.runInNewContext(read('living-characters.js'),livingCtx,{filename:'living-characters.js'});
+const lives=livingCtx.window.FE_LIVING_CHARACTERS;
+check(lives.advance(15).length===0,'No story milestone before 16 turns');
+const first=lives.advance(16);check(first.length<=2,'No duplicate character outcomes on milestone');
+const savedHistory=JSON.stringify(livingCtx.S.otherLives.history);
+check(lives.advance(16).length===0&&JSON.stringify(livingCtx.S.otherLives.history)===savedHistory,'World lives never reroll a turn');
+check(livingCtx.S.otherLives.actors.criminal.stage===1,'Criminal background actor advances');
+check(livingCtx.S.otherLives.actors.investigator.stage===1,'Detective background actor advances');
+check(lives.publicHistory().every(x=>!x.arc),'Private arc not exposed in public news');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

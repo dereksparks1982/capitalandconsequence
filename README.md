@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.14-dev · unaccepted, source-only · October 21, 2026**
+**Current development source: v0.6.15-dev · unaccepted, source-only · October 21, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,7 +15,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.14-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.15-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
 
@@ -61,7 +61,7 @@ Venue opportunity records and some room-access gates now exist. Every activity s
 
 ## Three lives in one Washington (future direction)
 
-The existing businessman/tycoon remains the only playable starting character. Profile creation now previews two **future** protagonists: a police/private-investigator route and a criminal/outlaw route. An optional darker thriller branch has not been agreed as mandatory gameplay. They would inhabit the **same city registry and setting**, each with separate personal knowledge, contacts and forward-moving autosave. Read [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
+The existing businessman/tycoon remains the only playable starting character. Profile creation now previews two **future** protagonists: a police/private-investigator route and a criminal/outlaw route. An optional darker thriller branch has not been agreed as mandatory gameplay. They would inhabit the **same city registry and setting**, each with separate personal knowledge, contacts and forward-moving autosave. The two unplayed character archetypes now have an early **autonomous background career simulation**: stable, saved branches can generate occasional public newspaper reports. They cannot yet be selected as the player's own story. Read [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
 
 ## Possible institutional venture: Blackwood Asylum
 

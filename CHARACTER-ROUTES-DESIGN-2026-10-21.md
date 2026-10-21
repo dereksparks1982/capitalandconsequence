@@ -35,3 +35,10 @@ Status: Proposed route framework, not three complete campaigns.
 - Existing profile creation clearly labels the playable **Businessman / Tycoon** and displays the other two as coming later. Their selection is disabled, rather than sending players into a factory story under another name.
 - Existing save files without a route are interpreted as **industrialist**. No rewrites to current stories or images.
 - The serial-killer branch is **proposed only**, and its scope requires another explicit design decision.
+
+
+## Autonomous other lives (v0.6.15)
+- While the industrialist is selected, the non-selected **investigator** and **criminal** follow seeded trajectories and periodically trigger saved milestones. The reverse will be supported when their routes become playable.
+- An organized-crime rise, petty-theft career, or series of unsolved deaths are **alternative** story paths, not cumulative guarantees. Investigators have separate career, political or corruption paths.
+- What the game engine knows and what the player knows are distinct. Newspaper reports show only public facts and may describe suspicions, never silently reveal the hidden culprit's identity.
+- Events are saved by turn and not rerolled by opening the paper. Outcomes will later affect shared institutions, venues and NPC responses.
