@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.12','Current package version is v0.6.12');
-check(appSource.includes("APP_VERSION='v0.6.12-dev'"),'Game masthead uses v0.6.12');
-check(read('build-linux.sh').includes('0.6.12'),'Local packaging uses the same number');
+check(pkg.version==='0.6.13','Current package version is v0.6.13');
+check(appSource.includes("APP_VERSION='v0.6.13-dev'"),'Game masthead uses v0.6.13');
+check(read('build-linux.sh').includes('0.6.13'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.12-linux-x64.tar.gz'),'Manual workflow archives v0.6.12');
+check(workflow.includes('0.6.13-linux-x64.tar.gz'),'Manual workflow archives v0.6.13');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -91,4 +91,12 @@ check(!vc.window.FE_VENUES.canUse('horse-racing'),'No remote horse racing');
 check(!vc.window.FE_VENUES.canEnterLocation('licensedGamingHall'),'Unapproved casino locked');
 check(!vc.window.FE_VENUES.canEnterLocation('cockfightingDen'),'Undiscovered illegal site locked');
 check(!vc.window.FE_VENUES.canEnterLocation('capitalSpeedway'),'Motor track closed in 1890');
+const institutionSource=read('institution-ventures.js');
+const instOut={textContent:''};
+const ic={window:{},S:{institutionInterests:{version:1,investments:[],appointments:[]}},document:{getElementById:id=>id==='asylumVentureStatus'?instOut:null}};
+vm.runInNewContext(institutionSource,ic,{filename:'institution-ventures.js'});
+check(ic.window.FE_INSTITUTIONS.get().governance==='undetermined','Blackwood legal structure undecided');
+check(ic.window.FE_INSTITUTIONS.describe().stakePercent===0,'Player does not start owning asylum shares');
+check(ic.window.FE_INSTITUTIONS.roles().every(r=>r.ready===false),'No unapproved buy/manage action enabled');
+check(city.getLocation('blackwoodAsylum').plannedOnly===true,'Proposed asylum cannot be visited as completed gameplay');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

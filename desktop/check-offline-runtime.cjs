@@ -1,7 +1,7 @@
 const fs=require('fs');
 const path=require('path');
 const root=path.resolve(__dirname,'..');
-const runtimeTextFiles=['app.js','city.js','boxing.js','racing.js','oval-racing.js','underworld.js','poker.js','paper-doll.js','personal-effects.js','housing.js','venue-opportunities.js','radio/radio-engine.js','radio/stations.js','styles.css','boxing.css','racing.css','underworld.css'];
+const runtimeTextFiles=['app.js','city.js','boxing.js','racing.js','oval-racing.js','underworld.js','poker.js','paper-doll.js','personal-effects.js','housing.js','venue-opportunities.js','institution-ventures.js','radio/radio-engine.js','radio/stations.js','styles.css','boxing.css','racing.css','underworld.css'];
 const failures=[];
 for(const rel of runtimeTextFiles){
  const text=fs.readFileSync(path.join(root,rel),'utf8');

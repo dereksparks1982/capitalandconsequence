@@ -1334,3 +1334,7 @@ body.elephant-easter-egg-open{overflow:hidden}
 .city-room-opportunity{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid #bea783}
 .city-room-opportunity span{flex:1}
 .city-room-opportunity button{background:#443420;color:#f6ebd5;border:1px solid #8a7652;padding:7px}
+
+/* v0.6.13 institutional venture conceptual record */
+#asylumVenture{border-left:3px double #846a41}
+#asylumVentureStatus{font-weight:700}

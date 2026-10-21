@@ -723,3 +723,13 @@ Authoritative station behavior:
 - [x] Clearly label unapproved baccarat, blackjack and roulette as **planning only**, with no wagers.
 - [x] Add source checks for physical access, secret site and date gating. Global legacy pastime actions require further enforcement.
 - [x] Increment v0.6.12; no executable produced.
+
+
+## v0.6.13 — Proposed Blackwood Asylum integration (source-only)
+
+- [x] Absorb the earlier **1890s Blackwood Asylum** idea into Federal Electric as a proposed, unpinned Washington institution. Preserve **Moroz Asylum / Cherny Bor** as a separate Soviet-era concept; borrow systems, not the incompatible period or political context.
+- [x] Add a read-only Blackwood venture panel in the Journal's Info screen and a catalog of possible future investor/operator/controlling-owner roles.
+- [x] Add per-profile institutional holdings/appointments records, initialized empty and normalized on load. **No ownership is granted; no buy controls, wages or prices fabricated.**
+- [x] Register planned-only superintendent office, ward and administrative room shells, blocked from normal map entry until researched and approved.
+- [x] Document budgets, patient/staff persistence, inspections, records, corruption and morality as future systems in the dedicated asylum integration brief.
+- [x] Increment v0.6.13; no executable and no completion claim for an asylum simulator.

@@ -54,3 +54,9 @@ Approved for the README and in-game Help. No change to approved title-screen art
 ## Development policy
 - Main branch only. Every separate source slice has a new version. No package on pushes.
 - Source-only commits are not tested Linux binaries. Acceptance only follows fully green packaging/smoke checks, user validation and explicit approval.
+
+
+## Potential Blackwood asylum venture (proposed)
+- Future purchase, managing-superintendent appointment or investment in a fictional Washington asylum is under consideration. Legal ownership form, site, governing board, licensing, budget and costs remain undecided.
+- Inspired by prior Blackwood (Victorian) and Moroz/Cherny Bor (Soviet) concepts. **Moroz's Soviet historical context does not move into 1890 D.C.**
+- Healthcare institution must have independent accounts, staff/patients as individuals, case records, inspections and meaningful consequences. Source: [ASLYUM-INTEGRATION-DESIGN-2026-10-21.md](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md).
