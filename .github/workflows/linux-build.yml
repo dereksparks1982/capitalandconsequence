@@ -21,14 +21,14 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Check out private source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -85,7 +85,7 @@ jobs:
             return 1;
           }
           EOF
-          gcc -O2 -s /tmp/federal-electric-launcher.c -o dist/linux-unpacked/federal-electric
+          gcc -Wall -Wextra -Werror -O2 -s /tmp/federal-electric-launcher.c -o dist/linux-unpacked/federal-electric
           chmod 0755 dist/linux-unpacked/federal-electric
           ln -s federal-electric "dist/linux-unpacked/Federal Electric"
 
@@ -99,12 +99,43 @@ jobs:
           tar -C dist -czf "dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz" "Federal Electric Standalone"
           (cd dist && sha256sum Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz > Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz.sha256)
 
-      - name: Upload private Linux standalone alpha
-        uses: actions/upload-artifact@v4
-        with:
-          name: Federal-Electric-Linux-standalone-v0.6.0-alpha.2
-          path: |
-            dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz
-            dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz.sha256
-          if-no-files-found: error
-          retention-days: 14
+      # GitHub Actions artifact storage is full. Draft release assets use GitHub
+      # Releases storage instead, while preserving existing artifacts and backups.
+      # A draft is NOT an accepted release. GitHub does not create a tag until
+      # the draft is published, which requires explicit owner acceptance.
+      - name: Upload private unaccepted Linux candidate (draft release)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="candidate-v0.6.0-alpha.2-unaccepted"
+          archive="dist/Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz"
+          checksum="${archive}.sha256"
+          title="Federal Electric v0.6.0-alpha.2 | UNACCEPTED LINUX CANDIDATE"
+          notes="Private Linux test candidate built from commit ${GITHUB_SHA}. NOT ACCEPTED, NOT PUBLISHED. This draft does not represent an approved game release. Validate the executable before release acceptance or tagging."
+          test -s "$archive"
+          test -s "$checksum"
+          (cd dist && sha256sum --check "Federal-Electric-0.6.0-alpha.2-linux-x64.tar.gz.sha256")
+          if gh release view "$tag" --json isDraft >/dev/null 2>&1; then
+            test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true" || {
+              echo "Refusing to overwrite a published release." >&2
+              exit 1
+            }
+            gh release edit "$tag" --title "$title" --notes "$notes" --target "$GITHUB_SHA"
+            gh release upload "$tag" "$archive" "$checksum" --clobber
+          else
+            gh release create "$tag" "$archive" "$checksum" \
+              --draft --title "$title" --notes "$notes" --target "$GITHUB_SHA"
+          fi
+          test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true"
+          for asset in "$archive" "$checksum"; do
+            name="$(basename "$asset")"
+            local_size="$(stat -c '%s' "$asset")"
+            uploaded_size="$(gh release view "$tag" --json assets --jq ".assets[] | select(.name == \"$name\") | .size")"
+            test "$local_size" = "$uploaded_size" || {
+              echo "Uploaded asset missing or has incorrect size: $name" >&2
+              exit 1
+            }
+          done
+          echo "CANDIDATE_DRAFT_ASSETS_VERIFIED: package + SHA-256, still unaccepted"
