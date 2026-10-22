@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','npc-ai.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.31','Current package version is v0.6.31');
-check(appSource.includes("APP_VERSION='v0.6.31-dev'"),'Game masthead uses v0.6.31');
-check(read('build-linux.sh').includes('0.6.31'),'Local packaging uses the same number');
+check(pkg.version==='0.6.32','Current package version is v0.6.32');
+check(appSource.includes("APP_VERSION='v0.6.32-dev'"),'Game masthead uses v0.6.32');
+check(read('build-linux.sh').includes('0.6.32'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.31-linux-x64.tar.gz'),'Manual workflow archives v0.6.31');
+check(workflow.includes('0.6.32-linux-x64.tar.gz'),'Manual workflow archives v0.6.32');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -185,7 +185,7 @@ check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow
 check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'"),'Canceled and forfeited outcomes uniquely recorded');
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
-const runtimeSrc=['city.js','app.js','venue-opportunities.js','character-routes.js',
+const runtimeSrc=['city.js','world-clock.js','app.js','venue-opportunities.js','character-routes.js',
  'living-characters.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js'];
 let priorOffset=-1;
