@@ -20,7 +20,7 @@
   },
   {
    id:'hillsdale',
-   name:'Hillsdale (Barry Farm)',
+   name:'Barry Farm',
    area:'Southeast Washington · east of the Anacostia River',
    category:'neighborhood',
    description:'A thriving African American landowning community established by the Freedmen’s Bureau after the Civil War. Residents called their neighborhood Hillsdale, although Barry Farm persisted on official maps. Houses, churches, schools, shops and community life belong to this district.',
@@ -28,7 +28,7 @@
    map:{n:13,x:.7350,y:.7620},
    defaultRoom:'neighborhood-street',
    rooms:[
-    {id:'neighborhood-street',name:'Hillsdale Neighborhood',description:'A settled community of Black Washingtonians, with family homes, churches, schools and local shops. Detailed businesses, residents and interactions will be added in later slices.'}
+    {id:'neighborhood-street',name:'Barry Farm Street',description:'A settled community of Black Washingtonians, with family homes, churches, schools and local shops. Detailed businesses, residents and interactions will be added in later slices.'}
    ]
   },
   {
@@ -37,7 +37,7 @@
    area:'Surviving Hay-Adams houses · 16th and H Streets NW',
    category:'social',
    radioContext:'star',
-   description:'A discreet private club operated by Madam Star, where businessmen, officials, gamblers and well-connected Washington figures may cross paths.',
+   description:'A discreet establishment operated by Madam Star, where Washington visitors and well-connected figures may cross paths. Gambling is not permitted at the Star Club.',
    map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
@@ -93,7 +93,7 @@
    ]
   },
   {
-   id:'oldChinatown',name:'Old Chinatown',
+   id:'oldChinatown',name:'Chinatown',
    area:'Old Chinatown · Pennsylvania Avenue NW, 4th–7th Streets',category:'social',
    description:'Shops and meeting places in Washington’s early Chinese-American neighborhood.',
    map:{n:7,x:.5080,y:.4890},defaultRoom:'market-street',
@@ -128,7 +128,7 @@
   },
   {
    id:'washingtonFairgrounds',name:'D.C. World’s Fair',
-   area:'National Mall · Smithsonian grounds (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',
+   area:'Potomac Park / Potomac Flats · west of Washington Monument (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',
    description:'The future grounds of the alternate-history 1893 World’s Columbian Exposition.',
    map:{n:9,x:.4700,y:.5660},defaultRoom:'fairgrounds',
    rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
@@ -159,19 +159,6 @@
    map:{n:11,x:.7620,y:.0800},
    defaultRoom:'engineering-hall',
    rooms:[{id:'engineering-hall',name:'Engineering Hall',description:'Placeholder university room for research, professors, and electrical-engineering contacts.'}]
-  },
-  {
-   id:'barryFarm',
-   name:'Barry Farm',
-   area:'Barry Farm / Hillsdale · east of the Anacostia River, southeast Washington',
-   category:'neighborhood',
-   description:'Historic African American neighborhood established by the Freedmen’s Bureau after the Civil War. In 1890 its residents have built homes, churches and schools. Local stories and establishments await development.',
-   // Provisional placement on the current later-era reference map; refine with the 1890 map replacement.
-   map:{n:13,x:.6460,y:.7470},
-   defaultRoom:'neighborhood-street',
-   rooms:[
-    {id:'neighborhood-street',name:'Barry Farm Street',description:'A neighborhood street in Barry Farm / Hillsdale. Individual shops, churches, schools and residents have not been assigned yet.'}
-   ]
   },
   {
    id:'home',
