@@ -268,6 +268,7 @@
    n:v.map.n,
    name:v.name,
    area:v.area,
+   category:v.category,
    x:v.map.x,
    y:v.map.y,
    description:v.description
