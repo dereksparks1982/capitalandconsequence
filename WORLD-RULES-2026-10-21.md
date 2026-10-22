@@ -101,3 +101,8 @@ Approved for the README and in-game Help. No change to approved title-screen art
 
 ## Public vs confidential history (v0.6.21)
 Player-visible Washington Dispatches are computed from events already designated public; loading/reopening the news does not cause new events. Internal actor identities and paths remain unexposed until discovered through properly built story mechanics.
+
+
+## Interrupted poker session resolution (v0.6.22)
+- A claimed poker popup whose settlement was interrupted may be explicitly **forfeited**. No stake refund, no replay, no additional hands. A never-claimed reservation may be canceled and refunded because no card session was authorized.
+- Both outcomes are recorded and saved once. Poker session locks are not silently cleared on reload and a resolved token cannot later settle again.

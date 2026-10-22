@@ -53,9 +53,9 @@ ln -sfn federal-electric "dist/linux-unpacked/Federal Electric"
 rm -rf "dist/Federal Electric Standalone"
 mv dist/linux-unpacked "dist/Federal Electric Standalone"
 
-archive="dist/Federal-Electric-0.6.21-linux-x64.tar.gz"
+archive="dist/Federal-Electric-0.6.22-linux-x64.tar.gz"
 tar -C dist -czf "$archive" "Federal Electric Standalone"
-(cd dist && sha256sum "Federal-Electric-0.6.21-linux-x64.tar.gz" > "Federal-Electric-0.6.21-linux-x64.tar.gz.sha256")
+(cd dist && sha256sum "Federal-Electric-0.6.22-linux-x64.tar.gz" > "Federal-Electric-0.6.22-linux-x64.tar.gz.sha256")
 
 printf '\nBuild complete: %s\nSHA-256: %s.sha256\n' "$archive" "$archive"
 printf 'To launch: extract the archive and double-click Federal Electric.\n'

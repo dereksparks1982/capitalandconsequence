@@ -806,3 +806,13 @@ Authoritative station behavior:
 - [x] Display headlines and summaries with text nodes; omit secret arc, actor identity, and unpublished incidents. A public inquiry does not prove guilt or reveal the criminal's private state.
 - [x] Read from the per-profile saved public events; opening a paper never advances careers or rerolls an event.
 - [x] Add test contracts for hidden fields and report rendering; source v0.6.21 only, no executable.
+
+
+## v0.6.22 — Recover from an interrupted poker popup without save abuse (source-only)
+
+- [x] Show a read-only Unfinished Poker Session status in the Info tab for the currently selected profile, including table, reserved stake and date.
+- [x] Add a guarded, confirmed resolution: **cancel undealt** reservation (refund, because no cards were issued), or **forfeit opened** session (no refund, because the hands cannot be reconstructed after a crash).
+- [x] Mark the old session token resolved in the one-use settlement ledger, write an outcome event and personal note, and autosave immediately. Later popup callbacks cannot claim a forfeited stake.
+- [x] Preserve poker daily entry limits even after a forfeited/canceled opened table, rather than making it a free reroll.
+- [x] Only acts on the current profile; other profiles' open sessions remain separate. No in-game historical rollback/replay function.
+- [x] Version 0.6.22 source only; full real-popup crash and restart behavior awaits Electron acceptance tests.
