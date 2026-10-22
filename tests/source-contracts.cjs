@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','npc-ai.js','world-clock.js','housing.js','
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.33','Current package version is v0.6.33');
-check(appSource.includes("APP_VERSION='v0.6.33-dev'"),'Game masthead uses v0.6.33');
-check(read('build-linux.sh').includes('0.6.33'),'Local packaging uses the same number');
+check(pkg.version==='0.6.34','Current package version is v0.6.34');
+check(appSource.includes("APP_VERSION='v0.6.34-dev'"),'Game masthead uses v0.6.34');
+check(read('build-linux.sh').includes('0.6.34'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.33-linux-x64.tar.gz'),'Manual workflow archives v0.6.33');
+check(workflow.includes('0.6.34-linux-x64.tar.gz'),'Manual workflow archives v0.6.34');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -210,7 +210,18 @@ check(appSource.includes("createProfile(name,routeId='industrialist')"),'New pro
 check(appSource.includes("S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)"),'New profile career is persisted');
 check(appSource.includes("const route=S.characterRoute;clearPauseLock();S=initial();"),'Career-specific new game reset does not change identity');
 check(appSource.includes("if(S.characterRoute!=='industrialist'&&['factory','warehouse','contracts'].includes(id))"),'Business-only tabs are career-gated');
-check(read('career-shell.css').includes('.title-screen.desk-interior .title-hotspot'),'Old title hotspots hidden in in-game office');
+check(read('career-shell.css').includes('#titleScreen:not([hidden]){display:none!important'),'Retired illustrated office can never be painted as an interactive page');
+check(index.includes('id="titleScreen"')&&index.includes('hidden aria-hidden="true"'),'Legacy title scaffold starts hidden');
+check(read('career-shell.js').includes("if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true');legacy.inert=true;}"),'Legacy office title is hidden and made inert');
+check(read('career-shell.js').includes('if(map)document.body.appendChild(map);'),'Map overlay is reparented outside retired title');
+check(read('career-shell.js').includes('document.body.appendChild(dialog)'),'Profile/archive modal is independent of retired title');
+check(appSource.includes("function titleScreenBlocksSimulation(){return careerMainMenuVisible()}"),'Neutral menu blocks gameplay progression while open');
+check(appSource.includes('function openTitleMap(){')&&!appSource.slice(appSource.indexOf('function openTitleMap(){'),appSource.indexOf('function closeTitleMap(){')).includes('screen.hidden=false'),'Opening map cannot reveal retired office');
+check(appSource.includes('function stepAwayFromDesk(){')&&!appSource.slice(appSource.indexOf('function stepAwayFromDesk(){'),appSource.indexOf('function profileSummary(')).includes('screen.hidden=false'),'Step Away uses map/room instead of old title');
+check(appSource.includes('function returnCityRoomToOffice(){')&&appSource.includes("showTab('desk');"),'Return to personal desk route is explicit');
+check(index.includes('id="cityRoomMainMenu"'),'Every city room can return directly to neutral character menu');
+check(read('career-shell.css').includes('.city-room-shell{background:linear-gradient'),'All city rooms share the neutral nineteenth-century menu palette');
+check(require('node:fs').existsSync(require('node:path').join(root,'archive/retired-office-title-2026-10-22.html')),'Original old office markup archived separately');
 check(appSource.includes('let profileSaveReadBlocked=false'),'Missing/corrupt profile guard exists');
 check(appSource.includes('if(!activeProfileId()||profileSaveReadBlocked)return false'),'Timer cannot overwrite unreadable autosave');
 check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}"),'Silent overwriting corrupted save path removed');
@@ -252,7 +263,7 @@ check(npcSave.npcSimulation.events.every(e=>e.actorId&&e.turn===1),'NPC decision
 check(city.getLocation('oldChinatown').name==='Chinatown','Chinatown has the player-facing agreed name');
 check(city.getLocation('star').description.includes('Gambling is not permitted'),'Star Club no gambling policy reflected in registry');
 check(appSource.includes('function mapTravelRestriction(location)'), 'Map gives locked destination explanations');
-check(appSource.includes('if(reached)titleScreenDeskBreak=true'), 'Map only transitions after successful room entry');
+check(appSource.includes('if(reached)window.FE_CAREER_SHELL?.refreshDesk?.()'), 'Map only updates after successful room entry');
 check(appSource.indexOf('save(true);',appSource.indexOf('function openCityRoom('))>appSource.indexOf("overlay.hidden=false;",appSource.indexOf('function openCityRoom(')), 'Room visit is saved after renderer setup succeeds');
 check(appSource.includes('S.currentLocation=priorLocation;'), 'Failed travel restores saved character location');
 check(index.includes('id="saveFailureBanner"'),'Save failures have a visible warning');
