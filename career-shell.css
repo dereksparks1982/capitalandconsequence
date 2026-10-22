@@ -67,3 +67,6 @@ body[data-career]:not([data-career=industrialist]) .daybar b:has(+ #headerCompan
 .title-screen.desk-interior .title-hotspot,.title-screen.desk-interior .title-dev-hotspot-tools{display:none!important}
 @media(max-width:800px){.career-menu-routes{grid-template-columns:repeat(2,minmax(0,1fr))}.career-menu-route{min-height:130px}.career-menu-paper{padding:16px}.career-desk-art{min-height:190px}.career-desk-heading{align-items:flex-start}.career-desk-seal{width:64px;height:64px}}
 @media(max-width:430px){.career-main-menu{padding:8px}.career-menu-paper{border-width:5px}.career-menu-route{padding:9px}.career-menu-route b{font-size:17px}.career-menu-profile{flex-wrap:wrap}.career-desk-blotter{width:59%;padding:8px;gap:7px}.career-desk-ledger{width:38%;padding:5px}.career-desk-sheet{font-size:10px;padding:10px}.career-desk .career-desk-map{min-width:70px;min-height:70px;font-size:12px}}
+
+/* An autosave error must remain visible even above modal records. */
+.save-failure-banner{z-index:4000000!important}
