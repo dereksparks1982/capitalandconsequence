@@ -389,3 +389,15 @@ Alternate Washington permits **some licensed gambling only**; the final game-spe
 
 ## 2026-10-21 — Proposed three-story Washington structure
 The player suggested three selectable character stories: **businessman/tycoon**, **police/private investigator**, and **criminal** with an optional serial-killer angle. This is a **proposed direction**, not approval of three finished protagonists or mandatory serial-killer play. The current businessman and paper doll stay in place. Each future role should use the same city but have its own knowledge, contacts, story, clothing and personal resources. See [CHARACTER-ROUTES-DESIGN-2026-10-21.md](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
+
+## October 22, 2026 — Current menu, route, map, hospital and Drek decisions
+
+**Documentation only, no build.** Current intended menu labels supersede older working names: **Businessman, Patrolman, Layman**. The Businessman is the only playable route until the tycoon arc is finished; the other two remain clearly locked. Layman starts as an ordinary person, not a mandatory criminal; Patrolman starts as a patrol officer, not automatically a detective. Certain careers and authorities are route-specific, but drinking, gambling, clubs, residences, relationships, risks and autonomous intersections are shared within each profile's own Washington.
+
+**Archive illustrated office menu** and plan a **fresh 1800s typography-only menu** with **NO pictures**. Main menu clock must display the **selected profile's in-game time/date**, never Washington's real-time clock; no offline progression or invented time.
+
+**One map across years:** number-only pins by default; individual names on hover/focus/click/tap; Show All Names toggle default OFF; filters distinguish **Chinatown and Barry Farm (neighborhood)** from **White House (government)** and others. Historical Government Hospital for the Insane (later St. Elizabeths) should allow **public reception** immediately while deeper rooms require access. Federal hospital is distinct from privately controlled fictional Blackwood concept.
+
+**Rare Drek proposal:** Working real name **Cornelius Wainwright III**, mansion **Wainwright House**, snobbish British butler **Mr. Pritchard** correcting the street name. Possible eccentric, benefactor, observer, secret elite/presidential kingmaker, successor-maker, impostor or powerful enemy. A Layman may own the Businessman's racetrack, gain mob power, and rival him. Cruelty matters. A player may kill Drek without ever learning the fortune or receiving the house; later disclosure is optional, never obligatory. No fixed outcome or mandatory reveal.
+
+See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map design](DESIGN-MENU-MAP-ROUTES-2026-10-22.md) for conditions, undecided details and explicit planned-vs-built status. No gameplay changes made.

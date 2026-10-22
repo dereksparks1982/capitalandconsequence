@@ -31,3 +31,7 @@ Possible future involvement:
 
 ## Decisions still needed
 Historical plausible ownership / governance structure, venue address, financing, charter rules, institution size and capacity, economic balance, whether the player wants a direct-management game or a remote investor experience first.
+
+## October 22, 2026 — Separate St. Elizabeths / federal hospital idea
+
+The real **Government Hospital for the Insane**, later **St. Elizabeths Hospital**, is separate from the fictional **Blackwood Asylum** investment/management concept. The former should be **clickable on the single map from the start** with an **accessible public reception** and other rooms (wards, records, offices) condition-gated; federal ownership is not automatically purchasable. Bolling Field is a **later-era** geographic landmark, not an operating 1890 airfield. See [current design](DESIGN-MENU-MAP-ROUTES-2026-10-22.md). **No location or management code was added.**

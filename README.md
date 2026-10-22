@@ -124,3 +124,13 @@ GitHub source QA checks are distinct from an actual Linux packaged-game test. Th
 3. Use the shared clock and event queue for NPC decisions, investigations, relationships, and newspaper events. Apply saved random seeds across old minigames rather than allowing outcomes to reroll at reload.
 4. Introduce GTA-style map pin category filters, only when existing movement and location access pass runtime tests.
 5. Character-select menu, Star Club expansion, rare Drek encounter, and later historical events remain **design proposals**, not implemented gameplay.
+
+## October 22, 2026: Drek, character paths and new menu (documented, not built)
+
+**New intended title menu:** archive the existing office main menu and replace it with **text-only nineteenth-century styling, no pictures**. The three exact character choices are **Businessman, Patrolman, Layman**; **only Businessman playable** until the tycoon arc finishes. Menu date/time must be the **selected profile's saved in-game time**, never real-time Washington. Characters have gated careers but share gambling, bars, property, rivals, crimes and autonomous encounters within each separate world save.
+
+**One Washington map across all years:** number-only pins by default; names on hover, keyboard focus, click or tap; Show All Names toggle default OFF; filters separate neighborhoods from government buildings and other types. The historic **Government Hospital for the Insane (St. Elizabeths later)** will be clickable with reception available from the start and deeper interiors gated. Barry Farm marker geography is provisional and no coordinates are being changed.
+
+**Rare Drek arc:** Possible secret millionaire **Cornelius Wainwright III**, mansion **Wainwright House**, British butler **Mr. Pritchard**. Drek might be a benefactor, kingmaker behind Washington's elites, potential mentor/successor-maker or enemy of a rising Layman mob boss. Killing him as an apparent homeless stranger may prevent ever learning of his wealth or house. These are optional, branching possibilities, not fixed missions.
+
+Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/routes/map/hospital design](DESIGN-MENU-MAP-ROUTES-2026-10-22.md). This change adds **documentation only**; no feature or build is complete and v0.6.32 remains unaccepted.

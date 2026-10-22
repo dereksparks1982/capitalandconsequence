@@ -890,7 +890,7 @@ Authoritative station behavior:
 - [ ] Separate player-character state and company ownership as a prerequisite to three selectable protagonists.
 - [ ] Model NPC personal knowledge separately from true world events and newspaper publication; add relationships, utility scoring and a small vertical slice of reactive decision-making.
 - [ ] Audit historical audio ownership and future-period gating before any commercial distribution.
-- [ ] Keep new main-menu artwork, named second-nightclub proprietor, expanded Star Club, and secret Drek/Wainwright encounter at **planning-only** status until explicitly selected for implementation.
+- [ ] Keep the text-only nineteenth-century main menu (NO new pictures), named second-nightclub proprietor, expanded Star Club, and Drek/Wainwright story at **planning-only** status until implementation is separately approved.
 
 ### v0.6.32 candidate validation snapshot (October 22, 2026)
 - [x] Private GitHub Actions run 39847055660 completed successfully from source commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555`.
@@ -899,3 +899,34 @@ Authoritative station behavior:
 - [x] Draft release `candidate-v0.6.32-unaccepted` contains Linux tar.gz and SHA-256 file, with assets verified in the workflow. Private draft link: https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251 .
 - [x] One-shot build request workflow removed from `main`. Standard source pushes cannot automatically package or publish another executable.
 - [ ] Owner real gameplay validation and explicit acceptance. No public release or accepted snapshot created.
+
+## October 22, 2026 — Documentation-only design cleanup (no build)
+
+Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [Three Lives / Main Menu / Map / Hospital Record](DESIGN-MENU-MAP-ROUTES-2026-10-22.md). Checked boxes here indicate **ideas recorded**, not implemented mechanics. Game remains **v0.6.32** with a **private unaccepted Linux candidate**.
+
+### 1800s title menu and three characters
+- [x] Record full new **text-only 1800s main menu**; archive current office title menu intact. **No new pictures or altered approved art**.
+- [x] Record exact labels **Businessman / Patrolman / Layman**. **Businessman playable first**; others **locked until tycoon arc finished**. Preserve internal route IDs and existing profiles when code work eventually begins.
+- [x] Record title clock based on **selected profile's saved game date/time** (never real-time D.C. clock) and no offline progression. Do not invent unrecorded legacy hours.
+- [x] Record distinct career access but common gambling, drinking, socializing, personal property, crime, consequences and autonomous encounters, including possible arrest, murder, rivalries and alliances.
+- [ ] Archive/recreate main menu and align selected-profile clock in a **future separately authorized slice**, with tests and preservation of saves.
+- [ ] Finish the tycoon arc before making the Patrolman and Layman playable.
+
+### City map, Barry Farm and hospital
+- [x] Record **one Washington map** across the years, **number-only pins** until hovered/clicked/focused, separate **Show All Names** toggle OFF by default, and distinct neighborhood/government/other category filters.
+- [x] Record that filtering is cosmetic, while discovery, unlocked descriptions, entry conditions and saved marker coordinates remain separate.
+- [x] Record user's observed Barry Farm/Hillsdale area landmarks as **geographical leads**, not verified historical pin coordinates. Keep marker 13 position unchanged until research and authorization.
+- [x] Record interest in a historically better map; no selected replacement image or artwork permission.
+- [x] Record historic **Government Hospital for the Insane / later St. Elizabeths** as visible and publicly enterable at **reception from game start**, with deeper wards/offices gated; distinct from proposed privately operated fictional **Blackwood Asylum**.
+- [ ] Implement map label toggle, category filters and accessible hospital reception only after separate authorization.
+- [ ] Research historic geographic and institutional facts before moving pins, changing artwork or adding deeper institutional gameplay.
+
+### Drek / Cornelius Wainwright III optional secret story
+- [x] Record rare homeless-seeming **Drek**, proposed real name **Cornelius Wainwright III**, suggested estate **Wainwright House**, and snobbish British butler **Mr. Pritchard** correcting the street name.
+- [x] Record alternate explanations: eccentric wealthy man, lonely benefactor, social experiment, undercover observer, hidden political/financial Washington kingmaker, successor-maker or unreliable/impostor account; not a guaranteed true explanation.
+- [x] Record conditional mansion discovery and possible residence, investment, inheritance, political influence, indebtedness and dangerous estate liabilities.
+- [x] Record relationships driven by past kindness/cruelty; a sufficiently powerful **Layman racetrack owner/mob boss** may become a rival rather than an invited heir. The Businessman and Patrolman can also interact or investigate.
+- [x] Record irreversible **death-before-discovery** scenario: Drek may be killed without the player ever knowing he was rich or ever unlocking his mansion; a later revelation might occur, but is not guaranteed.
+- [ ] Model ownership, inheritance, witnesses, secrets, belief propagation, motivations, rare-event scheduling and newspaper reporting before implementing these **only with new build approval**.
+
+**Quality/workflow:** No code, save data, maps, art, version numbers, executable or release were changed by this documentation pass. Preserve one main branch, forward-only autosave, honest planned-vs-built status and owner validation before release.

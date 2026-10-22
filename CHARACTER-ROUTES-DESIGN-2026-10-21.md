@@ -50,3 +50,7 @@ The Metropolitan Ledger now has a persistent published-dispatch strip using only
 
 ## Registered physical whereabouts (v0.6.24)
 Unplayed criminal/investigator story figures now have a stable current **registered location** each game turn in the selected profile. Room interfaces may display a neutral visitor observation if the player is in the same place. This does not automatically mark the figure as the culprit, reveal their name, or make an illegal contest accessible. Future character/encounter mechanics will decide whether the player can identify or interact with them. This is distinct from live multi-user simulation.
+
+## October 22, 2026 — Updated player-facing labels and path restrictions
+
+The current planned menu names are **Businessman, Patrolman, Layman**. They supersede the older labels above without changing code IDs. **Businessman only playable until tycoon arc is finished**. Patrolman starts as ordinary beat police; Layman is a free civilian who *may* turn criminal, gain racetrack ownership or rise to mob power. Professional roles may have gated career authority, while everyone shares bars, gambling, social life, relationships and potentially violent or legal consequences. The other two people are autonomous within each profile, potentially rivals, suspects, victims or friends. A Layman mob boss might rival Drek/Wainwright. [Details](DESIGN-MENU-MAP-ROUTES-2026-10-22.md) and [secret character](CODEX-DREK-WAINWRIGHT-2026-10-22.md). **Documentation only.**
