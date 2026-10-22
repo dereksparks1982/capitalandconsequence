@@ -16,7 +16,7 @@ function plan(from,to,mode='walk'){
  const m=MODES.find(v=>v.id===mode);
  if(!m)return {status:'unknown-transport',minutes:null,miles:null,mode};
  if(m.requires==='hire-service')return {status:'hiring-not-implemented',minutes:null,miles:null,mode};
- if(m.requires==='horse'&&!window.FE_TRANSPORT?.at?.(from).some(v=>v.kind==='horse'&&v.status!=='missing'))return {status:'no-horse-here',minutes:null,miles:null,mode};
+ if(m.requires==='horse'&&!window.FE_TRANSPORT?.at?.(from)?.some(v=>v.kind==='horse'))return {status:'no-horse-here',minutes:null,miles:null,mode};
  if(m.requires==='carriage-and-horse'){
   const items=window.FE_TRANSPORT?.at?.(from)||[];
   if(!items.some(x=>x.kind==='carriage')||!items.some(x=>x.kind==='horse'))return {status:'no-team-and-carriage-here',minutes:null,miles:null,mode};

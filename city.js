@@ -36,7 +36,7 @@
    name:'Capital Race Grounds',
    area:'Benning Race Track · Kenilworth Avenue and Jay Street NE',
    category:'sport',
-   description:'Federal Electric’s horse-racing and dog-racing venue.',
+   description:'The Capital Race Grounds horse-racing venue. Dog racing is registered at a separate kennel track.',
    map:{n:3,x:.8110,y:.4920},
    defaultRoom:'grounds',
    rooms:[

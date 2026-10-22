@@ -93,3 +93,7 @@ Approved for the README and in-game Help. No change to approved title-screen art
 - Future modes are walk, owned horse, owned carriage with horse, or hired carriage. Walking is possible without equipment; riding requires an actual local horse and carriages require local assets.
 - Verified road mileage / historical travel time are **unknown** and remain null, not guessed from artwork coordinates. Existing Go There remains provisional instant movement until route research and timing approval.
 - Every provisional relocation is recorded in the same autosave. No horse, carriage, or driver follows the player unless a later validated journey transfers them.
+
+
+## Transport availability integrity (v0.6.20)
+- Transport in transit, missing/stolen, or in someone else's care is **not available** to embark on a second trip. Registered assets remain tied to concrete city locations; even event-driven recovery must target a known registered location.

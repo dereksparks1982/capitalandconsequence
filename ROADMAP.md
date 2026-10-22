@@ -787,3 +787,14 @@ Authoritative station behavior:
 - [x] Record every player location change as a provisional journey with origin/destination and turn, together with the same per-profile autosave. A direct move never teleports a left-behind horse or carriage.
 - [x] Add source checks for mode availability, no fake durations, no free horse, route records and already-here protection.
 - [x] Increment v0.6.19. Actual walking/riding/carriage trip costs and incidents remain future work. No executable.
+
+
+## v0.6.20 — Transport and map consistency QA (source-only)
+
+- [x] Execute focused, runtime-independent assertions against current GitHub modules before changes: 17/17 passed for city pins, venue gating, NPC progression, transport and travel.
+- [x] Correct horse/carriage availability so animals marked **traveling** or **in care** cannot simultaneously be reused from their last stabling address. Only tethered/stabled transport is locally available.
+- [x] Reject transport relocation/recovery events whose destinations are not real entries in the shared city registry; do not teleport assets to invented site IDs.
+- [x] Correct the Capital Race Grounds description so it refers to horse racing alone, matching the separately registered dog track.
+- [x] Extend the future Node source-contract suite with status transitions, missing destinations, and the racing venue correction.
+- [x] Align development source/packaging labels to v0.6.20; no executable produced.
+- [ ] Run the full Node source-contract suite and packaged Electron smoke test during the next authorized candidate build; runtime UI acceptance still pending.
