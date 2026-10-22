@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.24','Current package version is v0.6.24');
-check(appSource.includes("APP_VERSION='v0.6.24-dev'"),'Game masthead uses v0.6.24');
-check(read('build-linux.sh').includes('0.6.24'),'Local packaging uses the same number');
+check(pkg.version==='0.6.25','Current package version is v0.6.25');
+check(appSource.includes("APP_VERSION='v0.6.25-dev'"),'Game masthead uses v0.6.25');
+check(read('build-linux.sh').includes('0.6.25'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.24-linux-x64.tar.gz'),'Manual workflow archives v0.6.24');
+check(workflow.includes('0.6.25-linux-x64.tar.gz'),'Manual workflow archives v0.6.25');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -195,4 +195,9 @@ for(const src of runtimeSrc){
 }
 check(read('desktop/main.cjs').includes('No active poker session'), 'Standalone smoke checks poker direct launch is refused');
 check(read('desktop/main.cjs').includes('resolveUnfinishedPoker('), 'Standalone smoke checks pending stake resolution');
+check(appSource.includes('let profileSaveReadBlocked=false'),'Missing/corrupt profile guard exists');
+check(appSource.includes('if(!activeProfileId()||profileSaveReadBlocked)return false'),'Timer cannot overwrite unreadable autosave');
+check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}"),'Silent overwriting corrupted save path removed');
+check(appSource.includes('original bytes are preserved'),'Save damage error is visible');
+check(appSource.includes("if(profileSaveReadBlocked){renderProfileManager("),'No bypassing failed save load via title Continue');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

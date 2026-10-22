@@ -110,3 +110,8 @@ Player-visible Washington Dispatches are computed from events already designated
 
 ## Residents occupying rooms (v0.6.24)
 - The nonselected protagonist candidates have real saved Washington whereabouts per business turn, and may appear as unintroduced visitors without private actor identity leakage. Locations update on world-turn progression only, not every time a UI panel opens.
+
+
+## Missing or damaged saved profiles (v0.6.25)
+- An indexed profile whose save data is corrupt or absent cannot be silently reset/restarted. Do not autosave over the unreadable bytes; require player-initiated recovery or creation of a genuinely new profile.
+- Do not expose a prior-save rollback selector for normal game play. This is data-preservation logic, not an undo mechanism for choices.

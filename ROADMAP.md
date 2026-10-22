@@ -833,3 +833,12 @@ Authoritative station behavior:
 - [x] The city-room framework can display **unintroduced visitors** when one of these residents is in the same location. No real names, occupations, guilt, secrets or career arcs are exposed by proximity alone.
 - [x] Extend source checks for stable locations and confidential projections. These are non-interactive resident shells: relationships, visits, schedules inside rooms and dialogue remain later work.
 - [x] Increment to v0.6.24; no packaged game.
+
+
+## v0.6.25 — Autosave corruption protection (source-only)
+- [x] Prevent an unreadable/missing indexed profile from being reset to a fresh character and then autosaved over its original bytes.
+- [x] Guard periodic, visibility and page-exit saves when there is no selected profile or when an active profile failed to load; preserve corrupt bytes for recovery.
+- [x] Validate the target profile's data **before changing the active profile**. On failure show an explicit warning, do not replace the previous game. New profiles clear the error only when deliberately created.
+- [x] Keep the title's Resume/Continue route from bypassing a failed profile-load guard.
+- [x] Deleting the active profile no longer allows its in-memory game state to autosave as a legacy backup; selecting another existing profile requires valid stored state.
+- [x] Extend Node source contracts and bump to v0.6.25. Full packaged Electron recovery testing still pending; no executable.

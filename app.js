@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.24-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.25-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -166,13 +166,16 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  fresh.productionQueue=(x.productionQueue||fresh.contracts.filter(c=>c.productionState==='queued'||c.productionState==='running'||c.productionState==='paused').map(c=>c.id)).filter(id=>{const c=fresh.contracts.find(v=>v.id===id);return c&&c.status!=='delivered'&&c.status!=='delivered-discount'&&(+c.completed||0)<(+c.productionQuantity||+c.quantity||1)});
  fresh.activeContractId=fresh.productionQueue.includes(x.activeContractId)?x.activeContractId:null;fresh.lineStatus=x.lineStatus||'idle';fresh.lineMessage=x.lineMessage||'No production run is running.';fresh.lastProductionQuality=x.lastProductionQuality||null;
  for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
+let profileSaveReadBlocked=false;
 function save(silent=true){
+ if(!activeProfileId()||profileSaveReadBlocked)return false;
  let payload=S;
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
   payload=Object.assign({},S,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
  }
  localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
  touchActiveProfile();updateCashHeader();if(!silent)note('Company books saved.');
+ return true;
 }
 function readProfiles(){try{const p=JSON.parse(localStorage.getItem(PROFILE_INDEX_KEY)||'[]');return Array.isArray(p)?p.slice(0,PROFILE_LIMIT):[]}catch(e){return[]}}
 function writeProfiles(p){localStorage.setItem(PROFILE_INDEX_KEY,JSON.stringify((p||[]).slice(0,PROFILE_LIMIT)))}
@@ -208,7 +211,14 @@ function activeProfileName(){
 function renderActiveProfileLabel(){
  const el=$('#activeProfileLabel');if(el)el.textContent='PROFILE: '+activeProfileName();
 }
-function loadInitial(){const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem('continentalElectricSave');if(raw){try{S=migrate(JSON.parse(raw));save(true)}catch(e){S=initial()}}}
+function loadInitial(){
+ const id=activeProfileId();
+ if(!id){profileSaveReadBlocked=false;return}
+ const raw=localStorage.getItem(profileSaveKey(id));
+ if(!raw){profileSaveReadBlocked=true;S=initial();return}
+ try{const migrated=migrate(JSON.parse(raw));S=migrated;profileSaveReadBlocked=false;save(true)}
+ catch(e){profileSaveReadBlocked=true;S=initial()}
+}
 function displayDate(){return new Date(S.gameDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 function displayHeaderDate(){const d=new Date(S.gameDate+'T12:00:00'),days=['SUN','MON','TUES','WED','THUR','FRI','SAT'],months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];return days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()}
 function displayTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY':'TURN '+Math.min(S.turnSerial,CAMPAIGN_TURNS)+' OF '+CAMPAIGN_TURNS}
@@ -1664,31 +1674,55 @@ function showNewProfileForm(){
 function createProfile(name){
  const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Three profiles already exist. Delete one before creating another.');return}
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
- profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();save(true);selectedStockTicker=null;render();closeTitleScreen();
+ profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
 function showSavedCityLocation(){
  const current=currentCityLocation();
  if(current.locationId!=='factory')openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
 }
 function loadProfileById(id){
- const p=readProfiles().find(v=>v.id===id);if(!p)return;
- setActiveProfileId(id);
- const raw=localStorage.getItem(SAVE_KEY);
- try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}
+ const p=readProfiles().find(v=>v.id===id);if(!p)return false;
+ const raw=localStorage.getItem(profileSaveKey(id));
+ if(!raw){
+  if(activeProfileId()===id)profileSaveReadBlocked=true;
+  renderProfileManager('This profile has no autosave data. Nothing was overwritten. Recover its original data before attempting to continue.');
+  return false;
+ }
+ let candidate;
+ try{candidate=migrate(JSON.parse(raw))}
+ catch(e){
+  if(activeProfileId()===id)profileSaveReadBlocked=true;
+  renderProfileManager('The selected profile autosave cannot be read. Its original bytes are preserved, and autosaving into that profile is blocked. Choose another valid profile or recover your save.');
+  return false;
+ }
+ setActiveProfileId(id);S=candidate;profileSaveReadBlocked=false;
  selectedStockTicker=null;save(true);render();closeTitleScreen();showSavedCityLocation();
+ return true;
 }
 function deleteProfileById(id){
  const profiles=readProfiles(),p=profiles.find(v=>v.id===id);if(!p)return;
  if(!confirm('Delete profile "'+p.name+'" and all of its saved Federal Electric progress?'))return;
  localStorage.removeItem(profileSaveKey(id));
  const next=profiles.filter(v=>v.id!==id);writeProfiles(next);
+ let warning='';
  if(activeProfileId()===id){
-  if(next.length){setActiveProfileId(next[0].id);const raw=localStorage.getItem(SAVE_KEY);try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}render()}
-  else setActiveProfileId('');
+  setActiveProfileId('');profileSaveReadBlocked=false;S=initial();
+  if(next.length){
+   const candidate=next[0],raw=localStorage.getItem(profileSaveKey(candidate.id));
+   try{
+    if(!raw)throw new Error('No autosave present');
+    const restored=migrate(JSON.parse(raw));
+    setActiveProfileId(candidate.id);S=restored;render();
+   }catch(e){
+    profileSaveReadBlocked=true;
+    warning='The remaining profile has missing or unreadable save data. Its original bytes are preserved. Select another valid profile or recover its data.';
+   }
+  }
  }
- renderProfileManager();
+ renderProfileManager(warning);
 }
 function continueFromTitle(){
+ if(profileSaveReadBlocked){renderProfileManager('This saved game could not be read. The existing autosave is protected from being overwritten. Select a valid profile or recover this save.');return}
  if(titleScreenDeskBreak){
   titleScreenDeskBreak=false;
   closeTitleScreen();
