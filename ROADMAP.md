@@ -930,3 +930,14 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Model ownership, inheritance, witnesses, secrets, belief propagation, motivations, rare-event scheduling and newspaper reporting before implementing these **only with new build approval**.
 
 **Quality/workflow:** No code, save data, maps, art, version numbers, executable or release were changed by this documentation pass. Preserve one main branch, forward-only autosave, honest planned-vs-built status and owner validation before release.
+
+
+## v0.6.33-dev: new period menu and four career desks (October 22, 2026)
+
+**Owner-approved implementation scope:** Replace the illustrated office as the main menu using nineteenth-century paper/typography (no generated imagery); keep original office art inside Businessman gameplay; add four **selectable** character desk foundations; independent save profiles and in-game time on the menu. Work on `main` only. Existing saves must migrate forward without identity loss.
+
+**Added in source:** `career-shell.js` and `career-shell.css`; four route records in `character-routes.js` (Businessman/Patrolman/Layman/Wardman); new generic menu and four different colored CSS desk motifs; profile creation stores chosen `characterRoute`, menu records show saved phase/date/time remaining; old executive art reused in gameplay; four profile slots; conservative factory tab gate for other routes; personal map and journal at each desk. Older industrialist autosaves continue as Businessman. A source contract suite and packaged renderer smoke test now inspect role persistence.
+
+**Status guardrails:** Businessman remains the sole fully developed profession. Patrolman/Layman/Wardman are usable **career/city foundations**, not complete police, civilian or hospital gameplay. No automatic promotion, crimes, asylum governance, or smart AI invented. World clock remains a foundation not a complete scheduling overhaul. No unrequested new art; no modifications to map pins or prior original images. Release remains unaccepted until owner tests.
+
+**Next work, in order:** (1) owner validation of all four desk routes and the old profile restore; (2) make disk saves authoritative with recovery UI; (3) migrate the runtime to one persistent calendar/clock and a common action-time API; (4) independent world actor goals and debug inspector for all four protagonists, not simulated menu clicks; (5) profession-specific campaigns and collision outcomes, relationship/knowledge cards and cult-investigation discoveries; (6) map pin number-only default, hover/tap labels and category filters; (7) archival/removal of old title technical handlers when in-game office interactions have clean replacement services. Keep company/player records separate as systems mature.
