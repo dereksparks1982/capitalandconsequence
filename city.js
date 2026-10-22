@@ -19,6 +19,19 @@
    ]
   },
   {
+   id:'hillsdale',
+   name:'Hillsdale (Barry Farm)',
+   area:'Southeast Washington · east of the Anacostia River',
+   category:'neighborhood',
+   description:'A thriving African American landowning community established by the Freedmen’s Bureau after the Civil War. Residents called their neighborhood Hillsdale, although Barry Farm persisted on official maps. Houses, churches, schools, shops and community life belong to this district.',
+   // Provisional pin on the existing later-era reference artwork; actual 1890 mapping remains pending.
+   map:{n:13,x:.7350,y:.7620},
+   defaultRoom:'neighborhood-street',
+   rooms:[
+    {id:'neighborhood-street',name:'Hillsdale Neighborhood',description:'A settled community of Black Washingtonians, with family homes, churches, schools and local shops. Detailed businesses, residents and interactions will be added in later slices.'}
+   ]
+  },
+  {
    id:'star',
    name:'Star Club',
    area:'Surviving Hay-Adams houses · 16th and H Streets NW',
