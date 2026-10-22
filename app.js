@@ -19,8 +19,8 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.32-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
-const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
+const APP_VERSION='v0.6.33-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
 function periodRadioAvailable(){return S.gameDate>='1938-01-01'}
@@ -265,6 +265,7 @@ function businessOpen(){return S.phase==='day'}
 const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
 function syncTopNavigation(id=document.querySelector('.tab.active')?.id||'desk'){const group=NAV_GROUP_BY_TAB[id]||id;document.querySelectorAll('nav button[data-nav-group]').forEach(btn=>btn.classList.toggle('active',btn.dataset.navGroup===group));document.querySelectorAll('.section-tabs button[data-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id))}
 function showTab(id){
+ if(S.characterRoute!=='industrialist'&&['factory','warehouse','contracts'].includes(id))id='desk';
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
  const tab=$('#'+id);if(tab)tab.classList.add('active');
  syncTopNavigation(id);
@@ -369,7 +370,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderDailyReport();renderCampaignEnd();applyPauseLock();syncTopNavigation()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderDailyReport();renderCampaignEnd();applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -898,7 +899,7 @@ $('#maintain').onclick=()=>{if(!businessOpen())return note('Regular works mainte
 $('#endDay').onclick=()=>{if(S.phase==='day'){if(confirm('Close the current business day early and begin Washington Night?'))closeBusinessDay(true)}else if(S.phase==='night'){if(confirm('Retire early and review the Daily Report?'))closeNight(true)}}
 const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
-function startFreshGame(){clearPauseLock();S=initial();selectedStockTicker=null;save();render()}
+function startFreshGame(){const route=S.characterRoute;clearPauseLock();S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(route)||'industrialist';selectedStockTicker=null;save();render()}
 $('#reset').onclick=()=>{if(confirm('You are about to start a new game. All previous progress will be lost. Continue?'))startFreshGame()}
 const continueEmpire=$('#continueEmpire');if(continueEmpire)continueEmpire.onclick=()=>{S.endlessMode=true;S.campaignCompleted=true;S.campaignEndPending=false;save(true);render();beginNextDay()};
 const campaignNewGame=$('#campaignNewGame');if(campaignNewGame)campaignNewGame.onclick=()=>startFreshGame();
@@ -1076,7 +1077,7 @@ function syncTitleCityAmbience(){
  if(titleMobileRadioOnly()){stopTitleCityAmbience(false);return}
  const audio=ensureTitleCityAmbience();
  const mode=titleEnvironmentIsDay()?'day':'night';
- const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!S.paused&&titleDevOutsideNoise;
+ const volume=titleCityAmbienceVolume(mode),visible=titleScreenVisible()&&!careerMainMenuVisible()&&!S.paused&&titleDevOutsideNoise;
  const src=mode==='day'?TITLE_DAY_AMBIENCE_SRC:TITLE_NIGHT_AMBIENCE_SRC;
  if(titleCityAmbienceMode!==mode){
   audio.pause();
@@ -1129,6 +1130,7 @@ let titleRadioAutoTune=true,titleRadioLocationContext='title';
 const TITLE_RADIO_CONTEXT_STATIONS={title:0,office:4,star:3};
 const titleRadioBackgroundFeeds=new Map();
 let titleScreenDeskBreak=false;
+function careerMainMenuVisible(){const el=document.getElementById('careerMainMenu');return !!(el&&!el.hidden)}
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
 function titleScreenBlocksSimulation(){return titleScreenVisible()&&!titleScreenDeskBreak&&!document.body.classList.contains('city-room-open')&&!document.body.classList.contains('title-map-open')}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
@@ -1281,7 +1283,7 @@ function prewarmHeavyTitleRadioOnDesktop(){
  }
 }
 function startTitleRadioBackgroundFeeds(){
- if(!periodRadioAvailable())return;
+ if(careerMainMenuVisible()||!periodRadioAvailable())return;
  if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
  startTitleRadioAirSync();
  if(titleRadioStationIndex<=0||titleRadioOff||S.paused)return;
@@ -1305,7 +1307,7 @@ function updateTitleRadioAudibility(){
  }
 }
 function startTitleRadio(){
- if(S.paused||!periodRadioAvailable())return;
+ if(careerMainMenuVisible()||S.paused||!periodRadioAvailable())return;
  startTitleRadioBackgroundFeeds();
  updateTitleRadioAudibility();
  if(titleRadioOff||titleRadioStationIndex!==0)return;
@@ -1660,8 +1662,9 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
+function closeTitleScreen(){document.getElementById('titleScreen')?.classList.remove('desk-interior');if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
+ if(S.characterRoute!=='industrialist'){openTitleMap();return}
  const screen=$('#titleScreen');if(!screen)return;
  const current=currentCityLocation();
  if(current.locationId!=='factory'){
@@ -1671,6 +1674,7 @@ function stepAwayFromDesk(){
  save(true);
  titleScreenDeskBreak=true;
  screen.hidden=false;
+ screen.classList.add('desk-interior');
  titleRadioLocationContext='office';
  startTitleEnvironment();
  startTitleClock();
@@ -1705,13 +1709,13 @@ function showNewProfileForm(){
  window.FE_CHARACTERS?.renderChoices?.();
  const input=$('#newProfileName');if(input)input.focus();
  $('#createProfileCancel').onclick=closeTitleDialog;
- $('#createProfileConfirm').onclick=()=>{const name=(input?.value||'').trim();if(!name){input?.focus();return}createProfile(name)};
+ $('#createProfileConfirm').onclick=()=>{const name=(input?.value||'').trim();if(!name){input?.focus();return}createProfile(name,window.FE_CHARACTERS?.selected?.()||'industrialist')};
  if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')$('#createProfileConfirm').click()});
 }
-function createProfile(name){
+function createProfile(name,routeId='industrialist'){
  const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Three profiles already exist. Delete one before creating another.');return}
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
- profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
+ profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
 function showSavedCityLocation(){
  const current=currentCityLocation();
@@ -1943,6 +1947,7 @@ function openCityRoom(locationId,roomId,options={}){
   renderCityRoomDirectory(location,room.id);
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
+  const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
   setRadioLocationContext(location.radioContext||'office');
@@ -2388,7 +2393,7 @@ function stopTitleClockAudio(reset=false){
  if(reset){try{titleClockAudio.currentTime=0}catch(e){}}
 }
 function syncTitleClockAudio(){
- if(titleMobileRadioOnly()||!titleScreenVisible()||S.paused){stopTitleClockAudio(false);return}
+ if(careerMainMenuVisible()||titleMobileRadioOnly()||!titleScreenVisible()||S.paused){stopTitleClockAudio(false);return}
  const audio=ensureTitleClockAudio();
  audio.volume=TITLE_CLOCK_SOUND_VOLUME;
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -2424,7 +2429,7 @@ function stopTitleFanAudio(reset=false){
  if(reset){try{titleFanAudio.currentTime=0}catch(e){}}
 }
 function syncTitleFanAudio(){
- if(titleMobileRadioOnly()||!titleScreenVisible()||S.paused||titleFanIsOff()){stopTitleFanAudio(false);return}
+ if(careerMainMenuVisible()||titleMobileRadioOnly()||!titleScreenVisible()||S.paused||titleFanIsOff()){stopTitleFanAudio(false);return}
  const audio=ensureTitleFanAudio();
  audio.volume=TITLE_FAN_SOUND_VOLUME;
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
@@ -2688,6 +2693,7 @@ function closeTitleMapOrReturnToLocation(){
  }
 }
 function toggleTitleMapShortcut(){
+ if(careerMainMenuVisible())return;
  const viewer=$('#titleMapViewer');
  if(!viewer)return;
  if(!viewer.hidden){closeTitleMapOrReturnToLocation();return;}
