@@ -271,4 +271,19 @@ try{
  check(bad,'Profile IDs cannot traverse out of storage directory');
 }finally{fs.rmSync(diskRoot,{recursive:true,force:true})}
 
+const clock=require('../world-clock.js');
+const at=clock.parseMinute('1890-01-02T08:00');
+const agenda=clock.create('1890-01-02T08:00'),seen=[];
+clock.schedule(agenda,at+20,'late',{who:'samuel'});
+clock.schedule(agenda,at+5,'early',{who:'charles'});
+clock.schedule(agenda,at+5,'early-again',{who:'elias'});
+check(clock.spend(agenda,30,(e,w)=>{seen.push(e.type);if(e.type==='early')clock.schedule(w,at+9,'follow-up')})===4,'Clock handles a complete action-time jump');
+check(seen.join(',')==='early,early-again,follow-up,late','Clock processes all queued events in stable order');
+check(clock.formatMinute(agenda.worldMinute)==='1890-01-02T08:30','World clock calendar follows elapsed minutes');
+const snapshot=JSON.stringify(agenda);
+check(clock.advanceTo(agenda,agenda.worldMinute)===0&&JSON.stringify(agenda)===snapshot,'Reload does not advance time or replay events');
+const restored=JSON.parse(snapshot);
+clock.spend(restored,60);
+check(clock.formatMinute(restored.worldMinute)==='1890-01-02T09:30','Clock state survives JSON save and restore');
+check(index.includes('world-clock.js?v='),'World clock is loaded by the standalone game');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
