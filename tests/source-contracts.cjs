@@ -222,6 +222,14 @@ check(appSource.includes('function returnCityRoomToOffice(){')&&appSource.includ
 check(index.includes('id="cityRoomMainMenu"'),'Every city room can return directly to neutral character menu');
 check(read('career-shell.css').includes('.city-room-shell{background:linear-gradient'),'All city rooms share the neutral nineteenth-century menu palette');
 check(require('node:fs').existsSync(require('node:path').join(root,'archive/retired-office-title-2026-10-22.html')),'Original old office markup archived separately');
+const archivedOffice=read('archive/retired-office-title-2026-10-22.html');
+check(archivedOffice.includes('id="titleOfficeBackground"')&&archivedOffice.includes('federal-electric-office-day.webp'),'Original rejected title art is preserved in archive');
+check(!index.includes('id="titleOfficeBackground"'),'Old office illustration removed from live HTML, not merely hidden');
+check(!read('career-shell.js').includes('federal-electric-office-day.webp'),'Businessman and all other generic desks exclude retired title artwork');
+check(!read('career-shell.js').includes('career-businessman-office'),'No retired title image inserted into any career desk');
+check(!read('career-shell.css').includes('.career-businessman-office'),'Rejected title-art styling removed');
+check(!appSource.includes('Object.values(TITLE_OFFICE_IMAGES).forEach'),'Inactive old title office images are not preloaded');
+
 check(appSource.includes('let profileSaveReadBlocked=false'),'Missing/corrupt profile guard exists');
 check(appSource.includes('if(!activeProfileId()||profileSaveReadBlocked)return false'),'Timer cannot overwrite unreadable autosave');
 check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}"),'Silent overwriting corrupted save path removed');
