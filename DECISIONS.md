@@ -401,3 +401,12 @@ The player suggested three selectable character stories: **businessman/tycoon**,
 **Rare Drek proposal:** Working real name **Cornelius Wainwright III**, mansion **Wainwright House**, snobbish British butler **Mr. Pritchard** correcting the street name. Possible eccentric, benefactor, observer, secret elite/presidential kingmaker, successor-maker, impostor or powerful enemy. A Layman may own the Businessman's racetrack, gain mob power, and rival him. Cruelty matters. A player may kill Drek without ever learning the fortune or receiving the house; later disclosure is optional, never obligatory. No fixed outcome or mandatory reveal.
 
 See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map design](DESIGN-MENU-MAP-ROUTES-2026-10-22.md) for conditions, undecided details and explicit planned-vs-built status. No gameplay changes made.
+
+
+## 2026-10-22 later owner direction, v0.6.33
+
+- Supersede the older three-career launch lock: **four selectable early foundations** (Businessman, Patrolman, Layman, Wardman), of which only Businessman has a full professional arc today.
+- Main menu is a **neutral period document**, not one character's office. The former title office and its approved imagery belong within Businessman gameplay. Each other career receives a differently colored generic desk, to be replaced with approved art later.
+- Main menu displays **a saved profile's own in-game phase/date/time**. Closing the game and idling at the menu never advances simulation time.
+- NPC protagonists must be independently scheduled, learn and act through common model APIs, not fake menu clicks; they may collide in many ways in future saves. Shared Washington is the universe, not the player's orbit.
+- Four career choices are not a claim that specialist Patrolman, Layman or Wardman simulation exists yet; business-only screens must not be presented as a profession owned by those characters.
