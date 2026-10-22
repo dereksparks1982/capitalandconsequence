@@ -1,6 +1,6 @@
 # Federal Electric: October 22 Menu, Career and City Map Decisions
 
-**Status: updated design direction, NOT implemented.** Supersedes outdated *proposed labels* without rewriting previous development history. **No pictures, game-code changes, executable, or release authorized in this documentation-only pass.**
+**Historical planning snapshot with later owner amendments (see v0.6.33 amendment below).** Supersedes outdated *proposed labels* without rewriting previous development history. **No pictures, game-code changes, executable, or release authorized in this documentation-only pass.**
 
 ## Replace main menu, archive original office
 
@@ -50,3 +50,12 @@ The rare man known as **Drek**, possibly Cornelius Wainwright III, has a suggest
 ## Implementation status and workflow
 
 **Current v0.6.32 remains the playable Businessman/industrialist with the old illustrated office title screen and always-visible map name labels.** The alternate real-world wall-clock title behavior, planned new UI, map filters, hospital reception, two further playable routes and Drek secret are **NOT yet delivered**. Build permission was withdrawn for gameplay work; the owner's latest authorization is **documentation cleanup and GitHub commit only**. Single branch main, existing profiles, forward-only saves, no offline progression, user testing and release acceptance remain required.
+
+
+## 2026-10-22 superseding owner approval: fourth Wardman + immediate four-desk foundations
+
+After the documentation-only instruction above, the owner **explicitly authorized gameplay development of v0.6.33**. The earlier initial policy 'only Businessman selectable' and 'exactly three careers' is superseded. The new menu now offers **four** routes: **Businessman, Patrolman, Layman and Wardman**. All may begin a profile and access a colored generic desk and Washington's common map. **Businessman alone has complete profession-specific systems**; the other three deliberately begin as playable **desk/city foundations** without pretending their specialized arcs are implemented.
+
+Color choices for temporary CSS-based desks: **green Businessman; blue Patrolman; red Layman; white/cream Wardman**. The existing executive-office illustration remains an approved Businessman *in-game* asset. Do not generate/replace art until requested. The character-focused desk interface is the long-term shared UI framework, but each desk will eventually have its own artwork, location, props and job-specific actions. A map should be accessible to all, physically positioned differently at each desk if desired.
+
+Each saved world may contain the unplayed three protagonists as independent NPCs later, with a developer inspector showing goals, choices and whereabouts. The guiding analogy is **four moving orbits crossing unpredictably, not four people waiting for the player to click a menu**. Menu/desk foundation does not claim full autonomy yet. Wardman's planned family story is a slow rise from a deliberately humiliating low-status nursing/institutional role to possible authority, inspired by the *Wardman* surname but **not a portrayal of the historical Harry Wardman**. The institution may expand into doctors, nurses, patients, prisons, wardens, hospitals, etc. only after deliberate design.
