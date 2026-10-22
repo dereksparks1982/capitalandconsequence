@@ -1,6 +1,8 @@
 # Federal Electric
 
-**Current candidate: v0.6.32 Linux x64 · unaccepted private draft · October 22, 2026**
+**Current source: v0.6.33-dev · four-career menu foundation · October 22, 2026**
+
+**Last packaged candidate: v0.6.32 Linux x64 · private and unaccepted.**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,7 +17,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.32-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.33-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -134,3 +136,12 @@ GitHub source QA checks are distinct from an actual Linux packaged-game test. Th
 **Rare Drek arc:** Possible secret millionaire **Cornelius Wainwright III**, mansion **Wainwright House**, British butler **Mr. Pritchard**. Drek might be a benefactor, kingmaker behind Washington's elites, potential mentor/successor-maker or enemy of a rising Layman mob boss. Killing him as an apparent homeless stranger may prevent ever learning of his wealth or house. These are optional, branching possibilities, not fixed missions.
 
 Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/routes/map/hospital design](DESIGN-MENU-MAP-ROUTES-2026-10-22.md). This change adds **documentation only**; no feature or build is complete and v0.6.32 remains unaccepted.
+
+
+## v0.6.33 source: shared menu and four desks (owner requested)
+
+- The old illustrated title office is no longer the **visible main menu**. A new text-first late-nineteenth-century menu contains a four-career selection, profile name form, up to four independent profile autosaves, existing-profile loading, and archived papers/options access. It reports the selected profile's **saved in-game date, phase, and time remaining**, not the current time in Washington, D.C. An unopened profile never advances off-screen.
+- All four careers now have selectable **desktop/city foundations**: **Businessman** (green executive office), **Patrolman** (blue station desk), **Layman** (red private writing desk, not automatically a criminal), **Wardman** (cream institutional desk). The former illustrated office art is reused **inside Businessman gameplay**, not destroyed or regenerated. The other desk pictures are simple CSS placeholders.
+- The Businessman retains the actual full factory, contracts, company treasury and tycoon route; all four can open the common map, Journal and walk through existing public city venues. The other three are explicitly **EARLY FOUNDATIONS**, not claims of completed police, civilian criminal, or hospital campaigns; factory tabs are blocked and hidden for those routes. Roles remain distinct after save/load and New Game, and legacy profiles remain Businessman.
+- Existing map artwork, pin positions, NPC logic, artwork files, and business gameplay are not rewritten. The old interactive title scene is retained inside the Businessman's playable office for development migration. A more thorough refactor of title scene props, map filters, and the four-character autonomous simulation remains on the roadmap.
+- The source and packaged smoke suite include four-role profile creation and restore checks. The v0.6.32 packaged draft is **still unaccepted**; v0.6.33 is a separate source/build candidate pending owner validation.
