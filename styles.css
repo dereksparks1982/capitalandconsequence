@@ -1352,3 +1352,9 @@ body.elephant-easter-egg-open{overflow:hidden}
 .washington-dispatch small{display:block;color:#69593b;font-size:12px}
 .washington-dispatch strong{display:block;margin:3px 0;font:bold 16px Georgia,serif}
 .washington-dispatch p{margin:3px 0 0;font-size:14px}
+
+/* v0.6.24 unintroduced Washington residents sharing an actual room */
+.city-room-visitors{width:min(620px,95%);margin:12px auto;padding:12px 15px;background:#e6d5b8;color:#322416;border:1px solid #8a704c;text-align:left}
+.city-room-visitors[hidden]{display:none}
+.city-room-visitors h4{margin:0 0 7px;font:bold 16px Georgia,serif}
+.city-room-visitors p{margin:5px 0;font:14px Georgia,serif}

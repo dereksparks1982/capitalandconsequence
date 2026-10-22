@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.23','Current package version is v0.6.23');
-check(appSource.includes("APP_VERSION='v0.6.23-dev'"),'Game masthead uses v0.6.23');
-check(read('build-linux.sh').includes('0.6.23'),'Local packaging uses the same number');
+check(pkg.version==='0.6.24','Current package version is v0.6.24');
+check(appSource.includes("APP_VERSION='v0.6.24-dev'"),'Game masthead uses v0.6.24');
+check(read('build-linux.sh').includes('0.6.24'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.23-linux-x64.tar.gz'),'Manual workflow archives v0.6.23');
+check(workflow.includes('0.6.24-linux-x64.tar.gz'),'Manual workflow archives v0.6.24');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -119,11 +119,23 @@ check(livingCtx.S.otherLives.actors.criminal.stage===1,'Criminal background acto
 check(livingCtx.S.otherLives.actors.investigator.stage===1,'Detective background actor advances');
 check(lives.publicHistory().every(x=>!x.arc),'Private arc not exposed in public news');
 check(lives.publicHistory().every(x=>!('actorId' in x)&&!('id' in x)),'Public dispatch history never exposes internal actor identity');
+livingCtx.S.turnSerial=16;
+const investigatorLocation=livingCtx.S.otherLives.actors.investigator.locationId;
+const knownActorPlace=lives.visibleResidents(investigatorLocation);
+check(!!investigatorLocation&&knownActorPlace.length>=1,'Background resident has a real Washington location');
+check(knownActorPlace.every(v=>!('id' in v)&&!('arc' in v)&&!('actorId' in v)),'Room sightings do not reveal private character roles');
+const whereBefore=livingCtx.S.otherLives.actors.investigator.locationId;
+lives.visibleResidents(investigatorLocation);
+check(livingCtx.S.otherLives.actors.investigator.locationId===whereBefore,'Opening location directory does not relocate resident');
+livingCtx.S.turnSerial=17;lives.advance(17);
+check(livingCtx.S.otherLives.actors.investigator.locationTurn===17,'Background resident position advances with game turn');
+
 const dispatchHolder={children:[],replaceChildren(){this.children=[]},appendChild(node){this.children.push(node)}};
 livingCtx.document={getElementById:id=>id==='washingtonPublicDispatches'?dispatchHolder:null,createElement:tag=>({tagName:tag,textContent:'',className:'',children:[],appendChild(n){this.children.push(n)}})};
 lives.renderPublicDispatches();
 check(dispatchHolder.children.length===lives.publicHistory().length,'Published dispatch UI renders public reports only');
 check(index.includes('id="washingtonPublicDispatches"'),'Public newspaper dispatch anchor exists');
+check(index.includes('id="cityRoomVisitorList"'),'City room includes reserved resident presence area');
 
 const mt={window:{FederalElectricCity:city},S:{turnSerial:1,transport:{version:2,assets:[{id:'h',kind:'horse',name:'Test Horse',locationId:'home',status:'stabled',condition:100,homeLocationId:'home'}],events:[],journeys:[]}},save:()=>{}};
 vm.runInNewContext(read('mobility.js'),mt,{filename:'mobility.js'});

@@ -8,6 +8,16 @@
   criminal:Object.freeze(['petty-offender','organized-crime','suspected-serial-offender','quiet-underworld'])
  });
  const SCHEDULE=16; // 4 business turns/month; each milestone is four calendar months.
+ // Public social venues only, always taken from the shared registered city.
+ // Names, legal statuses and private career arcs are deliberately not revealed.
+ const PLACES=Object.freeze({
+  investigator:Object.freeze(['metropolitanPolice','washingtonArena','star','russianTradeHall','whiteHouse','universityMaryland']),
+  criminal:Object.freeze(['secondNightclub','star','workingPoker','washingtonArena','commercePoker','russianTradeHall'])
+ });
+ function placeFor(seed,id,turn){
+  const spots=PLACES[id]||[];
+  return spots.length?spots[roll(seed,id,'whereabouts:'+turn,spots.length)]:null;
+ }
  function hash(s){let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function roll(seed,id,key,n){return hash(seed+'|'+id+'|'+key)%n}
  function empty(){return {version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]}}
@@ -22,7 +32,14 @@
    if(id===S.characterRoute)continue;
    if(!world.actors[id]||typeof world.actors[id]!=='object'){
     const choices=PATHS[id];
-    world.actors[id]={id,arc:choices[roll(world.seed,id,'arc',choices.length)],stage:0,lastTurn:0,status:'active'};
+    world.actors[id]={id,arc:choices[roll(world.seed,id,'arc',choices.length)],stage:0,lastTurn:0,status:'active',
+      locationId:null,locationTurn:0};
+   }
+   const actor=world.actors[id];
+   const turn=Math.max(1,Math.floor(Number(S.turnSerial)||1));
+   if(!actor.locationId||!Number.isInteger(actor.locationTurn)||actor.locationTurn<1||actor.locationTurn>turn){
+    actor.locationId=placeFor(world.seed,id,turn);
+    actor.locationTurn=turn;
    }
   }
   return world;
@@ -46,6 +63,12 @@
   const publicItems=[];
   // Resolve milestones exactly once, in chronological order.
   for(let t=w.lastProcessedTurn+1;t<=target;t++){
+   for(const id of Object.keys(PATHS)){
+    if(id===S.characterRoute)continue;
+    const actor=w.actors[id];if(!actor)continue;
+    actor.locationId=placeFor(w.seed,id,t);
+    actor.locationTurn=t;
+   }
    if(t<=1||t%SCHEDULE!==0)continue;
    for(const id of Object.keys(PATHS)){
     if(id===S.characterRoute)continue;
@@ -87,5 +110,21 @@
    container.appendChild(article);
   }
  }
- window.FE_LIVING_CHARACTERS=Object.freeze({ensure,advance,publishInPaper,publicHistory,renderPublicDispatches});
+ function visibleResidents(locationId){
+  if(!locationId)return [];
+  const w=ensure();
+  return Object.keys(PATHS).filter(id=>id!==S.characterRoute&&w.actors[id]?.locationId===locationId&&w.actors[id]?.locationTurn===Math.max(1,Math.floor(Number(S.turnSerial)||1)))
+   .map((_id,index)=>({description:index===0?'An unfamiliar visitor seems occupied with private business.':'Another resident is keeping to themselves.'}));
+ }
+ function renderRoomVisitors(locationId){
+  const panel=document.getElementById('cityRoomVisitors'),list=document.getElementById('cityRoomVisitorList');
+  if(!panel||!list)return;
+  list.replaceChildren();
+  const visitors=visibleResidents(locationId);
+  panel.hidden=!visitors.length;
+  for(const v of visitors){
+   const row=document.createElement('p');row.textContent=v.description;list.appendChild(row);
+  }
+ }
+ window.FE_LIVING_CHARACTERS=Object.freeze({ensure,advance,publishInPaper,publicHistory,renderPublicDispatches,visibleResidents,renderRoomVisitors});
 })();

@@ -825,3 +825,11 @@ Authoritative station behavior:
 - [x] Extend the packaged Electron smoke test to verify that opening `poker.html` directly cannot deal cards without a saved one-use session.
 - [x] Add real-renderer poker resolution smoke: claimed stake forfeits exactly once, undealt reservation refunds once, and neither token can later settle again. The smoke cleans up its temporary test profile.
 - [x] Increment all development/candidate labels to v0.6.23. **No executable invoked**, and full Node/Electron validation remains pending.
+
+
+## v0.6.24 — Background residents actually occupy Washington places (source-only)
+- [x] Add deterministic per-turn **last location** for the non-played investigator and criminal, using existing registered public social/civic places only. Their positions are stored in the active profile's background-life records and remain stable while a turn is in progress.
+- [x] Advance whereabouts along with each business-turn transition; no time passes offline, and opening a map/room does not reroll another character's location.
+- [x] The city-room framework can display **unintroduced visitors** when one of these residents is in the same location. No real names, occupations, guilt, secrets or career arcs are exposed by proximity alone.
+- [x] Extend source checks for stable locations and confidential projections. These are non-interactive resident shells: relationships, visits, schedules inside rooms and dialogue remain later work.
+- [x] Increment to v0.6.24; no packaged game.

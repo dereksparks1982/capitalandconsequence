@@ -46,3 +46,7 @@ Status: Proposed route framework, not three complete campaigns.
 
 ## Public reporting interface (v0.6.21)
 The Metropolitan Ledger now has a persistent published-dispatch strip using only the autonomous actor simulation's already-public records, with game dates or a legacy turn fallback. Private actor IDs, hidden paths and unreported behavior are not emitted to that display. Future investigations can corroborate or contradict what people read, and reporting need not equal truth.
+
+
+## Registered physical whereabouts (v0.6.24)
+Unplayed criminal/investigator story figures now have a stable current **registered location** each game turn in the selected profile. Room interfaces may display a neutral visitor observation if the player is in the same place. This does not automatically mark the figure as the culprit, reveal their name, or make an illegal contest accessible. Future character/encounter mechanics will decide whether the player can identify or interact with them. This is distinct from live multi-user simulation.

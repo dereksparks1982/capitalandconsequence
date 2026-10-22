@@ -106,3 +106,7 @@ Player-visible Washington Dispatches are computed from events already designated
 ## Interrupted poker session resolution (v0.6.22)
 - A claimed poker popup whose settlement was interrupted may be explicitly **forfeited**. No stake refund, no replay, no additional hands. A never-claimed reservation may be canceled and refunded because no card session was authorized.
 - Both outcomes are recorded and saved once. Poker session locks are not silently cleared on reload and a resolved token cannot later settle again.
+
+
+## Residents occupying rooms (v0.6.24)
+- The nonselected protagonist candidates have real saved Washington whereabouts per business turn, and may appear as unintroduced visitors without private actor identity leakage. Locations update on world-turn progression only, not every time a UI panel opens.
