@@ -218,6 +218,42 @@ async function runSmokeTest(win) {
       throw new Error('M shortcut location regression: '+JSON.stringify(mapKeyTest));
     }
 
+    // Real renderer navigation regression, including destination restrictions.
+    const cityTravelTest=await win.webContents.executeJavaScript(`(() => {
+      const oldProfile=localStorage.getItem('federalElectricActiveProfile');
+      const oldPlace=S.currentLocation?{...S.currentLocation}:null;
+      const oldDate=S.gameDate,oldBreak=titleScreenDeskBreak,oldScreenHidden=document.getElementById('titleScreen').hidden;
+      const room=document.getElementById('cityRoomOverlay'),map=document.getElementById('titleMapViewer');
+      const go=document.getElementById('titleMapLocationTravel'),notice=document.getElementById('titleMapTravelNote'),out={};
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-city-travel');
+        S.gameDate='1890-01-02';S.currentLocation={locationId:'factory',roomId:'executive-office'};
+        closeTitleMap();closeCityRoom();openTitleMap();
+        openTitleMapLocation('commercePoker');
+        out.commerceEnabled=!go.disabled&&!go.hidden;
+        go.click();
+        out.commerceEntered=!room.hidden&&map.hidden&&S.currentLocation.locationId==='commercePoker';
+        out.singleRoomHidden=document.getElementById('cityRoomDirectory').hidden;
+        openTitleMap();openTitleMapLocation('oldChinatown');
+        out.chinatownEnabled=!go.disabled;
+        go.click();
+        out.chinatownEntered=!room.hidden&&S.currentLocation.locationId==='oldChinatown';
+        openTitleMap();openTitleMapLocation('washingtonFairgrounds');
+        out.fairLocked=go.disabled&&notice.textContent.includes('1893');
+        out.fairNotVisited=S.currentLocation.locationId==='oldChinatown';
+        return out;
+      }finally{
+        closeTitleMap();closeCityRoom();
+        S.currentLocation=oldPlace||{locationId:'factory',roomId:'executive-office'};
+        S.gameDate=oldDate;titleScreenDeskBreak=oldBreak;
+        document.getElementById('titleScreen').hidden=oldScreenHidden;
+        localStorage.removeItem('federalElectricProfile___smoke-city-travel');
+        if(oldProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldProfile);
+      }
+    })()`);
+    if(Object.entries(cityTravelTest).some(([,ok])=>ok!==true))throw new Error('Map destination travel regression: '+JSON.stringify(cityTravelTest));
+
     // Check personal effects are empty by default, attached to the save,
     // and cannot be retrieved from another city location.
     const effectsTest=await win.webContents.executeJavaScript(`(() => {
