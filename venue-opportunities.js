@@ -29,7 +29,7 @@ function renderRoomOpportunities(id){
   status.textContent=o.status!=='existing'?'Planning only':canUse(o.id)?'Available here':'Requires access';
   row.appendChild(status);
   if(o.status==='existing'){
-   const button=document.createElement('button');button.type='button';button.textContent='Enter Activity';button.disabled=!canUse(o.id);button.onclick=()=>window.FE_CITY?.openLocalActivity?.(o.id);row.appendChild(button);
+   const button=document.createElement('button');button.type='button';button.textContent='Enter '+o.name;button.disabled=!canUse(o.id);button.onclick=()=>window.FE_CITY?.openLocalActivity?.(o.id);row.appendChild(button);
   }
   box.appendChild(row);
  }
