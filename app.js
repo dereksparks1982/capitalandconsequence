@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.29-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.30-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -168,14 +168,35 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  fresh.activeContractId=fresh.productionQueue.includes(x.activeContractId)?x.activeContractId:null;fresh.lineStatus=x.lineStatus||'idle';fresh.lineMessage=x.lineMessage||'No production run is running.';fresh.lastProductionQuality=x.lastProductionQuality||null;
  for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
 let profileSaveReadBlocked=false;
+let profileSaveWriteError='';
+function setSaveWarning(message=''){
+ profileSaveWriteError=message;
+ const banner=document.getElementById('saveFailureBanner');
+ if(!banner)return;
+ banner.hidden=!message;
+ banner.textContent=message;
+}
 function save(silent=true){
  if(!activeProfileId()||profileSaveReadBlocked)return false;
  let payload=S;
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
   payload=Object.assign({},S,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
  }
- localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
- touchActiveProfile();updateCashHeader();if(!silent)note('Company books saved.');
+ // localStorage writes can throw QuotaExceededError or security exceptions.
+ // A failed write is never represented as a successful autosave.
+ try{
+  const serialized=JSON.stringify(payload);
+  localStorage.setItem(SAVE_KEY,serialized);
+ }catch(err){
+  const message='AUTOSAVE FAILED. Your latest progress is not on disk. Free up storage space and keep Federal Electric open, then try again.';
+  if(profileSaveWriteError!==message)console.error('Federal Electric autosave failure',err);
+  setSaveWarning(message);
+  return false;
+ }
+ if(profileSaveWriteError)setSaveWarning('');
+ try{touchActiveProfile()}catch(err){console.warn('Profile save succeeded; profile index update failed',err)}
+ updateCashHeader();
+ if(!silent)note('Company books saved.');
  return true;
 }
 function readProfiles(){try{const p=JSON.parse(localStorage.getItem(PROFILE_INDEX_KEY)||'[]');return Array.isArray(p)?p.slice(0,PROFILE_LIMIT):[]}catch(e){return[]}}
