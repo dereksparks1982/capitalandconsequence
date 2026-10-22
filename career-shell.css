@@ -1,0 +1,69 @@
+/* v0.6.33: text-first 1800s menu and interchangeable career desktops.
+   No new raster/vector artwork; four desk placeholders are CSS. */
+.career-main-menu{position:fixed;inset:0;z-index:2500000;background:radial-gradient(ellipse at center,#494333 0%,#171715 74%);overflow-y:auto;color:#302c25;padding:20px;font-family:Georgia,'Times New Roman',serif}
+.career-main-menu[hidden]{display:none}
+.career-menu-paper{width:min(100%,1080px);margin:0 auto;padding:clamp(20px,3vw,44px);border:9px double #675f4e;outline:1px solid #a39b8a;background:linear-gradient(120deg,#e9e1cb,#faf5e6 46%,#e8e0ca);box-shadow:0 10px 38px #070706, inset 0 0 22px #d9ccb4}
+.career-menu-heading{text-align:center!important;display:block;background:none!important;border:0!important;color:#302b22!important;padding:8px 10px 19px!important}
+.career-menu-heading small{display:block;letter-spacing:.24em;font-size:13px}
+.career-menu-heading h1{font-size:clamp(29px,5vw,53px);line-height:1.25;letter-spacing:.13em;margin:8px 0}
+.career-menu-heading p{margin:4px 0;letter-spacing:.1em;font-size:13px}
+.career-menu-heading .career-menu-motto{margin:14px auto 12px;font-size:16px;letter-spacing:0;font-style:italic;line-height:1.45}
+.career-menu-heading output{display:block;margin:8px auto;font-size:15px;letter-spacing:.02em;font-weight:700}
+.career-menu-rule{border-top:4px double #554938;width:74%;margin:12px auto}
+.career-main-menu h2{font-variant:small-caps;letter-spacing:.12em;text-align:center;font-size:21px;border-bottom:1px solid #b3a48e;margin:15px 0 12px;padding:0 0 7px}
+.career-menu-routes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.career-menu-route{display:flex;flex-direction:column;gap:7px;align-items:flex-start;text-align:left;min-height:153px;border:2px solid #777063;border-top:6px solid #49654a;background:#f7f1e0;color:#332c24;font:inherit;padding:13px;cursor:pointer}
+.career-menu-route[data-color=blue]{border-top-color:#385778}
+.career-menu-route[data-color=red]{border-top-color:#793b40}
+.career-menu-route[data-color=cream]{border-top-color:#a89c79}
+.career-menu-route.selected{outline:3px solid #41392c;outline-offset:2px;background:#fffaf0}
+.career-menu-route b{font-size:20px}
+.career-menu-route small{font-size:11px;font-family:Arial,sans-serif;letter-spacing:.04em}
+.career-menu-route span{font-size:13px;line-height:1.4}
+.career-menu-records{margin-top:18px}
+.career-menu-profile{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #beb29c}
+.career-menu-profile div{flex:1;min-width:0}.career-menu-profile small{display:block;font-size:12px;margin-top:5px;overflow-wrap:anywhere}
+.career-main-menu button:not(.career-menu-route){border:1px solid #514632;background:#f4ead4;color:#312a22;border-radius:1px;cursor:pointer;padding:8px 12px;font:700 14px Georgia,serif;min-height:38px}
+.career-main-menu button:focus-visible,.career-desk button:focus-visible{outline:3px solid #bd772d;outline-offset:3px}
+.career-main-menu button:disabled{opacity:.5;cursor:not-allowed}
+.career-main-menu button.danger{background:#7a3941;color:#fff2e6}
+.career-menu-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:13px}
+.career-menu-buttons button{min-width:125px}
+.career-empty{text-align:center;font-style:italic}
+.career-menu-create{margin:18px auto 4px;padding:14px;background:#ebe0ca;border:1px solid #a79b83;max-width:620px}
+.career-menu-create[hidden]{display:none}
+.career-menu-create label{display:block;font-size:15px;font-weight:700}
+.career-menu-create input{display:block;max-width:100%;width:100%;font-size:17px;padding:10px;margin-top:7px;background:#fffdf4;border:1px solid #817766}
+.career-menu-create p{font-size:13px}
+.career-menu-message{min-height:20px;text-align:center;color:#842c2c;font-weight:700}
+.career-menu-paper>footer{margin-top:23px;text-align:center;letter-spacing:.14em;font-size:11px}
+.career-global-dialog{z-index:3100000!important}
+.career-desk{--blotter:#3f5c42;--desk:#654328;background:#e8dfc9;border:4px double #64533b;padding:clamp(12px,2.2vw,25px);margin-bottom:18px}
+.career-desk[data-route=investigator]{--blotter:#365a82;--desk:#5e493a}
+.career-desk[data-route=criminal]{--blotter:#753b3b;--desk:#654631}
+.career-desk[data-route=wardman]{--blotter:#d1c7af;--desk:#67583e}
+.career-desk-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:2px solid #827258;margin-bottom:13px}
+.career-desk-heading small{letter-spacing:.12em;font-size:11px}
+.career-desk-heading h2{font-size:clamp(20px,2.5vw,27px);margin:4px 0 6px}
+.career-desk-heading p{margin:0 0 12px}
+.career-desk-seal{border:2px solid #7d705e;border-radius:50%;width:82px;height:82px;display:grid;place-items:center;font-size:12px;text-align:center;flex:0 0 auto;font-variant:small-caps}
+.career-businessman-office{display:block;max-width:100%;width:100%;height:auto;max-height:360px;object-fit:contain;background:#282019;margin:0 auto 14px}
+.career-desk-art{background:linear-gradient(90deg,#3c281b,var(--desk) 16%,#93694b 50%,var(--desk) 84%,#3c281b);border:8px ridge #68452d;box-shadow:inset 0 4px 10px #25170f7a;min-height:220px;display:flex;align-items:center;justify-content:space-evenly;gap:12px;padding:25px 16px;position:relative;overflow:hidden}
+.career-desk-ledger{width:35%;min-height:154px;background:#f2e5c4;border:2px solid #877657;box-shadow:4px 5px 0 #301c1455;display:flex;flex-direction:column;align-items:center;justify-content:space-around;text-align:center;padding:9px;transform:rotate(-4deg)}
+.career-desk-ledger strong{font-size:clamp(15px,2.4vw,24px);text-transform:uppercase}
+.career-desk-ledger small,.career-desk-ledger span{font-size:10px}
+.career-desk-blotter{width:50%;min-height:168px;padding:15px;background:var(--blotter);border:5px solid #392c24;box-shadow:inset 0 0 15px #22160e6b;display:flex;gap:16px;align-items:center;justify-content:center;transform:rotate(2deg)}
+.career-desk-sheet{background:#f0e9d9;color:#333;font-size:13px;font-weight:700;letter-spacing:.1em;padding:18px 12px;min-height:90px;box-shadow:2px 2px 3px #19171777}
+.career-desk .career-desk-map{background:#efe4c9;border:2px solid #6b5840;color:#352e25;font-weight:700;min-width:96px;min-height:88px;cursor:pointer;transform:rotate(-2deg)}
+.career-desk-pencil{position:absolute;bottom:32px;left:17%;width:115px;height:6px;border:1px solid #281c15;background:linear-gradient(90deg,#b9a094 0 10%,#b78b38 10% 92%,#382419 92%);transform:rotate(26deg)}
+.career-desk-summary{font-size:15px;margin:14px 0 4px;font-weight:700}
+.career-desk-readiness{font-size:13px;margin:7px 0 12px}
+.career-desk-actions{display:flex;flex-wrap:wrap;gap:9px}
+.career-desk-actions button{background:#f7f2e8;border:1px solid #6c5d43;font:700 14px Georgia,serif;padding:10px;cursor:pointer;min-height:39px}
+body[data-career]:not([data-career=industrialist]) #desk > :not(#careerDesk){display:none!important}
+body[data-career]:not([data-career=industrialist]) nav button[data-nav-group=factory]{display:none!important}
+body[data-career]:not([data-career=industrialist]) .daybar b:has(+ #headerCompanyCash),body[data-career]:not([data-career=industrialist]) #headerCompanyCash{display:none!important}
+/* The retired illustrated title is accessible only as the Businessman's office scene. */
+.title-screen.desk-interior .title-hotspot,.title-screen.desk-interior .title-dev-hotspot-tools{display:none!important}
+@media(max-width:800px){.career-menu-routes{grid-template-columns:repeat(2,minmax(0,1fr))}.career-menu-route{min-height:130px}.career-menu-paper{padding:16px}.career-desk-art{min-height:190px}.career-desk-heading{align-items:flex-start}.career-desk-seal{width:64px;height:64px}}
+@media(max-width:430px){.career-main-menu{padding:8px}.career-menu-paper{border-width:5px}.career-menu-route{padding:9px}.career-menu-route b{font-size:17px}.career-menu-profile{flex-wrap:wrap}.career-desk-blotter{width:59%;padding:8px;gap:7px}.career-desk-ledger{width:38%;padding:5px}.career-desk-sheet{font-size:10px;padding:10px}.career-desk .career-desk-map{min-width:70px;min-height:70px;font-size:12px}}
