@@ -849,3 +849,44 @@ Authoritative station behavior:
 - [ ] Research/map exact 1890 boundaries and replace provisional map pin coordinates after comparing the actual map artwork.
 - [ ] Add era-appropriate churches, schools, shops, named residents and interactions in a later authorized slice; do not invent them as already functioning.
 - Historical references: Smithsonian Anacostia Community Museum (Barry Farm–Hillsdale) https://anacostia.si.edu/barryfarm/explore-neighborhood ; DC Policy Center (2019) https://www.dcpolicycenter.org/publications/barry-farm-anacostia-history/ .
+
+
+## v0.6.29 — Real location navigation hardening · October 22, 2026
+- [x] Preserve the existing approved map screen and default room navigation.
+- [x] Show a clear reason on the map when a destination is future-dated, planned-only or undiscovered; never show an enabled dead Go There button in those cases.
+- [x] Render the requested room before committing the player's new location; failed rendering restores the previous location and reports an error to diagnostics.
+- [x] Add packaged-Electron navigation smoke assertions for Commerce Club, Chinatown and World’s Fair date gate; **execution pending new private candidate**.
+- [ ] Verify actual map-to-room navigation against Linux candidate for every accessible venue.
+- [ ] Reconcile map category filters, and only then begin exposing additional unpinned venues.
+
+## v0.6.30 — Autosave failure diagnostics · October 22, 2026
+- [x] Catch rejected browser storage writes (quota/security), avoid claiming the save succeeded, show a persistent on-screen warning and retain the running game for recovery.
+- [ ] Move authoritative profile loading off browser storage after disk migration and integrity checks.
+
+## v0.6.31 — Atomic disk autosave mirror (transitional) · October 22, 2026
+- [x] Add backend module `desktop/save-store.cjs` for atomically writing JSON profile snapshots within Electron userData; keep the previous private recovery file.
+- [x] Add restrictive preload-to-main-process bridge. Browser renderer remains sandboxed with Node integration disabled.
+- [x] Keep the existing profile-local autosave authoritative for loading; queue best-effort serialized disk mirrors after successful saves; delete disk mirror on explicit profile deletion.
+- [x] Add source tests for disk serialization, recovery, corrupt file detection, and traversal rejection, plus a packaged bridge test.
+- [ ] Confirm packaged Electron preload and disk roundtrip on Linux.
+- [ ] Migrate authoritative reads to file-backed autosaves without creating rewind slots; provide safe one-way import of existing localStorage profiles and a deliberate corruption-recovery workflow.
+- [ ] Replace whole-state browser writes once disk reads and recovery are validated; until then browser size limits remain.
+
+## v0.6.32 — Event-driven shared world clock foundation · October 22, 2026
+- [x] Introduce engine-independent `world-clock.js` with absolute UTC calendar minutes, a deterministic priority queue, explicit action-driven time jumps and stable same-minute event ordering.
+- [x] Preserve event queue and current world minute in serializable data; reopening without an action does not advance time.
+- [x] Add source checks for multiple events during one action jump, triggered follow-up events, stable reload and correct calendar arithmetic.
+- [ ] Connect event-queue time to authoritative `S` in a later migration. The present day/night countdown continues to govern factory, markets and NPC schedules and should not be mistaken for the new clock.
+- [ ] Establish per-action time costs, regular weekday routines, long jumps for imprisonment, interruptions and deterministic RNG with careful saved-game migration.
+- [ ] Only migrate factory throughput and existing racing/poker/boxing time after core calendar invariants pass.
+
+## Claude audit incorporation and next stability milestones (October 22, 2026)
+- [x] Fix conflicting v0.6.25/0.6.26 source version assertions and duplicated Barry Farm map number 13.
+- [x] Introduce source-only QA on main pushes without publishing an executable.
+- [x] Start addressing silent Go There restrictions and unguarded autosave storage failures.
+- [ ] Run full packaged runtime smoke tests, then owner acceptance testing; **latest packaged v0.6.25 remains an unaccepted private draft**.
+- [ ] Consolidate random outcomes through save-backed seeded generators; avoid a reload reroll.
+- [ ] Separate player-character state and company ownership as a prerequisite to three selectable protagonists.
+- [ ] Model NPC personal knowledge separately from true world events and newspaper publication; add relationships, utility scoring and a small vertical slice of reactive decision-making.
+- [ ] Audit historical audio ownership and future-period gating before any commercial distribution.
+- [ ] Keep new main-menu artwork, named second-nightclub proprietor, expanded Star Club, and secret Drek/Wainwright encounter at **planning-only** status until explicitly selected for implementation.
