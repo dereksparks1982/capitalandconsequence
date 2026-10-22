@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.30-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.31-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -169,6 +169,19 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
 let profileSaveReadBlocked=false;
 let profileSaveWriteError='';
+let diskSaveQueue=Promise.resolve();
+function enqueueDiskWrite(profileId,json){
+ if(!window.FE_DISK_SAVES)return;
+ diskSaveQueue=diskSaveQueue.catch(()=>{}).then(()=>window.FE_DISK_SAVES.write(profileId,json)).catch(err=>{
+  console.warn('Federal Electric: disk save mirror failed; local autosave is still present',err);
+ });
+}
+function enqueueDiskDelete(profileId){
+ if(!window.FE_DISK_SAVES)return;
+ diskSaveQueue=diskSaveQueue.catch(()=>{}).then(()=>window.FE_DISK_SAVES.remove(profileId)).catch(err=>{
+  console.warn('Federal Electric: could not delete saved disk mirror',err);
+ });
+}
 function setSaveWarning(message=''){
  profileSaveWriteError=message;
  const banner=document.getElementById('saveFailureBanner');
@@ -178,6 +191,7 @@ function setSaveWarning(message=''){
 }
 function save(silent=true){
  if(!activeProfileId()||profileSaveReadBlocked)return false;
+ const profileId=activeProfileId();
  let payload=S;
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
   payload=Object.assign({},S,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
@@ -187,6 +201,7 @@ function save(silent=true){
  try{
   const serialized=JSON.stringify(payload);
   localStorage.setItem(SAVE_KEY,serialized);
+  enqueueDiskWrite(profileId,serialized);
  }catch(err){
   const message='AUTOSAVE FAILED. Your latest progress is not on disk. Free up storage space and keep Federal Electric open, then try again.';
   if(profileSaveWriteError!==message)console.error('Federal Electric autosave failure',err);
@@ -1725,6 +1740,7 @@ function deleteProfileById(id){
  const profiles=readProfiles(),p=profiles.find(v=>v.id===id);if(!p)return;
  if(!confirm('Delete profile "'+p.name+'" and all of its saved Federal Electric progress?'))return;
  localStorage.removeItem(profileSaveKey(id));
+ enqueueDiskDelete(id);
  const next=profiles.filter(v=>v.id!==id);writeProfiles(next);
  let warning='';
  if(activeProfileId()===id){
