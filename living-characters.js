@@ -36,7 +36,7 @@
       locationId:null,locationTurn:0};
    }
    const actor=world.actors[id];
-   const turn=Math.max(1,Math.floor(Number(S.turnSerial)||1));
+   const turn=Math.max(1,Math.floor(Number(S.turnSerial)||1),world.lastProcessedTurn);
    if(!actor.locationId||!Number.isInteger(actor.locationTurn)||actor.locationTurn<1||actor.locationTurn>turn){
     actor.locationId=placeFor(world.seed,id,turn);
     actor.locationTurn=turn;
