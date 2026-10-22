@@ -1,0 +1,21 @@
+name: Approved one-time v0.6.25 candidate request
+
+# Temporary, explicitly authorized build request for October 22, 2026.
+# Dispatch the existing manual-only Linux workflow. Remove after completion.
+on:
+  push:
+    paths:
+      - '.github/workflows/request-v0.6.25-build.yml'
+
+permissions:
+  actions: write
+
+jobs:
+  request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch authorized Linux build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run linux-build.yml --ref main
