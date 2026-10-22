@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.32','Current package version is v0.6.32');
-check(appSource.includes("APP_VERSION='v0.6.32-dev'"),'Game masthead uses v0.6.32');
-check(read('build-linux.sh').includes('0.6.32'),'Local packaging uses the same number');
+check(pkg.version==='0.6.33','Current package version is v0.6.33');
+check(appSource.includes("APP_VERSION='v0.6.33-dev'"),'Game masthead uses v0.6.33');
+check(read('build-linux.sh').includes('0.6.33'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.32-linux-x64.tar.gz'),'Manual workflow archives v0.6.32');
+check(workflow.includes('0.6.33-linux-x64.tar.gz'),'Manual workflow archives v0.6.33');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -105,9 +105,12 @@ check(city.getLocation('blackwoodAsylum').plannedOnly===true,'Proposed asylum ca
 const routesContext={window:{},document:{getElementById:()=>null}};
 vm.runInNewContext(read('character-routes.js'),routesContext,{filename:'character-routes.js'});
 const routes=routesContext.window.FE_CHARACTERS;
-check(routes.list().length===3,'Three stories share Washington');
+check(routes.list().length===4,'Four selectable careers share one Washington');
 check(routes.canStart('industrialist'),'Existing factory story remains playable');
-check(!routes.canStart('investigator')&&!routes.canStart('criminal'),'Undeveloped routes cannot enter broken campaigns');
+check(routes.canStart('investigator')&&routes.canStart('criminal')&&routes.canStart('wardman'),'All four desks may be opened in a new career foundation');
+check(routes.list().filter(r=>r.status==='foundation').length===3,'Unfinished careers are honestly marked as foundations');
+check(routes.label('wardman')==='Wardman'&&routes.label('criminal')==='Layman','Agreed character labels retained');
+check(routes.get('investigator').deskColor==='blue'&&routes.get('wardman').deskColor==='cream','Personal desk colors are distinct');
 check(routes.normalize('unknown')==='industrialist','Old saves migrate to executive');
 check(routes.get('industrialist').paperDoll==='assets/artwork/characters/paperdolls/paperdoll.png','Approved paper doll unchanged');
 const livingCtx={window:{},S:{otherLives:{version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]},characterRoute:'industrialist',headline:'ORDINARY DAILY BUSINESS',societyStory:''},activeProfileId:()=>profile};
@@ -185,9 +188,9 @@ check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow
 check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'"),'Canceled and forfeited outcomes uniquely recorded');
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
-const runtimeSrc=['city.js','world-clock.js','app.js','venue-opportunities.js','character-routes.js',
+const runtimeSrc=['city.js','world-clock.js','character-routes.js','app.js','venue-opportunities.js',
  'living-characters.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
- 'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js'];
+ 'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js','career-shell.js'];
 let priorOffset=-1;
 for(const src of runtimeSrc){
  const token='src="'+src+'?';
@@ -197,6 +200,17 @@ for(const src of runtimeSrc){
 }
 check(read('desktop/main.cjs').includes('No active poker session'), 'Standalone smoke checks poker direct launch is refused');
 check(read('desktop/main.cjs').includes('resolveUnfinishedPoker('), 'Standalone smoke checks pending stake resolution');
+check(index.includes('career-shell.css?v=')&&index.includes('career-shell.js?v='),'Four-career menu/desk runtime and CSS loaded');
+check(index.indexOf('character-routes.js?v=')<index.indexOf('app.js?v='),'Career IDs load before autosave migration');
+check(read('career-shell.js').includes("menu.id='careerMainMenu'"),'Text-first shared title replaces visible former office title');
+check(read('career-shell.js').includes("desk.id='careerDesk'"),'Four desk foundation mounts in playable UI');
+check(read('career-shell.js').includes("dateLabel(profile)"),'Main menu reads profile's saved date and phase');
+check(appSource.includes("PROFILE_LIMIT=4"),'Four independent profile slots available');
+check(appSource.includes("createProfile(name,routeId='industrialist')"),'New profiles accept selected career');
+check(appSource.includes("S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)"),'New profile career is persisted');
+check(appSource.includes("const route=S.characterRoute;clearPauseLock();S=initial();"),'Career-specific new game reset does not change identity');
+check(appSource.includes("if(S.characterRoute!=='industrialist'&&['factory','warehouse','contracts'].includes(id))"),'Business-only tabs are career-gated');
+check(read('career-shell.css').includes('.title-screen.desk-interior .title-hotspot'),'Old title hotspots hidden in in-game office');
 check(appSource.includes('let profileSaveReadBlocked=false'),'Missing/corrupt profile guard exists');
 check(appSource.includes('if(!activeProfileId()||profileSaveReadBlocked)return false'),'Timer cannot overwrite unreadable autosave');
 check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}"),'Silent overwriting corrupted save path removed');
