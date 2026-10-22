@@ -1,4 +1,4 @@
-/* Federal Electric v0.6.33. Shared title and career desk foundation.
+/* Federal Electric v0.6.34. Shared title and career desk foundation.
    Does not simulate unbuilt police, civilian or hospital careers. */
 (function(){
  'use strict';
@@ -21,10 +21,16 @@
    <footer>FOUR LIVES · ONE WASHINGTON · AUTOSAVE ENABLED</footer>
  </div>`;
  document.body.appendChild(menu);
- // Original archive/dialog service remains usable without exposing the former
- // title-office background, even when the player is inside a different desk.
+ // Keep the old markup only as a noninteractive compatibility/archive scaffold
+ // until the legacy audio/title services are independently retired.
+ // Move the live map and archive dialogue OUT of that hidden scaffold so neither
+ // may ever accidentally display the former illustrated office.
+ const legacy=document.getElementById('titleScreen');
  const dialog=document.getElementById('titleDialog');
+ const map=document.getElementById('titleMapViewer');
+ if(map)document.body.appendChild(map);
  if(dialog){document.body.appendChild(dialog);dialog.classList.add('career-global-dialog');dialog.addEventListener('click',e=>{if(e.target===dialog)closeTitleDialog()});}
+ if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true');legacy.inert=true;}
  const desk=document.createElement('section');
  desk.id='careerDesk';desk.className='career-desk';desk.setAttribute('aria-label','Personal career desk');
  const first=document.querySelector('#desk > h2');
@@ -34,7 +40,7 @@
   let saved;
   try{saved=JSON.parse(localStorage.getItem(profileSaveKey(profile.id))||'null')}catch(e){return 'Unreadable autosave · original data preserved'}
   if(!saved)return 'No readable autosave · original data preserved';
-  const date=/^\\d{4}-\\d{2}-\\d{2}$/.test(saved.gameDate||'')?saved.gameDate:'Date not recorded';
+  const date=/^\d{4}-\d{2}-\d{2}$/.test(saved.gameDate||'')?saved.gameDate:'Date not recorded';
   const phase={day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[saved.phase]||'TIME NOT RECORDED';
   const secs=Number.isFinite(+saved.dayRemaining)?Math.max(0,Math.ceil(+saved.dayRemaining)):null;
   const remaining=secs===null?'':(' · '+String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0')+' remaining');
@@ -72,7 +78,7 @@
  function open(){
   if(activeProfileId()&&!profileSaveReadBlocked)save(true);
   const title=document.getElementById('titleScreen');
-  if(title){title.hidden=false;title.classList.remove('desk-interior')}
+  if(title)title.hidden=true;
   titleScreenDeskBreak=false;
   closeCityRoom();closeTitleMap();
   pauseTitleAudio();
@@ -117,7 +123,7 @@
   if(button.dataset.careerLoad){load(button.dataset.careerLoad);return}
   if(button.dataset.careerDelete){
    deleteProfileById(button.dataset.careerDelete);
-   closeTitleDialog(); // the original deletion UI may open behind the new menu
+   closeTitleDialog();
    renderMenu();return;
   }
   switch(button.id){
