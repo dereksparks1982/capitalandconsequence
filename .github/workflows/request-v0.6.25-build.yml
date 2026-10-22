@@ -1,6 +1,7 @@
 name: Approved one-time v0.6.25 candidate request
 
 # Temporary, explicitly authorized build request for October 22, 2026.
+# Retry after correcting resident-position regression discovered by CI.
 # Dispatch the existing manual-only Linux workflow. Remove after completion.
 on:
   push:
