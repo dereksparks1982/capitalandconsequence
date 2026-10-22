@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
+for(const rel of ['city.js','app.js','npc-ai.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.25','Current package version is v0.6.25');
-check(appSource.includes("APP_VERSION='v0.6.25-dev'"),'Game masthead uses v0.6.25');
-check(read('build-linux.sh').includes('0.6.25'),'Local packaging uses the same number');
+check(pkg.version==='0.6.28','Current package version is v0.6.28');
+check(appSource.includes("APP_VERSION='v0.6.28-dev'"),'Game masthead uses v0.6.28');
+check(read('build-linux.sh').includes('0.6.28'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.25-linux-x64.tar.gz'),'Manual workflow archives v0.6.25');
+check(workflow.includes('0.6.28-linux-x64.tar.gz'),'Manual workflow archives v0.6.28');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -40,7 +40,8 @@ check(pins.length===13,'Thirteen distinct Washington map pins');
 check(new Set(ids).size===13,'No duplicate map location identifiers');
 check(new Set(nums).size===13&&Math.max(...nums)===13,'Map marker numbers 1-13');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
-check(city.getLocation('hillsdale').map.n===13,'Hillsdale Barry Farm is marker 13');
+check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
+check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
 check(city.getLocation('home').rooms.length===4,'Home has four internal rooms');
 check(!city.getLocation('races').description.includes('horse-racing and dog-racing'),'Separate racing locations are reflected in venue description');
 check(city.getRoom('home','bedroom').id==='bedroom','Home bedroom address is stable');
@@ -185,7 +186,7 @@ check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'")
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
 const runtimeSrc=['city.js','app.js','venue-opportunities.js','character-routes.js',
- 'living-characters.js','mobility.js','journey-planner.js','institution-ventures.js',
+ 'living-characters.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js'];
 let priorOffset=-1;
 for(const src of runtimeSrc){
@@ -201,13 +202,39 @@ check(appSource.includes('if(!activeProfileId()||profileSaveReadBlocked)return f
 check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e){S=initial()}"),'Silent overwriting corrupted save path removed');
 check(appSource.includes('original bytes are preserved'),'Save damage error is visible');
 check(appSource.includes("if(profileSaveReadBlocked){renderProfileManager("),'No bypassing failed save load via title Continue');
-console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
-
 // Physical city rooms own leisure entry points; the executive desk has no global Pastimes button.
 check(!index.includes('data-nav-group="pastimes"'),'Pastimes absent from executive navigation');
 check(index.includes('id="cityRoomActivityHost"'),'City rooms have an activity host');
 check(appSource.includes('host.appendChild(panel)')&&appSource.includes('restoreLocalVenueActivity()'),'Activity panels move into venue rooms and restore on exit');
 
-check(!!city.getLocation('barryFarm'),'Barry Farm historic neighborhood is registered');
-check(city.getLocation('barryFarm').map?.n===13,'Barry Farm is numbered map pin 13');
-check(city.getRoom('barryFarm','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
+check(!!city.getLocation('hillsdale'),'Barry Farm historic neighborhood is registered');
+check(city.getLocation('hillsdale').map?.n===13,'Barry Farm is numbered map pin 13');
+check(city.getRoom('hillsdale','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
+
+check(index.includes('src="npc-ai.js?v='),'NPC AI loads as a local offline module');
+check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migrate to NPC simulation safely');
+check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
+const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
+let npcSaved=0;
+const npcCtx={window:{FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+ activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
+vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
+const npc=npcCtx.window.FE_NPC_AI;
+check(npc.list().length===7,'Seven named NPCs use persistent scheduling groundwork');
+check(npc.syncClock()===true,'Initial clock slot schedules residents');
+check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Factory foreman works at the factory');
+const npcOriginal=JSON.stringify(npcSave.npcSimulation);
+check(npc.syncClock()===false&&JSON.stringify(npcSave.npcSimulation)===npcOriginal,'Same clock slot cannot reroll NPC goals');
+check(npc.recordInteraction('madamStar','industrialist','introduction',3)===true,'NPC conversation can record relationship memory');
+check(npc.inspect('madamStar').relationships.industrialist===3,'Relationship change persisted in NPC state');
+const npcSnapshot=JSON.stringify(npcSave.npcSimulation);
+check(npc.syncClock()===false&&JSON.stringify(npcSave.npcSimulation)===npcSnapshot,'Reloading a room does not erase NPC memory');
+npcSave.dayRemaining=1500;
+check(npc.syncClock()===true,'Elapsed business time updates NPCs into the later slot');
+npcSave.phase='night';npcSave.dayRemaining=3600;
+check(npc.syncClock()===true,'Night change updates resident schedules without next-day reroll');
+check(npcSaved>=4,'Significant NPC schedule and memory changes autosave');
+check(npcSave.npcSimulation.events.every(e=>e.actorId&&e.turn===1),'NPC decisions retain actor and game turn identifiers');
+check(city.getLocation('oldChinatown').name==='Chinatown','Chinatown has the player-facing agreed name');
+check(city.getLocation('star').description.includes('Gambling is not permitted'),'Star Club no gambling policy reflected in registry');
+console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
