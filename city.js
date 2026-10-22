@@ -161,6 +161,19 @@
    rooms:[{id:'engineering-hall',name:'Engineering Hall',description:'Placeholder university room for research, professors, and electrical-engineering contacts.'}]
   },
   {
+   id:'barryFarm',
+   name:'Barry Farm',
+   area:'Barry Farm / Hillsdale · east of the Anacostia River, southeast Washington',
+   category:'neighborhood',
+   description:'Historic African American neighborhood established by the Freedmen’s Bureau after the Civil War. In 1890 its residents have built homes, churches and schools. Local stories and establishments await development.',
+   // Provisional placement on the current later-era reference map; refine with the 1890 map replacement.
+   map:{n:13,x:.6460,y:.7470},
+   defaultRoom:'neighborhood-street',
+   rooms:[
+    {id:'neighborhood-street',name:'Barry Farm Street',description:'A neighborhood street in Barry Farm / Hillsdale. Individual shops, churches, schools and residents have not been assigned yet.'}
+   ]
+  },
+  {
    id:'home',
    name:'Our Home',
    area:'Capitol Hill · near Eastern Market, 7th and C Streets SE (proposed)',
