@@ -868,7 +868,7 @@ Authoritative station behavior:
 - [x] Add restrictive preload-to-main-process bridge. Browser renderer remains sandboxed with Node integration disabled.
 - [x] Keep the existing profile-local autosave authoritative for loading; queue best-effort serialized disk mirrors after successful saves; delete disk mirror on explicit profile deletion.
 - [x] Add source tests for disk serialization, recovery, corrupt file detection, and traversal rejection, plus a packaged bridge test.
-- [ ] Confirm packaged Electron preload and disk roundtrip on Linux.
+- [x] Confirmed packaged Electron preload and disk roundtrip during successful v0.6.32 Linux candidate smoke test.
 - [ ] Migrate authoritative reads to file-backed autosaves without creating rewind slots; provide safe one-way import of existing localStorage profiles and a deliberate corruption-recovery workflow.
 - [ ] Replace whole-state browser writes once disk reads and recovery are validated; until then browser size limits remain.
 
@@ -884,9 +884,18 @@ Authoritative station behavior:
 - [x] Fix conflicting v0.6.25/0.6.26 source version assertions and duplicated Barry Farm map number 13.
 - [x] Introduce source-only QA on main pushes without publishing an executable.
 - [x] Start addressing silent Go There restrictions and unguarded autosave storage failures.
-- [ ] Run full packaged runtime smoke tests, then owner acceptance testing; **latest packaged v0.6.25 remains an unaccepted private draft**.
+- [x] Run source contracts, Linux packaging, launcher, real-room navigation and disk IPC smoke tests for v0.6.32. Private draft assets and checksum verified.
+- [ ] Owner acceptance testing of the **v0.6.32 unaccepted private draft**; do not tag or publish as a released game.
 - [ ] Consolidate random outcomes through save-backed seeded generators; avoid a reload reroll.
 - [ ] Separate player-character state and company ownership as a prerequisite to three selectable protagonists.
 - [ ] Model NPC personal knowledge separately from true world events and newspaper publication; add relationships, utility scoring and a small vertical slice of reactive decision-making.
 - [ ] Audit historical audio ownership and future-period gating before any commercial distribution.
 - [ ] Keep new main-menu artwork, named second-nightclub proprietor, expanded Star Club, and secret Drek/Wainwright encounter at **planning-only** status until explicitly selected for implementation.
+
+### v0.6.32 candidate validation snapshot (October 22, 2026)
+- [x] Private GitHub Actions run 39847055660 completed successfully from source commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555`.
+- [x] Automated source QA, artwork and offline audits, standalone Linux packaging, generated launcher compilation with warnings-as-errors, and xvfb packaged-launcher smoke all passed.
+- [x] The enhanced packaged smoke checked map travel to Commerce Club and Chinatown, fair availability gate, title map hotkeys, original paper doll, and a real Electron disk mirror write/read/remove operation.
+- [x] Draft release `candidate-v0.6.32-unaccepted` contains Linux tar.gz and SHA-256 file, with assets verified in the workflow. Private draft link: https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251 .
+- [x] One-shot build request workflow removed from `main`. Standard source pushes cannot automatically package or publish another executable.
+- [ ] Owner real gameplay validation and explicit acceptance. No public release or accepted snapshot created.
