@@ -410,3 +410,11 @@ See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map desi
 - Main menu displays **a saved profile's own in-game phase/date/time**. Closing the game and idling at the menu never advances simulation time.
 - NPC protagonists must be independently scheduled, learn and act through common model APIs, not fake menu clicks; they may collide in many ways in future saves. Shared Washington is the universe, not the player's orbit.
 - Four career choices are not a claim that specialist Patrolman, Layman or Wardman simulation exists yet; business-only screens must not be presented as a profession owned by those characters.
+
+
+## 2026-10-22, v0.6.34 owner-directed title archive and room consistency
+
+- The former illustrated executive-office *title screen* is **retired and archived**. It must **never reappear via navigation**. The office illustration is retained only as part of the Businessman's desk in gameplay, not as the universal Washington room or menu.
+- All registered locations currently share a neutral **nineteenth-century paper-style placeholder room**, visually consistent with the four-character main menu; no generated room art needed now.
+- Each room has navigation to the city map, the character's **own** desk, and the modern four-career main menu. Closing the map must restore the correct scene without exposing the retired title.
+- Keep original artwork/source archives, autosaves, historical room IDs and map pins intact; menu idling doesn't advance time.
