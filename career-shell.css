@@ -63,10 +63,50 @@
 body[data-career]:not([data-career=industrialist]) #desk > :not(#careerDesk){display:none!important}
 body[data-career]:not([data-career=industrialist]) nav button[data-nav-group=factory]{display:none!important}
 body[data-career]:not([data-career=industrialist]) .daybar b:has(+ #headerCompanyCash),body[data-career]:not([data-career=industrialist]) #headerCompanyCash{display:none!important}
-/* The retired illustrated title is accessible only as the Businessman's office scene. */
-.title-screen.desk-interior .title-hotspot,.title-screen.desk-interior .title-dev-hotspot-tools{display:none!important}
+/* Old illustrated title is an inert compatibility scaffold. It is NEVER a visible room or menu. */
+#titleScreen,#titleScreen.desk-interior,#titleScreen:not([hidden]){display:none!important;visibility:hidden!important;pointer-events:none!important;}
 @media(max-width:800px){.career-menu-routes{grid-template-columns:repeat(2,minmax(0,1fr))}.career-menu-route{min-height:130px}.career-menu-paper{padding:16px}.career-desk-art{min-height:190px}.career-desk-heading{align-items:flex-start}.career-desk-seal{width:64px;height:64px}}
 @media(max-width:430px){.career-main-menu{padding:8px}.career-menu-paper{border-width:5px}.career-menu-route{padding:9px}.career-menu-route b{font-size:17px}.career-menu-profile{flex-wrap:wrap}.career-desk-blotter{width:59%;padding:8px;gap:7px}.career-desk-ledger{width:38%;padding:5px}.career-desk-sheet{font-size:10px;padding:10px}.career-desk .career-desk-map{min-width:70px;min-height:70px;font-size:12px}}
 
 /* An autosave error must remain visible even above modal records. */
 .save-failure-banner{z-index:4000000!important}
+
+/* v0.6.34: every city room uses the same neutral nineteenth-century paper
+   language as the four-character main menu. No illustrated office backdrop. */
+.city-room-overlay{background:radial-gradient(ellipse at center,#494333,#171715 80%);padding:12px;align-items:center}
+.city-room-shell{background:linear-gradient(120deg,#e9e1cb,#faf5e6 46%,#e8e0ca);
+ color:#302c25;border:9px double #675f4e;outline:1px solid #a39b8a;
+ box-shadow:0 10px 38px #070706,inset 0 0 22px #d9ccb4;
+ max-height:calc(100dvh - 24px);min-height:0;overflow-y:auto}
+.city-room-head{background:transparent;color:#302c25;border-bottom:4px double #554938;
+ padding:20px 22px 14px}
+.city-room-head small{color:#5f533f;letter-spacing:.2em;font:700 11px Georgia,serif}
+.city-room-head h2{color:#302c25;font:700 clamp(23px,3vw,35px) Georgia,serif;letter-spacing:.07em}
+.city-room-head p{color:#675942;font:italic 14px Georgia,serif}
+.city-room-head button{background:#f4ead4;color:#312a22;border:1px solid #514632;border-radius:0}
+.city-room-placeholder{background:transparent;color:#302c25;min-height:270px;padding:26px 22px;text-align:center}
+.city-room-placeholder-tag{color:#63513b;border:1px solid #9b8869;letter-spacing:.14em;
+ font:700 11px Georgia,serif}
+.city-room-placeholder h3{font:700 clamp(22px,3vw,33px) Georgia,serif;color:#3d3023;font-variant:small-caps}
+.city-room-placeholder>p{font:16px/1.5 Georgia,serif;color:#423929}
+.city-room-directory{background:#e8ddc5;border-bottom:1px solid #b3a48e;padding:12px}
+.city-room-directory button,.city-room-actions button{
+ border:1px solid #514632;background:#f4ead4;color:#312a22;
+ font:700 14px Georgia,serif;padding:8px 12px;min-height:39px;cursor:pointer}
+.city-room-directory button.active{background:#4d4535;color:#fff7e2;border-color:#4d4535}
+.city-room-actions{background:transparent;border-top:3px double #99896b;
+ display:flex;gap:10px;padding:18px 20px;flex-wrap:wrap}
+.city-room-framework-note{border-top:1px solid #b3a48e;color:#675942}
+.city-room-shell button:focus-visible{outline:3px solid #bd772d;outline-offset:2px}
+@media(max-width:700px){
+ .city-room-overlay{padding:0}
+ .city-room-shell{width:100vw;min-height:100dvh;max-height:100dvh;border:5px double #675f4e}
+ .city-room-head{padding:16px}
+ .city-room-placeholder{padding:18px 12px}
+ .city-room-placeholder h3{font-size:25px}
+ .city-room-actions{padding:12px}
+}
+/* Reparented map and records are independent top-level overlays, never
+   descendants of the hidden former office. */
+body>#titleMapViewer{z-index:2900000}
+body>#titleDialog{z-index:3100000}
