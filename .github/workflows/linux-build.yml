@@ -4,9 +4,6 @@ name: Linux Desktop Build
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/linux-build.yml'
 
 jobs:
   build-linux:
