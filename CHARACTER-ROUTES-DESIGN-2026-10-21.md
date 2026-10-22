@@ -42,3 +42,7 @@ Status: Proposed route framework, not three complete campaigns.
 - An organized-crime rise, petty-theft career, or series of unsolved deaths are **alternative** story paths, not cumulative guarantees. Investigators have separate career, political or corruption paths.
 - What the game engine knows and what the player knows are distinct. Newspaper reports show only public facts and may describe suspicions, never silently reveal the hidden culprit's identity.
 - Events are saved by turn and not rerolled by opening the paper. Outcomes will later affect shared institutions, venues and NPC responses.
+
+
+## Public reporting interface (v0.6.21)
+The Metropolitan Ledger now has a persistent published-dispatch strip using only the autonomous actor simulation's already-public records, with game dates or a legacy turn fallback. Private actor IDs, hidden paths and unreported behavior are not emitted to that display. Future investigations can corroborate or contradict what people read, and reporting need not equal truth.

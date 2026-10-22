@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.20','Current package version is v0.6.20');
-check(appSource.includes("APP_VERSION='v0.6.20-dev'"),'Game masthead uses v0.6.20');
-check(read('build-linux.sh').includes('0.6.20'),'Local packaging uses the same number');
+check(pkg.version==='0.6.21','Current package version is v0.6.21');
+check(appSource.includes("APP_VERSION='v0.6.21-dev'"),'Game masthead uses v0.6.21');
+check(read('build-linux.sh').includes('0.6.21'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.20-linux-x64.tar.gz'),'Manual workflow archives v0.6.20');
+check(workflow.includes('0.6.21-linux-x64.tar.gz'),'Manual workflow archives v0.6.21');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -118,6 +118,13 @@ check(lives.advance(16).length===0&&JSON.stringify(livingCtx.S.otherLives.histor
 check(livingCtx.S.otherLives.actors.criminal.stage===1,'Criminal background actor advances');
 check(livingCtx.S.otherLives.actors.investigator.stage===1,'Detective background actor advances');
 check(lives.publicHistory().every(x=>!x.arc),'Private arc not exposed in public news');
+check(lives.publicHistory().every(x=>!('actorId' in x)&&!('id' in x)),'Public dispatch history never exposes internal actor identity');
+const dispatchHolder={children:[],replaceChildren(){this.children=[]},appendChild(node){this.children.push(node)}};
+livingCtx.document={getElementById:id=>id==='washingtonPublicDispatches'?dispatchHolder:null,createElement:tag=>({tagName:tag,textContent:'',className:'',children:[],appendChild(n){this.children.push(n)}})};
+lives.renderPublicDispatches();
+check(dispatchHolder.children.length===lives.publicHistory().length,'Published dispatch UI renders public reports only');
+check(index.includes('id="washingtonPublicDispatches"'),'Public newspaper dispatch anchor exists');
+
 const mt={window:{},S:{turnSerial:1,transport:{version:1,assets:[{id:'h',kind:'horse',name:'Test Horse',locationId:'home',status:'stabled',condition:100,homeLocationId:'home'}],events:[]}},save:()=>{}};
 vm.runInNewContext(read('mobility.js'),mt,{filename:'mobility.js'});
 const horse=mt.window.FE_TRANSPORT;

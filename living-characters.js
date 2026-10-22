@@ -52,7 +52,7 @@
     const actor=w.actors[id];if(!actor)continue;
     actor.stage++;actor.lastTurn=t;
     const [headline,summary,priority]=bulletin(id,actor.arc,actor.stage);
-    const record={id:id+'-turn-'+t,actorId:id,turn:t,headline,summary,priority,public:priority>0};
+    const record={id:id+'-turn-'+t,actorId:id,turn:t,date:S.gameDate,headline,summary,priority,public:priority>0};
     w.history.push(record);
     if(record.public&&t===target)publicItems.push({...record});
    }
@@ -71,6 +71,21 @@
    S.headline=notable.headline;S.story=notable.summary;
   }else S.societyStory=(S.societyStory||'')+' '+notable.summary;
  }
- function publicHistory(){return ensure().history.filter(x=>x.public).map(x=>({turn:x.turn,headline:x.headline,summary:x.summary}));}
- window.FE_LIVING_CHARACTERS=Object.freeze({ensure,advance,publishInPaper,publicHistory});
+ function publicHistory(){return ensure().history.filter(x=>x.public).map(x=>({turn:x.turn,date:x.date||null,headline:x.headline,summary:x.summary}));}
+ function renderPublicDispatches(){
+  const container=document.getElementById('washingtonPublicDispatches');if(!container)return;
+  const reports=publicHistory().slice(-16).reverse();
+  container.replaceChildren();
+  if(!reports.length){
+   const note=document.createElement('p');note.className='empty';note.textContent='No additional public dispatches have been filed.';container.appendChild(note);return;
+  }
+  for(const r of reports){
+   const article=document.createElement('article');article.className='washington-dispatch';
+   const mark=document.createElement('small');mark.textContent=r.date||'Turn '+r.turn;article.appendChild(mark);
+   const title=document.createElement('strong');title.textContent=r.headline;article.appendChild(title);
+   const paragraph=document.createElement('p');paragraph.textContent=r.summary;article.appendChild(paragraph);
+   container.appendChild(article);
+  }
+ }
+ window.FE_LIVING_CHARACTERS=Object.freeze({ensure,advance,publishInPaper,publicHistory,renderPublicDispatches});
 })();

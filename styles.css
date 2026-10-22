@@ -1344,3 +1344,11 @@ body.elephant-easter-egg-open{overflow:hidden}
 .title-character-choices p{margin:0 0 8px;font-size:13px}
 .title-character-route{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 3px;border-top:1px solid #c2ac87}
 .title-character-route small{font-size:11px}
+
+/* v0.6.21 persistent published Washington dispatches */
+.washington-public-dispatches{margin:18px 0;padding:15px;border:1px solid #9a8766;background:#f4e7cf;color:#2d2318}
+.washington-public-dispatches h3{margin:0 0 6px}
+.washington-dispatch{padding:10px 0;border-top:1px solid #baaa8c}
+.washington-dispatch small{display:block;color:#69593b;font-size:12px}
+.washington-dispatch strong{display:block;margin:3px 0;font:bold 16px Georgia,serif}
+.washington-dispatch p{margin:3px 0 0;font-size:14px}

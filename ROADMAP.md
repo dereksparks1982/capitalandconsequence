@@ -798,3 +798,11 @@ Authoritative station behavior:
 - [x] Extend the future Node source-contract suite with status transitions, missing destinations, and the racing venue correction.
 - [x] Align development source/packaging labels to v0.6.20; no executable produced.
 - [ ] Run the full Node source-contract suite and packaged Electron smoke test during the next authorized candidate build; runtime UI acceptance still pending.
+
+
+## v0.6.21 — Persisted public Washington dispatches (source-only)
+- [x] Add a **Washington Dispatches** section to the Metropolitan Ledger, showing the last 16 actual public reports from autonomous background-character careers.
+- [x] Include the recorded in-game date on new dispatch events, while preserving compatibility with earlier history records that only saved turn numbers.
+- [x] Display headlines and summaries with text nodes; omit secret arc, actor identity, and unpublished incidents. A public inquiry does not prove guilt or reveal the criminal's private state.
+- [x] Read from the per-profile saved public events; opening a paper never advances careers or rerolls an event.
+- [x] Add test contracts for hidden fields and report rendering; source v0.6.21 only, no executable.

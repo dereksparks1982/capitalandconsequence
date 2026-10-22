@@ -97,3 +97,7 @@ Approved for the README and in-game Help. No change to approved title-screen art
 
 ## Transport availability integrity (v0.6.20)
 - Transport in transit, missing/stolen, or in someone else's care is **not available** to embark on a second trip. Registered assets remain tied to concrete city locations; even event-driven recovery must target a known registered location.
+
+
+## Public vs confidential history (v0.6.21)
+Player-visible Washington Dispatches are computed from events already designated public; loading/reopening the news does not cause new events. Internal actor identities and paths remain unexposed until discovered through properly built story mechanics.
