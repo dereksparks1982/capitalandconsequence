@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current candidate: v0.6.25 Linux x64 · unaccepted private draft · October 22, 2026**
+**Current candidate: v0.6.32 Linux x64 · unaccepted private draft · October 22, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,11 +15,11 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.32-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. A **new Linux x64 standalone test executable** has been packaged from commit `ba9a8086c0e1eee249a096645cdcab75a6731764` and is available in the [private v0.6.25 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-77235e6eadd10ae242e6). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.32-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
-Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.25 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test, checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
+Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
-Each distinct development slice increments the patch number; this v0.6.25 candidate includes the city, background-character, transport, poker, autosave, and corruption-protection groundwork. Packaging stays **manual-only** after the authorized one-time October 22 build. Candidate testing, owner acceptance, and final publication remain separate steps.
+Each distinct development slice increments the patch number; this v0.6.32 candidate includes the earlier factory, city, transport and gambling groundwork plus the new location, save, and world-clock foundations. Packaging stays **manual-only** after the authorized one-time October 22 build. Candidate testing, owner acceptance, and final publication remain separate steps.
 
 ## The world and the clock
 
@@ -77,7 +77,7 @@ Travel will eventually offer walking, riding and carriage options, each with mea
 
 ## Play and test status
 
-The source is developed for local Electron/Linux. The v0.6.25 test candidate is available as [Federal-Electric-0.6.25-linux-x64.tar.gz](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-77235e6eadd10ae242e6/Federal-Electric-0.6.25-linux-x64.tar.gz) with its [SHA-256 file](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-77235e6eadd10ae242e6/Federal-Electric-0.6.25-linux-x64.tar.gz.sha256). Archive SHA-256: `c50d92f86bc9d5717b3bf87ac5b142c057f5193894c44eafc819136a4adc0d8e`. This is a **private, unaccepted draft**; the game has not been approved for final release.
+The source is developed for local Electron/Linux. The v0.6.32 test candidate is available as [Federal-Electric-0.6.32-linux-x64.tar.gz](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-01b2835c3de880bb6251/Federal-Electric-0.6.32-linux-x64.tar.gz) with its [SHA-256 file](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-01b2835c3de880bb6251/Federal-Electric-0.6.32-linux-x64.tar.gz.sha256). The package and accompanying checksum were verified in the private GitHub Actions build. The earlier v0.6.25 draft remains available separately. This is a **private, unaccepted draft**; the game has not been approved for final release.
 
 For developers with the repository and Node installed:
 
@@ -88,7 +88,7 @@ npm run audit:artwork
 npm run audit:offline
 ```
 
-The source suite verifies registry, personal storage, housing, mobility, autonomous story progression, and save-model contracts. The authorized October 22 Linux candidate **passed** source, packaged-runtime, and launcher smoke checks in GitHub Actions. The transient one-time request workflow was removed afterward; source pushes now trigger **source-only QA**, not an executable build. Linux packaging remains manual-only. Real-player review and acceptance are still outstanding.
+The source suite verifies the city registry, room travel contracts, personal storage, housing, mobility, autonomous story progression, save-model contracts, disk mirror, and deterministic event queue. The authorized v0.6.32 candidate **passed** source, packaged-runtime, and launcher smoke checks in GitHub Actions. The transient one-time v0.6.32 request workflow was removed afterward; source pushes trigger **source-only QA**, not an executable build. Linux packaging remains manual-only. Real-player review and acceptance are still outstanding.
 
 ## Next steps and project records
 
@@ -110,12 +110,12 @@ Added the **Barry Farm** neighborhood to Washington's city registry as numbered 
 
 ## v0.6.29–v0.6.32 development slices (October 22, 2026)
 
-- **v0.6.29 · Map navigation safety:** A historically future or otherwise restricted map location gives an explanatory message, rather than a dead Go There action. City-room setup is validated before committing the player's location, and failed entry restores the previous position instead of saving a phantom visit. A new packaged-Electron smoke check exercises Commerce Club, Chinatown, and the 1893 World's Fair gate. **The packaged check has not yet been executed for this source version.**
+- **v0.6.29 · Map navigation safety:** A historically future or otherwise restricted map location gives an explanatory message, rather than a dead Go There action. City-room setup is validated before committing the player's location, and failed entry restores the previous position instead of saving a phantom visit. A new packaged-Electron smoke check exercises Commerce Club, Chinatown, and the 1893 World's Fair gate. **The packaged navigation check passed in the private v0.6.32 Linux candidate.**
 - **v0.6.30 · Save failure visibility:** Catches localStorage write failures such as quota exhaustion. A persistent on-screen error banner says explicitly that recent progress was not saved. A failed write never reports success.
 - **v0.6.31 · Atomic file mirror foundation:** A sandboxed Electron preload bridge lets the main process keep a profile-scoped file copy of successful localStorage autosaves in the application's private user-data folder. File writes use temporary files and renames; a private previous copy exists for corruption recovery. Legacy localStorage is **still the loading authority**; automatic recovery from these disk copies is future work, not implemented. An explicitly deleted profile also schedules removal of its mirror. This slice does not yet remove the browser storage capacity limit.
 - **v0.6.32 · Shared-clock foundation:** Adds an engine-independent `world-clock.js` implementation of absolute calendar minutes and a deterministic priority queue of scheduled events. The queue can advance by an activity's duration and execute intervening events in order, including events caused by other events. Serialized world-clock state can be reopened without advancing time offline. **This clock is not yet the authoritative gameplay clock**; the existing day/night timer and seven-character schedule slice remain active during the transition.
 
-GitHub source QA checks are distinct from an actual Linux packaged-game test. The last accepted status has not changed: **the v0.6.25 packaged executable remains an unaccepted private candidate**. Do not claim these newer features are play-tested until a new candidate passes the full smoke tests and the owner validates it.
+GitHub source QA checks are distinct from an actual Linux packaged-game test. The new **v0.6.32 packaged executable is an unaccepted private draft**, verified by the automated smoke suite and awaiting owner gameplay acceptance. Do not claim these newer features are play-tested until a new candidate passes the full smoke tests and the owner validates it.
 
 ### Remaining engineering priorities
 
