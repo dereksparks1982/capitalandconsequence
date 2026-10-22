@@ -201,3 +201,8 @@ check(!appSource.includes("try{S=raw?migrate(JSON.parse(raw)):initial()}catch(e)
 check(appSource.includes('original bytes are preserved'),'Save damage error is visible');
 check(appSource.includes("if(profileSaveReadBlocked){renderProfileManager("),'No bypassing failed save load via title Continue');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
+
+// Physical city rooms own leisure entry points; the executive desk has no global Pastimes button.
+check(!index.includes('data-nav-group="pastimes"'),'Pastimes absent from executive navigation');
+check(index.includes('id="cityRoomActivityHost"'),'City rooms have an activity host');
+check(appSource.includes('host.appendChild(panel)')&&appSource.includes('restoreLocalVenueActivity()'),'Activity panels move into venue rooms and restore on exit');
