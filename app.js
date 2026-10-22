@@ -2346,10 +2346,8 @@ function updateTitleEnvironment(){
 }
 let titleEnvironmentTimer=null;
 function startTitleEnvironment(){
- Object.values(TITLE_OFFICE_IMAGES).forEach(src=>{const img=new Image();img.src=src});
- updateTitleEnvironment();
- if(titleEnvironmentTimer)clearInterval(titleEnvironmentTimer);
- titleEnvironmentTimer=setInterval(updateTitleEnvironment,1000);
+ // Archived office title art must never preload, render or reappear in gameplay.
+ if(titleEnvironmentTimer){clearInterval(titleEnvironmentTimer);titleEnvironmentTimer=null}
 }
 function updateTitleClock(){
  const hour=document.getElementById('titleClockHour');
