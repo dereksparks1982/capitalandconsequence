@@ -15,7 +15,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.25-dev` on the single `main` branch. A **new Linux x64 standalone test executable** has been packaged from commit `ba9a8086c0e1eee249a096645cdcab75a6731764` and is available in the [private v0.6.25 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-77235e6eadd10ae242e6). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.32-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. A **new Linux x64 standalone test executable** has been packaged from commit `ba9a8086c0e1eee249a096645cdcab75a6731764` and is available in the [private v0.6.25 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-77235e6eadd10ae242e6). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.25 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test, checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -37,11 +37,11 @@ The Metropolitan Ledger, Contacts, Journal, and pastimes introduce information t
 
 ## Getting around Washington
 
-The city registry contains **12 editable numbered map pins**, currently using a temporary later-era Washington illustration. The map positions are **display coordinates, not surveyed road distances**.
+The city registry contains **13 editable numbered map pins**, currently using a temporary later-era Washington illustration. The map positions are **display coordinates, not surveyed road distances**.
 
 Press **M** to open or close the Washington map. Closing it should return you to the room or game interface you were using, **without moving your character**. Selecting **Go There** enters that location's current placeholder room; when you are already there, the Go There action is hidden. Real route durations and transport costs remain unfinished. **Go There currently performs clearly labeled provisional direct movement**, saving origin and destination but charging no invented time and leaving any owned transport behind.
 
-Among the pinned locations are the Ivy City factory, Star Club, Capital Race Grounds, Neighborhood Game, Commerce Club at the Washington-Hoover hangar, Embassy Room, Old Chinatown, Russian Trade Hall, fairgrounds, Capitol Airport, University of Maryland and **Our Home**.
+Among the pinned locations are the Ivy City factory, Star Club, Capital Race Grounds, Neighborhood Game, Commerce Club at the Washington-Hoover hangar, Embassy Room, Chinatown, Russian Trade Hall, fairgrounds, Capitol Airport, University of Maryland and **Our Home**.
 
 **Pin 12: Our Home** is a proposed modest Capitol Hill rowhouse near Eastern Market, with separate Front Room, Bedroom, Kitchen and Household Storage. It has a basic Household Register. The starting home's rental/ownership terms are **undetermined**, not assumed. More expensive townhouses, city mansions, estates, household staff, door service and better amenities are designed as later progression, **not currently purchasable**.
 
@@ -88,7 +88,7 @@ npm run audit:artwork
 npm run audit:offline
 ```
 
-The source suite verifies registry, personal storage, housing, mobility, autonomous story progression, and save-model contracts. The authorized October 22 Linux candidate **passed** source, packaged-runtime, and launcher smoke checks in GitHub Actions. The transient one-time request workflow was removed afterward; standard source pushes do not trigger new executable builds. Real-player review and acceptance are still outstanding.
+The source suite verifies registry, personal storage, housing, mobility, autonomous story progression, and save-model contracts. The authorized October 22 Linux candidate **passed** source, packaged-runtime, and launcher smoke checks in GitHub Actions. The transient one-time request workflow was removed afterward; source pushes now trigger **source-only QA**, not an executable build. Linux packaging remains manual-only. Real-player review and acceptance are still outstanding.
 
 ## Next steps and project records
 
@@ -107,3 +107,20 @@ This is an **unaccepted source change**, not an approved new executable release.
 ## v0.6.27 source slice: Barry Farm neighborhood pin
 
 Added the **Barry Farm** neighborhood to Washington's city registry as numbered map pin **13** (provisional position southeast/east of the Anacostia River), with a visitable neighborhood-street room shell. The historic African American community began in 1867, before the game's 1890 starting date. This change adds no invented shops, residents, activities, historical 1940s public housing, or new artwork. Its historical basis is documented by the [Smithsonian Anacostia Community Museum](https://anacostia.si.edu/barryfarm/explore-neighborhood) and the [D.C. History Center](https://dchistory.libguides.com/c.php?g=1246926&p=9124571). Source-only and unaccepted until separately packaged and tested.
+
+## v0.6.29–v0.6.32 development slices (October 22, 2026)
+
+- **v0.6.29 · Map navigation safety:** A historically future or otherwise restricted map location gives an explanatory message, rather than a dead Go There action. City-room setup is validated before committing the player's location, and failed entry restores the previous position instead of saving a phantom visit. A new packaged-Electron smoke check exercises Commerce Club, Chinatown, and the 1893 World's Fair gate. **The packaged check has not yet been executed for this source version.**
+- **v0.6.30 · Save failure visibility:** Catches localStorage write failures such as quota exhaustion. A persistent on-screen error banner says explicitly that recent progress was not saved. A failed write never reports success.
+- **v0.6.31 · Atomic file mirror foundation:** A sandboxed Electron preload bridge lets the main process keep a profile-scoped file copy of successful localStorage autosaves in the application's private user-data folder. File writes use temporary files and renames; a private previous copy exists for corruption recovery. Legacy localStorage is **still the loading authority**; automatic recovery from these disk copies is future work, not implemented. An explicitly deleted profile also schedules removal of its mirror. This slice does not yet remove the browser storage capacity limit.
+- **v0.6.32 · Shared-clock foundation:** Adds an engine-independent `world-clock.js` implementation of absolute calendar minutes and a deterministic priority queue of scheduled events. The queue can advance by an activity's duration and execute intervening events in order, including events caused by other events. Serialized world-clock state can be reopened without advancing time offline. **This clock is not yet the authoritative gameplay clock**; the existing day/night timer and seven-character schedule slice remain active during the transition.
+
+GitHub source QA checks are distinct from an actual Linux packaged-game test. The last accepted status has not changed: **the v0.6.25 packaged executable remains an unaccepted private candidate**. Do not claim these newer features are play-tested until a new candidate passes the full smoke tests and the owner validates it.
+
+### Remaining engineering priorities
+
+1. Validate packaged navigation and file-save IPC end-to-end, then migrate profile loading from localStorage to atomic files with explicit recovery handling and backward compatibility.
+2. Convert the new absolute-minute clock into the real game clock in carefully tested stages, keeping economy and manufacturing calculations consistent. Existing real-time hour-long turns must not be described as the new 24-hour model.
+3. Use the shared clock and event queue for NPC decisions, investigations, relationships, and newspaper events. Apply saved random seeds across old minigames rather than allowing outcomes to reroll at reload.
+4. Introduce GTA-style map pin category filters, only when existing movement and location access pass runtime tests.
+5. Character-select menu, Star Club expansion, rare Drek encounter, and later historical events remain **design proposals**, not implemented gameplay.
