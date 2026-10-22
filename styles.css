@@ -1358,3 +1358,12 @@ body.elephant-easter-egg-open{overflow:hidden}
 .city-room-visitors[hidden]{display:none}
 .city-room-visitors h4{margin:0 0 7px;font:bold 16px Georgia,serif}
 .city-room-visitors p{margin:5px 0;font:14px Georgia,serif}
+
+/* 0.6.26: existing activity modules render inside visited city rooms. */
+.city-room-placeholder{overflow-y:auto;justify-content:flex-start}
+.city-room-activity-host{width:min(980px,100%);margin:12px auto;text-align:left}
+.city-room-activity-host[hidden]{display:none}
+.city-room-activity-host .activity-panel{margin:0}
+.city-room-activity-host .sheet{max-width:100%}
+.city-room-activity-host .poker-circles article[hidden]{display:none!important}
+@media(max-width:700px){.city-room-activity-host{width:100%}.city-room-placeholder{padding:16px 9px}}
