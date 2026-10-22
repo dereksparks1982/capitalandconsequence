@@ -204,7 +204,7 @@ check(index.includes('career-shell.css?v=')&&index.includes('career-shell.js?v='
 check(index.indexOf('character-routes.js?v=')<index.indexOf('app.js?v='),'Career IDs load before autosave migration');
 check(read('career-shell.js').includes("menu.id='careerMainMenu'"),'Text-first shared title replaces visible former office title');
 check(read('career-shell.js').includes("desk.id='careerDesk'"),'Four desk foundation mounts in playable UI');
-check(read('career-shell.js').includes("dateLabel(profile)"),'Main menu reads profile's saved date and phase');
+check(read('career-shell.js').includes("dateLabel(profile)"),'Main menu reads the saved profile date and phase');
 check(appSource.includes("PROFILE_LIMIT=4"),'Four independent profile slots available');
 check(appSource.includes("createProfile(name,routeId='industrialist')"),'New profiles accept selected career');
 check(appSource.includes("S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)"),'New profile career is persisted');
