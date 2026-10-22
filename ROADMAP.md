@@ -944,3 +944,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 
 
 **v0.6.33 packaging QA (22 October 2026):** GitHub Actions Linux build **39862944756** completed **SUCCESS** from source commit `e0ddc8612cf3e94b8789fc7771e12c8a6553652e`. Source tests, Electron packaged smoke, four-career Wardman save/reload, profile/room navigation, asset audits, gcc launcher, tar SHA-256 and private draft upload all passed. Archive `Federal-Electric-0.6.33-linux-x64.tar.gz` and `.sha256` were attached to the unaccepted private candidate draft `untagged-b86b37b640e44455ddfc`. Owner validation still required. Transient packaging requester removed; `main` remains the only branch.
+
+
+## v0.6.34-dev: retired office main menu never reappears (owner-directed)
+
+**Problem:** v0.6.33 introduced the four-life neutral menu, but legacy calls to `stepAwayFromDesk`, `openTitleMap`, `closeTitleMapOrReturnToLocation`, `returnCityRoomToOffice`, and `FE_CAREER_SHELL.open` still exposed `#titleScreen`, causing the old executive-office title to reappear. The old map and records dialog were nested inside the title markup, coupling room/navigation to the retired artwork. A separate preview CSS rule still mentioned using the retired office as a desk interior.
+
+**Source fix:** The old office title markup is archived at `archive/retired-office-title-2026-10-22.html`; original assets are preserved for the Businessman in-game desk. Existing title audio/developer DOM remains `hidden` and `inert` for compatibility but is forcibly invisible via CSS and no longer a navigation target. Map and records dialog reparented directly to the body; map travel/close and character menu/room links return only to the visited room, personal desk or neutral menu. Any role's city room can use **Main Menu**. All city placeholder rooms now use the common period paper color, borders and typography, without producing art. The old factory-room special case applies only to the Businessman. Menu freezes game progression; profile autosaves are untouched. Source tests and a packaged Electron smoke regression verify routes.
+
+**Build/candidate:** Separate development patch with consistent `v0.6.34-dev` source/package/workflow numbering. Owner must test and accept; do not publish as final or discard previous candidate. **Next independent work** includes historic slots/gaming math, easier gambling payouts, configurable difficulty, map pin numbers-only/hover labels and optional gold priority pins; these remain *not implemented*.
