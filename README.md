@@ -2,7 +2,7 @@
 
 **Current source: v0.6.33-dev · four-career menu foundation · October 22, 2026**
 
-**Last packaged candidate: v0.6.32 Linux x64 · private and unaccepted.**
+**Latest packaged candidate: v0.6.33 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -145,3 +145,12 @@ Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [m
 - The Businessman retains the actual full factory, contracts, company treasury and tycoon route; all four can open the common map, Journal and walk through existing public city venues. The other three are explicitly **EARLY FOUNDATIONS**, not claims of completed police, civilian criminal, or hospital campaigns; factory tabs are blocked and hidden for those routes. Roles remain distinct after save/load and New Game, and legacy profiles remain Businessman.
 - Existing map artwork, pin positions, NPC logic, artwork files, and business gameplay are not rewritten. The old interactive title scene is retained inside the Businessman's playable office for development migration. A more thorough refactor of title scene props, map filters, and the four-character autonomous simulation remains on the roadmap.
 - The source and packaged smoke suite include four-role profile creation and restore checks. The v0.6.32 packaged draft is **still unaccepted**; v0.6.33 is a separate source/build candidate pending owner validation.
+
+
+### v0.6.33 Linux candidate (verified in GitHub Actions)
+
+- **[Download the Linux x64 tar.gz candidate](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-b86b37b640e44455ddfc/Federal-Electric-0.6.33-linux-x64.tar.gz)**
+- **[SHA-256 verification file](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-b86b37b640e44455ddfc/Federal-Electric-0.6.33-linux-x64.tar.gz.sha256)**
+- Private draft release: [Federal Electric v0.6.33](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-b86b37b640e44455ddfc).
+- Verified GitHub Actions build: [run 39862944756](https://github.com/dereksparks1982/federalelectric/actions/runs/39862944756), completed **SUCCESS**. Source contracts, local artwork and offline audits, GCC double-click launcher, packaged Electron smoke (including Wardman profile create/reload, navigation, autosave mirror, and other existing regression checks), archive SHA-256 check and draft release asset sizes all passed.
+- The Linux archive (~330 MB) remains a **candidate for owner testing**, not a published or accepted release. No release tag has been published. The build-request workflow was removed after success.
