@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','npc-ai.js','housing.js','personal-effects.
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.28','Current package version is v0.6.28');
-check(appSource.includes("APP_VERSION='v0.6.28-dev'"),'Game masthead uses v0.6.28');
-check(read('build-linux.sh').includes('0.6.28'),'Local packaging uses the same number');
+check(pkg.version==='0.6.29','Current package version is v0.6.29');
+check(appSource.includes("APP_VERSION='v0.6.29-dev'"),'Game masthead uses v0.6.29');
+check(read('build-linux.sh').includes('0.6.29'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.28-linux-x64.tar.gz'),'Manual workflow archives v0.6.28');
+check(workflow.includes('0.6.29-linux-x64.tar.gz'),'Manual workflow archives v0.6.29');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -237,4 +237,8 @@ check(npcSaved>=4,'Significant NPC schedule and memory changes autosave');
 check(npcSave.npcSimulation.events.every(e=>e.actorId&&e.turn===1),'NPC decisions retain actor and game turn identifiers');
 check(city.getLocation('oldChinatown').name==='Chinatown','Chinatown has the player-facing agreed name');
 check(city.getLocation('star').description.includes('Gambling is not permitted'),'Star Club no gambling policy reflected in registry');
+check(appSource.includes('function mapTravelRestriction(location)'), 'Map gives locked destination explanations');
+check(appSource.includes('if(reached)titleScreenDeskBreak=true'), 'Map only transitions after successful room entry');
+check(appSource.indexOf('save(true);',appSource.indexOf('function openCityRoom('))>appSource.indexOf("overlay.hidden=false;",appSource.indexOf('function openCityRoom(')), 'Room visit is saved after renderer setup succeeds');
+check(appSource.includes('S.currentLocation=priorLocation;'), 'Failed travel restores saved character location');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
