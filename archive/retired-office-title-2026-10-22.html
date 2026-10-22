@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Archived Federal Electric office title</title></head><body>
+<!-- RETIRED OFFICE TITLE SCREEN. Archived v0.6.33 source. NOT AN ACTIVE GAME SCREEN. The original artwork assets are unchanged. -->
+  <div class="title-screen-frame">
+    <img id="titleOfficeBackground" class="title-screen-art" src="assets/artwork/locations/offices/federal-electric-office-day.webp?v=20261003-dc1" alt="Washington, D.C. executive office">
+    <div id="titleDevPanel" class="title-dev-panel" aria-label="Developer panel">
+      <div id="titleDevPanelHandle" class="title-dev-panel-head">
+        <span>DEV PANEL</span>
+        <button id="titleDevCollapse" type="button" aria-label="Collapse developer panel">−</button>
+      </div>
+      <div class="title-dev-panel-body">
+        <button id="titleDevDayNight" type="button" aria-pressed="false">Day / Night: DAY</button>
+        <button id="titleDevInfiniteMoney" type="button" aria-pressed="false">Infinite Money: OFF</button>
+        <button id="titleDevFreezeTime" type="button" aria-pressed="false">Freeze Time: OFF</button>
+        <button id="titleDevHotspots" type="button" aria-pressed="false">Show Hotspots: OFF</button>
+        <button id="titleDevEditHotspots" type="button" aria-pressed="false">Edit Hotspots: OFF</button>
+        <div class="title-dev-city-tools" aria-label="Developer city room controls">
+          <strong>CITY / ROOM</strong>
+          <select id="titleDevLocationSelect" aria-label="Developer location"></select>
+          <select id="titleDevRoomSelect" aria-label="Developer room"></select>
+          <button id="titleDevGoRoom" type="button">Go To Room</button>
+          <output id="titleDevRoomStatus">No room open</output>
+        </div>
+        <div class="title-dev-hotspot-tools">
+          <select id="titleDevHotspotSelect" aria-label="Selected title hotspot">
+            <option value="titleContinue">CONTINUE</option>
+            <option value="titleProfile">PROFILE</option>
+            <option value="titleOptions">OPTIONS</option>
+            <option value="titleArchives">ARCHIVES</option>
+          </select>
+          <output id="titleDevHotspotReadout">L 0 · T 0 · W 0 · H 0</output>
+          <div class="title-dev-hotspot-grid" aria-label="Move selected hotspot">
+            <button id="titleDevHotspotUp" type="button" aria-label="Move selected hotspot up">↑</button>
+            <button id="titleDevHotspotLeft" type="button" aria-label="Move selected hotspot left">←</button>
+            <button id="titleDevHotspotDown" type="button" aria-label="Move selected hotspot down">↓</button>
+            <button id="titleDevHotspotRight" type="button" aria-label="Move selected hotspot right">→</button>
+          </div>
+          <div class="title-dev-hotspot-size">
+            <button id="titleDevHotspotNarrow" type="button">Width −</button>
+            <button id="titleDevHotspotWiden" type="button">Width +</button>
+            <button id="titleDevHotspotShorter" type="button">Height −</button>
+            <button id="titleDevHotspotTaller" type="button">Height +</button>
+          </div>
+          <div class="title-dev-hotspot-actions">
+            <button id="titleDevHotspotSave" type="button">Save Hotspots</button>
+            <button id="titleDevHotspotResetSelected" type="button">Reset Selected</button>
+          </div>
+        </div>
+        <button id="titleDevOutsideNoise" type="button" aria-pressed="true">Outside Noise: ON</button>
+        <button id="titleDevReset" class="title-dev-reset" type="button">Reset Overrides</button>
+        <small>Session only · drag this header</small>
+      </div>
+    </div>
+    <img class="title-game-logo" src="assets/artwork/branding/logos/federal-electric-logo-overlay.webp?v=20261003-logo1" alt="Federal Electric — A Game of Industry, Markets, and Power">
+    <div class="title-fan-motion" aria-hidden="true"></div>
+    <button id="titleFanHub" class="title-fan-hub" type="button" aria-label="Turn fan off" aria-pressed="false"></button>
+
+    <div class="title-clock-live" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <circle class="title-clock-face" cx="50" cy="50" r="48"/>
+        <circle class="title-clock-ring" cx="50" cy="50" r="45"/>
+        <line class="title-clock-mark" x1="50.00" y1="10.00" x2="50.00" y2="5.00"/><line class="title-clock-mark" x1="70.00" y1="15.36" x2="72.50" y2="11.03"/><line class="title-clock-mark" x1="84.64" y1="30.00" x2="88.97" y2="27.50"/><line class="title-clock-mark" x1="90.00" y1="50.00" x2="95.00" y2="50.00"/><line class="title-clock-mark" x1="84.64" y1="70.00" x2="88.97" y2="72.50"/><line class="title-clock-mark" x1="70.00" y1="84.64" x2="72.50" y2="88.97"/><line class="title-clock-mark" x1="50.00" y1="90.00" x2="50.00" y2="95.00"/><line class="title-clock-mark" x1="30.00" y1="84.64" x2="27.50" y2="88.97"/><line class="title-clock-mark" x1="15.36" y1="70.00" x2="11.03" y2="72.50"/><line class="title-clock-mark" x1="10.00" y1="50.00" x2="5.00" y2="50.00"/><line class="title-clock-mark" x1="15.36" y1="30.00" x2="11.03" y2="27.50"/><line class="title-clock-mark" x1="30.00" y1="15.36" x2="27.50" y2="11.03"/>
+        <text class="title-clock-num" x="50" y="15">12</text>
+        <text class="title-clock-num" x="85" y="50">3</text>
+        <text class="title-clock-num" x="50" y="85">6</text>
+        <text class="title-clock-num" x="15" y="50">9</text>
+        <line id="titleClockHour" class="title-clock-hour" x1="50" y1="52" x2="50" y2="31"/>
+        <line id="titleClockMinute" class="title-clock-minute" x1="50" y1="53" x2="50" y2="23"/>
+        <line id="titleClockSecond" class="title-clock-second" x1="50" y1="56" x2="50" y2="19"/>
+        <circle class="title-clock-pin" cx="50" cy="50" r="3"/>
+      </svg>
+    </div>
+    <button id="titleRadioKnob" class="title-radio-knob" type="button" aria-label="Turn radio off" aria-pressed="false"></button>
+    <button id="titleNewspaperM" class="title-newspaper-m" type="button" aria-label="Open the Metropolitan Ledger newspaper"></button>
+    <button id="titleDcMap" class="title-dc-map" type="button" aria-label="Open Washington, D.C. city map"></button>
+    <button id="titleContinue" class="title-hotspot title-continue" type="button" aria-label="Continue" data-title-label="CONTINUE"></button>
+    <button id="titleProfile" class="title-hotspot title-profile" type="button" aria-label="Profile" data-title-label="PROFILE"></button>
+    <button id="titleOptions" class="title-hotspot title-options" type="button" aria-label="Options" data-title-label="OPTIONS"></button>
+    <button id="titleArchives" class="title-hotspot title-archives" type="button" aria-label="Archives" data-title-label="ARCHIVES"></button>
+  </div>
+
+</body></html>
