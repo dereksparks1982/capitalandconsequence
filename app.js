@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.25-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.26-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=3;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -225,7 +225,7 @@ function displayTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY'
 function displayHeaderTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY':'TURN '+Math.min(S.turnSerial,CAMPAIGN_TURNS)+'/'+CAMPAIGN_TURNS}
 function clockText(){const t=Math.max(0,Math.ceil(S.dayRemaining)),m=Math.floor(t/60),s=t%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
 function businessOpen(){return S.phase==='day'}
-const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal',racing:'pastimes',washington:'pastimes'};
+const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
 function syncTopNavigation(id=document.querySelector('.tab.active')?.id||'desk'){const group=NAV_GROUP_BY_TAB[id]||id;document.querySelectorAll('nav button[data-nav-group]').forEach(btn=>btn.classList.toggle('active',btn.dataset.navGroup===group));document.querySelectorAll('.section-tabs button[data-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id))}
 function showTab(id){
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -1006,7 +1006,7 @@ function simulatePoker(circle,stake){
 window.FE_POKER_CLOCK=()=>Math.max(0,S.dayRemaining);
 function pokerButton(circle,stake){return playPokerCircle(circle,stake)}
 $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').onclick=()=>pokerButton('middle',100);$('#pokerElite').onclick=()=>pokerButton('elite',500);$('#simPokerWorking').onclick=()=>simulatePoker('working',25);$('#simPokerMiddle').onclick=()=>simulatePoker('middle',100);$('#simPokerElite').onclick=()=>simulatePoker('elite',500);
-document.querySelectorAll('nav button[data-tab],.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
+document.querySelectorAll('nav button[data-tab]:not([data-nav-group="pastimes"]),.section-tabs button[data-tab]').forEach(b=>b.onclick=()=>{if(S.paused)return;showTab(b.dataset.tab)});
 const sectors=[...new Set(stockSeed.map(x=>x[2]))].sort();$('#sectorFilter').innerHTML='<option value="All">All sectors</option>'+sectors.map(s=>'<option>'+s+'</option>').join('');$('#stockSearch').oninput=renderStocks;$('#sectorFilter').onchange=renderStocks;
 const TITLE_CITY_AMBIENCE_VOLUME=.07;
 const TITLE_CITY_AMBIENCE_MOBILE_VOLUME=.005;
@@ -1864,6 +1864,7 @@ function renderCityRoomDirectory(location,activeRoomId){
  }
 }
 function openCityRoom(locationId,roomId,options={}){
+ restoreLocalVenueActivity();
  const location=cityLocation(locationId);if(!location)return false;
  const priorPlayerLocation=currentCityLocation();
  if(!options.dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id))return false;
@@ -1906,6 +1907,7 @@ function openCityRoom(locationId,roomId,options={}){
  return true;
 }
 function closeCityRoom(){
+ restoreLocalVenueActivity();
  const overlay=document.getElementById('cityRoomOverlay');if(overlay)overlay.hidden=true;
  document.body.classList.remove('city-room-open');
  cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
@@ -1942,11 +1944,42 @@ function initCityRoomUI(){
  overlay.addEventListener('click',e=>{if(e.target===overlay)closePlayerRoom()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closePlayerRoom()});
 }
+// Each pastime lives in its actual room. Existing module DOM is reused rather than duplicated.
+const localActivityHomes=new Map();
+let localActivityOpenId=null;
+function restoreLocalVenueActivity(){
+ for(const [panel,anchor] of localActivityHomes){
+  if(anchor.parentNode)anchor.parentNode.insertBefore(panel,anchor);
+  anchor.remove();
+  panel.hidden=true;
+ }
+ localActivityHomes.clear();
+ localActivityOpenId=null;
+ const host=document.getElementById('cityRoomActivityHost');
+ if(host){host.replaceChildren();host.hidden=true}
+}
 function openLocalVenueActivity(id){
  const v=window.FE_VENUES?.get?.(id);
- if(!v||!window.FE_VENUES.canUse(id)||!v.group||!v.panel)return false;
- closeCityRoom();showTab(v.group==='legal'?'racing':'washington');
- if(pastimeActivityState[v.group]!==v.panel)setPastimeActivity(v.group,v.panel);
+ if(!v||!window.FE_VENUES.canUse(id)||!v.group||!v.panel||cityRoomSession.dev)return false;
+ const panel=document.querySelector('[data-activity-panel="'+v.group+'"][data-activity-name="'+v.panel+'"]');
+ const host=document.getElementById('cityRoomActivityHost');
+ if(!panel||!host)return false;
+ restoreLocalVenueActivity();
+ const anchor=document.createComment('Original '+id+' activity position');
+ panel.parentNode.insertBefore(anchor,panel);
+ localActivityHomes.set(panel,anchor);
+ host.appendChild(panel);
+ host.hidden=false;panel.hidden=false;
+ localActivityOpenId=id;
+ // Poker circles share one legacy panel: the local room only exposes its own table.
+ panel.querySelectorAll('.poker-circles article').forEach((article,i)=>{
+  article.hidden=v.panel==='poker'&&i!==({'working-poker':0,'commerce-poker':1,'embassy-poker':2}[id]);
+ });
+ if(v.panel==='poker')renderWashington();
+ panel.querySelectorAll('[data-activity-close]').forEach(btn=>{
+  btn.onclick=event=>{event.stopImmediatePropagation();restoreLocalVenueActivity();window.FE_VENUES?.renderRoomOpportunities?.(currentCityLocation().locationId)};
+ });
+ window.FE_VENUES.renderRoomOpportunities(currentCityLocation().locationId);
  return true;
 }
 window.FE_CITY={
