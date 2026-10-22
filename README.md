@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.22-dev · unaccepted, source-only · October 21, 2026**
+**Current development source: v0.6.23-dev · unaccepted, source-only · October 21, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,7 +15,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.22-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.23-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
 

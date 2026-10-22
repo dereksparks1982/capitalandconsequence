@@ -816,3 +816,12 @@ Authoritative station behavior:
 - [x] Preserve poker daily entry limits even after a forfeited/canceled opened table, rather than making it a free reroll.
 - [x] Only acts on the current profile; other profiles' open sessions remain separate. No in-game historical rollback/replay function.
 - [x] Version 0.6.22 source only; full real-popup crash and restart behavior awaits Electron acceptance tests.
+
+
+## v0.6.23 — Cross-module test harness and poker regression coverage (source-only)
+
+- [x] Repair the Node mobility test environment to provide the real shared city registry; this reflects the v0.6.20 rule that transport cannot move to an unregistered site.
+- [x] Add script-tag ordering checks for the city, narrative, venue, transport, paper-doll, property, and sports modules to the source-contract suite.
+- [x] Extend the packaged Electron smoke test to verify that opening `poker.html` directly cannot deal cards without a saved one-use session.
+- [x] Add real-renderer poker resolution smoke: claimed stake forfeits exactly once, undealt reservation refunds once, and neither token can later settle again. The smoke cleans up its temporary test profile.
+- [x] Increment all development/candidate labels to v0.6.23. **No executable invoked**, and full Node/Electron validation remains pending.

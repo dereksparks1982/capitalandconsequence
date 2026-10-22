@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','housing.js','personal-effects.js','venue-o
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.22','Current package version is v0.6.22');
-check(appSource.includes("APP_VERSION='v0.6.22-dev'"),'Game masthead uses v0.6.22');
-check(read('build-linux.sh').includes('0.6.22'),'Local packaging uses the same number');
+check(pkg.version==='0.6.23','Current package version is v0.6.23');
+check(appSource.includes("APP_VERSION='v0.6.23-dev'"),'Game masthead uses v0.6.23');
+check(read('build-linux.sh').includes('0.6.23'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.22-linux-x64.tar.gz'),'Manual workflow archives v0.6.22');
+check(workflow.includes('0.6.23-linux-x64.tar.gz'),'Manual workflow archives v0.6.23');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -125,7 +125,7 @@ lives.renderPublicDispatches();
 check(dispatchHolder.children.length===lives.publicHistory().length,'Published dispatch UI renders public reports only');
 check(index.includes('id="washingtonPublicDispatches"'),'Public newspaper dispatch anchor exists');
 
-const mt={window:{},S:{turnSerial:1,transport:{version:1,assets:[{id:'h',kind:'horse',name:'Test Horse',locationId:'home',status:'stabled',condition:100,homeLocationId:'home'}],events:[]}},save:()=>{}};
+const mt={window:{FederalElectricCity:city},S:{turnSerial:1,transport:{version:2,assets:[{id:'h',kind:'horse',name:'Test Horse',locationId:'home',status:'stabled',condition:100,homeLocationId:'home'}],events:[],journeys:[]}},save:()=>{}};
 vm.runInNewContext(read('mobility.js'),mt,{filename:'mobility.js'});
 const horse=mt.window.FE_TRANSPORT;
 check(horse.at('home').length===1&&horse.at('races').length===0,'Horse remains where actually stored');
@@ -170,4 +170,17 @@ check(index.includes('id="unresolvedPokerResolve"'),'Poker rescue control exists
 check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow resolution handler implemented');
 check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'"),'Canceled and forfeited outcomes uniquely recorded');
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
+// Cross-module wiring must remain coherent when adding future modules.
+const runtimeSrc=['city.js','app.js','venue-opportunities.js','character-routes.js',
+ 'living-characters.js','mobility.js','journey-planner.js','institution-ventures.js',
+ 'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js'];
+let priorOffset=-1;
+for(const src of runtimeSrc){
+ const token='src="'+src+'?';
+ const position=index.indexOf(token);
+ check(position>priorOffset,'Required runtime script exists in correct order: '+src);
+ priorOffset=position;
+}
+check(read('desktop/main.cjs').includes('No active poker session'), 'Standalone smoke checks poker direct launch is refused');
+check(read('desktop/main.cjs').includes('resolveUnfinishedPoker('), 'Standalone smoke checks pending stake resolution');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

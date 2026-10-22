@@ -275,6 +275,35 @@ async function runSmokeTest(win) {
     })()`);
     if(Object.entries(housingTest).some(([,value])=>value!==true))throw new Error('Housing groundwork smoke regression: '+JSON.stringify(housingTest));
 
+    const unresolvedPokerTest=await win.webContents.executeJavaScript(`(() => {
+      const originalSessions=S.pokerSessions,originalEvents=S.outcomeEvents,
+        originalNotes=S.notes,originalCash=S.personalCash;
+      const oldActive=localStorage.getItem('federalElectricActiveProfile');
+      const out={};
+      try{
+        localStorage.setItem('federalElectricActiveProfile','__smoke-poker');
+        S.pokerSessions={version:1,pending:[],settled:[]};
+        S.outcomeEvents=[];S.notes=[];S.personalCash=100;
+        S.pokerSessions.pending.push({id:'smoke-claimed',profileId:'__smoke-poker',circle:'working',stake:25,gameDate:S.gameDate,claimed:true});
+        out.forfeited=resolveUnfinishedPoker('smoke-claimed')&&S.personalCash===100;
+        out.noDuplicateForfeit=!resolveUnfinishedPoker('smoke-claimed')&&S.outcomeEvents.length===1;
+        out.pokerCannotSettleLater=!window.FE_POKER_SETTLE('smoke-claimed','working',500,10,60);
+        S.pokerSessions.pending.push({id:'smoke-undealt',profileId:'__smoke-poker',circle:'middle',stake:20,gameDate:S.gameDate,claimed:false});
+        out.undealtRefunded=resolveUnfinishedPoker('smoke-undealt')&&S.personalCash===120;
+        out.notReclaimable=!window.FE_POKER_SETTLE('smoke-undealt','middle',500,10,60);
+        return out;
+      }finally{
+        S.pokerSessions=originalSessions;S.outcomeEvents=originalEvents;
+        S.notes=originalNotes;S.personalCash=originalCash;
+        if(oldActive===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldActive);
+        localStorage.removeItem('federalElectricProfile___smoke-poker');
+        render();
+      }
+    })()`);
+    if(Object.values(unresolvedPokerTest).some(value=>value!==true))
+      throw new Error('One-use poker resolution regression: '+JSON.stringify(unresolvedPokerTest));
+
     const cityTravel=await win.webContents.executeJavaScript(`(() => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');
@@ -337,6 +366,13 @@ async function runSmokeTest(win) {
     await sleep(800);
     const popup=BrowserWindow.getAllWindows().find(candidate=>candidate!==win&&candidate.webContents.getURL().includes('poker.html'));
     if(!popup) throw new Error('Local poker popup did not open through packaged Electron window policy');
+    // Poker's old direct popup route must not bypass the one-use saved
+    // reservation. No stake and no card room are manufactured by smoke.
+    const blockedPoker=await popup.webContents.executeJavaScript(`({
+      refused:document.body.innerText.includes('No active poker session'),
+      cardUiGone:!document.getElementById('pokerModal')
+    })`);
+    if(!blockedPoker.refused||!blockedPoker.cardUiGone)throw new Error('Direct poker window bypass regression: '+JSON.stringify(blockedPoker));
     popup.destroy();
 
     await win.webContents.executeJavaScript(`localStorage.removeItem('__federalElectricSmokePersistence')`);
