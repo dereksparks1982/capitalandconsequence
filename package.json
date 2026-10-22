@@ -1,6 +1,6 @@
 {
   "name": "federal-electric",
-  "version": "0.6.30",
+  "version": "0.6.31",
   "private": true,
   "description": "Federal Electric desktop alpha",
   "main": "desktop/main.cjs",
@@ -32,7 +32,9 @@
       "assets/**/*",
       "radio/**/*",
       "vendor/**/*",
-      "desktop/main.cjs"
+      "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "desktop/save-store.cjs"
     ],
     "asarUnpack": [
       "assets/audio/**/*"
