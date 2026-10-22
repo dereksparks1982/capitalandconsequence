@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.33-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.34-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1132,7 +1132,7 @@ const titleRadioBackgroundFeeds=new Map();
 let titleScreenDeskBreak=false;
 function careerMainMenuVisible(){const el=document.getElementById('careerMainMenu');return !!(el&&!el.hidden)}
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
-function titleScreenBlocksSimulation(){return titleScreenVisible()&&!titleScreenDeskBreak&&!document.body.classList.contains('city-room-open')&&!document.body.classList.contains('title-map-open')}
+function titleScreenBlocksSimulation(){return careerMainMenuVisible()}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
 function titleRadioStationAvailable(index){
  const station=TITLE_RADIO_STATIONS[index];
@@ -1665,29 +1665,12 @@ function openTitleNewspaper(){
 }
 function closeTitleScreen(){document.getElementById('titleScreen')?.classList.remove('desk-interior');if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
- if(S.characterRoute!=='industrialist'){openTitleMap();return}
- const screen=$('#titleScreen');if(!screen)return;
+ // The retired illustrated office title is never a navigation destination.
+ // The personal career desk is the home UI; a step away opens the actual room
+ // where the player stands, or the city map if they are at their own factory.
  const current=currentCityLocation();
- if(current.locationId!=='factory'){
-  openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
-  return;
- }
- save(true);
- titleScreenDeskBreak=true;
- screen.hidden=false;
- screen.classList.add('desk-interior');
- titleRadioLocationContext='office';
- startTitleEnvironment();
- startTitleClock();
- if(!titleRadioAirStartAt)titleRadioAirStartAt=Date.now();
- startTitleRadioBackgroundFeeds();
- setRadioLocationContext('office',true);
- updateTitleRadioControls();
- syncTitleCityAmbience();
- syncTitleFanAudio();
- syncTitleClockAudio();
- startTitleRadio();
- updateTitleDevPanel();
+ if(current.locationId!=='factory'&&openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'}))return;
+ openTitleMap();
 }
 function profileSummary(p){
  let save=null;try{save=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
@@ -1914,7 +1897,7 @@ function openCityRoom(locationId,roomId,options={}){
  if(!dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
- if(location.id==='factory'&&!dev){
+ if(location.id==='factory'&&!dev&&S.characterRoute==='industrialist'){
   returnCityRoomToOffice();closeTitleMap();return true;
  }
  const room=cityRoom(location.id,roomId||location.defaultRoom);
@@ -1990,13 +1973,18 @@ function returnCityRoomToMap(){
  if(TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))requestAnimationFrame(()=>openTitleMapLocation(locationId));
 }
 function returnCityRoomToOffice(){
- if(!cityRoomSession.dev){
+ // Return to the current character's personal desk, not the old title office.
+ // Only the Businessman actually owns the Federal Electric executive office.
+ if(!cityRoomSession.dev&&S.characterRoute==='industrialist'){
   const previous=currentCityLocation();
   S.currentLocation={locationId:'factory',roomId:'executive-office'};
   if(previous.locationId!=='factory')window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
   save(true);
  }
  closeCityRoom();
+ closeTitleMap();
+ showTab('desk');
+ window.FE_CAREER_SHELL?.refreshDesk?.();
 }
 function openSelectedTitleDevRoom(){
  const locationId=document.getElementById('titleDevLocationSelect')?.value;
@@ -2009,6 +1997,7 @@ function initCityRoomUI(){
  document.getElementById('cityRoomClose').onclick=closePlayerRoom;
  document.getElementById('cityRoomReturnMap').onclick=returnCityRoomToMap;
  document.getElementById('cityRoomReturnOffice').onclick=returnCityRoomToOffice;
+ const mainMenuButton=document.getElementById('cityRoomMainMenu');if(mainMenuButton)mainMenuButton.onclick=()=>window.FE_CAREER_SHELL?.open?.();
  overlay.addEventListener('click',e=>{if(e.target===overlay)closePlayerRoom()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closePlayerRoom()});
 }
@@ -2570,7 +2559,7 @@ function travelFromTitleMap(){
  if(reason){if(message)message.textContent=reason;return false;}
  if(!id||currentCityLocation().locationId===id)return false;
  const reached=openCityRoom(id,null,{dev:false,source:'map'});
- if(reached)titleScreenDeskBreak=true;
+ if(reached)window.FE_CAREER_SHELL?.refreshDesk?.();
  else if(message)message.textContent='Travel failed. You remain at your previous location. Try another destination.';
  return reached;
 }
@@ -2656,13 +2645,10 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
- // Remember whether the map was opened over live gameplay so closing it
- // restores the exact interface rather than leaving an unexpected title office.
+ // The map is a standalone overlay. Never reveal or depend on the old title.
  const viewer=$('#titleMapViewer');
- if(!viewer)return;
- if(viewer.hidden)titleMapOpenedFromGame=!!$('#titleScreen')?.hidden;
- const screen=$('#titleScreen');
- if(screen?.hidden){screen.hidden=false;titleScreenDeskBreak=true;}
+ if(!viewer||careerMainMenuVisible())return;
+ if(viewer.hidden)titleMapOpenedFromGame=true;
  loadTitleMapLocationLayout();
  renderUnpinnedCityDirectory();
  const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img)return;
@@ -2682,16 +2668,18 @@ function closeTitleMap(){
 // The map is not a teleport: closing it away from Federal Electric returns to
 // the location where the player is standing, rather than exposing the office.
 function closeTitleMapOrReturnToLocation(){
+ // Close over the active personal desk or restore the visited city room.
  const restoreGame=titleMapOpenedFromGame;
  closeTitleMap();
+ if(!restoreGame||careerMainMenuVisible())return;
  const current=currentCityLocation();
  if(activeProfileId()&&current.locationId!=='factory'){
-  openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
- }else if(restoreGame){
-  // The map was opened from the live business/game interface.
-  titleScreenDeskBreak=false;
-  closeTitleScreen();
+  const restored=openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
+  if(restored)return;
  }
+ // This is a career desk, never the retired illustrated office title.
+ showTab('desk');
+ window.FE_CAREER_SHELL?.refreshDesk?.();
 }
 function toggleTitleMapShortcut(){
  if(careerMainMenuVisible())return;
@@ -2826,7 +2814,7 @@ function initTitleMapViewer(){
 
 function initTitleScreen(){
  const screen=$('#titleScreen');if(!screen)return;
- screen.hidden=false;
+ screen.hidden=true;
  titleRadioStationIndex=0;titleRadioTrackIndex=0;titleRadioOff=false;titleRadioLocationContext='title';
  startTitleEnvironment();
  startTitleClock();
