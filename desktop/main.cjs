@@ -179,6 +179,38 @@ async function runSmokeTest(win) {
     })()`);
     if(!fourCareerTest.menuVisible||fourCareerTest.routeCount!==4||!fourCareerTest.newRoute||!fourCareerTest.desk||!fourCareerTest.factoryHidden||!fourCareerTest.reloads)
       throw new Error('Four career menu/save/desk smoke regression: '+JSON.stringify(fourCareerTest));
+    // The retired office title may never reappear after desk, map or room transitions.
+    const retiredOfficeTest=await win.webContents.executeJavaScript(`(() => {
+      const title=document.getElementById('titleScreen'),menu=document.getElementById('careerMainMenu');
+      const map=document.getElementById('titleMapViewer'),room=document.getElementById('cityRoomOverlay');
+      const oldLocation={...S.currentLocation},oldMenuHidden=menu.hidden,out={};
+      try{
+        window.FE_CAREER_SHELL.open();
+        out.neutralMenu=!menu.hidden&&title.hidden&&title.inert&&getComputedStyle(title).display==='none';
+        out.detachedMap=map.parentNode===document.body;
+        out.detachedDialog=document.getElementById('titleDialog').parentNode===document.body;
+        menu.hidden=true;
+        stepAwayFromDesk();
+        out.stepAwayToMap=!map.hidden&&getComputedStyle(title).display==='none';
+        closeTitleMapOrReturnToLocation();
+        out.mapReturnNoOldOffice=map.hidden&&title.hidden;
+        out.genericRoom=openCityRoom('home','bedroom',{dev:true,source:'smoke'})&&!room.hidden;
+        out.roomMatchesPeriodMenu=getComputedStyle(document.querySelector('.city-room-shell')).backgroundImage.includes('linear-gradient');
+        document.getElementById('cityRoomMainMenu').click();
+        out.roomMenuReturnsNeutral=!menu.hidden&&room.hidden&&title.hidden;
+        return out;
+      }finally{
+        closeTitleMap();closeCityRoom();
+        menu.hidden=oldMenuHidden;
+        title.hidden=true;
+        S.currentLocation=oldLocation;
+        window.FE_CAREER_SHELL.refreshDesk();
+        render();
+      }
+    })()`);
+    if(Object.values(retiredOfficeTest).some(v=>v!==true))
+      throw new Error('Retired office/period room navigation regression: '+JSON.stringify(retiredOfficeTest));
+
 
 
     // Test actual map -> Go There -> room visibility and already-here guard
