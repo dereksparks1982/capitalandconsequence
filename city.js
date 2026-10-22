@@ -161,6 +161,17 @@
    rooms:[{id:'engineering-hall',name:'Engineering Hall',description:'Placeholder university room for research, professors, and electrical-engineering contacts.'}]
   },
   {
+   id:'brokerOffice',
+   name:'Stockbroker',
+   area:'Downtown Washington financial offices · precise address to be researched',
+   category:'finance',
+   description:'A private broker handles securities orders, account statements and market correspondence. A personal relationship may eventually permit instructions by telegram or telephone.',
+   // Visual position is deliberately provisional until a historically documented office is chosen.
+   map:{n:14,x:.5420,y:.4520},
+   defaultRoom:'broker-office',
+   rooms:[{id:'broker-office',name:'Broker’s Office',description:'The receiving office of a stockbroker. Initial inquiries and personal order instructions belong here; detailed brokerage service is a planned gameplay expansion.'}]
+  },
+  {
    id:'home',
    name:'Our Home',
    area:'Capitol Hill · near Eastern Market, 7th and C Streets SE (proposed)',
