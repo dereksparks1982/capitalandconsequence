@@ -207,3 +207,7 @@ console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
 check(!index.includes('data-nav-group="pastimes"'),'Pastimes absent from executive navigation');
 check(index.includes('id="cityRoomActivityHost"'),'City rooms have an activity host');
 check(appSource.includes('host.appendChild(panel)')&&appSource.includes('restoreLocalVenueActivity()'),'Activity panels move into venue rooms and restore on exit');
+
+check(!!city.getLocation('barryFarm'),'Barry Farm historic neighborhood is registered');
+check(city.getLocation('barryFarm').map?.n===13,'Barry Farm is numbered map pin 13');
+check(city.getRoom('barryFarm','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
