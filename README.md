@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current development source: v0.6.25-dev · unaccepted, source-only · October 21, 2026**
+**Current candidate: v0.6.25 Linux x64 · unaccepted private draft · October 22, 2026**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -15,11 +15,11 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.25-dev` on the single `main` branch. **This is not a new executable.** The prior Linux alpha candidate is unaccepted and no longer reflects current source.
+**Latest source:** `v0.6.25-dev` on the single `main` branch. A **new Linux x64 standalone test executable** has been packaged from commit `ba9a8086c0e1eee249a096645cdcab75a6731764` and is available in the [private v0.6.25 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-77235e6eadd10ae242e6). The build is **unaccepted**, not a final/public release.
 
-Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The new source has not yet completed its full packaged Electron regression run.
+Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.25 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test, checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
-Each distinct source slice increments the patch number: 0.6.6 added Home, 0.6.7 the M-key map, 0.6.8 personal storage, 0.6.9 housing, 0.6.10 source regression checks, and this 0.6.11 documentation refresh and 0.6.12 venue scaffolding. Packaging stays manual-only. Candidate validation, acceptance, commit/tag and release are separate steps.
+Each distinct development slice increments the patch number; this v0.6.25 candidate includes the city, background-character, transport, poker, autosave, and corruption-protection groundwork. Packaging stays **manual-only** after the authorized one-time October 22 build. Candidate testing, owner acceptance, and final publication remain separate steps.
 
 ## The world and the clock
 
@@ -77,7 +77,7 @@ Travel will eventually offer walking, riding and carriage options, each with mea
 
 ## Play and test status
 
-The source is developed for local Electron/Linux. No new packaged executable is available for this development source. When the next candidate is authorized, the manual workflow will package a Linux directory archive, perform Electron startup/smoke checks and publish the resulting binary plus SHA-256 to a **private, unaccepted draft**, not a public final release.
+The source is developed for local Electron/Linux. The v0.6.25 test candidate is available as [Federal-Electric-0.6.25-linux-x64.tar.gz](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-77235e6eadd10ae242e6/Federal-Electric-0.6.25-linux-x64.tar.gz) with its [SHA-256 file](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-77235e6eadd10ae242e6/Federal-Electric-0.6.25-linux-x64.tar.gz.sha256). Archive SHA-256: `c50d92f86bc9d5717b3bf87ac5b142c057f5193894c44eafc819136a4adc0d8e`. This is a **private, unaccepted draft**; the game has not been approved for final release.
 
 For developers with the repository and Node installed:
 
@@ -88,7 +88,7 @@ npm run audit:artwork
 npm run audit:offline
 ```
 
-The source suite verifies registry, personal storage and housing contracts. Packaged runtime checks are separate and have **not yet passed for this candidate**. Packaging remains manual; GitHub pushes do not trigger new executable builds.
+The source suite verifies registry, personal storage, housing, mobility, autonomous story progression, and save-model contracts. The authorized October 22 Linux candidate **passed** source, packaged-runtime, and launcher smoke checks in GitHub Actions. The transient one-time request workflow was removed afterward; standard source pushes do not trigger new executable builds. Real-player review and acceptance are still outstanding.
 
 ## Next steps and project records
 
