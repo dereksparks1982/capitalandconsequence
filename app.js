@@ -1295,6 +1295,7 @@ function startTitleRadioBackgroundFeeds(){
  const p=audio.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
 }
 function updateTitleRadioAudibility(){
+ if(careerMainMenuVisible()){if(titleRadioAudio)titleRadioAudio.pause();for(const audio of titleRadioBackgroundFeeds.values()){audio.muted=true;audio.pause()}return}
  if(!periodRadioAvailable()){for(const audio of titleRadioBackgroundFeeds.values()){audio.muted=true;audio.pause()}return}
  for(const [index,audio] of titleRadioBackgroundFeeds){
   configureTitleRadioFeedProgram(index,audio);
