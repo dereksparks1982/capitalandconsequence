@@ -1,0 +1,141 @@
+/* Federal Electric v0.6.33. Shared title and career desk foundation.
+   Does not simulate unbuilt police, civilian or hospital careers. */
+(function(){
+ 'use strict';
+ const routes=window.FE_CHARACTERS;
+ if(!routes)return;
+ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let choice='industrialist',showNew=false,lastRenderedRoute='';
+ const menu=document.createElement('section');
+ menu.id='careerMainMenu';menu.className='career-main-menu';
+ menu.setAttribute('aria-label','Federal Electric main menu');
+ menu.innerHTML=`<div class="career-menu-paper">
+   <header class="career-menu-heading"><small>WASHINGTON, DISTRICT OF COLUMBIA</small><h1>FEDERAL ELECTRIC</h1><p>THE CITY AND ITS PEOPLE</p><div class="career-menu-rule"></div>
+   <p class="career-menu-motto">Federal Electric is the company you own.<br>Washington is the world you inhabit.</p>
+   <output id="careerMenuDate">No profile selected</output></header>
+   <section class="career-menu-careers" aria-label="Four playable character foundations"><h2>Choose a Life</h2><div id="careerMenuRoutes" class="career-menu-routes"></div></section>
+   <section class="career-menu-records" aria-label="Saved lives"><h2>Saved Profiles</h2><div id="careerMenuProfiles"></div></section>
+   <section id="careerMenuCreateBox" class="career-menu-create" hidden><label>Character / Profile Name <input id="careerMenuName" type="text" maxlength="28" autocomplete="off" placeholder="Enter a name"></label><p id="careerMenuCreateRoute"></p><button id="careerMenuCreateConfirm" type="button">Start This Life</button><button id="careerMenuCreateCancel" type="button">Cancel</button></section>
+   <p id="careerMenuMessage" class="career-menu-message" role="status" aria-live="polite"></p>
+   <div class="career-menu-buttons"><button id="careerMenuContinue" type="button">Continue</button><button id="careerMenuNew" type="button">New Profile</button><button id="careerMenuArchives" type="button">Archives</button><button id="careerMenuOptions" type="button">Options</button></div>
+   <footer>FOUR LIVES · ONE WASHINGTON · AUTOSAVE ENABLED</footer>
+ </div>`;
+ document.body.appendChild(menu);
+ // Original archive/dialog service remains usable without exposing the former
+ // title-office background, even when the player is inside a different desk.
+ const dialog=document.getElementById('titleDialog');
+ if(dialog){document.body.appendChild(dialog);dialog.classList.add('career-global-dialog');dialog.addEventListener('click',e=>{if(e.target===dialog)closeTitleDialog()});}
+ const desk=document.createElement('section');
+ desk.id='careerDesk';desk.className='career-desk';desk.setAttribute('aria-label','Personal career desk');
+ const first=document.querySelector('#desk > h2');
+ if(first)first.before(desk);
+ function dateLabel(profile){
+  if(!profile)return 'No saved life selected · 1890 opening';
+  let saved;
+  try{saved=JSON.parse(localStorage.getItem(profileSaveKey(profile.id))||'null')}catch(e){return 'Unreadable autosave · original data preserved'}
+  if(!saved)return 'No readable autosave · original data preserved';
+  const date=/^\\d{4}-\\d{2}-\\d{2}$/.test(saved.gameDate||'')?saved.gameDate:'Date not recorded';
+  const phase={day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[saved.phase]||'TIME NOT RECORDED';
+  const secs=Number.isFinite(+saved.dayRemaining)?Math.max(0,Math.ceil(+saved.dayRemaining)):null;
+  const remaining=secs===null?'':(' · '+String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0')+' remaining');
+  return date+' · '+phase+remaining;
+ }
+ function message(s=''){menu.querySelector('#careerMenuMessage').textContent=s}
+ function renderMenu(){
+  const profiles=readProfiles(),active=activeProfileId();
+  menu.querySelector('#careerMenuDate').textContent=dateLabel(profiles.find(p=>p.id===active)||profiles[0]);
+  menu.querySelector('#careerMenuRoutes').innerHTML=routes.list().map(r=>`<button type="button" data-career-pick="${escape(r.id)}" class="career-menu-route ${r.id===choice?'selected':''}" aria-pressed="${r.id===choice}" data-color="${escape(r.deskColor)}"><b>${escape(r.name)}</b><small>${r.status==='playable'?'FULL BUSINESS CAREER':'DESK & CITY FOUNDATION'}</small><span>${escape(r.summary)}</span></button>`).join('');
+  menu.querySelector('#careerMenuProfiles').innerHTML=profiles.length?profiles.map(p=>{
+   let saved=null;try{saved=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
+   const route=routes.label(saved?.characterRoute);
+   return `<div class="career-menu-profile"><div><b>${escape(p.name)}</b><small>${escape(route)} · ${escape(dateLabel(p))}${p.id===active?' · ACTIVE':''}</small></div><button type="button" data-career-load="${escape(p.id)}">Load</button><button type="button" class="danger" data-career-delete="${escape(p.id)}">Delete</button></div>`;
+  }).join(''):'<p class="career-empty">No saved lives yet. Choose a career and create a profile.</p>';
+  menu.querySelector('#careerMenuCreateBox').hidden=!showNew;
+  menu.querySelector('#careerMenuCreateRoute').textContent='Starting as: '+routes.label(choice)+(choice==='industrialist'?' · Full business career':' · Career preview, shared city available');
+  menu.querySelector('#careerMenuNew').disabled=profiles.length>=4;
+ }
+ function load(id){
+  if(!id)return message('Create a profile before continuing.');
+  const wasLoaded=loadProfileById(id);
+  if(!wasLoaded)return message('The selected autosave could not be loaded. Its original data has been preserved.');
+  showNew=false;menu.hidden=true;lastRenderedRoute='';refreshDesk();
+ }
+ function create(){
+  const input=menu.querySelector('#careerMenuName');
+  const name=(input.value||'').trim();
+  if(!name)return message('Enter a character or profile name first.');
+  if(readProfiles().length>=4)return message('Four save slots are occupied. Existing profiles have not been changed.');
+  if(!routes.canStart(choice))return message('That life is not available yet.');
+  createProfile(name,choice);
+  showNew=false;menu.hidden=true;lastRenderedRoute='';refreshDesk();
+ }
+ function open(){
+  if(activeProfileId()&&!profileSaveReadBlocked)save(true);
+  const title=document.getElementById('titleScreen');
+  if(title){title.hidden=false;title.classList.remove('desk-interior')}
+  titleScreenDeskBreak=false;
+  closeCityRoom();closeTitleMap();
+  pauseTitleAudio();
+  showNew=false;menu.hidden=false;message();
+  renderMenu();
+ }
+ function refreshDesk(){
+  const route=routes.get(S.characterRoute)||routes.get('industrialist');
+  document.body.dataset.career=route.id;
+  if(lastRenderedRoute!==route.id){
+   lastRenderedRoute=route.id;
+   desk.dataset.route=route.id;
+   const image=route.id==='industrialist'?'<img class="career-businessman-office" src="assets/artwork/locations/offices/federal-electric-office-day.webp" alt="Federal Electric executive office, preserved from the former main menu">':'';
+   desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
+    ${image}<div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
+      <div class="career-desk-ledger"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${route.id==='industrialist'?'Factory Ledger':route.id==='investigator'?'Duty & Incident Book':route.id==='criminal'?'Personal Notebook':'Institutional Ward Register'}</strong><span>WASHINGTON · PRIVATE PAPERS</span></div>
+      <div class="career-desk-blotter"><div class="career-desk-sheet">REPORTS<br>AND NOTES</div><button type="button" id="careerDeskMap" class="career-desk-map">CITY MAP<br><small>OPEN</small></button></div>
+      <div class="career-desk-pencil" aria-hidden="true"></div>
+    </div>
+    <p class="career-desk-summary">${escape(route.summary)}</p>
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. The approved office artwork is now here, inside gameplay.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Profession-specific assignments, promotions and autonomous decisions are not implemented yet. The Federal Electric factory is not yours.</p>'}
+    <div class="career-desk-actions"><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
+   desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
+   desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
+   desk.querySelector('#careerDeskJournal').onclick=()=>showTab('notebook');
+   desk.querySelector('#careerDeskMenu').onclick=open;
+   desk.querySelector('#careerDeskWait').onclick=()=>{
+    if(S.paused)return;
+    if(S.phase==='report')return;
+    const spent=window.advanceWorldTime(300,true);
+    save(true);render();
+    const note=document.getElementById('careerDeskDate');
+    if(note&&spent===0)note.textContent+=' · No time remains in this phase';
+   };
+  }
+  const d=desk.querySelector('#careerDeskDate');
+  if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase)+' · '+clockText()+' remaining';
+ }
+ menu.addEventListener('click',e=>{
+  const button=e.target.closest('button');if(!button)return;
+  if(button.dataset.careerPick){choice=routes.normalize(button.dataset.careerPick);message();renderMenu();return}
+  if(button.dataset.careerLoad){load(button.dataset.careerLoad);return}
+  if(button.dataset.careerDelete){
+   deleteProfileById(button.dataset.careerDelete);
+   closeTitleDialog(); // the original deletion UI may open behind the new menu
+   renderMenu();return;
+  }
+  switch(button.id){
+   case 'careerMenuContinue':load(activeProfileId()||readProfiles()[0]?.id);break;
+   case 'careerMenuNew':showNew=true;renderMenu();menu.querySelector('#careerMenuName').focus();break;
+   case 'careerMenuCreateConfirm':create();break;
+   case 'careerMenuCreateCancel':showNew=false;renderMenu();break;
+   case 'careerMenuArchives':renderTitleArchives();break;
+   case 'careerMenuOptions':openTitleDialog('Options','<p>Period menu settings will be added in later builds.</p>');break;
+  }
+ });
+ menu.querySelector('#careerMenuName').addEventListener('keydown',e=>{if(e.key==='Enter')create()});
+ document.addEventListener('keydown',e=>{
+  if(menu.hidden||e.target.closest('input,textarea,select,[contenteditable]'))return;
+  if(e.code==='KeyM'){e.stopImmediatePropagation();e.preventDefault();}
+ },true);
+ // Clicking an old title hotspot cannot reveal the former front page;
+ // that office scene survives only as the Businessman's in-game desk.
+ window.FE_CAREER_SHELL=Object.freeze({open,refreshDesk,renderMenu});
+ refreshDesk();renderMenu();pauseTitleAudio();
+})();
