@@ -1704,7 +1704,7 @@ function renderProfileManager(message=''){
 }
 function showNewProfileForm(){
  const profiles=readProfiles();
- if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Three profiles already exist. Delete one before creating another.');return}
+ if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Four profiles already exist. Delete one before creating another.');return}
  openTitleDialog('New Profile','<div class="title-profile-form"><label>Profile name<input id="newProfileName" maxlength="28" autocomplete="off" placeholder="Executive name or profile name"></label><div id="titleCharacterChoices" class="title-character-choices" aria-label="Character story routes"></div><div class="title-dialog-actions"><button id="createProfileCancel" type="button">Cancel</button><button id="createProfileConfirm" type="button">Create Profile</button></div></div>');
  window.FE_CHARACTERS?.renderChoices?.();
  const input=$('#newProfileName');if(input)input.focus();
@@ -1713,7 +1713,7 @@ function showNewProfileForm(){
  if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')$('#createProfileConfirm').click()});
 }
 function createProfile(name,routeId='industrialist'){
- const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Three profiles already exist. Delete one before creating another.');return}
+ const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Four profiles already exist. Delete one before creating another.');return}
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
  profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
