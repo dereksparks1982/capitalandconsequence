@@ -2,7 +2,7 @@
 
 **Current source: v0.6.34-dev · archived title navigation / shared city rooms · October 22, 2026**
 
-**Latest packaged candidate: v0.6.33 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
+**Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -164,3 +164,11 @@ Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [m
 - **No offline time progress:** the main menu blocks the simulated clock; the map remains a separate in-game overlay. The menu reads the saved profile's game date/phase rather than a real-world Washington clock.
 - **QA:** source-only contracts now assert the retired title can never be painted and the map/dialog are detached; packaged Linux Electron smoke tests traverse desk → map → desk, generic city room → Main Menu, and confirm the hidden title is inert. Version 0.6.34 remains an **unaccepted candidate** pending owner testing.
 - **Deferred:** slot machines, player-friendly gambling odds, map marker number-only labels, gold priority markers and difficulty-mode balancing are separate planned work, not silently bundled into this navigation fix.
+
+
+### v0.6.34 private Linux candidate: confirmed successful
+
+- **[Download v0.6.34 Linux x64 archive](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-59128d984047199e6989/Federal-Electric-0.6.34-linux-x64.tar.gz)**
+- **[SHA-256 checksum](https://github.com/dereksparks1982/federalelectric/releases/download/untagged-59128d984047199e6989/Federal-Electric-0.6.34-linux-x64.tar.gz.sha256)**
+- [Successful GitHub Actions build and packaged smoke tests](https://github.com/dereksparks1982/federalelectric/actions/runs/39865269226), commit `d60e2fef63839aa2741ddf0d81ed99bb5e37f72d`.
+- Private **draft** release (unaccepted): [v0.6.34 candidate](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-59128d984047199e6989). Source contracts, offline/artwork audits, launcher, room-return/navigation regressions, four-career saves, archive/checksum and upload all passed. The one-shot build requester was deleted. Owner must validate this executable before acceptance.
