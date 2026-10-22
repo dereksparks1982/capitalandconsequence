@@ -125,6 +125,19 @@ async function runSmokeTest(win) {
       throw new Error('DOM/city smoke check failed: '+JSON.stringify(structure));
     }
 
+    // The sandboxed preload must reach the atomic disk mirror, not expose Node to the game.
+    const diskCheck=await win.webContents.executeJavaScript(`(async () => {
+      if(!window.FE_DISK_SAVES)return {ok:false,reason:'missing preload'};
+      const id='__smoke-disk-autosave';
+      const json=JSON.stringify({version:15,gameDate:'1890-01-02',companyCash:27});
+      try{
+        const w=await window.FE_DISK_SAVES.write(id,json);
+        const r=await window.FE_DISK_SAVES.read(id);
+        return {ok:w.ok===true&&r.ok===true&&r.json===json,nodeUnavailable:typeof require==='undefined'};
+      }finally{await window.FE_DISK_SAVES.remove(id);}
+    })()`);
+    if(!diskCheck.ok||!diskCheck.nodeUnavailable)throw new Error('Atomic disk save bridge regression: '+JSON.stringify(diskCheck));
+
     await win.webContents.executeJavaScript(`localStorage.setItem('__federalElectricSmokePersistence','ok')`);
     const loaded=waitForLoad(win);
     win.reload();
