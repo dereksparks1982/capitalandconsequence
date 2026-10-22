@@ -91,15 +91,14 @@
   if(lastRenderedRoute!==route.id){
    lastRenderedRoute=route.id;
    desk.dataset.route=route.id;
-   const image=route.id==='industrialist'?'<img class="career-businessman-office" src="assets/artwork/locations/offices/federal-electric-office-day.webp" alt="Federal Electric executive office, preserved from the former main menu">':'';
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
-    ${image}<div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
+    <div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
       <div class="career-desk-ledger"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${route.id==='industrialist'?'Factory Ledger':route.id==='investigator'?'Duty & Incident Book':route.id==='criminal'?'Personal Notebook':'Institutional Ward Register'}</strong><span>WASHINGTON · PRIVATE PAPERS</span></div>
       <div class="career-desk-blotter"><div class="career-desk-sheet">REPORTS<br>AND NOTES</div><button type="button" id="careerDeskMap" class="career-desk-map">CITY MAP<br><small>OPEN</small></button></div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. The approved office artwork is now here, inside gameplay.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Profession-specific assignments, promotions and autonomous decisions are not implemented yet. The Federal Electric factory is not yours.</p>'}
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Profession-specific assignments, promotions and autonomous decisions are not implemented yet. The Federal Electric factory is not yours.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
@@ -141,7 +140,7 @@
   if(e.code==='KeyM'){e.stopImmediatePropagation();e.preventDefault();}
  },true);
  // Clicking an old title hotspot cannot reveal the former front page;
- // that office scene survives only as the Businessman's in-game desk.
+ // the old office remains solely in the archive, not in any playable desk.
  window.FE_CAREER_SHELL=Object.freeze({open,refreshDesk,renderMenu});
  refreshDesk();renderMenu();pauseTitleAudio();
 })();
