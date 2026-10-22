@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','npc-ai.js','housing.js','personal-effects.
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.30','Current package version is v0.6.30');
-check(appSource.includes("APP_VERSION='v0.6.30-dev'"),'Game masthead uses v0.6.30');
-check(read('build-linux.sh').includes('0.6.30'),'Local packaging uses the same number');
+check(pkg.version==='0.6.31','Current package version is v0.6.31');
+check(appSource.includes("APP_VERSION='v0.6.31-dev'"),'Game masthead uses v0.6.31');
+check(read('build-linux.sh').includes('0.6.31'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.30-linux-x64.tar.gz'),'Manual workflow archives v0.6.30');
+check(workflow.includes('0.6.31-linux-x64.tar.gz'),'Manual workflow archives v0.6.31');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -245,4 +245,30 @@ check(index.includes('id="saveFailureBanner"'),'Save failures have a visible war
 check(appSource.includes("catch(err){\n  const message='AUTOSAVE FAILED"),'Quota write failures are caught');
 check(appSource.includes("setSaveWarning(message);\n  return false;"),'Failed autosave is not reported as success');
 check(read('styles.css').includes('.save-failure-banner[hidden]'),'Autosave warning is displayable and hideable');
+// Atomic file mirror foundation. Source tests run without Electron installed.
+const diskStore=require('../desktop/save-store.cjs'),diskRoot=fs.mkdtempSync(path.join(require('os').tmpdir(),'fe-save-qa-'));
+try{
+ const a=JSON.stringify({version:15,gameDate:'1890-01-02',companyCash:23});
+ const b=JSON.stringify({version:15,gameDate:'1890-01-03',companyCash:27});
+ check(diskStore.readSave(diskRoot,'p1').reason==='missing','Absent mirror is not mistaken for an empty valid game');
+ check(diskStore.atomicSave(diskRoot,'p1',a).ok,'First disk save written atomically');
+ check(diskStore.readSave(diskRoot,'p1').json===a,'Disk save round-trips unchanged');
+ check(diskStore.atomicSave(diskRoot,'p1',b).ok,'Later disk save replaces earlier state');
+ check(diskStore.readSave(diskRoot,'p1').json===b,'Latest save remains authoritative in disk mirror');
+ check(fs.readFileSync(path.join(diskRoot,'p1.json.recovery'),'utf8')===a,'Private previous state retained for corruption recovery');
+ check(!fs.readdirSync(diskRoot).some(x=>x.includes('.tmp-')),'Atomic file save leaves no pending temp files');
+ check(diskStore.readSave(diskRoot,'p1').ok,'Valid mirror recognized');
+ fs.writeFileSync(path.join(diskRoot,'p1.json'),'{broken');
+ check(diskStore.readSave(diskRoot,'p1').reason==='corrupt','Corrupt mirror is never accepted');
+ check(fs.readFileSync(path.join(diskRoot,'p1.json.recovery'),'utf8')===a,'Corrupt primary does not erase recovery copy');
+ check(diskStore.deleteSave(diskRoot,'p1').ok&&!fs.existsSync(path.join(diskRoot,'p1.json.recovery')),'Explicit profile deletion deletes the recovery mirror');
+ check(!index.includes('nodeIntegration:true'),'Renderer has no Node privileges');
+ check(read('desktop/main.cjs').includes("preload:path.join(__dirname,'preload.cjs')"),'Packaged renderer connects narrow disk bridge');
+ check(appSource.includes('enqueueDiskWrite(profileId,serialized)'),'Successful legacy autosaves mirror to disk');
+ check(appSource.includes('enqueueDiskDelete(id)'),'Profile deletion also removes the disk mirror');
+ check(pkg.build.files.includes('desktop/save-store.cjs')&&pkg.build.files.includes('desktop/preload.cjs'),'Save bridge packaged in standalone executable');
+ let bad=false;try{diskStore.atomicSave(diskRoot,'../bad',a)}catch(_e){bad=true}
+ check(bad,'Profile IDs cannot traverse out of storage directory');
+}finally{fs.rmSync(diskRoot,{recursive:true,force:true})}
+
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
