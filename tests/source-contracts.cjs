@@ -16,13 +16,13 @@ for(const rel of ['city.js','app.js','npc-ai.js','housing.js','personal-effects.
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.29','Current package version is v0.6.29');
-check(appSource.includes("APP_VERSION='v0.6.29-dev'"),'Game masthead uses v0.6.29');
-check(read('build-linux.sh').includes('0.6.29'),'Local packaging uses the same number');
+check(pkg.version==='0.6.30','Current package version is v0.6.30');
+check(appSource.includes("APP_VERSION='v0.6.30-dev'"),'Game masthead uses v0.6.30');
+check(read('build-linux.sh').includes('0.6.30'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.29-linux-x64.tar.gz'),'Manual workflow archives v0.6.29');
+check(workflow.includes('0.6.30-linux-x64.tar.gz'),'Manual workflow archives v0.6.30');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -241,4 +241,8 @@ check(appSource.includes('function mapTravelRestriction(location)'), 'Map gives 
 check(appSource.includes('if(reached)titleScreenDeskBreak=true'), 'Map only transitions after successful room entry');
 check(appSource.indexOf('save(true);',appSource.indexOf('function openCityRoom('))>appSource.indexOf("overlay.hidden=false;",appSource.indexOf('function openCityRoom(')), 'Room visit is saved after renderer setup succeeds');
 check(appSource.includes('S.currentLocation=priorLocation;'), 'Failed travel restores saved character location');
+check(index.includes('id="saveFailureBanner"'),'Save failures have a visible warning');
+check(appSource.includes("catch(err){\n  const message='AUTOSAVE FAILED"),'Quota write failures are caught');
+check(appSource.includes("setSaveWarning(message);\n  return false;"),'Failed autosave is not reported as success');
+check(read('styles.css').includes('.save-failure-banner[hidden]'),'Autosave warning is displayable and hideable');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
