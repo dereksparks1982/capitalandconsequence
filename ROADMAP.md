@@ -842,3 +842,10 @@ Authoritative station behavior:
 - [x] Keep the title's Resume/Continue route from bypassing a failed profile-load guard.
 - [x] Deleting the active profile no longer allows its in-memory game state to autosave as a legacy backup; selecting another existing profile requires valid stored state.
 - [x] Extend Node source contracts and bump to v0.6.25. Full packaged Electron recovery testing still pending; no executable.
+
+## v0.6.27 planned city slice · Hillsdale (Barry Farm) pin · October 22, 2026
+- [x] Register Hillsdale (Barry Farm), a historically Black landowning neighborhood in southeast Washington founded after the Civil War, as Washington pin **13**.
+- [x] Add a neighborhood street room shell; preserve all existing pins and player map adjustments.
+- [ ] Research/map exact 1890 boundaries and replace provisional map pin coordinates after comparing the actual map artwork.
+- [ ] Add era-appropriate churches, schools, shops, named residents and interactions in a later authorized slice; do not invent them as already functioning.
+- Historical references: Smithsonian Anacostia Community Museum (Barry Farm–Hillsdale) https://anacostia.si.edu/barryfarm/explore-neighborhood ; DC Policy Center (2019) https://www.dcpolicycenter.org/publications/barry-farm-anacostia-history/ .
