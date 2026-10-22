@@ -1,7 +1,8 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { fileURLToPath } = require('url');
+const fileSaves=require('./save-store.cjs');
 
 app.setName('Federal Electric');
 
@@ -426,7 +427,7 @@ function createMainWindow() {
   const win=new BrowserWindow({
     title:'Federal Electric',width:1440,height:900,minWidth:1100,minHeight:720,
     backgroundColor:'#111111',autoHideMenuBar:true,show:false,
-    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true}
+    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,preload:path.join(__dirname,'preload.cjs')}
   });
 
   win.once('ready-to-show',()=>{if(!SMOKE_TEST)win.show();});
@@ -443,6 +444,11 @@ function createMainWindow() {
 
 app.whenReady().then(()=>{
   initDiagnostics();
+  const saveDirectory=path.join(app.getPath('userData'),'profile-autosaves');
+  const fromGame=event=>{if(event.senderFrame?.url!==new URL('file://'+path.join(APP_ROOT,'index.html')).href)throw new Error('Not a Federal Electric game window');};
+  ipcMain.handle('fe:saves:write',(event,{profileId,json})=>{fromGame(event);return fileSaves.atomicSave(saveDirectory,profileId,json)});
+  ipcMain.handle('fe:saves:read',(event,{profileId})=>{fromGame(event);return fileSaves.readSave(saveDirectory,profileId)});
+  ipcMain.handle('fe:saves:remove',(event,{profileId})=>{fromGame(event);return fileSaves.deleteSave(saveDirectory,profileId)});
   createMainWindow();
   app.on('activate',()=>{if(BrowserWindow.getAllWindows().length===0)createMainWindow();});
 });
