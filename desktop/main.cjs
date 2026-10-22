@@ -144,6 +144,42 @@ async function runSmokeTest(win) {
     await loaded;
     const persisted=await win.webContents.executeJavaScript(`localStorage.getItem('__federalElectricSmokePersistence')`);
     if(persisted!=='ok') throw new Error('localStorage did not survive a full renderer reload');
+    // Regress the real four-career UI and profile autosave inside packaged Electron.
+    const fourCareerTest=await win.webContents.executeJavaScript(`(() => {
+      const oldS=S,oldActive=localStorage.getItem('federalElectricActiveProfile'),
+        oldIndex=localStorage.getItem('federalElectricProfilesV1'),
+        oldBlocked=profileSaveReadBlocked,menu=document.getElementById('careerMainMenu'),
+        result={menuVisible:!!menu&&!menu.hidden,routeCount:document.querySelectorAll('[data-career-pick]').length};
+      let id=null;
+      try{
+        document.querySelector('[data-career-pick="wardman"]').click();
+        document.getElementById('careerMenuNew').click();
+        document.getElementById('careerMenuName').value='Wardman Smoke';
+        document.getElementById('careerMenuCreateConfirm').click();
+        id=activeProfileId();
+        const saved=JSON.parse(localStorage.getItem(profileSaveKey(id))||'null');
+        result.newRoute=S.characterRoute==='wardman'&&saved?.characterRoute==='wardman';
+        result.desk=!!document.getElementById('careerDesk')&&document.getElementById('careerDesk').dataset.route==='wardman';
+        result.factoryHidden=getComputedStyle(document.querySelector('nav button[data-nav-group="factory"]')).display==='none';
+        result.reloads=loadProfileById(id)&&S.characterRoute==='wardman';
+        return result;
+      }finally{
+        if(id){localStorage.removeItem(profileSaveKey(id));enqueueDiskDelete(id);}
+        if(oldIndex===null)localStorage.removeItem('federalElectricProfilesV1');
+        else localStorage.setItem('federalElectricProfilesV1',oldIndex);
+        if(oldActive===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',oldActive);
+        S=oldS;profileSaveReadBlocked=oldBlocked;
+        if(menu)menu.hidden=true;
+        titleScreenDeskBreak=false;
+        document.getElementById('titleScreen').hidden=true;
+        window.FE_CAREER_SHELL.refreshDesk();
+        render();
+      }
+    })()`);
+    if(!fourCareerTest.menuVisible||fourCareerTest.routeCount!==4||!fourCareerTest.newRoute||!fourCareerTest.desk||!fourCareerTest.factoryHidden||!fourCareerTest.reloads)
+      throw new Error('Four career menu/save/desk smoke regression: '+JSON.stringify(fourCareerTest));
+
 
     // Test actual map -> Go There -> room visibility and already-here guard
     // inside the packaged Electron renderer, not just existence of DOM nodes.
