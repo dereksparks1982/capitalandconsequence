@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.33-dev · four-career menu foundation · October 22, 2026**
+**Current source: v0.6.34-dev · archived title navigation / shared city rooms · October 22, 2026**
 
 **Latest packaged candidate: v0.6.33 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -154,3 +154,13 @@ Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [m
 - Private draft release: [Federal Electric v0.6.33](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-b86b37b640e44455ddfc).
 - Verified GitHub Actions build: [run 39862944756](https://github.com/dereksparks1982/federalelectric/actions/runs/39862944756), completed **SUCCESS**. Source contracts, local artwork and offline audits, GCC double-click launcher, packaged Electron smoke (including Wardman profile create/reload, navigation, autosave mirror, and other existing regression checks), archive SHA-256 check and draft release asset sizes all passed.
 - The Linux archive (~330 MB) remains a **candidate for owner testing**, not a published or accepted release. No release tag has been published. The build-request workflow was removed after success.
+
+
+## v0.6.34 navigation regression fix: archive old office title
+
+- **Old office title archived, never shown:** original interactive title-frame markup preserved unchanged in `archive/retired-office-title-2026-10-22.html`; original office artwork assets remain available in the Businessman's actual in-game desk. The existing old title DOM is retained only as an inert, hard-hidden compatibility scaffold while old audio/title handlers are removed in future refactoring. It is not an active menu or room.
+- **Navigation repaired:** Step Away From Desk opens the location's room or the Washington map, not the illustrated title; the map now sits outside the title DOM and never reveals it; closing the map restores the visited room or current character desk; returning from a city room opens that character's personal desk, not a generic factory office; city rooms have a direct **Main Menu** button which opens only the modern neutral four-character menu.
+- **All registered city room placeholders** use the same parchment, historical typography, simple border and neutral style as the four-character menu. No new artwork was generated and venue interactions, room identities, map coordinates and saved progress are retained.
+- **No offline time progress:** the main menu blocks the simulated clock; the map remains a separate in-game overlay. The menu reads the saved profile's game date/phase rather than a real-world Washington clock.
+- **QA:** source-only contracts now assert the retired title can never be painted and the map/dialog are detached; packaged Linux Electron smoke tests traverse desk → map → desk, generic city room → Main Menu, and confirm the hidden title is inert. Version 0.6.34 remains an **unaccepted candidate** pending owner testing.
+- **Deferred:** slot machines, player-friendly gambling odds, map marker number-only labels, gold priority markers and difficulty-mode balancing are separate planned work, not silently bundled into this navigation fix.
