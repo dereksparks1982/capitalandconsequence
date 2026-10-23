@@ -25,6 +25,14 @@ He keeps a **personal desk in the station's patrolmen’s duty room**. The stati
 
 The neighborhood is called **Hillsdale** in the live interface; some historical maps refer to the same area as **Barry Farm**. Its internal key remains `hillsdale` for compatibility. Saved games from the earlier two-beat prototype may contain an unfinished Chinatown police incident. The station provides an explicit **refer to sergeant** option to preserve and transfer that obsolete assignment rather than deleting or falsely resolving it. Saved duty flags absent in older profiles default to **off duty**.
 
+## Future personal discovery: corruption beyond the Hillsdale beat
+
+A particular contraband and drug-smuggling ring in **Chinatown** has protection from some corrupt Metropolitan Police officers who accept payments. **The captain may be implicated, complicit through deliberate inaction, unaware, or already investigating the corruption himself.** That truth should be set per campaign and discovered from consistent evidence, not assumed in advance.
+
+**Sam cannot go to Chinatown on duty under his current Hillsdale assignment.** He can explore Chinatown like any civilian **after clocking out**, and may gradually find unsettling information through observations, contacts and records available to him. An official reassignment to Chinatown or access to an internal investigation is a possible later earned career event, never an automatic perk. He need not learn the truth, and off-duty curiosity should not give him police investigative powers.
+
+The ring concerns **individual criminals and police protectors**, while Chinatown itself remains a fully populated neighborhood with independent merchants, families, residents and institutions. Witness knowledge, payments and police records will be causally simulated in future slices. The captain's identity, involvement and the details of any network remain undecided. **This scenario is documented only; not yet active gameplay.**
+
 ## Not yet implemented, do not imply otherwise
 
 A real eight-hour police roster, patrol time/distance mapping, police wages/paydays, promotions, official ordinances for 1878, summons court flow, prisoner processing, witness credibility, a living city dispatch feed, NPC-made crimes, investigators' rank privileges, overnight street shifts, and fully dynamic encounters. These remain Washington-first roadmap tasks.

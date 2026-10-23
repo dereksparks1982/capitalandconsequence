@@ -24,6 +24,20 @@
 
 **Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
 
+## Future Washington case arc: Chinatown smuggling and police corruption · proposed 2026-10-23
+
+**Setting:** A specific Washington trafficking/smuggling network moves contraband, including drugs suitable to the period, through contacts and businesses in Chinatown. **Some Metropolitan Police officers secretly take payments to protect the network**. The criminal ring and its protectors are individually identifiable actors with records, money, schedules and relationships; they are **not representative of Chinatown as a community**. Chinatown continues as an ordinary, living neighborhood, with families, merchants, social life and residents who may have no involvement, oppose the ring, or be harmed by it.
+
+**Player discovery:** Samuel “Sam” Harlan begins as a rookie **assigned on duty to Hillsdale only**. He cannot investigate Chinatown as an official Hillsdale patrol assignment. **Off duty**, as a civilian, he can visit Chinatown like other accessible city locations, talk to residents and observe suspicious circumstances. Any later *official* police work in Chinatown needs an **actually earned assignment, transfer or promotion**, not an automatic exception to the existing shift travel lock. Sam may misunderstand signs, encounter misinformation or fail to discover a lead.
+
+**Uncertain captain:** The police captain's truth is deliberately **not predetermined as always corrupt**. At campaign generation, choose a reproducible hidden variant and persist it to that profile: captain involved; captain knows and ignores it; captain genuinely unaware; or captain investigating corrupt officers. These are *working possible variants*, not a claim every campaign needs identical probabilities. A particular campaign has one coherent underlying reality, not a fact that changes based on player guesses. The captain's reputation, behavior, associates and evidence must agree with that truth.
+
+**NPC cause-and-effect:** Corrupt officers receive plausible hidden payments from concrete sources; protected drug deliveries have routes and risks; missing/altered police records should be traceable to actual authorized actors and times. Witnesses only know what they encountered, rumors can be wrong, personal testimony may be self-serving, and the player should never see the secret conspiracy truth through unearned omniscient UI. The player can follow money, discrepancies, unusual meeting patterns and contradictory witness statements. Avoid guaranteed revelations or turning every officer into a criminal.
+
+**Possible consequences (not implemented):** Sam may protect himself, quietly investigate, report evidence, challenge a corrupt superior, choose not to intervene, or become compromised himself. Suspicion is not proof; accusations should have realistic institutional risks. Captains, corrupt officers and criminals remain active regardless of whether Sam ever encounters the story. This could later intersect with Eli Crowe's **optional** underworld route without forcing Eli to participate.
+
+**Current status:** **Roadmap/canon groundwork only.** No smuggling simulation, police corruption system, named captain, randomized captain truth, evidence-chain code, Chinatown patrol authorization or new role privileges have been built. Future slices must be source-tested, save-stable and respect the Hillsdale-on-duty versus citywide-off-duty travel rules. 
+
 ## v0.6.58-dev · Hillsdale patrol jurisdiction, civilian freedom · October 23, 2026
 
 - [x] Display **Hillsdale** as the neighborhood and its street; keep the existing `hillsdale` place identifier for autosave/map compatibility. Mention Barry Farm only as a historical alternative name.

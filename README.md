@@ -26,6 +26,8 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
+**Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
 ## v0.6.58-dev · Sam Harlan's Hillsdale-only beat and off-duty freedom
 
 **Washington-first correction (October 23, 2026):** The historically known neighborhood previously displayed as **Barry Farm** is now displayed in the game as **Hillsdale**, including its location pin and street room. Its original registry ID, `hillsdale`, remains unchanged to preserve earlier profiles and map records. **Barry Farm** remains an alternate historical place-name in the descriptive text only.

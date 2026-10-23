@@ -83,3 +83,11 @@
 - **Clocking out at the station restores ordinary personal freedom**. Sam may then visit Chinatown or any other open Washington location under civilian rules. Chinatown is **not permanently closed to Sam**, and other careers and NPCs face no new restrictions.
 - Duty status persists per Sam's profile; old saves lacking it are **off duty**. Previously saved pending Chinatown police incidents can be preserved by formally transferring them to a supervisor at the station, not erased or falsely solved.
 - The previously implemented two-beat patrol circuit was an early prototype superseded by this correction. No expanded jurisdiction, police horse, detective duties or promotion is approved by this change.
+
+## 2026-10-23 · Proposed Chinatown smuggling and police-corruption arc
+
+- Washington's Chinatown may contain a **specific, independently acting drug/contraband smuggling network** protected by **some corrupt police officers who receive payments**. Other neighborhood residents and merchants are not treated as accomplices simply because they live or work in Chinatown.
+- The **captain's involvement is unknown and variable by campaign**: possible involvement, deliberate tolerance, actual ignorance, or a secret investigation. Do **not** hardcode guilt, choose/advertise the answer at game start or let NPCs possess knowledge they could not acquire. Preserve one underlying campaign truth and tie all evidence to it.
+- **Sam's on-duty police assignment remains exclusively Hillsdale**, with the police station as the only other duty location. **He can visit Chinatown and other ordinary Washington places off duty as a civilian**, looking into suspicious leads informally. Official Chinatown police jurisdiction is possible **only after a later earned assignment or promotion**.
+- Any investigation should arise through real NPC conduct, suspicious money or police records, personal conversations and earned information. Rumors are fallible. The case can remain unresolved, and the people involved continue their lives independently.
+- **Future design only.** No current police captain identity, smuggling system, secret campaign seed, corruption pay ledger or investigative privileges are created by this documentation update. See ROADMAP.md for the scenario and implementation requirements.
