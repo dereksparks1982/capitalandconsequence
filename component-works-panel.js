@@ -1,6 +1,4 @@
-/* Component Workshop UI. Keeps 1890 bulb widgets hidden only for
- * genuine founding-era saves, never silently alters older profiles.
- */
+/* 1878 Component Workshop UI. The founding workshop is authoritative. */
 (function(root){
  'use strict';
  const engine=root.FE_COMPONENT_WORKS,live=root.FE_COMPONENT_LIVE;
@@ -11,7 +9,7 @@
   const panel=document.createElement('section');
   panel.id='componentWorkshop';panel.className='sheet component-workshop';
   panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph apparatus and electrical components. Incandescent lamps are not yet available.</p>'+
-   '<p id="componentBalance"></p>'+
+   '<p id="componentBalance"></p><p id="componentStaff"></p>'+
    '<form id="cwOrder"><h4>Accept a customer order</h4><label>Customer <select name="customer"></select></label><label>Product <select name="productId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="4" required></label><button type="submit">Accept order · 5 min</button></form>'+
    '<form id="cwBuy"><h4>Buy stock</h4><label>Material <select name="materialId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="20" required></label><button type="submit">Buy materials · 5 min</button></form>'+
    '<form id="cwAssemble"><h4>Assemble goods</h4><label>Order <select name="orderId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="1" required></label><button type="submit">Assemble · real work minutes</button></form>'+
@@ -74,6 +72,11 @@
   panel.querySelector('#componentBalance').textContent='Company balance: $'+S.companyCash.toFixed(2)+
    ' · Workstations: '+state.stations.bench+' bench, '+state.stations.winder+' winder · Materials: '+
    Object.entries(state.materials).map(([k,v])=>k+' '+v).join(', ');
+  const assistant=S.npcSimulation?.agents?.foremanSullivan;
+  const unpaid=S.workshopPayroll?.owedCents||0;
+  panel.querySelector('#componentStaff').textContent='Staff: Charlie Whitcomb (owner, working) + Sullivan (one paid assistant) · assistant wage $1.00 per worked day'+
+   (unpaid?' · outstanding wages $'+(unpaid/100).toFixed(2):'')+
+   (assistant?.status==='present'&&assistant.locationId==='factory'?' · assistant at the works':' · assistant not currently at the works');
   const out=panel.querySelector('#cwOrders');out.replaceChildren();
   if(!state.orders.length)out.textContent='No component orders accepted yet.';
   for(const o of state.orders){
