@@ -6,7 +6,7 @@
 
 > **Current owner correction:** An earlier assistant invented a requirement to preserve old/1890 saves. **That rule is revoked; the owner never authorized it.** Current 1878 game design and properly working current-profile autosaves take priority. Maintaining or migrating old saves is NOT a development requirement. Earlier version notes below are historical, not instructions to preserve backward compatibility.
 
-**Current source candidate: v0.6.73-dev · 1878 Component Works and founding-era Exchange · October 23, 2026**
+**Current source candidate: v0.6.74-dev · Two-person founding workshop and funded assistant payroll · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -33,6 +33,14 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.74-dev · Charlie and one paid assistant (source-only candidate)
+
+**Starting staff:** Charles “Charlie” Whitcomb works as Federal Electric's owner, assisted by exactly **one salaried workshop assistant, Sullivan**. The former named factory foreman has been repurposed as the assistant, not retained as an extra employee. The new 1878 profile begins with `workers:1`, not twelve workers or a general manager. The assistant uses the existing named-resident planner, period-based 8 AM–5 PM weekday workshop schedule, room access, personal errands, conversations, memory and off-duty routines. **This is still the current slot-based NPC model**, not minute-by-minute independent factory operation.
+
+**Cash rule:** Charlie draws no employee wage. Assembly uses the player's actual in-game work time but no fabricated per-minute wage deduction. At 5 PM the company's one assistant earns a **provisional $1.00 per worked game day**, recorded once based on an actual NPC work action. Cash is transferred from company funds to the assistant's persistent NPC account; if the company cannot afford the wage, the unpaid balance becomes explicit arrears paid when funds later permit. Workshop cash, reporting expenses, and the assistant's earned personal funds reconcile; no extra wage is minted by NPC time-slot simulation. The existing legacy 1890 payroll is bypassed for component-era saves, not maintained as a compatibility requirement.
+
+**Verification boundary:** Standalone V8 execution of the current `workshop-staff.js`, component and NPC economy modules passed the focused assistant payroll, arrears, save/repeat, economic action and agency tests; syntax guards passed for edited JavaScript. **The full new GitHub Actions source suite and Electron gameplay have not yet been independently confirmed**. The parent milestones for full 24-hour economic accounting, staffing expansion, newspapers, hiring and real autonomous workshop production remain open. No Linux executable or accepted release created.
 
 ## v0.6.73-dev · Founding-era exchange quotations (source-only candidate)
 
