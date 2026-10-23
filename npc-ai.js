@@ -108,21 +108,30 @@
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
   return exchanged;
  }
+ function planDecision(w,def,a,period,signature){
+  const agency=window.FE_NPC_AGENCY;
+  if(!agency)throw Error('NPC agency module required before world simulation');
+  const situation=agency.observe(def,a,S,w),choice=agency.choose(def,a,situation,period);
+  // Private intention, updated only once per reached routine period.
+  a.lastDecision={goal:choice.goal,reason:choice.reason,score:choice.score,
+   situation:{...situation},at:signature};
+  return choice;
+ }
  function stepOnce(w,absolute){
   const slot=absolute%4,turn=Math.floor(absolute/4)+1;
   for(const def of DEFINITIONS){
    const a=w.agents[def.id];
-   const index=randomIndex(w.seed,def.id,absolute,'goal',def.goals.length);
-   const rest=a.energy<=32&&night;
+   const decision=planDecision(w,def,a,SLOT_NAMES[slot],'legacy|'+absolute);
+   const rest=decision.rest;
    const destination=rest?null:def.places[slot];
-   a.goal=rest?'rest-and-recover':def.goals[index];
+   a.goal=decision.goal;
    a.locationId=destination;
    a.activity=rest?null:def.activities[slot];
    a.status=destination?'present':'off-duty';
    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastStep=absolute;
    // A private log of completed routine decisions, never a public newspaper assertion.
-   w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal});
+   w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal,decisionReason:decision.reason});
   }
   exchangeLocalRumors(w,absolute);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
@@ -133,16 +142,16 @@
   const turn=Math.max(1,Math.floor(+S.turnSerial||1));
   for(const def of DEFINITIONS){
    const a=w.agents[def.id],period=window.FE_NPC_CALENDAR.at(c,def);
-   const index=hash(w.seed+'|'+def.id+'|'+key+'|goal')%def.goals.length;
-   const rest=a.energy<=32&&period.slot>=2,destination=rest?null:period.locationId;
-   a.goal=rest?'rest-and-recover':def.goals[index];
+   const decision=planDecision(w,def,a,period.name,key);
+   const rest=decision.rest,destination=rest?null:period.locationId;
+   a.goal=decision.goal;
    a.locationId=destination;
    a.activity=rest?null:period.activity;
    a.status=destination?'present':'off-duty';
    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastCalendarSlot=key;
    w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
-    slot:period.name,locationId:destination,goal:a.goal});
+    slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason});
   }
   exchangeLocalRumors(w,hash(key),turn);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
@@ -191,8 +200,9 @@
   const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
   if(already)return {ok:false,reason:'You have already discussed that today.'};
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
+  const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
   const reply=topic==='greet'
-   ?(known?'Good to see you again.':'Good day. I am '+def.name+'.')
+   ?(known?(affinity>=4?'Welcome back. It is good to have a familiar face here.':'Good to see you again.'):'Good day. I am '+def.name+'.')
    :topic==='city'?def.publicRemark:(a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
   // The first introduction improves familiarity once; repeating visits cannot
   // generate unlimited reputation or cash.

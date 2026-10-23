@@ -12,7 +12,7 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['time-transactions.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
@@ -248,6 +248,8 @@ check(city.getLocation('hillsdale').map?.n===13,'Barry Farm is numbered map pin 
 check(city.getRoom('hillsdale','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
 
 check(index.includes('src="npc-ai.js?v='),'NPC AI loads as a local offline module');
+check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
+check(read('npc-ai.js').includes('planDecision(w,def,a'),'Both NPC period types use private utility planning');
 check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('id="npcContactItinerary"'),'Public itinerary module and Contact File panel are wired');
 check(appSource.includes('window.FE_NPC_AI?.renderContactItineraries?.()'),'Main journal rendering refreshes learned NPC itineraries');
 check(read('npc-ai.js').includes("['city','Ask About Washington']"),'A separate public conversation topic is offered');
@@ -256,7 +258,7 @@ check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migra
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
 let npcSaved=0;
-const npcCtx={window:{FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
