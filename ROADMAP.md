@@ -1005,3 +1005,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Transition resident routine slots to the authoritative 24-hour calendar, with venue hours and schedules reviewed explicitly.
 - [ ] Implement deeper dialogue branches, personal goals and consequences after the existing location and time services stabilize.
 - [ ] No executable or accepted release in this slice.
+
+
+## v0.6.40-dev · NPC presence and authored dialogue coherence
+- [x] Reconcile Li Wen, Chen Mei and Pavel Orlov static room dialogue with scheduled NPC presence, preventing conversations from a different building or while off duty.
+- [x] Recheck co-location immediately before selecting a dialogue, not just when building a room.
+- [x] Dated per-route conversation memory is idempotent for the same date, with a personal note and no invented revelations.
+- [x] NPC schedule transitions refresh room people and visitor rows together.
+- [ ] The new absolute 24-hour clock must replace legacy morning/night slots before weekday routines and travel durations can be fully trusted.
+- [ ] Expand evidence/rumor distinction and goal-driven dialogue without leaking hidden NPC motives.

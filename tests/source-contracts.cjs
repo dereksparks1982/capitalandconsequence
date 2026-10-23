@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-ai.js','world-clock.js'
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.39','Current package version is v0.6.39');
-check(appSource.includes("APP_VERSION='v0.6.39-dev'"),'Game masthead uses v0.6.39');
-check(read('build-linux.sh').includes('0.6.39'),'Local packaging uses the same number');
+check(pkg.version==='0.6.40','Current package version is v0.6.40');
+check(appSource.includes("APP_VERSION='v0.6.40-dev'"),'Game masthead uses v0.6.40');
+check(read('build-linux.sh').includes('0.6.40'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.39-linux-x64.tar.gz'),'Manual workflow archives v0.6.39');
+check(workflow.includes('0.6.40-linux-x64.tar.gz'),'Manual workflow archives v0.6.40');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -383,4 +383,8 @@ npcCtx.window.FE_CITY.currentLocation=()=>({locationId:'factory'});
 check(npc.talkAtLocation('madamStar','work').ok===false,'NPC cannot be addressed from another building');
 check(npc.talkAtLocation('foremanSullivan','greet').ok===false,'Off-duty NPC cannot be talked to');
 check(read('npc-ai.js').includes('fe-npc-visitor-actions'),'NPCs have local contact buttons');
+check(appSource.includes('const physicallyPresent=()=>!resident')&&appSource.includes("if(!physicallyPresent())continue"),'Authored room speakers obey actual NPC presence');
+check(appSource.includes("if(!physicallyPresent()){output.textContent=npc.name+' has left"),'Conversations check for departed NPCs on click');
+check(appSource.includes("m.key==='authored-conversation'&&m.withId===route&&m.date===S.gameDate"),'Static NPC encounters are once per profile and date');
+check(read('npc-ai.js').includes('window.FE_CITY?.refreshRoomPeople?.()'),'NPC schedule updates refresh authored room speakers');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

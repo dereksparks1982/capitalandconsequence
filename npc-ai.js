@@ -105,6 +105,7 @@
   if(overlay&&!overlay.hidden){
    const location=window.FE_CITY?.currentLocation?.();
    if(location){
+    window.FE_CITY?.refreshRoomPeople?.();
     window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.locationId);
     renderRoomVisitors(location.locationId);
    }
@@ -166,7 +167,9 @@
   if(!a||typeof withId!=='string'||!withId||typeof kind!=='string'||!kind)return false;
   const delta=Math.max(-10,Math.min(10,Math.floor(+relationshipDelta||0)));
   a.relationships[withId]=Math.max(-100,Math.min(100,(+a.relationships[withId]||0)+delta));
-  a.memories.push({key:kind,withId,turn:Math.max(1,Math.floor(+S.turnSerial||1)),relationshipDelta:delta});
+  a.memories.push({key:kind,withId,turn:Math.max(1,Math.floor(+S.turnSerial||1)),
+   date:/^\d{4}-\d{2}-\d{2}$/.test(S.gameDate||'')?S.gameDate:null,
+   locationId:window.FE_CITY?.currentLocation?.()?.locationId||null,relationshipDelta:delta});
   if(a.memories.length>32)a.memories.splice(0,a.memories.length-32);
   if(typeof save==='function')save(true);
   return true;
