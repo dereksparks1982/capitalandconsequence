@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.41-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.42-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -732,7 +732,7 @@ function restoreStockTradeQuantities(){
   renderTradeEstimate(k);
  }
 }
-function brokerChannel(){return window.FE_BROKER?.channel?.(S,currentCityLocation().locationId)||null}
+function brokerChannel(){return window.FE_BROKER?.channel?.(S,currentCityLocation().locationId,S.characterRoute)||null}
 function renderBrokerOffice(){
  const panel=document.getElementById('cityRoomBrokerage');if(!panel)return;
  const active=cityRoomSession.locationId==='brokerOffice'&&!cityRoomSession.dev;
@@ -765,7 +765,7 @@ function brokerPlaceOrder(direction){
   ?'Broker accepted '+(direction>0?'purchase':'sale')+' of '+qty+' '+k+' shares. Personal cash: '+cash(S.personalCash)+'.'
   :document.getElementById('notice')?.textContent||'Order not accepted.';
 }
-function tradeQty(k){const el=$('#qty_'+k),n=Math.floor(Number(el?.value));return Number.isFinite(n)&&n>0?n:0}
+function tradeQty(k){const el=$('#qty_'+k),n=Number(el?.value);return Number.isSafeInteger(n)&&n>0?n:0}
 function renderTradeEstimate(k){const el=$('#estimate_'+k);if(!el)return;const qty=tradeQty(k),x=S.stocks[k];if(!qty){el.textContent='';return}const commission=Math.max(1,qty*.05);el.textContent='Buy total '+cash(x.price*qty+commission)}
 function renderStocks(){
  snapshotStockTradeQuantities();
@@ -819,7 +819,7 @@ window.tradeMaterial=(k,direction,forcedQty=null)=>{
  save();render();
 }
 window.sellAllMaterial=k=>{const qty=Math.floor(S.materials[k]||0);if(!qty)return note('No '+(MATERIAL_MARKET[k]?.name||k).toLowerCase()+' inventory to sell.');window.tradeMaterial(k,-1,qty)}
-window.trade=(k,direction,forcedQty=null)=>{if(S.paused)return note('The game is paused.');if(!businessOpen())return note('The Federal Exchange is closed for the night.');if(!brokerChannel())return note('Stock orders require a visit to your broker. After repeated visits, send telegrams from your executive office.');const qty=forcedQty||tradeQty(k),x=S.stocks[k],p=S.portfolio[k];if(!qty)return note('Enter a valid number of shares.');const commission=Math.max(1,qty*.05),gross=x.price*qty;if(direction>0){const total=gross+commission;if(S.personalCash<total)return note('Insufficient personal cash. Purchase requires '+cash(total)+' including commission; available cash is '+cash(S.personalCash)+'.');S.personalCash-=total;p.shares+=qty;p.cost+=total;S.transactions.push({date:displayDate(),action:'BUY',ticker:k,shares:qty,price:x.price,amount:-total,realized:0});note('Bought '+qty+' '+k+' at '+cash(x.price)+' · total cost '+cash(total)+' · cash available '+cash(S.personalCash)+'.')}else{if(p.shares<qty)return note('Not enough '+k+' shares. You own '+p.shares+'.');const avg=p.cost/p.shares,proceeds=gross-commission,costBasis=avg*qty,realized=proceeds-costBasis;p.shares-=qty;p.cost=Math.max(0,p.cost-costBasis);if(p.shares===0)p.cost=0;p.realized=(p.realized||0)+realized;S.personalCash+=proceeds;S.transactions.push({date:displayDate(),action:'SELL',ticker:k,shares:qty,price:x.price,amount:proceeds,realized});note('Sold '+qty+' '+k+' · proceeds '+cash(proceeds)+' · realized '+(realized>=0?'profit ':'loss ')+cash(Math.abs(realized))+' · cash available '+cash(S.personalCash)+'.')}save();render()}
+window.trade=(k,direction,forcedQty=null)=>{if(S.paused)return note('The game is paused.');if(!businessOpen())return note('The Federal Exchange is closed for the night.');if(!brokerChannel())return note('Stock orders require a visit to your broker. Only the Federal Electric proprietor may send telegrams from the executive office after repeated meetings.');const qty=forcedQty===null?tradeQty(k):Number(forcedQty),x=S.stocks[k],p=S.portfolio[k];if(!Number.isSafeInteger(qty)||qty<1)return note('Enter a positive whole number of shares.');if(!x||!p||!stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4)))return note('That security is not listed on the Federal Exchange in this year.');const commission=Math.max(1,qty*.05),gross=x.price*qty;if(direction>0){const total=gross+commission;if(S.personalCash<total)return note('Insufficient personal cash. Purchase requires '+cash(total)+' including commission; available cash is '+cash(S.personalCash)+'.');S.personalCash-=total;p.shares+=qty;p.cost+=total;S.transactions.push({date:displayDate(),action:'BUY',ticker:k,shares:qty,price:x.price,amount:-total,realized:0});note('Bought '+qty+' '+k+' at '+cash(x.price)+' · total cost '+cash(total)+' · cash available '+cash(S.personalCash)+'.')}else{if(p.shares<qty)return note('Not enough '+k+' shares. You own '+p.shares+'.');const avg=p.cost/p.shares,proceeds=gross-commission,costBasis=avg*qty,realized=proceeds-costBasis;p.shares-=qty;p.cost=Math.max(0,p.cost-costBasis);if(p.shares===0)p.cost=0;p.realized=(p.realized||0)+realized;S.personalCash+=proceeds;S.transactions.push({date:displayDate(),action:'SELL',ticker:k,shares:qty,price:x.price,amount:proceeds,realized});note('Sold '+qty+' '+k+' · proceeds '+cash(proceeds)+' · realized '+(realized>=0?'profit ':'loss ')+cash(Math.abs(realized))+' · cash available '+cash(S.personalCash)+'.')}save();render()}
 window.sellAll=k=>{const qty=S.portfolio[k].shares;if(!qty)return note('No '+k+' shares to sell.');window.trade(k,-1,qty)}
 function stepHiddenMarket(){
  const sectors=[...new Set(Object.values(S.stocks).map(x=>x.sector))],sectorMove={};sectors.forEach(s=>sectorMove[s]=(Math.random()-.5)*.0012);

@@ -1024,3 +1024,11 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Add source tests for beliefs, hearsay, contradictory rumors and one-profile isolation.
 - [ ] Feed the knowledge records from actual shared-clock NPC encounters, investigations, letters and witnessing events.
 - [ ] Event publication needs explicit editor/newspaper decision rules; never print private thoughts automatically.
+
+
+## v0.6.42-dev · Consistent brokerage access
+- [x] Require the industrialist route for company-office telegram trading; keep in-person broker-office share access available to all four careers.
+- [x] Check whole positive integer order quantities and stock listing year at transaction execution, independent of UI state.
+- [x] Add source regression cases for each non-business career, ordinary broker visits, and period-ineligible stock orders.
+- [ ] Order delivery latency, confirmations, office hours and remote wire costs need the unified 24-hour clock and historical research.
+- [ ] Continue person-specific relationships and information reliability without treating tips as certain predictions.

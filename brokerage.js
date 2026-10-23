@@ -16,10 +16,10 @@
   if(b.lastVisitDate!==date){b.lastVisitDate=date;b.visits++}
   return progress(save);
  }
- function channel(save,locationId){
+ function channel(save,locationId,careerId='industrialist'){
   const b=ensure(save);
   if(locationId==='brokerOffice')return 'office';
-  if(locationId==='factory'&&b.visits>=3)return 'telegram';
+  if(locationId==='factory'&&careerId==='industrialist'&&b.visits>=3)return 'telegram';
   return null;
  }
  // Publicly posted price histories only: never read hiddenPrice or future events.
