@@ -11,6 +11,10 @@
 
 **Build an electrical empire in alternate-history Washington, D.C., in the late nineteenth century.**
 
+**Approved future campaign opening: January 2, 1878.** Federal Electric's earliest products will be **electrical and telegraph components**, not mass-produced light bulbs. A working component business and its customers must come first. Later, technological advances, manufacturing investment, and possible patent or licensing arrangements allow incandescent lamp production. The **1893 alternate-history Washington World's Fair** offers a major contract to supply fairground bulbs and a possible front-page Metropolitan Ledger story if awarded; only **afterward** does a separate opportunity to compete for a modernized D.C. streetlighting contract arise. Washington's earlier 1880s electric **arc** streetlights are historically distinct from ordinary incandescent lamps. The actual 1893 World's Columbian Exposition took place in Chicago.
+
+**Implementation status:** This is an **approved roadmap direction only**. Current game code still opens campaigns in **1890**, and current early factory production is not yet rebuilt around 1878 component manufacturing. The full [1878-to-fair progression and Russian-language NPC requirements are on the roadmap](ROADMAP.md).
+
 Federal Electric is a standalone historical business and life simulation about running a growing electrical company while the rest of Washington keeps moving around you.
 
 You buy materials, negotiate contracts, run the factory, trade stocks, manage company money, follow the newspaper, make contacts, attend races and fights, sit in poker rooms, and decide how much of your limited day you are willing to spend away from the business.
@@ -19,7 +23,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.48-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.53-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -38,6 +42,8 @@ Federal Electric remains the company. Its electrical-lighting factory has contra
 The fictional Federal Exchange contains 50 securities with evolving quotations, a personal portfolio and corporate histories. Company Cash and Personal Cash stay separate. Trade and gambling decisions should not silently spend company funds.
 
 The Metropolitan Ledger, Contacts, Journal, and pastimes introduce information that may be incomplete, misleading, delayed or disputed. Separate social groups should eventually know different facts rather than exposing one global omniscient reputation score.
+
+**Russian-speaking Washington:** The planned NPC population will include **at least one resident who speaks only Russian**, so interviews, negotiation, and daily exchanges may require language learning or a real interpreter. He will be a fully original, historically plausible Russian immigrant with the morally complex, guarded, loyal-or-dangerous character depth associated with Niko Bellic (who is **Serbian**, not Russian). His 1878 story will not copy Niko's twentieth-century background. Russian Trade Hall and period-appropriate Imperial Russian connections remain in the setting. This is planned, **not yet operational multilingual dialogue AI**.
 
 ## Getting around Washington
 
