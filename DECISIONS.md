@@ -1,6 +1,13 @@
 # Capital & Consequence · Recorded Design Decisions
 
-> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+
+## 2026-10-23 · v0.6.73 · Founding-era Exchange slice
+
+- For 1878-only new profiles, the share quotation sheet uses eight invented period-suitable railway, telegraph, banking, coal/iron, shipping and machine-works issuers. Fictional issuers and opening prices are **gameplay balancing and alternate-world canon**, not claims about real corporations or historical prices.
+- Only securities actually available in the current game year appear in the active quotation sheet, index and sector filters. Future-company symbols are gated at the back end and never accrue invented market movements or published history before their listing year.
+- Older 1890-origin profiles keep their historical stock symbol/portfolio seed. Save dates, share balances and legitimate trading history are not overwritten to force a new 1878 economy.
+- This is one small checked market submilestone, **not** a declaration that 1878 company payroll, cash settlement, newspaper or stock-market research are finished. Targeted V8 source execution has passed; full new GitHub Source QA status and a real Electron playtest remain unconfirmed. No executable authorized.
 
 ## 2026-10-23 · v0.6.72 · Playable founding company
 
