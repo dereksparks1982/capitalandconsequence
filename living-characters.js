@@ -5,14 +5,16 @@
  'use strict';
  const PATHS=Object.freeze({
   investigator:Object.freeze(['public-service','private-detective','political-career','compromised']),
-  criminal:Object.freeze(['petty-offender','organized-crime','suspected-serial-offender','quiet-underworld'])
+  criminal:Object.freeze(['petty-offender','organized-crime','suspected-serial-offender','quiet-underworld']),
+  wardman:Object.freeze(['hospital-attendant','medical-apprentice','institutional-administrator','private-reformer'])
  });
  const SCHEDULE=16; // 4 business turns/month; each milestone is four calendar months.
  // Public social venues only, always taken from the shared registered city.
  // Names, legal statuses and private career arcs are deliberately not revealed.
  const PLACES=Object.freeze({
   investigator:Object.freeze(['metropolitanPolice','washingtonArena','star','russianTradeHall','whiteHouse','universityMaryland']),
-  criminal:Object.freeze(['secondNightclub','star','workingPoker','washingtonArena','commercePoker','russianTradeHall'])
+  criminal:Object.freeze(['secondNightclub','star','workingPoker','washingtonArena','commercePoker','russianTradeHall']),
+  wardman:Object.freeze(['governmentHospital','governmentHospital','universityMaryland','metropolitanPolice','home','star'])
  });
  function placeFor(seed,id,turn){
   const spots=PLACES[id]||[];
@@ -32,7 +34,11 @@
    if(id===S.characterRoute)continue;
    if(!world.actors[id]||typeof world.actors[id]!=='object'){
     const choices=PATHS[id];
-    world.actors[id]={id,arc:choices[roll(world.seed,id,'arc',choices.length)],stage:0,lastTurn:0,status:'active',
+    const priorCompleted=Math.floor(world.lastProcessedTurn/SCHEDULE);
+    world.actors[id]={id,arc:choices[roll(world.seed,id,'arc',choices.length)],
+      // Legacy saves may already be years into the story. Catch up quietly
+      // without inventing newspaper events the player has never seen.
+      stage:priorCompleted,lastTurn:priorCompleted*SCHEDULE,status:'active',
       locationId:null,locationTurn:0};
    }
    const actor=world.actors[id];
@@ -51,6 +57,12 @@
    if(arc==='private-detective')return ['PRIVATE INQUIRY OFFICE OPENS','A former District investigator has opened an independent detective practice.',1];
    if(arc==='political-career')return ['INVESTIGATOR ENTERS CIVIC AFFAIRS','A Washington detective is becoming increasingly involved in public life.',1];
    return k<2?['QUESTIONS RAISED ABOUT POLICE CASE','Officials are reviewing complaints concerning an investigation.',1]:['INTERNAL POLICE INQUIRY WIDENS','District officials have opened a wider review of alleged misconduct.',2];
+  }
+  if(id==='wardman'){
+   if(arc==='hospital-attendant')return k<2?['HOSPITAL SERVICE DRAWS INTEREST','Washington hospital staff are preparing changes to their daily ward routines.',1]:['HOSPITAL ATTENDANT EARNS NEW DUTIES','An attendant at a District institution has taken on additional responsibilities.',1];
+   if(arc==='medical-apprentice')return k<2?['MEDICAL TRAINING ATTRACTS APPLICANTS','Washington medical students and trainees are seeking institutional placements.',1]:['YOUNG MEDICAL WORKER BEGINS NEW POST','A local trainee has accepted a more advanced hospital appointment.',1];
+   if(arc==='institutional-administrator')return k<2?['HOSPITAL RECORDKEEPING REVISED','Institutional staff are discussing improvements to Washington hospital accounts and records.',1]:['DISTRICT INSTITUTION APPOINTMENTS REPORTED','A Washington institution reports changes in internal administrative duties.',1];
+   return k<2?['PRIVATE CHARITABLE INQUIRY BEGINS','A private Washington resident is making inquiries into hospital and relief work.',1]:['CHARITABLE WORK EXPANDS IN DISTRICT','A local resident is organizing a modest network of charitable assistance.',1];
   }
   if(arc==='petty-offender')return k<2?['SHOPKEEPERS REPORT THEFTS','Several Washington merchants report a series of small thefts.',1]:['LOCAL SUSPECT QUESTIONED','Police questioned a suspect after a fresh set of reported petty thefts.',1];
   if(arc==='organized-crime')return k<2?['UNLICENSED CLUBS DRAW NOTICE','Officials report closer scrutiny of an underground gambling network.',1]:['POLICE PROBE CRIMINAL ORGANIZATION','Investigators describe a growing pattern of coordinated extortion and illegal gaming.',3];

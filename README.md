@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.46-dev · archived title navigation / shared city rooms · October 22, 2026**
+**Current source: v0.6.47-dev · archived title navigation / shared city rooms · October 22, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -17,7 +17,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.46-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.47-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -65,7 +65,7 @@ Venue opportunity records and **location checks for existing wagering and club a
 
 **Businessman, Patrolman, Layman and Wardman** are selectable starting profiles, with independent autosaves and access to the common Washington map, public locations, Journal and basic personal desk. **Only Businessman has a fully implemented profession-specific career**: the Federal Electric factory, contracts, payroll and treasury. Patrolman (police), Layman (ordinary civilian with optional criminal paths), and Wardman (institutional career) remain **early playable desk/city foundations**, not complete simulations of their professions.
 
-The investigator and civilian/underworld counterpart already have modest autonomous background lives with profile-stable progress, locations and selected newspaper dispatches. The Wardman counterpart does **not yet** have an equivalent fully developed autonomous arc. Seven additional persistent Washington residents have schedule foundations, firsthand in-room conversations, limited relationship memory and private rumor records. These are **rule-based systems, not generative artificial intelligence**. Future protagonists share one Washington *inside a single save*; separate saved profiles are not synchronized worlds. See [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
+The investigator and civilian/underworld counterpart already have modest autonomous background lives with profile-stable progress, locations and selected newspaper dispatches. The Wardman counterpart now has an **early autonomous institutional-life arc** as well, including per-profile seeded branches and place visits, but none of the three unplayed careers is yet a deep autonomous human simulation. Seven additional persistent Washington residents have schedule foundations, firsthand in-room conversations, limited relationship memory and private rumor records. These are **rule-based systems, not generative artificial intelligence**. Future protagonists share one Washington *inside a single save*; separate saved profiles are not synchronized worlds. See [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
 
 ## Possible institutional venture: Blackwood Asylum
 
@@ -183,56 +183,61 @@ The map's Stockbroker pin 14 now has an in-room personal securities order desk. 
 This is an initial brokerage slice: orders currently confirm immediately, pending a real message-delivery model. **The old 60-minute day/night countdown is still active** despite the requested 24-hour game clock; it must be migrated across market, NPC and factory systems before claiming the time redesign is complete. Period-accurate securities and broker tips remain future work. Godot experimentation is shelved. No new executable or release is authorized.
 
 
-## v0.6.46-dev · Broker advisories (October 22, 2026)
+## v0.6.47-dev · Broker advisories (October 22, 2026)
 
 On a real broker office visit, owners of shares receive a cautious assessment from publicly posted quotation history. Declining holdings may prompt an opinion to consider selling, but the broker never reads hidden future prices. The advice is saved once per visited date, appears at the broker's desk and is copied to the personal journal. Reloading or visiting again on the same date does not reroll it. This is a rule-based NPC service, not predictive artificial intelligence. No executable or release produced.
 
 
-## v0.6.46-dev · 24-hour calendar kernel (October 22, 2026)
+## v0.6.47-dev · 24-hour calendar kernel (October 22, 2026)
 
 The source-only `world-clock.js` engine now exposes actual 24-hour calendar positions, 12-hour player-facing clock formatting, midnight rollover, weekdays, and caller-supplied opening-hours checks. It calculates the next opening date across nonworking weekdays and advances events through action-driven multi-day jumps without offline time passing. Tests cover exact open/close boundaries, weekends, and save round-trips. **Venue hours and activity durations are not invented. The existing gameplay still uses its legacy day/night countdown until every major clock consumer is migrated**. This is not a finished 24-hour gameplay clock. No executable was packaged.
 
 
-## v0.6.46-dev · Washington map filtering and labels (October 22, 2026)
+## v0.6.47-dev · Washington map filtering and labels (October 22, 2026)
 
 Washington map pins show their **numbers only by default**. Names appear on mouse hover, keyboard focus, or selecting/tapping a pin. The optional **Show Names** control reveals all names, while the **Locations** category selector filters the visible pins by the established city-registry category. Categories come only from actual mapped places, not fictitious destinations. Filters change the *view*, never physical travel eligibility, invitations, saves or pin coordinates. This source slice is not an accepted new executable.
 
 
-## v0.6.46-dev · First local resident conversations (October 22, 2026)
+## v0.6.47-dev · First local resident conversations (October 22, 2026)
 
 Seven persistent NPCs now offer **Greet** and **Ask About Work** buttons while physically present in a Washington room. Conversations are available only when the NPC and protagonist occupy the same location at the current simulated schedule slot. Introductions create modest profile-local relationship memory, and each conversation topic may be used only once per game date to prevent repeated trust farming. A journal note records what was **actually said**, not private motives or confidential goals. Reloading a room does not reset these meetings. These are intentionally simple, deterministic rule-based social interactions, **not a generative conversational AI** and not a substitute for the unfinished 24-hour runtime migration. Durations and later interactive dialogue remain to be defined. No executable packaged.
 
 
-## v0.6.46-dev · Resident schedule consistency (October 22, 2026)
+## v0.6.47-dev · Resident schedule consistency (October 22, 2026)
 
 Existing authored location dialogue for Li Wen, Chen Mei and Pavel Orlov is now tied to those characters' persistent NPC presence. A resident who is elsewhere or off duty cannot remain indefinitely available as a separate static talk button. If a person leaves between rendering and the conversation, the action refuses rather than implying the meeting happened. Conversations add a once-per-date encounter memory and a modest journal entry without manufacturing secret knowledge. NPC routine updates refresh the room's authored people as well as the visitor list. This remains an **early social simulation**, still awaiting the unified 24-hour runtime clock and richer individual decision-making. No executable packaged.
 
 
-## v0.6.46-dev · Per-NPC facts and hearsay (October 22, 2026)
+## v0.6.47-dev · Per-NPC facts and hearsay (October 22, 2026)
 
 A new offline `npc-knowledge.js` module gives every simulated character **their own evidence and beliefs**, keyed by information source, date and confidence. An NPC may hold a mistaken belief; sharing it only passes what that NPC *believes*, with reduced confidence. Neither an NPC's private record nor a rumor automatically becomes public news. Direct introductions now record personal first-hand acquaintance as private knowledge in that profile's NPC simulation. Duplicate facts from the same source/date cannot be farmed; separate sources may disagree without being silently overwritten. This is an auditable rule-based memory system, **not generative AI**. It does not migrate the live day/night countdown and does not imply a finished conversation system. No executable packaged.
 
 
-## v0.6.46-dev · Brokerage career and order integrity (October 22, 2026)
+## v0.6.47-dev · Brokerage career and order integrity (October 22, 2026)
 
 Stockbroker relationships remain personal to each saved profile. In-person brokerage remains available to **all four careers**, but telegram access from the Federal Electric executive office is exclusive to the **Businessman who controls that office**. Visiting the building as a Patrolman, Layman, or Wardman cannot silently grant corporate-office communication privileges. The actual stock-order execution function now validates whole safe share quantities and rejects securities not yet listed in the simulated year, even when invoked outside its visible controls. These are source-only safeguards, not new price-prediction or automated telephone mechanics. No executable packaged.
 
 
-## v0.6.46-dev · Private, location-bound rumor exchange (October 22, 2026)
+## v0.6.47-dev · Private, location-bound rumor exchange (October 22, 2026)
 
 Scheduled NPCs can exchange **their own known claims** with another resident only when both are present at the same city location during a processed simulation slot. Each attempted exchange is deterministic per saved profile and time slot, influenced by their sociability, so re-opening a room does not reroll the result. Hearsay has lower confidence than firsthand knowledge; identical secondhand reports from the same speaker are not duplicated on every game date. Successful exchanges record private provenance and the meeting place. **Gossip is never automatically printed in the Metropolitan Ledger**. This is the first autonomous gossip foundation, not a complete AI gossip or conversation model. Source-only, no executable packaged.
 
 
-## v0.6.46-dev · Weekly appointments on a real 24-hour clock (October 22, 2026)
+## v0.6.47-dev · Weekly appointments on a real 24-hour clock (October 22, 2026)
 
 The new offline `npc-daybook.js` service calculates NPC/venue appointment availability from an **absolute saved calendar minute**, including weekdays, late-night/overnight meetings, exact closing minutes, and the next weekly occurrence after a missed gathering. No fictional location's actual weekday or operating hours have been hard-coded: those rules must be supplied by approved historical/gameplay schedules. Source regression tests demonstrate Friday-night-to-Saturday, missed appointments and one-week recurrence with **test-only** times. The existing playable runtime remains on the legacy countdown until all major systems can adopt the new clock together, so this is a calendar scheduling foundation rather than a claim that existing Washington venues now run on the 24-hour clock. No executable packaged.
 
 
-## v0.6.46-dev · Earned NPC contact cards and current-status documentation (October 22, 2026)
+## v0.6.47-dev · Earned NPC contact cards and current-status documentation (October 22, 2026)
 
 Face-to-face greetings with scheduled NPCs now add the person to that profile's **Contact File**, using their established identity. Contacts cannot be gained through a remote dialogue request or by opening a location while the resident is absent. A card represents acquaintance only, **not guaranteed cooperation, trust, secret knowledge, or telephone access**. Later contact systems may add richer source-qualified information. Updated the README's current overview to accurately state four selectable career foundations, fourteen mapped pins, four profiles, the old packaged candidate and incomplete shared-calendar migration. Source-only, no executable packaged.
 
 
-## v0.6.46-dev · Historic Government Hospital reception (October 22, 2026)
+## v0.6.47-dev · Historic Government Hospital reception (October 22, 2026)
 
 Added the actual **Government Hospital for the Insane** as an independently visitable public reception/inquiry location in southeast Washington. The institution opened in **1855**; **St. Elizabeths** became its official name in **1916** ([National Archives history](https://www.archives.gov/research/guide-fed-records/groups/418.html)). Deeper patient wards and superintendent rooms exist as restricted shells, blocked both from regular room navigation and direct entry, with no public patient records or invented treatments. The hospital remains **unpinned** until an approved placement on the existing reference map is established; the approved 14 map pins are unchanged. This location is distinct from fictional Blackwood Asylum, which remains planning-only. No artwork or executable packaged.
+
+
+## v0.6.47-dev · Wardman's autonomous life (October 22, 2026)
+
+While another protagonist is being played, **Wardman now independently inhabits Washington**, using registered public and institutional places including the historical Government Hospital reception. The profile-specific seeded career may develop through hospital service, medical apprenticeship, administration or private charitable reform, with modest public reports appearing on appropriate story milestones. The selected protagonist is never simultaneously simulated as their own background rival. Old saves whose stories already progressed initialize Wardman's stage consistently **without fabricating prior newspapers or resetting the existing three characters**. This completes *foundation coverage* for the three nonplayer protagonist archetypes, not their full AI personalities or professional campaigns. Source-only, no executable packaged.

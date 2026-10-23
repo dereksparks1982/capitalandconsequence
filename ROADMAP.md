@@ -1069,3 +1069,13 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Map the real hospital grounds on approved reference art; then expose a marker with tested coordinates, subject to owner review.
 - [ ] Build approved staff credentials, admissions and institutional career play, with respectful and historically sourced treatment of real care conditions.
 - Historic institution: National Archives, Record Group 418, https://www.archives.gov/research/guide-fed-records/groups/418.html .
+
+
+## v0.6.47-dev · Four-protagonist shared-world background cast
+- [x] Add Wardman as a third autonomous alternate protagonist alongside Patrolman and Layman, skipping whichever route the player selected.
+- [x] Seed several institution-related paths and persistent whereabouts, using the registered historic hospital as one actual Washington location.
+- [x] Record occasional newspaper-eligible events without exposing actor IDs or hidden career branches in public stories.
+- [x] Catch up Wardman quietly in mature legacy profiles instead of retroactively manufacturing unobserved headlines or starting their life at stage zero.
+- [x] Source tests verify career states, migration and no duplicate background actor for a chosen Wardman protagonist.
+- [ ] Add rich independent goals, episodic memory, scheduling on 24-hour world time, and real interactions among all four lives.
+- [ ] Institution tenure, staff authority and Wardman's playable profession still need approved systems and runtime acceptance.

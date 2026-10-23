@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowle
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.46','Current package version is v0.6.46');
-check(appSource.includes("APP_VERSION='v0.6.46-dev'"),'Game masthead uses v0.6.46');
-check(read('build-linux.sh').includes('0.6.46'),'Local packaging uses the same number');
+check(pkg.version==='0.6.47','Current package version is v0.6.47');
+check(appSource.includes("APP_VERSION='v0.6.47-dev'"),'Game masthead uses v0.6.47');
+check(read('build-linux.sh').includes('0.6.47'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.46-linux-x64.tar.gz'),'Manual workflow archives v0.6.46');
+check(workflow.includes('0.6.47-linux-x64.tar.gz'),'Manual workflow archives v0.6.47');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -118,11 +118,13 @@ const livingCtx={window:{},S:{otherLives:{version:1,seed:null,lastProcessedTurn:
 vm.runInNewContext(read('living-characters.js'),livingCtx,{filename:'living-characters.js'});
 const lives=livingCtx.window.FE_LIVING_CHARACTERS;
 check(lives.advance(15).length===0,'No story milestone before 16 turns');
-const first=lives.advance(16);check(first.length<=2,'No duplicate character outcomes on milestone');
+const first=lives.advance(16);check(first.length<=3,'Three nonplayer career actors may report on a milestone');
 const savedHistory=JSON.stringify(livingCtx.S.otherLives.history);
 check(lives.advance(16).length===0&&JSON.stringify(livingCtx.S.otherLives.history)===savedHistory,'World lives never reroll a turn');
 check(livingCtx.S.otherLives.actors.criminal.stage===1,'Criminal background actor advances');
 check(livingCtx.S.otherLives.actors.investigator.stage===1,'Detective background actor advances');
+check(livingCtx.S.otherLives.actors.wardman.stage===1,'Wardman background actor advances independently');
+check(!!livingCtx.S.otherLives.actors.wardman.arc,'Wardman chooses a saved institutional-career branch');
 check(lives.publicHistory().every(x=>!x.arc),'Private arc not exposed in public news');
 check(lives.publicHistory().every(x=>!('actorId' in x)&&!('id' in x)),'Public dispatch history never exposes internal actor identity');
 livingCtx.S.turnSerial=16;
@@ -439,4 +441,15 @@ check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city
 check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
 check(appSource.includes('if(room?.restricted&&!dev)')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev'),'Both direct room entry and room-directory controls enforce restrictions');
 check(city.mapLocations().length===14,'Hospital addition preserves all 14 approved map pins');
+check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
+check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
+const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
+const wardmanCtx={window:{},S:wardmanSave,activeProfileId:()=>profile};
+vm.runInNewContext(read('living-characters.js'),wardmanCtx,{filename:'living-characters.js'});
+const otherWardman=wardmanCtx.window.FE_LIVING_CHARACTERS.ensure().actors.wardman;
+check(otherWardman.stage===5&&otherWardman.lastTurn===80,'Migrating an older save catches Wardman stage up without fabricating old news');
+check(wardmanSave.otherLives.history.length===0,'Legacy actor catch-up does not backfill fictional newspaper reports');
+wardmanCtx.S.characterRoute='wardman';wardmanCtx.S.otherLives={version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]};
+check(!wardmanCtx.window.FE_LIVING_CHARACTERS.ensure().actors.wardman,'Selected Wardman protagonist is never duplicated as a background actor');
+check(read('living-characters.js').includes("id==='wardman'"),'Wardman has distinct institutional public news templates');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
