@@ -28,6 +28,10 @@
    if(room.id==='production-floor'&&(role==='industrialist'||(person==='foremanSullivan'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};
   }
+  if(id==='metropolitanPolice'){
+   if(room.id==='station-duty-room'&&(role==='investigator'||(person==='inspectorHayes'&&actor.onDuty)))
+    return {ok:true,locationId:id,roomId:room.id};
+  }
   if(id==='blackwoodAsylum'){
    if((room.id==='orderly-station'||room.id==='patient-ward')&&(role==='wardman'||(actor?.job==='orderly'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};

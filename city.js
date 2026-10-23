@@ -251,11 +251,13 @@
    name:'Metropolitan Police',
    area:'Washington, D.C.',
    category:'government',
-   description:'Police location reserved for investigations, raids, contacts and later legal consequences.',
+   description:'Metropolitan Police station with a public entrance, an officers’ duty room and desk ledgers. Historical station location pending.',
    map:null,
    defaultRoom:'unassigned-room',
    rooms:[
-    {id:'unassigned-room',name:'Metropolitan Police · Unassigned Room',description:'Placeholder room shell. The exact station, office or interview room will be selected when the police system expands.'}
+    {id:'unassigned-room',name:'Public Station Entrance',description:'Public station counter and waiting area. This stable legacy room ID is retained for existing saves.'},
+    {id:'station-duty-room',name:'Patrolmen’s Duty Room',restricted:true,description:'A working police desk for writing routine beat reports. Only authorized officers may enter.'},
+    {id:'sergeant-office',name:'Sergeant’s Office',restricted:true,description:'Private supervisory records and assignments. A rookie patrolman has no unrestricted access.'}
    ]
   }
  ];

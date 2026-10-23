@@ -24,6 +24,19 @@
 
 **Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
 
+## v0.6.56-dev · The Patrolman’s Beat · October 23, 2026
+
+- [x] Introduce a Metropolitan Police **restricted patrolmen's duty room** and **sergeant's office**, separate from the existing public station entrance. Sam begins at his authorized desk; ordinary visitors and rookies cannot access the sergeant's private office.
+- [x] Walk actual registered **Barry Farm** and **Chinatown** neighborhood-street rooms as Sam; charge 10 game minutes per patrol circuit.
+- [x] Offer small ordinary encounters with choices: wagon crossing obstruction, shop dispute, found property, street noise and directions. Charge 5 game minutes for a response. Issue a summons only where applicable, never random fines as personal income.
+- [x] Return to Sam’s station duty room to complete 5-minute written reports; allow paperwork after the business day. Carry pending incidents and saved reports through time passage, room travel, autosave and reload. Bound archival history while retaining totals.
+- [x] Leave rookie detective casebook disabled and company operations owned by Charlie. Preserve alternate Washington and all four lives.
+- [x] Add source and repeat-action regression tests; document exact limits.
+- [ ] Expand to timed shift assignments, beats covering more neighborhoods, proper roster/payroll, lost-property chain of custody and citation ordinances suitable to the alternate 1878 city.
+- [ ] Attach witnesses and street incidents to actual NPC locations/behaviors; implement referrals, supervisory review, measurable fairness and historical discriminatory treatment where applicable.
+- [ ] Support off-duty investigations, earned detective training, rank progression and real case assignment after Sam proves himself.
+- [ ] Continue **1878 electrical component manufacturing** as the priority next major Washington-only factory slice.
+
 ## v0.6.51-dev · Washington public contact intelligence (source-only) · October 23, 2026
 
 - [x] Model provisional public next-appearance windows for seven named residents from the *persisted* absolute calendar, including weekend factory/police absence and true overnight periods.

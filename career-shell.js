@@ -1,4 +1,4 @@
-/* Capital & Consequence v0.6.55. Shared title and career desk foundation.
+/* Capital & Consequence v0.6.56. Shared title and career desk foundation.
    Does not simulate unbuilt police, civilian or hospital careers. */
 (function(){
  'use strict';
@@ -100,7 +100,7 @@
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Most profession-specific assignments and promotions are under development. Detective investigations require a later career advancement. The factory is not yours.</p>'}
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a working patrol-and-report loop; other profession-specific duties and promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
@@ -117,6 +117,7 @@
   }
   const d=desk.querySelector('#careerDeskDate');
   if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase)+' · '+clockText()+' remaining';
+  window.FE_PATROL_UI?.refresh?.();
   // The preexisting detective casebook engine stays offline until a promotion system grants investigative authority.
  }
  menu.addEventListener('click',e=>{

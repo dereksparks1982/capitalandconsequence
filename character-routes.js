@@ -1,4 +1,4 @@
-/* Capital & Consequence v0.6.54: four independent Washington career foundations.
+/* Capital & Consequence v0.6.56: four independent Washington career foundations.
    Industrialist retains the only complete profession-specific gameplay.
    The other three open honest, shared-city desk previews for later expansion. */
 (function(){
@@ -9,9 +9,9 @@
    summary:'Own Federal Electric. Manage contracts, production, investments and private influence.',
    systems:Object.freeze(['factory','Federal Exchange','contracts','society'])}),
   Object.freeze({id:'investigator',name:'Patrolman',characterName:'Samuel “Sam” Harlan',status:'foundation',deskTitle:'Station Duty Desk',deskColor:'blue',
-   startingLocationId:'metropolitanPolice',paperDoll:null,
-   summary:'Sam starts as a rookie Black walking-beat officer, issuing tickets, answering disturbances and writing duty reports. Detective cases are a future promotion, not his starting assignment.',
-   systems:Object.freeze(['patrol','incident reports','case files','evidence'])}),
+   startingLocationId:'metropolitanPolice',startingRoomId:'station-duty-room',paperDoll:null,
+   summary:'Sam starts as a rookie Black walking-beat officer. Walk Barry Farm or Chinatown, settle routine incidents, and file reports at the station duty desk. Detective cases require a later promotion.',
+   systems:Object.freeze(['walking beat','ordinary incidents','station paperwork','future promotions'])}),
   Object.freeze({id:'criminal',name:'Doorman',characterName:'Elias “Eli” Crowe',status:'foundation',deskTitle:'Private Writing Desk',deskColor:'red',
    startingLocationId:'secondNightclub',paperDoll:null,
    summary:'Eli is an unknown nightclub doorman, paid by the shift. The proprietor does not even know his name. Crime and influence are optional, not guaranteed.',

@@ -1,6 +1,6 @@
 # Capital & Consequence
 
-**Current source: v0.6.55-dev · the United States of Districts and live title register · October 23, 2026**
+**Current source: v0.6.56-dev · Samuel Harlan's first active walking-beat and station-paperwork gameplay · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -20,6 +20,19 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 **The important part is that you cannot do everything.**
 
+
+
+**Character detail:** [Samuel Harlan's permanent character codex](CODEX-SAMUEL-HARLAN-2026-10-23.md).
+
+## v0.6.56-dev · Samuel Harlan's first walking-beat duties (October 23, 2026)
+
+This **Washington-only gameplay slice** adds a real action loop for **Samuel “Sam” Harlan**, the rookie Black patrolman. A new patrol profile begins at the **Metropolitan Police patrolmen's duty room**, not in a detective office. The restricted duty room has a personal desk for paperwork; the public station entrance retains its old internal ID for save compatibility. The sergeant's office is restricted to higher authority.
+
+Sam can travel on the existing Washington map to the **Barry Farm** or **Chinatown** neighborhood streets, spend **10 charged game minutes** walking one beat segment, and receive one deterministic routine encounter. Encounters include wagon obstructions, street disputes, found property, noise complaints and requests for directions. The player chooses a proportionate response, spends **5 minutes** handling it and must return to the **actual station duty room** to spend **5 more minutes** filing a report. An appropriate ordinance summons is a **police record**, not a personal cash reward. Nighttime station paperwork is permitted, but new street patrol circuits begin during the business/day phase of the current prototype.
+
+**Persistence and simulation rules:** All patrol actions go through the existing game clock, stop when insufficient time remains, and autosave into the active protagonist's profile; an unresolved encounter remains pending across travel, reload and day changes, cannot be rerolled or double-filed, and reports enter the journal only after the report has been written. Encounter choices and outcomes are explicitly scripted groundwork, **not claims of fully autonomous criminal behavior or verified real historical 1878 ordinances**. No automatic arrests, rank increase, detective powers, officer salary, real geographic patrol route or NPC victim events are implemented by this slice. Future work: beat boundaries, realistic pay and shifts, witnesses and citations, racial discrimination grounded in time/location, promotions, earned case assignments and dynamically caused street events. The original detective-case engine remains disconnected from the rookie patrol desk.
+
+All four career IDs, Charles Whitcomb's company ownership, Edmund Wardman's position, Eli Crowe's doorman work, Alexi Rurik's autonomy, the district-republic background and existing save data remain unchanged.
 
 ## Active development scope · Washington first (October 23, 2026)
 

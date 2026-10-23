@@ -138,3 +138,16 @@ body>#titleDialog{z-index:3100000}
  background:#f3ebd9;border-left:4px solid #7a6650;
  padding:14px 18px;max-height:55vh;overflow-y:auto
 }
+
+/* Samuel Harlan: readable street-duty and station-paperwork controls.
+   Shared visual language with the existing four personal desks. */
+.patrol-duty-box{margin:18px 8px;padding:18px;border:2px solid #75644c;border-radius:4px;background:#f0e6d0;color:#302c25;box-shadow:inset 0 0 12px #d8c9aa;font-family:Georgia,'Times New Roman',serif}
+.patrol-duty-box[hidden]{display:none!important}
+.patrol-duty-box h3{margin:0 0 12px;font-size:clamp(19px,2.2vw,25px);line-height:1.3}
+.patrol-duty-box h4{margin:12px 0 6px;font-size:17px}
+.patrol-duty-box p,.patrol-duty-box li{font-size:15px;line-height:1.55}
+.patrol-duty-box button{font:inherit;font-size:16px;line-height:1.3;min-height:44px;min-width:190px;padding:9px 14px;margin:7px 8px 7px 0;border:1px solid #6f573c;border-radius:3px;background:#e0d2b2;color:#26221c;cursor:pointer}
+.patrol-duty-box button:disabled{opacity:.48;cursor:not-allowed}
+.patrol-duty-box button:focus-visible{outline:3px solid #65532e;outline-offset:3px}
+.patrol-duty-box ol{padding-left:20px;margin:4px 0;max-height:210px;overflow-y:auto}
+.patrol-duty-box [role=status]{min-height:1.4em;font-weight:700;color:#55401d}

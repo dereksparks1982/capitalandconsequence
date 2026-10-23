@@ -59,3 +59,11 @@
 - **The world deliberately resembles historical America without matching it.** Treat it as coherent alternate reality (the user used *Rick and Morty* as an analogy), not a literal adaptation or strict documentary history. Historical material is a reference point, not a requirement that outcomes and borders reproduce real history.
 - The roadmap's new **ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST** section supersedes national-development priority implied by earlier checklists. Include external district names/roles only as background to enrich D.C. until the owner changes scope.
 - This instruction is recorded in documentation only, without changes to active gameplay, national district dataset, saves or release candidates.
+
+## 2026-10-23 · v0.6.56 Samuel Harlan patrol gameplay
+
+- Washington-only source slice under the approved DC-first priority. The playable patrolman is **Samuel “Sam” Harlan**, a Black rookie assigned **on-foot patrol**, not a detective with a horse, automobile, or unlimited station access.
+- His station contains public entrance, restricted patrolmen's duty room (his desk), and restricted sergeant office. Stable legacy police location/entry room identifiers remain unchanged for saves.
+- Street duty is **earned time spent at real Barry Farm/Chinatown neighborhood rooms**: 10-minute beat circuit, 5-minute measured non-homicide encounter response, then travel back to the station duty room for a 5-minute written report; nighttime desk paperwork allowed. Every action autosaves and preserves one pending incident until resolution and filing.
+- The first five encounters are **authored and deterministic**, not autonomous violent cases, official 1878 legal procedure, or randomized published news. No personal revenue from summons. Detective access, actual wages, rank advancement, real geographic beat paths, and future procedural legality remain roadmap tasks.
+- Federal Electric remains Charlie's property; Edmund works at District Asylum; Eli works the nightclub door. This slice does not expand beyond D.C., change the still-prototype 1890 start, affect national districts, or claim a completed 1878 component-first factory.

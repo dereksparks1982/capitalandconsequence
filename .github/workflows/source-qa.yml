@@ -16,6 +16,8 @@ on:
       - 'npc-agency.js'
       - 'npc-economy.js'
       - 'npc-mobility.js'
+      - 'patrol-duty.js'
+      - 'patrol-ui.js'
       - 'city-access.js'
       - 'career-shell.js'
       - 'desktop/main.cjs'

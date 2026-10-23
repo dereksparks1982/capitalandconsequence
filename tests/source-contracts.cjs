@@ -12,21 +12,26 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.55','Current package version is v0.6.55');
-check(appSource.includes("APP_VERSION='v0.6.55-dev'"),'Game masthead uses v0.6.55');
+check(pkg.version==='0.6.56','Current package version is v0.6.56');
+check(appSource.includes("APP_VERSION='v0.6.56-dev'"),'Game masthead uses v0.6.56');
+check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
+check(index.indexOf('career-shell.js?v=')<index.indexOf('patrol-ui.js?v='),'Patrol UI loads after four-career personal desk');
+check(read('patrol-ui.js').includes("window.advanceWorldTime(seconds,true)"),'Patrol duties charge the authoritative game clock');
+check(read('patrol-ui.js').includes('save(true);render();refresh()'),'Patrol actions autosave and refresh visible state');
+check(read('patrol-duty.js').includes("save?.characterRoute!=='investigator'"),'Patrol model is career-locked');
 check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop document shows new game name');
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.55'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.56'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.55-linux-x64.tar.gz'),'Manual workflow archives v0.6.55');
+check(workflow.includes('0.6.56-linux-x64.tar.gz'),'Manual workflow archives v0.6.56');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -492,6 +497,12 @@ check(!read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career
 check(read('career-shell.css').includes('.detective-case-person'),'Casebook responsive styles exist');
 check(read('README.md').includes('[LEGAL.md](LEGAL.md)')&&read('LEGAL.md').includes('Contact'),'README and GitHub legal contact notice registered');
 check(pkg.scripts['test:source'].includes('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
+check(city.getRoom('metropolitanPolice','station-duty-room')?.restricted===true,'Police station has a restricted patrol duty room');
+check(city.getRoom('metropolitanPolice','sergeant-office')?.restricted===true,'Rookie does not inherit supervisor access');
+check(routes.get('investigator').startingRoomId==='station-duty-room','Samuel begins at the station duty desk');
+check(require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','station-duty-room','1890-01-02').ok,'Officer may use his own duty room');
+check(!require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','sergeant-office','1890-01-02').ok,'Officer cannot enter his superior’s private office');
+check(pkg.scripts['test:source'].includes('tests/patrol-duty.cjs'),'Source QA includes actual patrol loop');
 check(city.getLocation('governmentHospital')?.name==='Government Hospital for the Insane','Government Hospital is registered under its 1890 historical name');
 check(city.getLocation('governmentHospital').provisionalMapPosition===true,'Hospital pin is explicitly labeled provisional');
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
