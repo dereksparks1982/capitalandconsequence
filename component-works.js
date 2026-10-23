@@ -113,8 +113,9 @@
    if(!Number.isSafeInteger(state.materials[k])||state.materials[k]<v)
     return {ok:false,reason:'insufficient '+k};
   }
-  // Provisional balancing labor cost. No historical wage claim.
-  const minutesRequired=p.minutes*units,laborCostCents=minutesRequired*2;
+  // Charlie's manual assembly has no per-unit wage charge. The paid assistant
+   // is salaried once from company funds at daily close, not per assembly.
+  const minutesRequired=p.minutes*units,laborCostCents=0;
   if(!Number.isSafeInteger(minutesRequired)||minutesRequired>1000000)
    return {ok:false,reason:'production run too large'};
   if(laborCostCents>state.cashCents)return {ok:false,reason:'insufficient operating cash'};
