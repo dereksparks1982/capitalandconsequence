@@ -12,12 +12,12 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.73','Current package version is v0.6.73');
-check(appSource.includes("APP_VERSION='v0.6.73-dev'"),'Game masthead uses v0.6.73');
+check(pkg.version==='0.6.74','Current package version is v0.6.74');
+check(appSource.includes("APP_VERSION='v0.6.74-dev'"),'Game masthead uses v0.6.74');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.73'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.74'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.73-linux-x64.tar.gz'),'Manual workflow archives v0.6.73');
+check(workflow.includes('0.6.74-linux-x64.tar.gz'),'Manual workflow archives v0.6.74');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -271,6 +271,10 @@ check(index.includes('component-works.js?v=')&&index.indexOf('component-works.js
 check(index.includes('component-works-live.js?v=')&&index.indexOf('app.js?v=')<index.indexOf('component-works-live.js?v='),'1878 workshop transactions follow player clock');
 check(index.includes('component-works-panel.js?v=')&&index.indexOf('component-works-live.js?v=')<index.indexOf('component-works-panel.js?v='),'Playable component UI loads after authoritative transactions');
 check(appSource.includes("CAMPAIGN_START_DATE='1878-01-02'")&&appSource.includes('contracts:[],contractOffers:[],productionQueue:[]'),'New game begins 1878 without bulb-first factory orders');
+check(appSource.includes('workers:1,machinery:92,workforce:{present:1')&&appSource.includes('window.FE_WORKSHOP_STAFF.settleDay(S)'),'1878 owner starts with one assistant and real single payroll');
+check(index.indexOf('workshop-staff.js?v=')<index.indexOf('app.js?v='),'Assistant payroll loads before gameplay');
+check(read('component-works.js').includes('minutesRequired=p.minutes*units,laborCostCents=0'),'Owner assembly does not pay imaginary second wages');
+check(pkg.scripts['test:source'].includes('tests/workshop-staff.cjs'),'Assistant payroll invariants belong to source QA');
 check(appSource.includes('componentWorks:window.FE_COMPONENT_WORKS?.createState?.(CAMPAIGN_START_DATE)'),'Component inventory lives inside the player save');
 check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
@@ -311,7 +315,7 @@ vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
 check(npc.list().length===8,'Eight named NPCs including Russian-only Alexi Rurik are registered');
 check(npc.syncClock()===true,'Initial clock slot schedules residents');
-check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Factory foreman works at the factory');
+check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Founding workshop assistant works at the factory');
 const npcOriginal=JSON.stringify(npcSave.npcSimulation);
 check(npc.syncClock()===false&&JSON.stringify(npcSave.npcSimulation)===npcOriginal,'Same clock slot cannot reroll NPC goals');
 check(npc.recordInteraction('madamStar','industrialist','introduction',3)===true,'NPC conversation can record relationship memory');
