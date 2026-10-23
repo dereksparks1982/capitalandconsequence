@@ -9,7 +9,7 @@
   const panel=document.createElement('section');
   panel.id='componentWorkshop';panel.className='sheet component-workshop';
   panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph apparatus and electrical components. Incandescent lamps are not yet available.</p><p>Railway standing batch: 2 keys, 2 relays, 3 switch contacts. $30.80 sales, $5.40 materials (estimates). Mon-Fri 9 AM-5 PM production. Saturday 9 AM-5 PM shipments and weekly pay. Closed Sunday.</p>'+
-   '<p id="componentBalance"></p><p id="componentStaff"></p>'+
+   '<p id="componentBalance"></p><p id="componentStaff"></p><p id="componentIncident" role="status"></p><button id="cwRepair" type="button">Charlie: repair stopped equipment · 45 minutes, $0.30</button>'+
    '<form id="cwOrder"><h4>Accept a customer order</h4><label>Customer <select name="customer"></select></label><label>Product <select name="productId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="4" required></label><button type="submit">Accept order · 5 min</button></form>'+
    '<form id="cwBuy"><h4>Buy stock</h4><label>Material <select name="materialId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="20" required></label><button type="submit">Buy materials · 5 min</button></form>'+
    '<form id="cwAssemble"><h4>Assemble goods</h4><label>Order <select name="orderId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="1" required></label><button type="submit">Assemble · real work minutes</button></form>'+
@@ -29,6 +29,18 @@
   choices('cwOrder','customer',engine.CUSTOMERS.map(n=>[n,n]));
   choices('cwOrder','productId',Object.entries(engine.PRODUCTS).filter(([k])=>k!=='incandescent-lamp').map(([k,v])=>[k,v.name]));
   choices('cwBuy','materialId',Object.entries(engine.MATERIALS).map(([k,v])=>[k,v.name]));
+  panel.querySelector('#cwRepair').addEventListener('click',()=>{
+   if(typeof S==='undefined'||!S.componentWorks||S.characterRoute!=='industrialist'||S.paused)return;
+   const sequence=(S.componentTransactionSequence||0)+1,token='cw:'+String(sequence);
+   const result=live.transact(S,'repair',{},token,
+    (sec,away)=>root.advanceWorkshopTime(sec,away),()=>{
+     S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence);
+     return root.finishWorkshopClosingBell();
+    });
+   panel.querySelector('#cwMessage').textContent=result.ok?'Charlie repaired the equipment in 45 minutes.':result.reason;
+   if(result.ok&&!result.repeated){S.componentTransactionSequence=sequence;save(true)}
+   render();
+  });
   for(const [formId,kind] of Object.entries({cwOrder:'order',cwBuy:'purchase',cwAssemble:'assemble',cwShip:'ship'})){
    panel.querySelector('#'+formId).addEventListener('submit',ev=>{
     ev.preventDefault();
@@ -78,11 +90,23 @@
   panel.querySelector('#componentBalance').textContent='Company balance: $'+S.companyCash.toFixed(2)+
    ' · Workstations: '+state.stations.bench+' bench, '+state.stations.winder+' winder · Materials: '+
    Object.entries(state.materials).map(([k,v])=>k+' '+v).join(', ');
+  const clock=root.FE_WASHINGTON_TIME?.now?.(S);
+  const ops=root.FE_WORKSHOP_OPERATIONS;
+  const attendance=clock&&ops?.arrival(S,clock.date);
+  const hold=S.workshopOperations?.hold;
+  const incident=panel.querySelector('#componentIncident');
+  if(incident)incident.textContent=hold?
+   'MACHINE STOPPED: '+hold.description+'. Sullivan tried but could not restore it. Charlie must repair the equipment.':
+   attendance?.absent?'Sullivan is absent today. Production must wait.':
+   attendance&&clock.minuteOfDay<attendance.arrivalMinute?
+   'Sullivan has not arrived for work yet; production cannot begin.':'No outstanding machinery failure.';
+  const repairButton=panel.querySelector('#cwRepair');
+  if(repairButton)repairButton.hidden=!hold;
   const assistant=S.npcSimulation?.agents?.foremanSullivan;
   const unpaid=S.workshopPayroll?.owedCents||0;
   panel.querySelector('#componentStaff').textContent='Staff: Charlie Whitcomb (owner, working) + Sullivan (one paid assistant) · $1.20 per worked weekday, paid Saturday (up to $6/week)'+
    (unpaid?' · outstanding wages $'+(unpaid/100).toFixed(2):'')+
-   (assistant?.status==='present'&&assistant.locationId==='factory'?' · assistant at the works':' · assistant not currently at the works');
+   (assistant?.status==='present'&&assistant.locationId==='factory'&&!attendance?.absent&&(!clock||clock.minuteOfDay>=attendance.arrivalMinute)?' · assistant at the works':' · assistant not currently at the works');
   const out=panel.querySelector('#cwOrders');out.replaceChildren();
   if(!state.orders.length)out.textContent='No component orders accepted yet.';
   for(const o of state.orders){
