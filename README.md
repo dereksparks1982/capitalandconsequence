@@ -6,11 +6,11 @@
 
 > **Current owner correction:** An earlier assistant invented a requirement to preserve old/1890 saves. **That rule is revoked; the owner never authorized it.** Current 1878 game design and properly working current-profile autosaves take priority. Maintaining or migrating old saves is NOT a development requirement. Earlier version notes below are historical, not instructions to preserve backward compatibility.
 
-**Current source candidate: v0.6.74-dev · Two-person founding workshop and funded assistant payroll · October 23, 2026**
+**Current source candidate: v0.6.75-dev · 5 PM workshop receipt-before-payroll settlement · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**For all new work:** begin with [CONTINUE-HERE.md](CONTINUE-HERE.md), then consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.73 executable has been made; source-only development remains the rule.
+**For all new work:** begin with [CONTINUE-HERE.md](CONTINUE-HERE.md), then consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.75 executable has been made; source-only development remains the rule.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -33,6 +33,14 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.75-dev · Correct 5 PM workshop completion (source-only)
+
+**Implemented:** A 1878 component order, supply purchase, assembly action, or customer shipment that finishes **exactly at 5:00 PM** may now complete. The workshop runs on the same player-driven **1:1 saved game clock**, but the shared clock defers that specific closing bell until the workshop has committed its material, inventory, receipt and company-cash changes. Then the existing day-end settles Sullivan's actual company-funded salary and records the daily business figures. Ordinary clock ticks and player activities still close at 5 PM normally, and workshop actions extending **past** closing remain disallowed.
+
+**Autosave consistency:** The factory UI commits its transaction sequence before the closing-bell save, so a reload cannot reuse or trap the last transaction token. Repeated transaction receipts remain idempotent. No extra NPC-created clock time, second payroll system or old-save compatibility features were introduced.
+
+**Verification:** The new mandatory `tests/workshop-closing.cjs` runs the **actual `app.js` time-advance gateway** with only nonfinancial UI/world dependencies stubbed. It covers a 5 PM order, a 5 PM paid shipment, cash-before-payroll and reporting order, the saved token sequence, an ordinary 1:1 clock close, overtime refusal and duplicate receipt behavior. Six focused source suites were executed in V8 with passing results; edited JavaScript parsed successfully. **Full GitHub Actions source QA and an Electron desktop playthrough remain independently unverified.** The broader legacy daily report/turn system, genuine continuous NPC work, hires and complete era conversion are still open. No executable packaged.
 
 ## v0.6.74-dev · Charlie and one paid assistant (source-only candidate)
 
