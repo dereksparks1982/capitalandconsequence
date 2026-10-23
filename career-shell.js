@@ -27,6 +27,10 @@
  // Move the live map and archive dialogue OUT of that hidden scaffold so neither
  // may ever accidentally display the former illustrated office.
  const legacy=document.getElementById('titleScreen');
+ const devPanel=document.getElementById('titleDevPanel');
+ // Keep the complete existing dev panel on every screen instead of inside
+ // the retired, inert illustrated title screen.
+ if(devPanel)document.body.appendChild(devPanel);
  const dialog=document.getElementById('titleDialog');
  const map=document.getElementById('titleMapViewer');
  if(map)document.body.appendChild(map);

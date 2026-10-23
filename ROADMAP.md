@@ -1,6 +1,6 @@
 # Capital & Consequence Development Roadmap
 
-> **Start new development threads here:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant codices. Latest verified source is **v0.6.65-dev** with green QA on the final source commit. The earlier [October 23 v0.6.58 handoff](HANDOFF-2026-10-23-THREAD-END.md) remains archived. Later decisions supersede old priorities.
+> **Start new development threads here:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant codices. Last verified AI baseline is **v0.6.65-dev**; source **v0.6.66-dev** adds the persistent developer panel and player-only room access switch. The earlier [October 23 v0.6.58 handoff](HANDOFF-2026-10-23-THREAD-END.md) remains archived. Later decisions supersede old priorities.
 
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 
@@ -9,6 +9,8 @@
 **Alternate-world design rule:** The city must remain *recognizably* nineteenth-century Washington, but it is **not a documentary reconstruction of the real United States**. Familiar buildings, social institutions, technology, contemporary personalities and historical reference points can coexist with deliberately changed politics, geography, districts, events, and outcomes. The inspiration is an alternate-reality variation: **similar, but not the same**. Keep changes internally consistent with the game's post-Civil-War United States of purpose-defined districts; avoid importing real state-based laws/elections automatically. The comparison to *Rick and Morty* describes the alternate-universe feeling, **not a crossover**.
 
 ### Now · highest-priority D.C. playable slices
+
+**Source advancement v0.6.66:** Existing developer controls float above every live game screen and room (collapsible and draggable). Unlock All Rooms lets the selected player inspect all registered Washington locations and rooms regardless of normal duties, invitations, opening date or door permissions without giving NPCs unrestricted access. Developer sessions never create non-existent scenes or permanent access entitlements.
 
 **Source advancement v0.6.65:** Gossip now depends on precise co-room presence, shared language, relationship strength and source confidence. Classified private records are barred from casual hearsay; private events retain room and language provenance. Future full NPC evidence and investigation systems should build on these guarded facts without treating rumor as confirmed truth.
 

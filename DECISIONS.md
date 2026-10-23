@@ -147,3 +147,9 @@
 - The **current resume reference** is [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), superseding the older pre-v0.6.59 handoff while retaining its canonical character and world decisions.
 - Latest tested source commit `de212efbda8ccf773f74e9258ace733c3704b7dc` passed GitHub Actions [39969296302](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39969296302) with **441 source-contract checks** and all supplemental suites, including 360 case truth tests. This is **not a Linux executable acceptance test**.
 - Remain Washington-first. AI improvements, isolated 1878 component groundwork and Edmund work loop are delivered, while the complete new 1878 campaign, unified clock and genuine autonomous city case consequences are future slices.
+
+## 2026-10-23 · v0.6.66 always-available developer panel
+
+- The entire existing developer panel should be visible throughout the live four-career title, career desk, maps, rooms, and other screens, for now. Reparent it out of the retired title instead of reviving the deprecated artwork. Preserve drag and collapse and allow access at narrow widths.
+- Add Unlock All Rooms: ON/OFF next to Infinite Money. This lets the human-controlled protagonist inspect any registered Washington room, including staff-only, hidden, future and planned shells, but does not create interiors, unlock actions, confer ownership or alter independent NPC permissions.
+- Override state is session-only. On deactivation, reset or autosave, never preserve an otherwise unauthorized room position; use public Hillsdale if necessary. Remain single-main-branch and source-only.

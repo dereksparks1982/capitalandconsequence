@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.65','Current package version is v0.6.65');
-check(appSource.includes("APP_VERSION='v0.6.65-dev'"),'Game masthead uses v0.6.65');
+check(pkg.version==='0.6.66','Current package version is v0.6.66');
+check(appSource.includes("APP_VERSION='v0.6.66-dev'"),'Game masthead uses v0.6.66');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.65'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.66'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.65-linux-x64.tar.gz'),'Manual workflow archives v0.6.65');
+check(workflow.includes('0.6.66-linux-x64.tar.gz'),'Manual workflow archives v0.6.66');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -539,7 +539,11 @@ check(city.getLocation('governmentHospital').provisionalMapPosition===true,'Hosp
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
 check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city.getRoom('governmentHospital','superintendent-office')?.restricted===true,'Wards and superintendent office are access restricted');
 check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
-check(appSource.includes('if(room?.restricted&&!dev&&!window.FE_CITY_ACCESS')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev'),'Room entry and room buttons enforce shared staff permissions');
+check(appSource.includes('if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms'),'Room entry and room buttons enforce staff permissions except in explicit dev override');
+check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').includes('document.body.appendChild(devPanel)'),'Dev panel stays accessible throughout the live game');
+check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
+check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
+check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
 check(city.mapLocations().length===26,'Existing pins retained and provisional markers fill the remaining 12');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');

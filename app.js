@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.65-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.66-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -194,7 +194,13 @@ function save(silent=true){
  const profileId=activeProfileId();
  let payload=S;
  if(titleDevInfiniteMoney&&titleDevMoneySnapshot){
-  payload=Object.assign({},S,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
+  payload=Object.assign({},payload,{companyCash:titleDevMoneySnapshot.companyCash,personalCash:titleDevMoneySnapshot.personalCash});
+ }
+ // Never persist a developer-only room location into ordinary career saves.
+ if(titleDevUnlockAllRooms&&S.currentLocation){
+  const position=currentCityLocation();
+  if(!ordinaryPlayerRoomAllowed(position.locationId,position.roomId))
+   payload=Object.assign({},payload,{currentLocation:{locationId:'hillsdale',roomId:'neighborhood-street'}});
  }
  // localStorage writes can throw QuotaExceededError or security exceptions.
  // A failed write is never represented as a successful autosave.
@@ -1852,7 +1858,7 @@ function titleDCSunTimes(date){
  return {sunrise:solarNoon-hourAngle*4,sunset:solarNoon+hourAngle*4};
 }
 let titleEnvironmentDevOverride=null;
-let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevEditHotspots=false,titleDevOutsideNoise=true;
+let titleDevInfiniteMoney=false,titleDevMoneySnapshot=null,titleDevUnlockAllRooms=false,titleDevFreezeTime=false,titleDevShowHotspots=false,titleDevEditHotspots=false,titleDevOutsideNoise=true;
 const TITLE_DEV_MONEY=999999999;
 
 let cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
@@ -1920,7 +1926,7 @@ function renderCityRoomDirectory(location,activeRoomId){
   const button=document.createElement('button');
   button.type='button';
   button.textContent=room.name;
-  button.disabled=!!room.restricted&&!cityRoomSession.dev&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok;
+  button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok;
   if(button.disabled)button.title='Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
   button.onclick=()=>openCityRoom(location.id,room.id,{dev:cityRoomSession.dev,source:cityRoomSession.source});
@@ -1932,15 +1938,15 @@ function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
  const dev=!!options.dev,source=options.source||'dev';
- if(!dev&&!window.FE_PATROL?.travel?.(S,location.id)?.ok)return false;
- if(!dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
+ if(!dev&&!titleDevUnlockAllRooms&&!window.FE_PATROL?.travel?.(S,location.id)?.ok)return false;
+ if(!dev&&!titleDevUnlockAllRooms&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
  if(location.id==='factory'&&!dev&&S.characterRoute==='industrialist'&&(!roomId||roomId==='executive-office')){
   returnCityRoomToOffice();closeTitleMap();return true;
  }
  const room=cityRoom(location.id,roomId||location.defaultRoom);
- if(room?.restricted&&!dev&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok){
+ if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok){
   console.warn('Federal Electric: restricted room entry refused',location.id,room.id);
   return false;
  }
@@ -2224,6 +2230,7 @@ function updateTitleDevPanel(){
  const mode=titlePlaythroughEnvironmentMode();
  setTitleDevButtonState('titleDevDayNight',titleEnvironmentDevOverride!==null,'Day / Night: '+mode.toUpperCase());
  setTitleDevButtonState('titleDevInfiniteMoney',titleDevInfiniteMoney,'Infinite Money: '+(titleDevInfiniteMoney?'ON':'OFF'));
+ setTitleDevButtonState('titleDevUnlockAllRooms',titleDevUnlockAllRooms,'Unlock All Rooms: '+(titleDevUnlockAllRooms?'ON':'OFF'));
  setTitleDevButtonState('titleDevFreezeTime',titleDevFreezeTime,'Freeze Time: '+(titleDevFreezeTime?'ON':'OFF'));
  setTitleDevButtonState('titleDevHotspots',titleDevShowHotspots,'Show Hotspots: '+(titleDevShowHotspots?'ON':'OFF'));
  setTitleDevButtonState('titleDevEditHotspots',titleDevEditHotspots,'Edit Hotspots: '+(titleDevEditHotspots?'ON':'OFF'));
@@ -2253,6 +2260,34 @@ function toggleTitleDevInfiniteMoney(){
   titleDevMoneySnapshot=null;
  }
  render();
+ updateTitleDevPanel();
+}
+// Developer room access grants no NPC permits or permanent entitlements.
+function ordinaryPlayerRoomAllowed(locationId,roomId){
+ const actor={kind:'player',route:S.characterRoute};
+ return !!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,actor,locationId,roomId,S.gameDate).ok&&
+  (!window.FE_VENUES||window.FE_VENUES.canEnterLocation(locationId))&&
+  (!window.FE_PATROL?.travel||window.FE_PATROL.travel(S,locationId).ok);
+}
+function restoreNormalCityRoomAccess(){
+ if(!activeProfileId())return;
+ const current=currentCityLocation();
+ if(ordinaryPlayerRoomAllowed(current.locationId,current.roomId))return;
+ // Public Hillsdale remains accessible to all protagonists in the 1878 setting.
+ S.currentLocation={locationId:'hillsdale',roomId:'neighborhood-street'};
+ if(cityRoomSession.locationId&&!cityRoomSession.dev)closeCityRoom();
+ save(true);
+ window.FE_CAREER_SHELL?.refreshDesk?.();
+}
+function toggleTitleDevUnlockAllRooms(){
+ titleDevUnlockAllRooms=!titleDevUnlockAllRooms;
+ if(!titleDevUnlockAllRooms)restoreNormalCityRoomAccess();
+ if(cityRoomSession.locationId){
+  const location=cityLocation(cityRoomSession.locationId);
+  if(location)renderCityRoomDirectory(location,cityRoomSession.roomId);
+ }
+ renderUnpinnedCityDirectory();
+ if(titleMapSelectedLocationId)openTitleMapLocation(titleMapSelectedLocationId);
  updateTitleDevPanel();
 }
 function toggleTitleDevFreezeTime(){
@@ -2300,6 +2335,9 @@ function resetTitleDevOverrides(){
  }
  titleDevInfiniteMoney=false;
  titleDevMoneySnapshot=null;
+ titleDevUnlockAllRooms=false;
+ restoreNormalCityRoomAccess();
+ renderUnpinnedCityDirectory();
  titleDevFreezeTime=false;
  titleDevShowHotspots=false;
  titleDevEditHotspots=false;
@@ -2316,8 +2354,9 @@ function resetTitleDevOverrides(){
 function initTitleDevPanel(){
  const panel=document.getElementById('titleDevPanel');
  const handle=document.getElementById('titleDevPanelHandle');
- const frame=panel?.closest('.title-screen-frame');
- if(!panel||!handle||!frame)return;
+ // Once moved out of the retired title, dragging uses the viewport instead.
+ const frame=document.documentElement;
+ if(!panel||!handle)return;
  let dragId=null,startX=0,startY=0,startLeft=0,startTop=0;
  handle.addEventListener('pointerdown',e=>{
   if(e.button!==0||e.target.closest('button'))return;
@@ -2350,6 +2389,7 @@ function initTitleDevPanel(){
  });
  document.getElementById('titleDevDayNight').onclick=toggleTitleEnvironmentDev;
  document.getElementById('titleDevInfiniteMoney').onclick=toggleTitleDevInfiniteMoney;
+ document.getElementById('titleDevUnlockAllRooms').onclick=toggleTitleDevUnlockAllRooms;
  document.getElementById('titleDevFreezeTime').onclick=toggleTitleDevFreezeTime;
  document.getElementById('titleDevHotspots').onclick=toggleTitleDevHotspots;
  document.getElementById('titleDevEditHotspots').onclick=toggleTitleDevEditHotspots;
@@ -2617,6 +2657,7 @@ function mapTravelRestriction(location){
  if(!location)return 'Unknown destination.';
  const entry=cityLocation(location.id);
  if(!entry)return 'This location has no registered entrance.';
+ if(titleDevUnlockAllRooms)return '';
  if(entry.plannedOnly)return 'This location is planned but not yet open.';
  if(entry.availableFrom&&S.gameDate<entry.availableFrom)return 'Not open until '+entry.availableFrom+'.';
  const dutyRestriction=window.FE_PATROL?.travel?.(S,entry.id);
@@ -2808,7 +2849,7 @@ function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
  out.innerHTML='';
  const active=!!activeProfileId(),year=S.gameDate;
- for(const loc of city.listLocations().filter(loc=>!loc.map&&!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id))&&(!loc.availableFrom||year>=loc.availableFrom))){
+ for(const loc of city.listLocations().filter(loc=>!loc.map&&(titleDevUnlockAllRooms||(!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id))&&(!loc.availableFrom||year>=loc.availableFrom))))){
   const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
   button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
   button.onclick=()=>openCityRoom(loc.id,null,{dev:false,source:'map'});

@@ -163,3 +163,14 @@ body>#titleDialog{z-index:3100000}
 .doorman-work-box button:focus-visible{outline:3px solid #65532e;outline-offset:3px}
 .doorman-work-box ol{padding-left:20px;max-height:210px;overflow-y:auto}
 .doorman-work-box [role=status]{min-height:1.4em;font-weight:700;color:#55401d}
+
+/* v0.6.66: existing developer panel floats above the entire playable city. */
+body > #titleDevPanel.title-dev-panel{
+ position:fixed;top:12px;left:12px;right:auto;bottom:auto;
+ display:block!important;z-index:4000000;
+ width:min(245px,calc(100vw - 24px));max-height:calc(100dvh - 24px);
+}
+body > #titleDevPanel .title-dev-panel-body{max-height:calc(100dvh - 65px);overflow:auto}
+body > #titleDevPanel .title-dev-panel-head{cursor:grab}
+body > #titleDevPanel.is-dragging .title-dev-panel-head{cursor:grabbing}
+@media(max-width:900px){body > #titleDevPanel.title-dev-panel{display:block!important}}
