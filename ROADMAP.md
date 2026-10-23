@@ -1079,3 +1079,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Source tests verify career states, migration and no duplicate background actor for a chosen Wardman protagonist.
 - [ ] Add rich independent goals, episodic memory, scheduling on 24-hour world time, and real interactions among all four lives.
 - [ ] Institution tenure, staff authority and Wardman's playable profession still need approved systems and runtime acceptance.
+
+
+## v0.6.47-dev · Runtime calendar bridge (source-only)
+- [x] Store engine-independent `worldCalendar` minute/queue and fractional seconds in each profile, preserving save isolation and serialization.
+- [x] Start new profiles from a known 8:00 AM date; never backfill unrecorded hours into legacy day/night saves.
+- [x] Advance saved calendar on explicitly timed actions and ordinary legacy ticks, avoiding offscreen/paused time changes.
+- [x] Migrate pre-calendar profiles safely, taking up clock synchronization on the next explicitly initiated morning.
+- [x] Add source tests covering 8 AM, subminute boundaries, action jumps, midnight, reload, pause and missing historical hours.
+- [ ] Switch factory, markets, NPC schedules, activity costs, overnight venue play and the header/menu UI to the calendar together after cross-module smoke QA. Existing one-hour phase timing remains authoritative in this slice; do not claim the game now runs a 24-hour day.

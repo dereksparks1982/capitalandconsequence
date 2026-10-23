@@ -12,7 +12,7 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
@@ -191,7 +191,7 @@ check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow
 check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'"),'Canceled and forfeited outcomes uniquely recorded');
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
-const runtimeSrc=['city.js','world-clock.js','character-routes.js','app.js','venue-opportunities.js',
+const runtimeSrc=['city.js','world-clock.js','calendar-bridge.js','character-routes.js','app.js','venue-opportunities.js',
  'living-characters.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js','career-shell.js'];
 let priorOffset=-1;
@@ -352,6 +352,20 @@ const restored=JSON.parse(snapshot);
 clock.spend(restored,60);
 check(clock.formatMinute(restored.worldMinute)==='1890-01-02T09:30','Clock state survives JSON save and restore');
 check(index.includes('world-clock.js?v='),'World clock is loaded by the standalone game');
+check(index.indexOf('world-clock.js?v=')<index.indexOf('calendar-bridge.js?v='),'Calendar bridge loads after the world clock');
+const bridge=require('../calendar-bridge.js');
+const freshCalendar={paused:false};
+bridge.start(freshCalendar,'1890-01-02');
+check(bridge.label(freshCalendar)==='8:00 AM','New world calendar begins at 8 AM in provisional fixture');
+check(bridge.spend(freshCalendar,59)===0&&bridge.label(freshCalendar)==='8:00 AM','Subminute accrual does not manufacture elapsed minute');
+check(bridge.spend(freshCalendar,1)===1&&bridge.label(freshCalendar)==='8:01 AM','One full minute advances the saved clock');
+check(bridge.spend(freshCalendar,719*60)===719&&bridge.label(freshCalendar)==='8:00 PM','Large action jumps carry through a complete game day');
+check(bridge.spend(freshCalendar,4*60*60)===240&&bridge.moment(freshCalendar).date==='1890-01-03','Saved calendar crosses midnight without game clock reset');
+const readBack={};check(bridge.migrate(readBack,JSON.parse(JSON.stringify(freshCalendar)))&&bridge.label(readBack)==='12:00 AM','The exact saved absolute minute survives reload');
+readBack.paused=true;check(bridge.spend(readBack,300)===0&&bridge.label(readBack)==='12:00 AM','Paused game cannot advance the calendar');
+const oldCalendar={};check(bridge.migrate(oldCalendar,{gameDate:'1938-09-30',dayRemaining:100,phase:'night'})===false&&bridge.label(oldCalendar)===null&&oldCalendar.worldCalendarStatus==='legacy-unmapped','Legacy autosaves receive no invented absolute hour');
+check(appSource.includes('window.FE_CALENDAR_BRIDGE?.spend?.(S,spent)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.spend?.(S,1)'),'Instant actions and passive legacy ticks both maintain the shadow calendar');
+check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.start?.(S,S.gameDate)'),'Existing saves preserve unknown time until next known business opening');
 const midnightClock=clock.create('1890-01-02T23:55');
 check(clock.timeLabel(midnightClock)==='11:55 PM','Simulated time displays 12-hour clock without countdown');
 check(clock.calendar(midnightClock).date==='1890-01-02','Calendar date comes from saved world minute');
