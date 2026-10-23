@@ -2,6 +2,14 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
+## 2026-10-23 · v0.6.74 · Only Charlie and one assistant at opening
+
+- The starting January 1878 Federal Electric workshop has exactly **two people**: owner/operator Charles “Charlie” Whitcomb and **one paid assistant, Sullivan**. There is no inherited twelve-person crew or starting general manager.
+- Sullivan is the existing `foremanSullivan` NPC identity repurposed to a workshop **assistant**, not a second newly spawned employee. He uses the established saved NPC goals, 8 AM–5 PM weekday workplace, accessible production room, personality, conversations, social memory and off-duty decisions. The remaining machine-era “foreman” nomenclature is legacy technical debt, not an additional staff member.
+- Charlie does manual assembly as an explicit player-time action and earns no employee wage. There is **no per-unit labor cash deduction** during assembly. Sullivan's provisional **$1.00 per worked day** is paid at one day-close from company cash into his actual NPC economy balance; insufficient cash creates tracked salary arrears. Work action generation itself awards Sullivan **zero phantom wages**. This is **gameplay balancing**, not authenticated 1878 payroll research.
+- Current assistant settlement is once daily at the old 5 PM close trigger; full continuous 24-hour economic event handling, hiring, proper hands-on NPC work production and accounting overhaul remain outstanding. The workshop transaction adapter refuses jobs **finishing exactly at 5 PM** as well as afterward to avoid processing payroll before a still-uncommitted workshop payment. This is a temporary atomicity guard pending improved shared-clock transaction scheduling.
+- Targeted executable V8 checks on current source passed; complete new GitHub Actions Source QA/Electron gameplay still unconfirmed. No executable is authorized. **Old-save compatibility remains explicitly NOT required.**
+
 ## 2026-10-23 · CORRECTION: old-save preservation was an invented rule
 
 **Owner never approved any requirement to preserve old saves.** The assistant introduced that constraint without authorization and wrongly treated it as policy. It is rescinded and supersedes every older or newer conflicting statement below: **do not perform compatibility engineering or retain obsolete 1890 gameplay solely to protect historical saves.** Old saves may break as the game evolves; focus on the real 1878 starting experience. The new/current campaign must still autosave correctly. No existing save files were deleted as part of this documentation correction.
