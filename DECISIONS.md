@@ -1,5 +1,12 @@
 # Federal Electric · Recorded Design Decisions
 
+## 2026-10-23 · v0.6.70 shared clock pacing
+
+- Preserve one real-hour Business Day and one real-hour Washington Night while making that rhythm advance an authentic 24-hour in-game day: 8 AM–5 PM (9x passive speed), 5 PM–8 AM (15x passive speed).
+- An intentional player action or journey still costs its exact stated **in-game** seconds; it debits the remaining real-time phase allowance proportionally and saves the fractional remainder to avoid charging extra for repeated small actions.
+- Daytime factory passive production advances at the same rate as the authoritative saved 24-hour calendar. Old accounting turn frequency, schedules and report logic are still acknowledged as transitional.
+
+
 ## 2026-10-23 · v0.6.69 real saved Washington clock integration
 
 - Use existing `world-clock.js`, `calendar-bridge.js` and `time-transactions.js`, not a second moon/calendar library or invented time formulas. Expose one `washington-time.js` adapter to gameplay, NPCs, dialogue and the sky.

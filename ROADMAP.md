@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.70:** The two 60-real-minute gameplay segments now drive the single 24h Washington calendar at 9x business / 15x night passive rate, with exact game-second charges for player actions and production. Phase budget expenditure preserves fractional sub-second costs through save/reload; contracts and activities check true available simulated time. Midnight, day/night and Eclipse displays follow the same clock, though legacy four-turn-per-month accounting and report transitions remain in place.
+
 **Source advancement v0.6.69:** The visible Washington 12-hour clock/date, NPC period scheduler, weather and astronomy now all consult the same saved `worldCalendar`. Timed actions and ticks route through a shared gateway and the legacy day/night/report handoffs move that saved clock to real evening/next-morning moments without backwards jumps. NPC risk judgments and conversational sky descriptions use only present conditions. **Not finished:** replacing old 60-minute phase budgets, payroll and stock exchange settlement with continuous hour-based authority and real 1878 component-factory gameplay. These are immediate follow-ups, not claims of completion.
 
 **Source advancement v0.6.68:** Existing daily Washington weather is visible in the gameplay top bar. A licensed, bundled astronomy engine supplies historical sun/moon phases, daylight, sunrise/sunset, and local eclipse detection using the saved in-game minute. The July 29, 1878 Washington solar eclipse is a tested fixture. Eclipse-motivated NPC crime and detective pattern recognition remain **future emergent gameplay**, not fabricated existing murders. Next: actual self-directed actions, events, and observer-accessible evidence.

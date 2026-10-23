@@ -2,7 +2,7 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) records the v0.6.65 verified AI baseline. **v0.6.66-dev** adds the floating developer panel and room unlock; CI for this slice must be checked separately. Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
 
-**Current source: v0.6.69-dev · Common saved Washington time gateway and NPC environment · October 23, 2026**
+**Current source: v0.6.70-dev · Consistent Washington day/night clock pacing · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -29,6 +29,12 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.70-dev · One actual Washington day in the existing play rhythm
+
+Passive Washington simulation now maps the existing **60 minutes of real-time business play to the 9 hours from 8 AM to 5 PM**, then **60 minutes of real-time night play to the 15 hours from 5 PM to 8 AM**. The saved absolute clock actually reaches those boundaries at the end of a normally elapsed phase, so the sun, moon, NPC schedules and date do not sit nearly still before abruptly jumping hours at close. Factory production during ordinary passive ticks advances by the same nine in-game seconds as Washington time. Players' time-consuming activities, travel and duties still charge their actual **stated in-game minutes**, and a remainder-preserving budget counter keeps small actions from losing extra time through rounding. UI checks for sufficient remaining time, playable card-session ceilings and queued-production estimates use true available **simulated** time rather than the obsolete real-time countdown.
+
+The user still receives one real-hour day phase and one real-hour night phase; this is an explicit **9x daytime / 15x nighttime passive rate**. The older 4-transaction-turn-per-month progression, factory accounting, exchange settlement, report screens and 1890 opening continue as transitional mechanics, and a manually ended phase advances to its valid boundary. This is not yet a seamlessly self-directed continuous society or the final 1878 components-first economic system. Source-only, no executable. No new time/math dependency: composes the already-integrated calendar, transaction service and astronomy engine.
 
 ## v0.6.69-dev · Moving the city onto one saved clock
 
