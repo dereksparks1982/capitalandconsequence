@@ -13,7 +13,7 @@
   pavelOrlov:Object.freeze({'develop-trade':'russianTradeHall','expand-connections':'star','protect-reputation':'russianTradeHall'}),
   inspectorHayes:Object.freeze({'review-open-cases':'metropolitanPolice','maintain-public-order':'metropolitanPolice','build-professional-standing':'washingtonArena'}),
   madamStar:Object.freeze({'maintain-the-club':'star','cultivate-trusted-contacts':'russianTradeHall','protect-staff':'star'}),
-  foremanSullivan:Object.freeze({'maintain-machinery':'factory','meet-contract-deadlines':'factory','protect-workforce':'factory'})
+  foremanSullivan:Object.freeze({'check-workshop-tools':'factory','fill-component-orders':'factory','handle-supplies':'factory'})
  });
  function plan(def,agent,action){
   if(!def||!agent||!action||action.kind!=='personal'||!action.locationId||
