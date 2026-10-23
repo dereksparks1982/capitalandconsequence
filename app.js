@@ -971,7 +971,7 @@ function beginNextDay(){
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
  archiveToday();const old=S.gameDate,next=window.FE_WASHINGTON_TIME?.now?.(S)?.date||window.FE_WASHINGTON_TIME.nextCivilDay(S.gameDate);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;payMonthlyDividends(old,S.gameDate);
  S.phase='day';S.dayRemaining=BUSINESS_DAY_SECONDS;S.phaseBudgetRemainder=0;window.FE_NPC_AI?.syncClock?.();
- for(const [ticker,x] of Object.entries(S.stocks)){const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
+ for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
  if(S.raidMonth!==monthKey(S.gameDate)){S.raidMonth=monthKey(S.gameDate);S.raidDays=rollRaidDays(S.gameDate)}
  generateTurnConditions();processPendingQualityClaims();ageManagementNeglect();const delegatedStart=applyMorningDelegation();generatePaper();
