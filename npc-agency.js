@@ -11,9 +11,9 @@
    'cultivate-trusted-contacts':[31,0,.60,0,.30],
    'protect-staff':[28,0,0,1.20,0]},
   'foremanSullivan':{
-   'maintain-machinery':[43,.17,0,.35,0],
-   'meet-contract-deadlines':[35,1.10,0,0,0],
-   'protect-workforce':[34,.1,0,.90,.15]},
+   'check-workshop-tools':[43,.17,0,.35,0],
+   'fill-component-orders':[35,1.10,0,0,0],
+   'handle-supplies':[34,.1,0,.90,.15]},
   'eddieDoyle':{
    'expand-connections':[37,0,.75,0,.25],
    'protect-reputation':[35,0,0,.72,.30],
