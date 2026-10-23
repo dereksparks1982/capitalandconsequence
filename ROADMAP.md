@@ -985,3 +985,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Dependency-free source tests for precise 9 AM open, 5 PM close and weekend skip in an explicit test schedule, not universal game rules.
 - [ ] Integrate `worldMinute` as sole authoritative player clock. Replace legacy countdown only after activity, production, markets, NPCs, and saves are adapted; do not fabricate old-save clock times.
 - [ ] Keep original playable mechanics intact during transition. Packaging requires separate approval.
+
+
+## v0.6.38-dev · City map presentation
+- [x] Number-only map pins by default; hover/focus/tap selected markers reveal their labels.
+- [x] Wire the existing Show Names checkbox and Locations category selector to the real 14-pin registry.
+- [x] Keep filters cosmetic, preserve marker identities, draggable saved positions, travel restrictions and click-to-read details.
+- [x] Include source-contract coverage of map control wiring and CSS behavior.
+- [ ] Place future vetted government locations as map pins after historical research; no invented marker positions.
+- [ ] Player discovery and known-versus-secret information remain a separate system.

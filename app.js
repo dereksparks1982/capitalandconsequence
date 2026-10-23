@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.37-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.38-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -2493,6 +2493,39 @@ const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
+let titleMapShowNames=false,titleMapCategory='all';
+const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
+ company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
+ sport:'Sports & Recreation',fair:'Fairgrounds',transport:'Transportation',
+ finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government'
+});
+function syncTitleMapFilters(){
+ const layer=document.getElementById('titleMapMarkers'),show=document.getElementById('titleMapShowNames');
+ const select=document.getElementById('titleMapCategory');
+ if(show){show.checked=titleMapShowNames;show.setAttribute('aria-checked',String(titleMapShowNames))}
+ if(select)select.value=titleMapCategory;
+ if(!layer)return;
+ layer.classList.toggle('show-all-names',titleMapShowNames);
+ for(const marker of layer.querySelectorAll('[data-map-location]')){
+  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
+  marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory);
+  marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
+ }
+ if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&(titleMapCategory==='all'||v.category===titleMapCategory)))closeTitleMapLocation();
+}
+function initTitleMapFilters(){
+ const select=document.getElementById('titleMapCategory'),names=document.getElementById('titleMapShowNames');
+ if(!select||!names)return;
+ // Filter only the known mapped locations. Empty government category will become
+ // available when historically vetted government pins are placed on this map.
+ const categories=[...new Set(TITLE_MAP_LOCATIONS.map(v=>v.category))].sort((a,b)=>
+  (TITLE_MAP_CATEGORY_LABELS[a]||a).localeCompare(TITLE_MAP_CATEGORY_LABELS[b]||b));
+ select.replaceChildren(new Option('All categories','all'));
+ for(const category of categories)select.add(new Option(TITLE_MAP_CATEGORY_LABELS[category]||category,category));
+ select.onchange=()=>{titleMapCategory=select.value;syncTitleMapFilters()};
+ names.onchange=()=>{titleMapShowNames=names.checked;syncTitleMapFilters()};
+ syncTitleMapFilters();
+}
 
 function loadTitleMapLocationLayout(){
  // Start from fixed defaults so each profile has independent, predictable pin positions.
@@ -2560,6 +2593,7 @@ function titleMapPositionMarkers(){
 function closeTitleMapLocation(){
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
  titleMapSelectedLocationId=null;
+ syncTitleMapFilters();
 }
 // Preserve a visible explanation for historically locked and undiscovered locations.
 function mapTravelRestriction(location){
@@ -2575,6 +2609,7 @@ function mapTravelRestriction(location){
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
  titleMapSelectedLocationId=id;
+ syncTitleMapFilters();
  $('#titleMapLocationName').textContent=location.name;
  $('#titleMapLocationArea').textContent=location.area;
  $('#titleMapLocationDescription').textContent=location.description;
@@ -2652,6 +2687,7 @@ function buildTitleMapMarkers(){
   layer.appendChild(marker);
  }
  titleMapPositionMarkers();
+ syncTitleMapFilters();
 }
 function titleMapClamp(){
  const viewport=$('#titleMapViewport'),img=$('#titleMapImage');if(!viewport||!img||!img.naturalWidth||!img.naturalHeight)return;
@@ -2804,6 +2840,7 @@ function initTitleMapViewer(){
  initMapShortcut();
  loadTitleMapLocationLayout();
  buildTitleMapMarkers();
+ initTitleMapFilters();
  updateTitleMapPinEditor();
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;

@@ -1371,3 +1371,11 @@ body.elephant-easter-egg-open{overflow:hidden}
 /* A failed autosave must be visible above every room and title overlay. */
 .save-failure-banner{position:fixed;left:12px;right:12px;top:10px;z-index:3000000;background:#4e1b1b;color:#fff3d9;border:2px solid #dc8c68;padding:12px 16px;font:700 14px/1.45 Arial,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.65)}
 .save-failure-banner[hidden]{display:none}
+
+/* v0.6.38: numbered map pins, with labels only on hover, focus, selection
+ * or by the explicit Show Names control. Category filtering is visual only. */
+#titleMapMarkers .title-map-marker[hidden]{display:none!important}
+#titleMapMarkers:not(.show-all-names) .title-map-marker-label{display:none}
+#titleMapMarkers:not(.show-all-names) .title-map-marker:hover .title-map-marker-label,
+#titleMapMarkers:not(.show-all-names) .title-map-marker:focus-visible .title-map-marker-label,
+#titleMapMarkers:not(.show-all-names) .title-map-marker.is-selected .title-map-marker-label{display:block}

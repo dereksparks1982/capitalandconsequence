@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.37-dev · archived title navigation / shared city rooms · October 22, 2026**
+**Current source: v0.6.38-dev · archived title navigation / shared city rooms · October 22, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -17,7 +17,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.37-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.38-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -181,11 +181,16 @@ The map's Stockbroker pin 14 now has an in-room personal securities order desk. 
 This is an initial brokerage slice: orders currently confirm immediately, pending a real message-delivery model. **The old 60-minute day/night countdown is still active** despite the requested 24-hour game clock; it must be migrated across market, NPC and factory systems before claiming the time redesign is complete. Period-accurate securities and broker tips remain future work. Godot experimentation is shelved. No new executable or release is authorized.
 
 
-## v0.6.37-dev · Broker advisories (October 22, 2026)
+## v0.6.38-dev · Broker advisories (October 22, 2026)
 
 On a real broker office visit, owners of shares receive a cautious assessment from publicly posted quotation history. Declining holdings may prompt an opinion to consider selling, but the broker never reads hidden future prices. The advice is saved once per visited date, appears at the broker's desk and is copied to the personal journal. Reloading or visiting again on the same date does not reroll it. This is a rule-based NPC service, not predictive artificial intelligence. No executable or release produced.
 
 
-## v0.6.37-dev · 24-hour calendar kernel (October 22, 2026)
+## v0.6.38-dev · 24-hour calendar kernel (October 22, 2026)
 
 The source-only `world-clock.js` engine now exposes actual 24-hour calendar positions, 12-hour player-facing clock formatting, midnight rollover, weekdays, and caller-supplied opening-hours checks. It calculates the next opening date across nonworking weekdays and advances events through action-driven multi-day jumps without offline time passing. Tests cover exact open/close boundaries, weekends, and save round-trips. **Venue hours and activity durations are not invented. The existing gameplay still uses its legacy day/night countdown until every major clock consumer is migrated**. This is not a finished 24-hour gameplay clock. No executable was packaged.
+
+
+## v0.6.38-dev · Washington map filtering and labels (October 22, 2026)
+
+Washington map pins show their **numbers only by default**. Names appear on mouse hover, keyboard focus, or selecting/tapping a pin. The optional **Show Names** control reveals all names, while the **Locations** category selector filters the visible pins by the established city-registry category. Categories come only from actual mapped places, not fictitious destinations. Filters change the *view*, never physical travel eligibility, invitations, saves or pin coordinates. This source slice is not an accepted new executable.
