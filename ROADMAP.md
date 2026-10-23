@@ -1,6 +1,6 @@
 # Federal Electric Roadmap
 
-Federal Electric is a long-save historical industrial, financial, social, and political life simulation beginning in Washington, D.C. in 1890, with later decades and locations unlocked as history progresses.
+Federal Electric is a long-save historical industrial, financial, social, and political life simulation set in **late nineteenth-century Washington, D.C.** The prototype currently seeds 1890, but **the exact starting year/date is undecided** and may move as the design and historical research progress.
 
 ## Locked rules
 
@@ -1097,3 +1097,16 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Maintain name-on-hover and category filtering, unchanged map pins and player locations.
 - [x] Add regression checks for deduplication, one-use leads, unrelated visits and autosave.
 - [ ] Optional gold suppression for later approved harder difficulties.
+
+
+## v0.6.48-dev · Provisional city journey hour · October 22, 2026
+
+- [x] Charge **60 temporary in-game minutes** for successful movement **between different registered Washington locations**, saved through the calendar bridge; do not claim this is surveyed travel time.
+- [x] Preserve **zero journey-time cost** between rooms in one location, especially executive office and factory.
+- [x] Reserve an empty per-route override table in `journey-planner.js` for later pin-dependent duration decisions; no false mileage or transport relocation.
+- [x] Add `tests/travel-duration.cjs` to `npm run test:source` and the Source QA triggers; latest source QA run 39889057504 **passed**.
+- [ ] Make the saved absolute 24-hour clock **the actual shared simulation authority** for factory, markets, NPCs, venues, UI and travel (the old 60-minute phase countdown still governs gameplay).
+- [ ] Later map/route design will specify several-minute, one-hour and multi-hour trips; no user-approved final geography yet.
+- [ ] Design approved game difficulty: friendly testing odds, harder modes and optional hiding of gold destination signals. Research period-appropriate mechanical slot machines and license/code options before implementing.
+- [ ] Continue nonplayer career autonomy and missed-opportunity-by-day/weekday behavior as real time schedules mature.
+- [ ] **Handoff:** read [HANDOFF-2026-10-22-THREAD-END.md](HANDOFF-2026-10-22-THREAD-END.md) before the next source build. No executable unless owner explicitly asks.

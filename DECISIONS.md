@@ -418,3 +418,12 @@ See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map desi
 - All registered locations currently share a neutral **nineteenth-century paper-style placeholder room**, visually consistent with the four-character main menu; no generated room art needed now.
 - Each room has navigation to the city map, the character's **own** desk, and the modern four-career main menu. Closing the map must restore the correct scene without exposing the retired title.
 - Keep original artwork/source archives, autosaves, historical room IDs and map pins intact; menu idling doesn't advance time.
+
+
+## 2026-10-22 — Temporary travel, source-only handoff
+
+- A successful journey between **different registered city sites costs 60 temporary in-game minutes**; this is a **configurable placeholder**, not historically measured walking time. Travel between rooms in one location costs zero, especially the company's executive office and factory. Keep real distance unknown until map positions/routes are approved; future routes may take minutes or several hours.
+- The one-hour charge currently uses the **saved calendar bridge**. The old countdown still controls legacy gameplay. Do not claim the real 24-hour clock is finished or retroactively fabricate clock time in old saves.
+- Exact campaign start year/date remains **undecided**, within the **late nineteenth-century Washington** design. January 1890 is the current prototype default, not a permanently locked historical start.
+- Keep source-only development on the established Electron/JavaScript main branch; **no executable**, new artwork, engine migration or release without explicit owner request/acceptance.
+- Next thread starts from [HANDOFF-2026-10-22-THREAD-END.md](HANDOFF-2026-10-22-THREAD-END.md); retain old notes as historical record.

@@ -1,8 +1,10 @@
 # Federal Electric
 
-**Current source: v0.6.47-dev · archived title navigation / shared city rooms · October 22, 2026**
+**Current source: v0.6.48-dev · calendar bridge, earned map leads and provisional city travel · October 22, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
+
+**New-thread continuation:** [October 22 development handoff](HANDOFF-2026-10-22-THREAD-END.md). The default city travel charge is one provisional in-game hour; no executable has been generated for this new source work.
 
 > **Federal Electric is the company you own.**  
 > **Washington is the world you inhabit.**
@@ -17,7 +19,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.47-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.48-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -25,7 +27,7 @@ Each distinct development slice increments the patch number; this v0.6.32 candid
 
 ## The world and the clock
 
-Washington begins in **January 1890**, not 1938. The numbered campaign spans **372 turns**, four playable Business Days per month from January 1890 through September 1897. Each playable turn has a **60-minute Business Day** and **60-minute Washington Night**. The clock does not progress offline, and pausing blocks gameplay information and actions. Production, markets, scheduled racing and opportunity windows continue while the player is active elsewhere.
+The setting is **late nineteenth-century Washington**. The precise campaign start year is **not yet a final design decision**; the current prototype uses January 1890 and still retains an older 372-turn, 60-minute Business Day / 60-minute Washington Night framework. A persisted 24-hour calendar **bridge** now exists but has **not** replaced the old clock as the gameplay authority. No offline time passes. See the [latest thread handoff](HANDOFF-2026-10-22-THREAD-END.md) for the migration plan.
 
 The **1893 World's Fair in Washington** is a deliberate alternate-history event; in the real world it was hosted in Chicago. Later technologies and 1930s media assets remain in the project as legacy/future-period resources. Period gating and comprehensive historical conversion are still in progress, so not all inherited gameplay content has been verified for the 1890 start.
 
@@ -41,7 +43,7 @@ The Metropolitan Ledger, Contacts, Journal, and pastimes introduce information t
 
 The city registry contains **14 editable numbered map pins**, currently using a temporary later-era Washington illustration. The map positions are **display coordinates, not surveyed road distances**.
 
-Press **M** to open or close the Washington map. Closing it should return you to the room or game interface you were using, **without moving your character**. Selecting **Go There** enters that location's current placeholder room; when you are already there, the Go There action is hidden. Real route durations and transport costs remain unfinished. **Go There currently performs clearly labeled provisional direct movement**, saving origin and destination but charging no invented time and leaving any owned transport behind.
+Press **M** to open or close the Washington map. Closing it should return you to the room or game interface you were using, **without moving your character**. Selecting **Go There** enters that location's current placeholder room; when you are already there, the Go There action is hidden. Verified route durations and transport costs remain unfinished. **Go There now charges a configurable provisional 60 in-game minutes between distinct locations** through the saved calendar bridge; transfers between rooms at the same site cost zero. This is a gameplay placeholder, not a claimed surveyed journey. The legacy gameplay countdown remains active until the full calendar migration. Travel records retain origin/destination, and owned transport stays where left.
 
 Among the pinned locations are the Ivy City factory, Star Club, Capital Race Grounds, Neighborhood Game, Commerce Club at the Washington-Hoover hangar, Embassy Room, Chinatown, Russian Trade Hall, fairgrounds, Capitol Airport, University of Maryland and **Our Home**.
 
@@ -251,3 +253,8 @@ The game now stores a serializable **absolute-minute calendar** alongside its tr
 ## v0.6.48-dev · Golden map pins for earned invitations
 
 Gold numbered markers signal a **known, unvisited destination**, currently Commerce Club when Eddie Doyle introduces it and Embassy Room after Harrison Vale issues an invitation. The marker remains gold until the player genuinely enters that location, not merely upon clicking its map pin. These leads are saved per profile, and cannot be recreated by repeatedly meeting the same contact. Map labels, filters, pin coordinates and other locations are unchanged; no private NPC secrets appear. Hardcore difficulty options are still to be decided. Source-only; no executable.
+
+
+## v0.6.48-dev · Temporary hour-per-location travel (source-only)
+
+Travel between distinct registered Washington locations now records a **provisional 60-minute cost** in the saved 24-hour **calendar bridge**, while moving between rooms at the same location costs no travel hour. This is temporary until street geography and pin placement are approved. Real mileage remains unknown; transport assets do not teleport; old-profile unknown hours are not fabricated. **The legacy 60-minute day/night gameplay loop has not been replaced.** The [temporary travel decision](TRAVEL-DECISION-2026-10-22.md) and [October 22 thread handoff](HANDOFF-2026-10-22-THREAD-END.md) distinguish implemented behavior from unfinished calendar migration. Source QA passed; **no new executable packaged**.
