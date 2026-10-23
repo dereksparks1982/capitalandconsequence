@@ -5,7 +5,7 @@ const rooms={
  middle:{name:'The Commerce Club',className:'poker-middle',stake:100,blind:2,npcs:[['Walter Briggs','steady'],['Charles Webb','tight'],['Eddie Doyle','bluff']]},
  elite:{name:'The Embassy Room',className:'poker-elite',stake:500,blind:10,npcs:[['Harrison Vale','tight'],['Sen. Robert Whitmore','steady'],['August Belmont III','aggressive']]}
 };
-let G=null,sessionStarted=Date.now(),businessStart=3600,clockTimer=null,sessionSettled=false;
+let G=null,sessionStarted=Date.now(),clockTimer=null,sessionSettled=false;
 const ranks='23456789TJQKA',suits='♣♦♥♠';
 function deck(){let d=[];for(let r of ranks)for(let s of suits)d.push({r,s,v:ranks.indexOf(r)+2});for(let i=d.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
 function combos(a,k){let out=[];function go(start,x){if(x.length===k){out.push(x.slice());return}for(let i=start;i<a.length;i++){x.push(a[i]);go(i+1,x);x.pop()}}go(0,[]);return out}
@@ -14,12 +14,11 @@ function eval7(cs){return combos(cs,5).map(five).sort((a,b)=>cmp(b.score,a.score
 function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){let d=(a[i]||0)-(b[i]||0);if(d)return d}return 0}
 function card(c,hide=false){return '<span class="p-card '+((c.s==='♥'||c.s==='♦')?'red':'')+(hide?' back':'')+'">'+(hide?'FE':c.r+'<i>'+c.s+'</i>')+'</span>'}
 function clockText(n){n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
-function updateClock(){const elapsed=Math.floor((Date.now()-sessionStarted)/1000);let left=Math.max(0,businessStart-elapsed);try{if(window.opener&&!window.opener.closed&&typeof window.opener.FE_POKER_CLOCK==='function')left=Math.max(0,window.opener.FE_POKER_CLOCK()-elapsed)}catch(e){}const el=document.querySelector('#pokerBusinessClock');if(el)el.textContent=clockText(left)}
+function updateClock(){const elapsed=Math.max(0,Math.floor((Date.now()-sessionStarted)/1000));const el=document.querySelector('#pokerBusinessClock');if(el)el.textContent=clockText(elapsed)}
 function start(roomKey){
  sessionSettled=false;
  sessionStarted=Date.now();
- const raw=new URLSearchParams(location.search).get('remaining');
- businessStart=raw===null?0:Math.max(0,Number(raw)||0);
+ // No artificial remaining business-day timer; time at the table counts upward.
  clearInterval(clockTimer);clockTimer=setInterval(updateClock,250);updateClock();
  const R=rooms[roomKey];if(!R)return;
  G={roomKey,R,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[

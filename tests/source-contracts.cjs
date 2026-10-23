@@ -436,6 +436,9 @@ check(pkg.scripts['test:source'].includes('tests/washington-pacing.cjs'),'NPC an
 check(appSource.includes('secondsToBoundary(S)')&&appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Long time skips replay crossed NPC schedule slots');
 check(read('journey-planner.js').includes('window.advanceWorldTime?.(gameMinutes*60,true)'),'Travel follows the player clock and NPC catch-up');
 check(!appSource.includes('advanceProduction(window.FE_WASHINGTON_TIME.rate(S),false)'),'No acceleration in passive factory work');
+check(!appSource.includes('Business day remaining:')&&appSource.includes('Until 5 PM closing bell:'),'Production UI shows actual in-game shift time, not the removed hourly budget');
+check(read('poker.html').includes('TIME AT THE TABLE')&&!read('poker.html').includes('BUSINESS DAY REMAINING'),'Poker popup measures time played, not obsolete day remaining');
+check(read('poker.js').includes('clockText(elapsed)')&&!read('poker.js').includes('businessStart'),'Poker timer counts elapsed time and cannot show huge fake time limits');
 check(appSource.includes('advanceProduction(productive,away)'),'Factory moves by real elapsed game seconds');
 check(read('washington-time.js').includes('function rate(){return 1}')&&appSource.includes("advanceWorldSimulation(1,false,'tick')"),'Active daylight and night tick at real speed, never 9x/15x');
 check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('S.gameDate=next;S.turnSerial='),'Daily accounting date follows observed clock');

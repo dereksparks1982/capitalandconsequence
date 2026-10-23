@@ -32,6 +32,8 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## v0.6.71-dev · Correct 24-hour Washington clock and NPC time jumps
 
+**UI correction:** Factory queue time remaining now refers to the real 5 PM closing bell rather than showing a nonsensical infinite phase budget. The poker popup now displays **elapsed time at the table**, not the discarded Business Day Remaining timer. Neither counter forces a phase end. Real selectable 1–8 hour card visits remain a future activity feature.
+
 At the owner's direction, active time now ticks **1 game second per real second**. There is no fixed daytime/nighttime play session, no old 60-real-minute expiration and no 9x/15x acceleration. Explicit player actions and travel advance additional exact game time. The runner slices long jumps at **midnight, 8 AM, noon, 5 PM and 10 PM**, allowing NPC routines to resolve through the intervening periods instead of skipping straight to the destination state. Factory accounting closes when the clock reaches 5 PM; the following business morning starts at 8 AM because time naturally reaches it. Rest Until Morning is an intentional player action. NPC actions never drive the clock; the title/background/paused game never accrues offline time.
 
 **Limits:** the playable factory is still 1890 bulb-first, daily accounting uses transitional legacy turn counters, NPC activity is still coarse, and full real poker/club session durations and 1878 components-first integration are pending. Only source tests are performed. See [the authoritative design](DESIGN-2026-10-23-LIVING-WASHINGTON.md) for exact decisions and next steps.
