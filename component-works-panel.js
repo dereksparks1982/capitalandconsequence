@@ -51,12 +51,17 @@
     if(kind==='assemble'||kind==='ship')details.orderId=fd.get('orderId');
     btn.disabled=true;
     try{
-     const token='cw:'+String((S.componentTransactionSequence||0)+1);
+     const sequence=(S.componentTransactionSequence||0)+1,token='cw:'+String(sequence);
      const result=live.transact(S,kind,details,token,
-      (sec,away)=>root.advanceWorkshopTime(sec,away),()=>root.finishWorkshopClosingBell());
+      (sec,away)=>root.advanceWorkshopTime(sec,away),()=>{
+       // Closing saves immediately. Persist the already-committed receipt's
+       // token sequence before the closing-bell autosave can run.
+       S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence);
+       return root.finishWorkshopClosingBell();
+      });
      panel.querySelector('#cwMessage').textContent=result.ok?
       'Recorded '+kind+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
-     if(result.ok&&!result.repeated){S.componentTransactionSequence=(S.componentTransactionSequence||0)+1;save(true)}
+     if(result.ok&&!result.repeated){S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence);save(true)}
      render();
     }catch(err){panel.querySelector('#cwMessage').textContent='Workshop action failed: '+String(err.message||err).slice(0,150)}
     finally{btn.disabled=false}
