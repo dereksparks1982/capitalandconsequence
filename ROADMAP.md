@@ -1058,3 +1058,14 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Correct current README summary for 14 map pins, four profile slots and four starting desk/city foundations (only Businessman profession-complete).
 - [ ] Deepen contact discovery, private communication availability, and when individuals agree to future meetings.
 - [ ] Migrate legacy countdown consumers to actual 24-hour action-driven shared world time.
+
+
+## v0.6.46-dev · 1890 federal hospital location and physical access
+- [x] Register historical Government Hospital for the Insane, founded 1852 and opened 1855, under its era-appropriate name (St. Elizabeths not the official name until 1916).
+- [x] Make the public reception/inquiry room addressable and enterable from an active profile's Washington city directory, without adding an unapproved map pin.
+- [x] Add restricted patient ward and superintendent office shells; room directory disables them and direct nondeveloper room requests are blocked.
+- [x] Preserve confidential patient records and the independence of proposed fictional Blackwood Asylum.
+- [x] Source-test the historical name, public entrance, room restrictions and unchanged fourteen numbered map pins.
+- [ ] Map the real hospital grounds on approved reference art; then expose a marker with tested coordinates, subject to owner review.
+- [ ] Build approved staff credentials, admissions and institutional career play, with respectful and historically sourced treatment of real care conditions.
+- Historic institution: National Archives, Record Group 418, https://www.archives.gov/research/guide-fed-records/groups/418.html .

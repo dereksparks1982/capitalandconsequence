@@ -1,6 +1,6 @@
 name: Linux Desktop Build
 
-# Developer workflow is manual-only while multiple 0.6.45 source slices are underway.
+# Developer workflow is manual-only while multiple 0.6.46 source slices are underway.
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
@@ -90,8 +90,8 @@ jobs:
       - name: Package standalone alpha
         run: |
           mv dist/linux-unpacked "dist/Federal Electric Standalone"
-          tar -C dist -czf "dist/Federal-Electric-0.6.45-linux-x64.tar.gz" "Federal Electric Standalone"
-          (cd dist && sha256sum Federal-Electric-0.6.45-linux-x64.tar.gz > Federal-Electric-0.6.45-linux-x64.tar.gz.sha256)
+          tar -C dist -czf "dist/Federal-Electric-0.6.46-linux-x64.tar.gz" "Federal Electric Standalone"
+          (cd dist && sha256sum Federal-Electric-0.6.46-linux-x64.tar.gz > Federal-Electric-0.6.46-linux-x64.tar.gz.sha256)
 
       # GitHub Actions artifact storage is full. Draft release assets use GitHub
       # Releases storage instead, while preserving existing artifacts and backups.
@@ -103,14 +103,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          tag="candidate-v0.6.45-unaccepted"
-          archive="dist/Federal-Electric-0.6.45-linux-x64.tar.gz"
+          tag="candidate-v0.6.46-unaccepted"
+          archive="dist/Federal-Electric-0.6.46-linux-x64.tar.gz"
           checksum="${archive}.sha256"
-          title="Federal Electric v0.6.45 | UNACCEPTED LINUX CANDIDATE"
+          title="Federal Electric v0.6.46 | UNACCEPTED LINUX CANDIDATE"
           notes="Private Linux test candidate built from commit ${GITHUB_SHA}. NOT ACCEPTED, NOT PUBLISHED. This draft does not represent an approved game release. Validate the executable before release acceptance or tagging."
           test -s "$archive"
           test -s "$checksum"
-          (cd dist && sha256sum --check "Federal-Electric-0.6.45-linux-x64.tar.gz.sha256")
+          (cd dist && sha256sum --check "Federal-Electric-0.6.46-linux-x64.tar.gz.sha256")
           if gh release view "$tag" --json isDraft >/dev/null 2>&1; then
             test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true" || {
               echo "Refusing to overwrite a published release." >&2

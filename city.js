@@ -186,6 +186,21 @@
     {id:'storage',name:'Household Storage',description:'An addressable storage room. Personal possessions will remain here only when a storage system is implemented.'}
    ]
   },
+  {
+   id:'governmentHospital',
+   name:'Government Hospital for the Insane',
+   area:'Anacostia hillside · southeast Washington, D.C.',
+   category:'institution',
+   description:'A federal psychiatric hospital operating since 1855, later officially named St. Elizabeths in 1916. Public inquiries are received at the entrance; treatment wards and administrative offices require permission.',
+   // Historical institution: the 1890 name and opening date are verified by NARA.
+   // Deliberately unpinned until its exact placement is reconciled with our map artwork.
+   map:null,defaultRoom:'reception',
+   rooms:[
+    {id:'reception',name:'Reception and Inquiry Desk',description:'Public visitors may request information and ask the receiving attendant about hospital procedures. No confidential patient record is accessible here.'},
+    {id:'patient-ward',name:'Patient Ward',restricted:true,description:'A patient-care area. Entry requires specific authorization; clinical and patient information remain confidential.'},
+    {id:'superintendent-office',name:'Superintendent’s Office',restricted:true,description:'Restricted institutional management offices, not available to an uninvited visitor.'}
+   ]
+  },
   {"id":"potomacKennelTrack","name":"Potomac Kennel Track","area":"Washington region · exact site pending","category":"sport","description":"Dog-racing venue with a placeholder room; site under historical review.","map":null,"defaultRoom":"track-office","rooms":[{"id":"track-office","name":"Kennel Track","description":"An undecorated dog-racing location."}]},
   {"id":"capitalSpeedway","name":"Capital Speedway","area":"Washington region · later period","category":"sport","availableFrom":"1930-01-01","description":"Later-period motor racing venue, unavailable in 1890.","map":null,"defaultRoom":"grandstand","rooms":[{"id":"grandstand","name":"Grandstand","description":"Future motor sport room."}]},
   {"id":"licensedGamingHall","name":"Licensed Gaming Hall","area":"Washington, D.C. · undecided address","category":"gaming","plannedOnly":true,"description":"Proposed regulated game hall; the allowed games and site are not yet settled.","map":null,"defaultRoom":"gaming-floor","rooms":[{"id":"gaming-floor","name":"Gaming Floor","description":"Planning only."}]},

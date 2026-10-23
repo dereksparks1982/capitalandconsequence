@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowle
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.45','Current package version is v0.6.45');
-check(appSource.includes("APP_VERSION='v0.6.45-dev'"),'Game masthead uses v0.6.45');
-check(read('build-linux.sh').includes('0.6.45'),'Local packaging uses the same number');
+check(pkg.version==='0.6.46','Current package version is v0.6.46');
+check(appSource.includes("APP_VERSION='v0.6.46-dev'"),'Game masthead uses v0.6.46');
+check(read('build-linux.sh').includes('0.6.46'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.45-linux-x64.tar.gz'),'Manual workflow archives v0.6.45');
+check(workflow.includes('0.6.46-linux-x64.tar.gz'),'Manual workflow archives v0.6.46');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -432,4 +432,11 @@ check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'star').ongoing===tru
 check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'factory')===null,'Unknown venue has no invented appointment');
 check(daybook.at(JSON.parse(JSON.stringify(clock.create('1890-01-03T23:00'))),weekly).length===1,'Appointment availability derives from saved world minute, not wall clock');
 check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real calendar appointment tool loads before NPC runtime');
+check(city.getLocation('governmentHospital')?.name==='Government Hospital for the Insane','Government Hospital is registered under its 1890 historical name');
+check(city.getLocation('governmentHospital').map===null,'Hospital has no invented map pin or unapproved pixel coordinates');
+check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
+check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city.getRoom('governmentHospital','superintendent-office')?.restricted===true,'Wards and superintendent office are access restricted');
+check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
+check(appSource.includes('if(room?.restricted&&!dev)')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev'),'Both direct room entry and room-directory controls enforce restrictions');
+check(city.mapLocations().length===14,'Hospital addition preserves all 14 approved map pins');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
