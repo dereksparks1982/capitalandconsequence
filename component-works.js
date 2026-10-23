@@ -1,7 +1,7 @@
 /* Capital & Consequence v0.6.62: independent 1878 component works foundation.
  * Production, payment, warehouse delivery and raw material procurement are
  * integer-cents transactional facts, kept distinct from 1890 bulb saves.
- * This module DOES NOT change the live game's opening date or world clock.
+ * The v0.6.72 adapter and live game now integrate this reusable core with the new 1878 start and player clock.
  * Prices, recipes, wages and customer names are provisional game balancing.
  */
 (function(root){

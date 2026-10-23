@@ -1,6 +1,6 @@
 # 1878 Federal Electric component-works foundation · v0.6.62
 
-**Status: tested source module; NOT connected to the live 1890 profile factory or a validated 1878 new game.**
+**Update v0.6.72:** The previously standalone component engine is now connected to January 1878 new profiles with a playable customer-order/material/assembly/shipment workshop and the authoritative Washington clock. The rest of this document records the v0.6.62 historical foundation and its original limitations.
 
 The current historical-factory retrofit cannot safely consist of changing `CAMPAIGN_START_DATE` alone. `app.js` contains a bulb-first contract pipeline, tungsten/carbon filament purchasing, working-day timing, delivery lots, starting contracts, recurring lighting sales, newspapers, wages, stock quotations, starting material inventory, and a version-15 save schema. Those assumptions remain live for preserved 1890 campaigns.
 
@@ -8,7 +8,7 @@ The current historical-factory retrofit cannot safely consist of changing `CAMPA
 
 Early historical facts need further period research. **Recipe inputs, tool classes, customers, prices, wages, output times and balances are provisional GAME DATA, not authenticated 1878 industrial records.** The experimental future incandescent lamp is *not* eligible on January 2, 1878. Reaching 1880 alone is insufficient: a separate license and lamp-line station are also required. These deliberately conservative locks do not assert an exact historical first-sale date.
 
-## Not yet wired
+## Previously not yet wired (v0.6.62 snapshot); partially delivered in v0.6.72
 
 - `app.js` still opens **1890** and operates its existing bulb line. No silent old-save migration is attempted.
 - This module's `minutesCommitted` is **production time due**, not proof an authoritative world-clock debit occurred. Runtime integration must charge through one shared world-time transaction and never double-charge.

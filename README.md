@@ -2,7 +2,7 @@
 
 > **PRIMARY CURRENT DESIGN:** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). Read it FIRST before building. The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Previous handoffs are archived background.
 
-**Current source: v0.6.71-dev · Real 1:1 running clock, activity skips and NPC catch-up · October 23, 2026**
+**Current source: v0.6.72-dev · First playable January 1878 Component Works · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -12,9 +12,9 @@
 
 **Live an ordinary or extraordinary life in alternate-history Washington, D.C., in the late nineteenth century.**
 
-**Approved future campaign opening: January 2, 1878.** Federal Electric's earliest products will be **electrical and telegraph components**, not mass-produced light bulbs. A working component business and its customers must come first. Later, technological advances, manufacturing investment, and possible patent or licensing arrangements allow incandescent lamp production. The **1893 alternate-history Washington World's Fair** offers a major contract to supply fairground bulbs and a possible front-page Metropolitan Ledger story if awarded; only **afterward** does a separate opportunity to compete for a modernized D.C. streetlighting contract arise. Washington's earlier 1880s electric **arc** streetlights are historically distinct from ordinary incandescent lamps. The actual 1893 World's Columbian Exposition took place in Chicago.
+**Current new-game opening: January 2, 1878.** Federal Electric's earliest products will be **electrical and telegraph components**, not mass-produced light bulbs. A working component business and its customers must come first. Later, technological advances, manufacturing investment, and possible patent or licensing arrangements allow incandescent lamp production. The **1893 alternate-history Washington World's Fair** offers a major contract to supply fairground bulbs and a possible front-page Metropolitan Ledger story if awarded; only **afterward** does a separate opportunity to compete for a modernized D.C. streetlighting contract arise. Washington's earlier 1880s electric **arc** streetlights are historically distinct from ordinary incandescent lamps. The actual 1893 World's Columbian Exposition took place in Chicago.
 
-**Implementation status:** This is an **approved roadmap direction only**. Current game code still opens campaigns in **1890**, and current early factory production is not yet rebuilt around 1878 component manufacturing. The full [1878-to-fair progression and Russian-language NPC requirements are on the roadmap](ROADMAP.md).
+**Implementation status:** New profiles now begin in **1878** with a playable electrical-components workshop. Period-correct company economics, stock listings, wages, later factory tooling, technology licensing, the 1893 fair and the streetlight bid remain [unfinished roadmap work](ROADMAP.md). Existing 1890 saves retain their own game dates and original inventory.
 
 **Capital & Consequence is a Washington-first historical life simulation.** Federal Electric is the business owned from day one by **Charles “Charlie” Whitcomb**, one of four starting protagonists. The police patrolman, nightclub doorman and asylum orderly have their own desks and lives; the city keeps moving regardless of who is selected.
 
@@ -29,6 +29,12 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.72-dev · Owner-operated 1878 founding workshop
+
+**Built:** New games begin on January 2, 1878 and no longer receive the 1890 incandescent starter contract or active bulb manufacturing queue. Charlie Whitcomb can use **Factory → Component Works** to accept actual telegraph and electrical customer orders, purchase copper/brass/wood/iron/insulating stock, assemble period components at bench/winder stations, and ship physical warehouse stock to receive payment. This reuses the v0.6.62 component engine and its integer-cents receipts. Every operation consumes its actual in-game minutes on the **same active 1:1 Washington player clock**; work cannot run past 5 PM. Repeated receipts cannot duplicate stock, money or time. The old bulb factory screens are hidden for new 1878 profiles, but historical 1890 saves are not silently re-dated.
+
+**Remaining:** broader period-correct company payroll, stock listings, newspaper stories, hiring, equipment, licensing, fair and lamp progression, and NPC-owned company operation. This is a checked-off **workshop submilestone**, not the entire 1878 historical economy. Source-only checks, no new playable Linux executable.
 
 ## v0.6.71-dev · Correct 24-hour Washington clock and NPC time jumps
 

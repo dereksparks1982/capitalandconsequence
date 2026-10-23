@@ -1,4 +1,13 @@
-# Federal Electric · Recorded Design Decisions
+# Capital & Consequence · Recorded Design Decisions
+
+## 2026-10-23 · v0.6.72 · Playable founding company
+
+- New campaigns now start January 2, **1878**. Charlie owns Federal Electric's component works and begins with actual telegraph/electrical orders, material suppliers, timed assembly and paid warehouse shipments rather than a 1890 bulb-first contract.
+- Use the existing `component-works.js` integer-cents inventory/receipts. Only the `component-works-live.js` and `component-works-panel.js` adapters bind that module to the common normal-speed game clock and visible Factory. Do not recreate electrical manufacturing as an independent economy.
+- Historical 1890 saves remain separate. New 1878 workshop screens do not advertise incandescent bulbs or automatically grant technology, license or production stations.
+- The full 1878 economy is **not** checked off. Period market, wages, newspaper, career NPC economy and later technical milestones still require work, tests and user acceptance.
+
+
 
 ## 2026-10-23 · v0.6.70 shared clock pacing · SUPERSEDED, NOT APPROVED
 

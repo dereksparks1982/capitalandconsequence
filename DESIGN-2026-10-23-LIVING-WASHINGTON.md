@@ -1,6 +1,6 @@
 # Capital & Consequence | Authoritative Thread Design, October 23, 2026
 
-**This is the PRIMARY build specification.** It records explicit user requests and corrections in this thread. Read it before the README, ROADMAP, decisions, older handoffs, and code. Where they disagree, **the user's newer explicit correction wins**. The repo is the private `dereksparks1982/capitalconsequence`, single branch `main`. Source target at writing: **v0.6.71-dev**; not an accepted executable. Do not describe planned features as implemented.
+**This is the PRIMARY build specification.** It records explicit user requests and corrections in this thread. Read it before the README, ROADMAP, decisions, older handoffs, and code. Where they disagree, **the user's newer explicit correction wins**. The repo is the private `dereksparks1982/capitalconsequence`, single branch `main`. Source target at latest update: **v0.6.72-dev**; not an accepted executable. Do not describe planned features as implemented.
 
 **Title:** CAPITAL & CONSEQUENCE. **Motto:** "One city. Countless lives. Every choice has consequences." **Distinction:** "Federal Electric is the company you own. Washington is the world you inhabit."
 
@@ -46,7 +46,7 @@
 - The real Civil War (1861–65) is the fork: after it, alternate America abolished the **Electoral College** and replaced states/old borders with **functional national districts** (breadbasket agriculture, industry, etc.). Presidents are elected by nationwide **popular vote only**.
 - The user suggested that **Samuel J. Tilden**, historical popular-vote winner in 1876, **could become president** in this alternate 1878. Treat Tilden as a *working candidate*, not a final entire political timeline; later elections, candidates and presidents are undecided until curated. Residents should refer to what the game actually establishes, not our real world's Hayes as if nothing changed.
 - The requested playable opening is **January 2, 1878**. Charlie first manufactures minor contemporary electrical components: telegraph parts/keys, switches, contacts, relays, insulated wire, insulators and battery fittings. Incandescent bulbs follow with later actual technological/patent progress. Afterward an **alternate-history 1893 Washington World's Fair** is a possible major bulb contract, followed by distinct Washington streetlighting modernization. Real-world Chicago fair history is not the same timeline.
-- **Reality check:** v0.6.71 **still starts 1890 and sells bulbs first**. An isolated and tested `component-works.js` engine for 1878 exists, **not wired as the live player factory**. User says old saves do **not** matter, so preserving legacy save compatibility must not block the future proper 1878 rewrite. Do not just switch the date string and leave historical anachronisms.
+- **Updated v0.6.72:** New campaigns now **start January 2, 1878**, with Charlie's playable component workshop, actual material buying, order acceptance, timed manufacture, stocked shipments and company payments using the tested `component-works.js` engine. No 1890 bulb starter contract is created in new profiles. The surrounding older markets, wages, newspaper rules and period-company integration still need historical conversion. User says old saves do **not** matter, so preserving legacy save compatibility must not block the future proper 1878 rewrite. Do not just switch the date string and leave historical anachronisms.
 
 ## 6. Weather, day-night and celestial events
 
@@ -72,7 +72,7 @@
 
 ## 9. Status and next work
 
-**v0.6.71 code direction:** correct 1:1 active timer, explicit activity jump durations, chronological NPC slot catch-up during actions and travel, actual 5 PM/8 AM work handoffs without time teleportation, player-chosen Rest Until Morning. GitHub Source QA must pass before claiming a verified source build.
+**v0.6.72 update:** The 1878 playable component workshop is connected. The remaining era-correct market, business accounting and NPC simulation systems are still open. **v0.6.71 code direction:** correct 1:1 active timer, explicit activity jump durations, chronological NPC slot catch-up during actions and travel, actual 5 PM/8 AM work handoffs without time teleportation, player-chosen Rest Until Morning. GitHub Source QA must pass before claiming a verified source build.
 
 **Still unfinished:** real 1878 component factory start; remove legacy four-turn/month company economics and account-date aliasing; richer hour-by-hour NPC behavior through all playable activities; real persistent offscreen character agency across poker/races/jobs/crimes; configurable venue stay/card duration; year-by-year historical facts and complete strong local LLM installation/inference; diverse weather changing within days; first-hand eclipse-driven investigations; steam-car permissions/routes/estate; complete visual day/night transitions; desktop gameplay acceptance.
 
