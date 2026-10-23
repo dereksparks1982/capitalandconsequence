@@ -1,12 +1,28 @@
 # Capital & Consequence
 
+
+## v0.6.76 · Weekly 1878 telegraph works and household economy (source-only)
+
+**Factory:** Charlie and Sullivan work **Monday-Friday 9 AM-5 PM**, with **Saturday 9 AM-5 PM for customer delivery and payroll**, Sunday closed. Production requires Sullivan physically at the works. Orders larger than the available shift time make only complete units that fit; the rest carries over. No automatic 9 AM restart, autonomous assistant fabrication or breakdown-repair intervention is claimed by this slice. The player retains the existing 1:1 ticking game clock and action-time jumps.
+
+**First real standing contract:** Capital Railway Telegraph buys **2 telegraph keys at $4.20**, **2 relays at $7.60**, and **3 switch contacts at $2.40**. Total **$30.80** gross, **$5.40** replacement materials from the current component catalog, and **29 hours** proposed hands-on production across the 40-hour Mon-Fri workweek. The first full-week Saturday is **January 12, 1878** (the January 2 opening is Wednesday). Future weekly batches appear on a Monday only if the previous batch was fully delivered. All amounts and production times are provisional gameplay estimates, not proven period prices.
+
+**Staff and bills:** Sullivan earns **$1.20 per day actually worked**, maximum **$6 per five-day week**, accrued weekdays and paid by company-cash transfer to his NPC account on Saturday. Unpaid employee wages persist as arrears. Saturday shop costs are **$0.55 lamp oil/tools** plus **$0.70 winter coal heat in November-March**, assessed only when the workshop worked; **$1.15 wagon transport only if stock was actually shipped that Saturday**. Unpaid costs remain visible as liability, not fabricated negative cash. Owned raw stock is consumed without paying for it twice; raw material purchases actually debit company cash.
+
+**Representative successful winter week:** $30.80 customer payment minus $5.40 replacement materials, $6 Sullivan salary and $2.40 shop/transport = **$17 before Charlie's draw, personal living costs, unusual repairs, taxes or reinvestment**. Initial inventory is already owned, so material replacement is an economic cost but not an automatic duplicate cash debit in week one. No fixed invisible owner withdrawal has been added. Sullivan's 25-cent weekly factory-room rent, household grocery basket (milk, bread, bacon, eggs, stew meat, potatoes, onion, soap), and Charlie's separate groceries/housing remain planned NPC purchasing features, not implemented market transactions.
+
+**Future city economy, proposal only:** Two competing brother-owned horse/carriage stables on **opposite sides of Washington**, cause of feud undecided. Some residents own private horse sheds; many do not own a horse. Charlie could eventually keep a horse and delivery wagon in a rear factory stable/carriage house, owing feed, shoeing and upkeep, but no commercial boarding. A modest 1878 shop uses hand/foot machinery, coal heat, and oil or municipal manufactured-gas lighting where service exists; no assumed electric utility or diesel power.
+
+**Status:** Source-only candidate v0.6.76. No executable or release built; GitHub source QA must be checked independently. Old-save compatibility is not a requirement.
+
+
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
 > **OWNER DESIGN (read after the handoff):** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Older handoffs are archived background.
 
 > **Current owner correction:** An earlier assistant invented a requirement to preserve old/1890 saves. **That rule is revoked; the owner never authorized it.** Current 1878 game design and properly working current-profile autosaves take priority. Maintaining or migrating old saves is NOT a development requirement. Earlier version notes below are historical, not instructions to preserve backward compatibility.
 
-**Current source candidate: v0.6.75-dev · 5 PM workshop receipt-before-payroll settlement · October 23, 2026**
+**Current source candidate: v0.6.76-dev · weekly component production and Saturday payroll · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
