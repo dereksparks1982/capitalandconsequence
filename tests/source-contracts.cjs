@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.74','Current package version is v0.6.74');
-check(appSource.includes("APP_VERSION='v0.6.74-dev'"),'Game masthead uses v0.6.74');
+check(pkg.version==='0.6.75','Current package version is v0.6.75');
+check(appSource.includes("APP_VERSION='v0.6.75-dev'"),'Game masthead uses v0.6.75');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.74'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.75'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.74-linux-x64.tar.gz'),'Manual workflow archives v0.6.74');
+check(workflow.includes('0.6.75-linux-x64.tar.gz'),'Manual workflow archives v0.6.75');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -275,6 +275,9 @@ check(appSource.includes('workers:1,machinery:92,workforce:{present:1')&&appSour
 check(index.indexOf('workshop-staff.js?v=')<index.indexOf('app.js?v='),'Assistant payroll loads before gameplay');
 check(read('component-works.js').includes('minutesRequired=p.minutes*units,laborCostCents=0'),'Owner assembly does not pay imaginary second wages');
 check(pkg.scripts['test:source'].includes('tests/workshop-staff.cjs'),'Assistant payroll invariants belong to source QA');
+check(pkg.scripts['test:source'].includes('tests/workshop-closing.cjs'),'Exact 5 PM workshop cash and closing ledger integration required');
+check(appSource.includes('window.advanceWorkshopTime=')&&appSource.includes('window.finishWorkshopClosingBell=')&&appSource.includes('deferWorkshopClose&&S.componentWorks&&remaining===0'),'5 PM waits for committed component receipt before day close');
+check(read('component-works-panel.js').includes('S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence)'),'Closing-bell autosave includes transaction token sequence');
 check(appSource.includes('componentWorks:window.FE_COMPONENT_WORKS?.createState?.(CAMPAIGN_START_DATE)'),'Component inventory lives inside the player save');
 check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
