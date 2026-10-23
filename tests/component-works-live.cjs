@@ -21,7 +21,7 @@ const c=live.transact(s,'ship',{orderId:a.id,quantity:4},'ship:1',spend);
 assert.equal(c.ok,true);assert.equal(clock.now(s).time,'8:56 AM');
 assert.equal(Math.round(s.companyCash*100),250000-b.laborCostCents+c.revenueCents,'Cash compared in exact integer cents');
 const d=live.transact(s,'purchase',{materialId:'brass',quantity:10},'purchase:1',spend);
-assert.equal(d.ok,true);assert.equal(s.componentWorks.materials.brass,172);
+assert.equal(d.ok,true);assert.equal(s.componentWorks.materials.brass,182,'180 opening brass minus 8 assembled plus 10 purchased');
 const original=JSON.stringify(s);
 assert.equal(live.transact(s,'assemble',{orderId:a.id,quantity:4},'bad:1',spend).ok,false);
 assert.equal(JSON.stringify(s),original);
