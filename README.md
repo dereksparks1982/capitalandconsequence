@@ -2,13 +2,13 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
-> **PRIMARY CURRENT DESIGN:** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). Read it FIRST before building. The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Previous handoffs are archived background.
+> **OWNER DESIGN (read after the handoff):** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Older handoffs are archived background.
 
 **Current source: v0.6.72-dev · First playable January 1878 Component Works · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**For all new work:** consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), then ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.72 executable has been made; source-only development remains the rule.
+**For all new work:** begin with [CONTINUE-HERE.md](CONTINUE-HERE.md), then consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.72 executable has been made; source-only development remains the rule.
 
 > **One city. Countless lives. Every choice has consequences.**
 
