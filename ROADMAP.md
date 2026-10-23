@@ -1014,3 +1014,13 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] NPC schedule transitions refresh room people and visitor rows together.
 - [ ] The new absolute 24-hour clock must replace legacy morning/night slots before weekday routines and travel durations can be fully trusted.
 - [ ] Expand evidence/rumor distinction and goal-driven dialogue without leaking hidden NPC motives.
+
+
+## v0.6.41-dev · Private NPC belief and rumor groundwork
+- [x] Create `npc-knowledge.js` for saved per-actor belief records, each with claim, source, confidence, date and attribution.
+- [x] Deduplicate identical reports per day/source; preserve contradictory accounts rather than knowing truth globally.
+- [x] Allow an NPC to share their *belief* with another NPC at reduced reliability, without auto-publishing the rumor.
+- [x] Record directly witnessed introductions in private per-profile NPC knowledge; keep this separate from public Metro Ledger dispatches.
+- [x] Add source tests for beliefs, hearsay, contradictory rumors and one-profile isolation.
+- [ ] Feed the knowledge records from actual shared-clock NPC encounters, investigations, letters and witnessing events.
+- [ ] Event publication needs explicit editor/newspaper decision rules; never print private thoughts automatically.

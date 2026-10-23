@@ -50,6 +50,7 @@
   if(!Number.isSafeInteger(w.seed)||w.seed<0)w.seed=hash(profile()+'|npc-schedules-v1');
   if(!w.agents||typeof w.agents!=='object')w.agents={};
   if(!Array.isArray(w.events))w.events=[];
+  window.FE_NPC_KNOWLEDGE?.ensure?.(w);
   if(!Number.isSafeInteger(w.lastStep)||w.lastStep<0)w.lastStep=(turn-1)*4-1;
   for(const def of DEFINITIONS){
    if(!w.agents[def.id]||typeof w.agents[def.id]!=='object'){
@@ -138,6 +139,7 @@
    return {ok:false,reason:'The meeting could not be recorded.'};
   a.memories[a.memories.length-1].date=date;
   a.memories[a.memories.length-1].locationId=position.locationId;
+  if(topic==='greet')window.FE_NPC_KNOWLEDGE?.learn?.(w,id,'introduced:'+route,true,'direct-introduction',date,1);
   if(Array.isArray(S.notes))S.notes.push({date,source:'conversation with '+def.name,text:'Spoke with '+def.name+': '+reply});
   if(typeof save==='function')save(true);
   if(typeof renderNotes==='function')renderNotes();

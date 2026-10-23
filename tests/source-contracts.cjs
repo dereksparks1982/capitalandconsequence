@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','brokerage.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['city.js','brokerage.js','app.js','npc-knowledge.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.40','Current package version is v0.6.40');
-check(appSource.includes("APP_VERSION='v0.6.40-dev'"),'Game masthead uses v0.6.40');
-check(read('build-linux.sh').includes('0.6.40'),'Local packaging uses the same number');
+check(pkg.version==='0.6.41','Current package version is v0.6.41');
+check(appSource.includes("APP_VERSION='v0.6.41-dev'"),'Game masthead uses v0.6.41');
+check(read('build-linux.sh').includes('0.6.41'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.40-linux-x64.tar.gz'),'Manual workflow archives v0.6.40');
+check(workflow.includes('0.6.41-linux-x64.tar.gz'),'Manual workflow archives v0.6.41');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -190,7 +190,7 @@ check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'")
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
 const runtimeSrc=['city.js','world-clock.js','character-routes.js','app.js','venue-opportunities.js',
- 'living-characters.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
+ 'living-characters.js','npc-knowledge.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js','career-shell.js'];
 let priorOffset=-1;
 for(const src of runtimeSrc){
@@ -250,7 +250,7 @@ check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migra
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
 let npcSaved=0;
-const npcCtx={window:{FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+const npcCtx={window:{FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
@@ -387,4 +387,18 @@ check(appSource.includes('const physicallyPresent=()=>!resident')&&appSource.inc
 check(appSource.includes("if(!physicallyPresent()){output.textContent=npc.name+' has left"),'Conversations check for departed NPCs on click');
 check(appSource.includes("m.key==='authored-conversation'&&m.withId===route&&m.date===S.gameDate"),'Static NPC encounters are once per profile and date');
 check(read('npc-ai.js').includes('window.FE_CITY?.refreshRoomPeople?.()'),'NPC schedule updates refresh authored room speakers');
+const knowledge=require('../npc-knowledge.js');
+const mindA={};
+check(knowledge.learn(mindA,'madamStar','visitor:industrialist',true,'direct-introduction','1890-01-02',1),'Private firsthand knowledge can be learned');
+check(knowledge.learn(mindA,'madamStar','visitor:industrialist',true,'direct-introduction','1890-01-02',1)===false,'Same report from the same source and date is idempotent');
+check(knowledge.belief(mindA,'eddieDoyle','visitor:industrialist')===null,'Other NPCs do not know an observation automatically');
+check(knowledge.share(mindA,'madamStar','eddieDoyle','visitor:industrialist','1890-01-03')===true,'Observed beliefs can be shared only by an explicit exchange');
+check(knowledge.belief(mindA,'eddieDoyle','visitor:industrialist').confidence===.6,'Hearsay reduces confidence and retains source attribution');
+check(knowledge.learn(mindA,'eddieDoyle','visitor:industrialist',false,'rival-report','1890-01-03',.75),'Conflicting claim is retained as a belief');
+check(knowledge.belief(mindA,'eddieDoyle','visitor:industrialist').assertion===false,'NPC can believe a contradiction instead of magically learning truth');
+const mindB={};
+check(knowledge.belief(mindB,'madamStar','visitor:industrialist')===null,'Independent saves have independent NPC knowledge');
+check(!JSON.stringify(knowledge.knownFacts(mindA,'madamStar')).includes('worldTruth'),'Belief API contains no global truth field');
+check(index.includes('npc-knowledge.js?v=')&&index.indexOf('npc-knowledge.js?v=')<index.indexOf('npc-ai.js?v='),'Knowledge service loads before NPC runtime');
+check(read('npc-ai.js').includes("'introduced:'+route,true,'direct-introduction'"),'Real player introductions create first-hand private records');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
