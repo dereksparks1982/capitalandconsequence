@@ -105,6 +105,7 @@ function resolveRace(id,animate){
  const attending=document.getElementById('racing')?.classList.contains('active')&&S.phase==='day'&&(!window.isPastimeActivityOpen||window.isPastimeActivityOpen('legal','horse'));
  if(attending&&!S.contacts.bookie?.met&&Math.random()<.12){
    S.contacts.bookie.met=true;S.contacts.bookie.trust=1;S.bookieKnown=true;S.middlePokerUnlocked=true;
+   window.FE_MAP_LEADS?.flag?.(S,'commercePoker','race-bookie-introduction');
    S.notes.push({date:displayDate(),text:'Met Eddie Doyle among the bettors at Capital Race Grounds. The bookmaker said to ask him if I ever wanted to know what else was running around Washington.',source:'race-track conversation'});
  }
  if(id==='ME'){const winner=horse(r.result[0]);S.lastRaceResult='At Capital Race Grounds, '+winner.name+' won the Main Event.';S.notes.push({date:displayDate(),text:'The Main Event at Capital Race Grounds was won by '+winner.name+'.',source:'personal recollection / racing results'})}

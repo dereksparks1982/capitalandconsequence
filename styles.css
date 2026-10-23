@@ -1387,3 +1387,7 @@ body.elephant-easter-egg-open{overflow:hidden}
 .fe-npc-visitor-actions button{border:1px solid #746043;border-radius:2px;background:#eee0c2;color:#2b2117;padding:6px 9px;font:600 12px Georgia,serif;cursor:pointer}
 .fe-npc-visitor-actions button:focus-visible{outline:2px solid #9b4e1e;outline-offset:2px}
 .fe-npc-response{font-style:italic;min-height:1.2em}
+
+/* Golden pins are known, earned invitations until an actual destination visit. */
+#titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin{background:linear-gradient(135deg,#f5d77e,#bd8b2c)!important;border-color:#77531c!important;color:#312006!important;box-shadow:0 0 0 2px #f2d48b,0 0 13px rgba(244,181,39,.8)!important}
+#titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin b{color:#241705}

@@ -1088,3 +1088,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Migrate pre-calendar profiles safely, taking up clock synchronization on the next explicitly initiated morning.
 - [x] Add source tests covering 8 AM, subminute boundaries, action jumps, midnight, reload, pause and missing historical hours.
 - [ ] Switch factory, markets, NPC schedules, activity costs, overnight venue play and the header/menu UI to the calendar together after cross-module smoke QA. Existing one-hour phase timing remains authoritative in this slice; do not claim the game now runs a 24-hour day.
+
+
+## v0.6.48-dev · Saved, visit-cleared map lead signals
+- [x] Persist the source of earned Commerce Club and Embassy Room leads per profile.
+- [x] Gold-highlight earned unvisited destinations without exposing secret/unearned locations.
+- [x] Clear pending gold status only after successful real city-room entry, not DEV travel or map opening.
+- [x] Maintain name-on-hover and category filtering, unchanged map pins and player locations.
+- [x] Add regression checks for deduplication, one-use leads, unrelated visits and autosave.
+- [ ] Optional gold suppression for later approved harder difficulties.

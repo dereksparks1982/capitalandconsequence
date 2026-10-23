@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.47','Current package version is v0.6.47');
-check(appSource.includes("APP_VERSION='v0.6.47-dev'"),'Game masthead uses v0.6.47');
-check(read('build-linux.sh').includes('0.6.47'),'Local packaging uses the same number');
+check(pkg.version==='0.6.48','Current package version is v0.6.48');
+check(appSource.includes("APP_VERSION='v0.6.48-dev'"),'Game masthead uses v0.6.48');
+check(read('build-linux.sh').includes('0.6.48'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.47-linux-x64.tar.gz'),'Manual workflow archives v0.6.47');
+check(workflow.includes('0.6.48-linux-x64.tar.gz'),'Manual workflow archives v0.6.48');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -191,7 +191,7 @@ check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow
 check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'"),'Canceled and forfeited outcomes uniquely recorded');
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
-const runtimeSrc=['city.js','world-clock.js','calendar-bridge.js','character-routes.js','app.js','venue-opportunities.js',
+const runtimeSrc=['city.js','world-clock.js','calendar-bridge.js','map-leads.js','character-routes.js','app.js','venue-opportunities.js',
  'living-characters.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js','career-shell.js'];
 let priorOffset=-1;
@@ -353,6 +353,21 @@ clock.spend(restored,60);
 check(clock.formatMinute(restored.worldMinute)==='1890-01-02T09:30','Clock state survives JSON save and restore');
 check(index.includes('world-clock.js?v='),'World clock is loaded by the standalone game');
 check(index.indexOf('world-clock.js?v=')<index.indexOf('calendar-bridge.js?v='),'Calendar bridge loads after the world clock');
+check(index.indexOf('calendar-bridge.js?v=')<index.indexOf('map-leads.js?v=')&&index.indexOf('map-leads.js?v=')<index.indexOf('app.js?v='),'Map priorities load before gameplay');
+const leadApi=require('../map-leads.js'),leadSave={turnSerial:11};
+check(!leadApi.highlighted(leadSave,'commercePoker'),'No golden lead before meeting a contact');
+check(!leadApi.flag(leadSave,'embassyPoker','secret'),'Unknown private leads cannot make gold pins');
+check(leadApi.flag(leadSave,'commercePoker','star-bookie-introduction'),'Eddie invitation creates known map destination');
+check(!leadApi.flag(leadSave,'commercePoker','star-bookie-introduction'),'Repeated introductions do not duplicate destination');
+check(leadApi.highlighted(leadSave,'commercePoker'),'Earned destination remains gold until visited');
+check(!leadApi.visit(leadSave,'star')&&leadApi.highlighted(leadSave,'commercePoker'),'Unrelated location cannot clear lead');
+check(leadApi.visit(leadSave,'commercePoker')&&!leadApi.highlighted(leadSave,'commercePoker'),'Visiting correct room clears lead');
+check(!leadApi.flag(leadSave,'commercePoker','star-bookie-introduction'),'Used invitation cannot reroll');
+check(!leadApi.highlighted({mapLeads:leadApi.migrate(JSON.parse(JSON.stringify(leadSave.mapLeads)))},'commercePoker'),'Autosave retains completed destination');
+check(leadApi.flag(leadSave,'embassyPoker','vale-invitation'),'Vale creates only an earned elite destination lead');
+check(appSource.includes('window.FE_MAP_LEADS?.visit?.(S,location.id)'),'Successful physical room entry consumes map lead');
+check(read('styles.css').includes('.title-map-marker.is-priority'),'Golden markers have CSS');
+
 const bridge=require('../calendar-bridge.js');
 const freshCalendar={paused:false};
 bridge.start(freshCalendar,'1890-01-02');

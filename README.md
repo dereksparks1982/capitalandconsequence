@@ -246,3 +246,8 @@ While another protagonist is being played, **Wardman now independently inhabits 
 ## v0.6.47-dev · Persisted calendar bridge (source-only)
 
 The game now stores a serializable **absolute-minute calendar** alongside its transitional legacy business/night countdown. New profiles begin with a known 8:00 AM baseline; existing saves with no historical absolute minute are explicitly marked `legacy-unmapped`, rather than silently inventing an earlier hour. The next explicitly begun playable morning initializes that profile's calendar. Both time-costing game actions and the current tick update this saved calendar in whole-minute increments with a retained subminute remainder. Pauses and closed applications do not advance it. The calendar kernel can process queued events chronologically on large jumps, but **the existing 60-minute phase system is still the active gameplay timing authority**. No inaccurate 24-hour time is shown to the player yet. Migrating markets, factory, venue schedules, the main menu, and the real 12-hour readout to one authoritative 24-hour calendar remains unfinished. No executable generated.
+
+
+## v0.6.48-dev · Golden map pins for earned invitations
+
+Gold numbered markers signal a **known, unvisited destination**, currently Commerce Club when Eddie Doyle introduces it and Embassy Room after Harrison Vale issues an invitation. The marker remains gold until the player genuinely enters that location, not merely upon clicking its map pin. These leads are saved per profile, and cannot be recreated by repeatedly meeting the same contact. Map labels, filters, pin coordinates and other locations are unchanged; no private NPC secrets appear. Hardcore difficulty options are still to be decided. Source-only; no executable.
