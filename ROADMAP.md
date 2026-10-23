@@ -1,5 +1,7 @@
 # Capital & Consequence Development Roadmap
 
+> **Start new development threads here:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant character codices. The handoff confirms `v0.6.58-dev` source and last green QA. Older checked items chronicle past builds; **later decisions supersede earlier proposals**, especially Sam's former two-neighborhood prototype.
+
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 
 **Capital & Consequence is a Washington, D.C. life simulation.** Until the owner explicitly expands the scope, prioritize **only the playable city, its residents, institutions, rooms, four career paths, local history, and the interactions between them**. The rest of the restructured United States is **background canon and a deferred roadmap**, not a second playable map to build now.
@@ -59,6 +61,8 @@
 - [ ] Replace provisional shift wages with researched, period-appropriate pay rules integrated into the same labor/economy simulator used by all four careers and NPCs.
 - [ ] Build owner/floor-manager relationships, genuinely autonomous club customers, the nightclub's permanent design/name, job discipline and advancement, and optional underworld contacts that arise from actual interactions rather than predetermined crime.
 - [ ] Complete the **1878 component-first Federal Electric factory** and authoritative continuous Washington world clock next, before broadening the rest of the city.
+
+**Historical supersession notice:** The v0.6.56 two-beat patrol is no longer Sam's assignment. **v0.6.58 Hillsdale-only on-duty patrol and citywide off-duty civilian access control current gameplay.**
 
 ## v0.6.56-dev · The Patrolman’s Beat · October 23, 2026
 

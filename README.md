@@ -1,10 +1,12 @@
 # Capital & Consequence
 
+> **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
+
 **Current source: v0.6.58-dev · Hillsdale-only on-duty foot patrol; citywide civilian movement · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 22 development handoff](HANDOFF-2026-10-22-THREAD-END.md). The default city travel charge is one provisional in-game hour; no executable has been generated for this new source work.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.58-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -14,7 +16,7 @@
 
 **Implementation status:** This is an **approved roadmap direction only**. Current game code still opens campaigns in **1890**, and current early factory production is not yet rebuilt around 1878 component manufacturing. The full [1878-to-fair progression and Russian-language NPC requirements are on the roadmap](ROADMAP.md).
 
-Federal Electric is a standalone historical business and life simulation about running a growing electrical company while the rest of Washington keeps moving around you.
+**Capital & Consequence is a Washington-first historical life simulation.** Federal Electric is the business owned from day one by **Charles “Charlie” Whitcomb**, one of four starting protagonists. The police patrolman, nightclub doorman and asylum orderly have their own desks and lives; the city keeps moving regardless of who is selected.
 
 You buy materials, negotiate contracts, run the factory, trade stocks, manage company money, follow the newspaper, make contacts, attend races and fights, sit in poker rooms, and decide how much of your limited day you are willing to spend away from the business.
 
@@ -85,17 +87,17 @@ Every protagonist retains a personal desk and a separate autosave. **Alexi Rurik
 
 **Implemented in this source slice:** all **26** map destinations have visual pins, including **12 explicitly provisional placements** that still need historically appropriate coordinates; per-type location filtering; staff and restricted-room entry checks; saved independent NPC shift wages/household charges, occasional gambling and room-level visits; a Russian-only named resident with simple authored Russian conversation. **Not implemented:** the 1878 component conversion, minute-resolution NPC travel, fully autonomous crime, complete four-career duties, the fair's contract chain, political career, and a synchronized city across saves. No executable produced or personally play-tested.
 
-## Current build status
+## Current build status (verified at October 23 thread close)
 
-**Latest source:** `v0.6.54-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Current source:** `v0.6.58-dev` on the single `main` branch. The last code version was tested at commit `99ab704ed8978fd78bc5edbe879b0264d56db6af` by [successful GitHub source QA run 39962299550](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39962299550): **424 source-contract checks** and the other configured behavior suites. The subsequent latest docs-only commit at handoff was `d3b72c2d033f238964e1367b6abb492441544973`. See the [current handoff](HANDOFF-2026-10-23-THREAD-END.md) for successor documentation commits.
 
-Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
+**Latest private Linux executable candidate:** `v0.6.34` (not accepted as a release). **No v0.6.58 Linux desktop executable has been built, manually tested, accepted, tagged, or published.** `.github/workflows/linux-build.yml` remains manual-only. The old Federal Electric browser/Pages distribution is not the live product.
 
-Each distinct development slice increments the patch number; this v0.6.32 candidate includes the earlier factory, city, transport and gambling groundwork plus the new location, save, and world-clock foundations. Packaging stays **manual-only** after the authorized one-time October 22 build. Candidate testing, owner acceptance, and final publication remain separate steps.
+**Latest scope:** Washington, D.C., and four independent character profiles. Sam's sole **on-duty Hillsdale** patrol supersedes the prior two-beat prototype, Eli has a provisional paid doorman loop, and Edmund's orderly career remains mostly a foundation. The **1878 component-first factory** is an approved but unimplemented conversion; the current code starts in **1890** with bulb production. Future nationally defined districts are setting background, not current gameplay.
 
 ## The world and the clock
 
-The setting is **late nineteenth-century Washington**. The precise campaign start year is **not yet a final design decision**; the current prototype uses January 1890 and still retains an older 372-turn, 60-minute Business Day / 60-minute Washington Night framework. A persisted 24-hour calendar **bridge** now exists but has **not** replaced the old clock as the gameplay authority. No offline time passes. See the [latest thread handoff](HANDOFF-2026-10-22-THREAD-END.md) for the migration plan.
+The setting is **late nineteenth-century Washington**. The **approved design target** for new campaigns is **January 2, 1878**, but the **working prototype still starts January 2, 1890** with older bulb-first production and a 372-turn, 60-minute Business Day / 60-minute Washington Night framework. A persisted 24-hour calendar **bridge** now exists but has **not** replaced the old clock as the gameplay authority. No offline time passes. See the [latest thread handoff](HANDOFF-2026-10-22-THREAD-END.md) for the migration plan.
 
 The **1893 World's Fair in Washington** is a deliberate alternate-history event; in the real world it was hosted in Chicago. Later technologies and 1930s media assets remain in the project as legacy/future-period resources. Period gating and comprehensive historical conversion are still in progress, so not all inherited gameplay content has been verified for the 1890 start.
 
@@ -133,13 +135,17 @@ Existing gameplay includes horse/dog/midget-car racing, boxing, three social pok
 
 Venue opportunity records and **location checks for existing wagering and club actions** now require the player to reach their proper rooms. Specific invitations, time windows and outcomes still matter. The future casino game list remains undecided. Chinese-American characters should be individuals with specific relationships and stories; cricket-fighting has historical Chinese traditions, while proposed beetle and snake contests require further period and cultural research. No encounter, invitation or location exclusivity should be falsely described as implemented before its gameplay exists.
 
-## Four lives in one Washington (career foundations)
+## Four lives in one Washington (historical implementation notes)
+
+**CURRENT OVERRIDE:** Read [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) and [canonical four lives](#canonical-four-lives) for the accurate names/occupations. The following section describes earlier stages when Patrolman, "Layman" and Wardman were desk-only previews. Sam and Eli now have limited playable work loops.
 
 **Businessman, Patrolman, Layman and Wardman** are selectable starting profiles, with independent autosaves and access to the common Washington map, public locations, Journal and basic personal desk. **Only Businessman has a fully implemented profession-specific career**: the Federal Electric factory, contracts, payroll and treasury. Patrolman (police), Layman (ordinary civilian with optional criminal paths), and Wardman (institutional career) remain **early playable desk/city foundations**, not complete simulations of their professions.
 
 The investigator and civilian/underworld counterpart already have modest autonomous background lives with profile-stable progress, locations and selected newspaper dispatches. The Wardman counterpart now has an **early autonomous institutional-life arc** as well, including per-profile seeded branches and place visits, but none of the three unplayed careers is yet a deep autonomous human simulation. Seven additional persistent Washington residents have schedule foundations, firsthand in-room conversations, limited relationship memory and private rumor records. These are **rule-based systems, not generative artificial intelligence**. Future protagonists share one Washington *inside a single save*; separate saved profiles are not synchronized worlds. See [character routes design](CHARACTER-ROUTES-DESIGN-2026-10-21.md).
 
-## Possible institutional venture: Blackwood Asylum
+## Earlier asylum-investment concept: Blackwood (superseded naming)
+
+**CURRENT OVERRIDE:** The approved fictional playable institution is **District Asylum** under Edmund Wardman's unnamed brother. Its internal location key stays `blackwoodAsylum` only for compatibility. The description below preserves an earlier investment/ownership brainstorm, not the current institution's name or implemented ownership.
 
 A new, **planning-only** prospect proposes integrating the earlier Victorian-era asylum management concept as a separate Washington institution. Buying a controlling interest, investing as a minority shareholder, or running it as an appointed superintendent are possible future paths, subject to governance research. A read-only Info entry and empty per-profile institutional ledger exist; **there is no playable asylum acquisition, staff, patient or treatment management yet**. The separate Soviet Moroz Asylum concept is not being transplanted unchanged into 1890. See [Asylum integration design](ASLYUM-INTEGRATION-DESIGN-2026-10-21.md).
 
