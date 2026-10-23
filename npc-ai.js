@@ -116,7 +116,7 @@
   return exchanged;
  }
  function recordWitnessedMeetings(records){
-  if(!records?.length||window.FE_CITY?.isDevRoom?.())return;
+  if(!records?.length||S.npcOffscreenCatchup||window.FE_CITY?.isDevRoom?.())return;
   const found=window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),DEFINITIONS);
   if(found?.length&&typeof renderNotes==='function')renderNotes();
  }

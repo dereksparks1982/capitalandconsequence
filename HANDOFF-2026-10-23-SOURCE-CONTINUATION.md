@@ -1,3 +1,5 @@
+> **ARCHIVED HISTORICAL HANDOFF (v0.6.65).** Current owner decisions, correction of v0.6.70 timer guesses and latest source live in [the October 23 Living Washington design](DESIGN-2026-10-23-LIVING-WASHINGTON.md). Read that first. Current source is v0.6.71-dev.
+
 # Capital & Consequence · October 23 source continuation handoff
 
 > **CURRENT SOURCE RESUME POINT.** Read this document first, followed by `ROADMAP.md`'s **ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST**, `DECISIONS.md`, and the relevant character codices. `HANDOFF-2026-10-23-THREAD-END.md` is the preserved baseline that preceded this continuation. Older handoffs and snapshots retain historical value but are not the current source version.

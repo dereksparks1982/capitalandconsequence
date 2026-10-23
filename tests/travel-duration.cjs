@@ -4,7 +4,7 @@ const bridge=require('../calendar-bridge.js'),tx=require('../time-transactions.j
 global.S={turnSerial:1,paused:false,transport:{journeys:[]}};
 bridge.start(S,'1890-01-02');
 global.window={FederalElectricCity:{getLocation:id=>['factory','home','races'].includes(id)?{id}:null},
- FE_CALENDAR_BRIDGE:bridge,FE_TIME_TX:tx};
+ FE_CALENDAR_BRIDGE:bridge,FE_TIME_TX:tx,advanceWorldTime:seconds=>tx.advance(S,seconds,'travel').applied?seconds:0};
 require('../journey-planner.js');
 const travel=window.FE_TRAVEL;
 assert.equal(travel.DEFAULT_TRAVEL_MINUTES,60);

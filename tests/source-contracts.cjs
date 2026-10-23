@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.70','Current package version is v0.6.70');
-check(appSource.includes("APP_VERSION='v0.6.70-dev'"),'Game masthead uses v0.6.70');
+check(pkg.version==='0.6.71','Current package version is v0.6.71');
+check(appSource.includes("APP_VERSION='v0.6.71-dev'"),'Game masthead uses v0.6.71');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.70'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.71'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.70-linux-x64.tar.gz'),'Manual workflow archives v0.6.70');
+check(workflow.includes('0.6.71-linux-x64.tar.gz'),'Manual workflow archives v0.6.71');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -194,7 +194,7 @@ check(read('underworld.js').includes("canUse('private-fight')")&&read('underworl
 check(appSource.includes("window.FE_VENUES?.canUse(venue)"),'Simulated poker cannot bypass card venue');
 check(appSource.includes('window.FE_VENUES?.canEnterLocation?.(loc.id)'),'Discovered secret sites appear only after unlock');
 const travelS={turnSerial:5,transport:{version:2,assets:[],events:[],journeys:[]}};
-const tctx={window:{FederalElectricCity:city,FE_TRANSPORT:{at:()=>[]}},S:travelS};
+const tctx={window:{FederalElectricCity:city,FE_TRANSPORT:{at:()=>[]},advanceWorldTime:()=>3600},S:travelS};
 vm.runInNewContext(read('journey-planner.js'),tctx,{filename:'journey-planner.js'});
 const travel=tctx.window.FE_TRAVEL;
 check(travel.modes.length===4,'Four distinct proposed transportation modes');
@@ -428,14 +428,17 @@ check(bridge.spend(freshCalendar,4*60*60)===240&&bridge.moment(freshCalendar).da
 const readBack={};check(bridge.migrate(readBack,JSON.parse(JSON.stringify(freshCalendar)))&&bridge.label(readBack)==='12:00 AM','The exact saved absolute minute survives reload');
 readBack.paused=true;check(bridge.spend(readBack,300)===0&&bridge.label(readBack)==='12:00 AM','Paused game cannot advance the calendar');
 const oldCalendar={};check(bridge.migrate(oldCalendar,{gameDate:'1938-09-30',dayRemaining:100,phase:'night'})===false&&bridge.label(oldCalendar)===null&&oldCalendar.worldCalendarStatus==='legacy-unmapped','Legacy autosaves receive no invented absolute hour');
-check(appSource.includes("window.FE_WASHINGTON_TIME.advance(S,spent,'action')")&&appSource.includes("window.FE_WASHINGTON_TIME.advance(S,1,'tick')"),'Timed owner actions and passive ticks route through the saved time authority');
+check(appSource.includes('window.FE_WASHINGTON_TIME.advance(S,delta,kind)')&&appSource.includes("advanceWorldSimulation(1,false,'tick')"),'Player action and active game tick use same saved clock');
 check(index.includes('washington-time.js?v=')&&index.indexOf('time-transactions.js?v=')<index.indexOf('washington-time.js?v=')&&index.indexOf('washington-time.js?v=')<index.indexOf('app.js?v='),'One Washington clock gateway loads before the game');
-check(read('app.js').includes("handoff?.(S,'close-business',S.gameDate)")&&read('app.js').includes("handoff?.(S,'close-night',S.gameDate)"),'Phase handoffs advance actual Washington date instead of freezing the sky');
+check(!appSource.includes("handoff?.(S,'close-business'")&&!appSource.includes('S.dayRemaining=Math.max(0,S.dayRemaining-1)'),'No clock-jump handoffs or real-hour phase expiry');
 check(pkg.scripts['test:source'].includes('tests/washington-time.cjs'),'One-world-time and midnight regression tests are mandatory');
-check(pkg.scripts['test:source'].includes('tests/washington-pacing.cjs'),'NPC and economic phase pacing regression tests are mandatory');
-check(read('app.js').includes('advanceProduction(window.FE_WASHINGTON_TIME.rate(S),false)'),'Factory passive production consumes the same civil-time increments');
-check(read('app.js').includes('FE_WASHINGTON_TIME.debit(S,'),'Action budget converts real-time phase allotment into actual game seconds');
-check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes("FE_WASHINGTON_TIME?.handoff?.(S,'new-day',S.gameDate)"),'Legacy profiles map on explicit next-day handoff without rewinding saved game time');
+check(pkg.scripts['test:source'].includes('tests/washington-pacing.cjs'),'NPC and clock pacing regressions are mandatory');
+check(appSource.includes('secondsToBoundary(S)')&&appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Long time skips replay crossed NPC schedule slots');
+check(read('journey-planner.js').includes('window.advanceWorldTime?.(gameMinutes*60,true)'),'Travel follows the player clock and NPC catch-up');
+check(!appSource.includes('advanceProduction(window.FE_WASHINGTON_TIME.rate(S),false)'),'No acceleration in passive factory work');
+check(appSource.includes('advanceProduction(productive,away)'),'Factory moves by real elapsed game seconds');
+check(read('washington-time.js').includes('function rate(){return 1}')&&appSource.includes("advanceWorldSimulation(1,false,'tick')"),'Active daylight and night tick at real speed, never 9x/15x');
+check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('S.gameDate=next;S.turnSerial='),'Daily accounting date follows observed clock');
 const midnightClock=clock.create('1890-01-02T23:55');
 check(clock.timeLabel(midnightClock)==='11:55 PM','Simulated time displays 12-hour clock without countdown');
 check(clock.calendar(midnightClock).date==='1890-01-02','Calendar date comes from saved world minute');

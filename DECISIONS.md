@@ -1,6 +1,6 @@
 # Federal Electric · Recorded Design Decisions
 
-## 2026-10-23 · v0.6.70 shared clock pacing
+## 2026-10-23 · v0.6.70 shared clock pacing · SUPERSEDED, NOT APPROVED
 
 - Preserve one real-hour Business Day and one real-hour Washington Night while making that rhythm advance an authentic 24-hour in-game day: 8 AM–5 PM (9x passive speed), 5 PM–8 AM (15x passive speed).
 - An intentional player action or journey still costs its exact stated **in-game** seconds; it debits the remaining real-time phase allowance proportionally and saves the fractional remainder to avoid charging extra for repeated small actions.

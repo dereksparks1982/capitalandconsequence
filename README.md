@@ -1,12 +1,12 @@
 # Capital & Consequence
 
-> **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) records the v0.6.65 verified AI baseline. **v0.6.66-dev** adds the floating developer panel and room unlock; CI for this slice must be checked separately. Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
+> **PRIMARY CURRENT DESIGN:** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). Read it FIRST before building. The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Previous handoffs are archived background.
 
-**Current source: v0.6.70-dev · Consistent Washington day/night clock pacing · October 23, 2026**
+**Current source: v0.6.71-dev · Real 1:1 running clock, activity skips and NPC catch-up · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [Current October 23 source handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) supersedes the pre-continuation [October 23 historical handoff](HANDOFF-2026-10-23-THREAD-END.md) and [October 22 handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.66-dev**; travel between different city locations still has a provisional game-hour charge. **No v0.6.65 executable has been packaged.**
+**For all new work:** consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), then ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.71 executable is being made.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,16 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.71-dev · Correct 24-hour Washington clock and NPC time jumps
+
+At the owner's direction, active time now ticks **1 game second per real second**. There is no fixed daytime/nighttime play session, no old 60-real-minute expiration and no 9x/15x acceleration. Explicit player actions and travel advance additional exact game time. The runner slices long jumps at **midnight, 8 AM, noon, 5 PM and 10 PM**, allowing NPC routines to resolve through the intervening periods instead of skipping straight to the destination state. Factory accounting closes when the clock reaches 5 PM; the following business morning starts at 8 AM because time naturally reaches it. Rest Until Morning is an intentional player action. NPC actions never drive the clock; the title/background/paused game never accrues offline time.
+
+**Limits:** the playable factory is still 1890 bulb-first, daily accounting uses transitional legacy turn counters, NPC activity is still coarse, and full real poker/club session durations and 1878 components-first integration are pending. Only source tests are performed. See [the authoritative design](DESIGN-2026-10-23-LIVING-WASHINGTON.md) for exact decisions and next steps.
+
+### Historical experiment, not current design
+
+The following v0.6.70 section documents a **rejected accelerated timing design**. Never implement its 60-real-minute day/night structure again.
 
 ## v0.6.70-dev · One actual Washington day in the existing play rhythm
 

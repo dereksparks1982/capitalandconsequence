@@ -202,6 +202,8 @@ function save(silent=true){
   if(!ordinaryPlayerRoomAllowed(position.locationId,position.roomId))
    payload=Object.assign({},payload,{currentLocation:{locationId:'hillsdale',roomId:'neighborhood-street'}});
  }
+ // Never persist the temporary player-absent simulation scope.
+ if(S.npcOffscreenCatchup)payload=Object.assign({},payload,{npcOffscreenCatchup:false});
  // localStorage writes can throw QuotaExceededError or security exceptions.
  // A failed write is never represented as a successful autosave.
  try{

@@ -52,6 +52,10 @@ Alternatively, a later obituary in the **Metropolitan Ledger**, legal correspond
 
 Maintain separate **ground truth**, **character-specific beliefs** and **public newspaper reports**. A newspaper can report suspicion or a death without immediately disclosing secrets; the player should not get spoilers the player-character did not earn.
 
+## New vehicle direction (approved October 23, 2026, not yet built)
+
+The disguised millionaire possesses an extremely rare **1878-appropriate steam motor car**. A player may eventually gain access only by genuinely discovering his estate/mansion and earning permission to use it. **Short journeys favor horses; longer journeys favor this car.** The user specifically rejected steam buildup, maintenance, fuel and other complex vehicle micro-simulation. You get in and travel, with a simple duration difference. Exact route lengths and crossover are unapproved, and this is not already implemented.
+
 ## Necessary future simulation, still unbuilt
 
 - Extremely rare discovery triggers and permanent per-profile location knowledge.

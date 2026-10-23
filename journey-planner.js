@@ -41,12 +41,11 @@ function recordProvisional(from,to,journeyId=null){
  const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||DEFAULT_TRAVEL_MINUTES;
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
- const receipt=window.FE_TIME_TX?.advance?.(S,gameMinutes*60,'travel',id);
- if(receipt?.status==='duplicate'||receipt?.status==='paused')return false;
- const elapsed=receipt?receipt.wholeMinutes:(bridge?.spend?.(S,gameMinutes*60)||0);
+ const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
+ if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode:null,miles:null,minutes:null,
-  temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:elapsed===gameMinutes});
+  temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
 }
