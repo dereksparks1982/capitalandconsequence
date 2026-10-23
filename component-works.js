@@ -17,17 +17,17 @@
   carbon:Object.freeze({name:'Carbon stock',costCents:8})
  });
  const PRODUCTS=Object.freeze({
-  'telegraph-key':Object.freeze({name:'Telegraph key apparatus',unitPriceCents:420,minutes:9,
+  'telegraph-key':Object.freeze({name:'Telegraph key apparatus',unitPriceCents:420,minutes:180,
    inputs:{brass:2,copper:1,timber:1},station:'bench'}),
-  'telegraph-relay':Object.freeze({name:'Telegraph relay assemblies',unitPriceCents:760,minutes:16,
+  'telegraph-relay':Object.freeze({name:'Telegraph relay assemblies',unitPriceCents:760,minutes:420,
    inputs:{copper:3,iron:2,insulation:2,timber:1},station:'winder'}),
-  'switch-contact':Object.freeze({name:'Electrical switch contacts',unitPriceCents:240,minutes:7,
+  'switch-contact':Object.freeze({name:'Electrical switch contacts',unitPriceCents:240,minutes:180,
    inputs:{brass:2,copper:1,insulation:1},station:'bench'}),
-  'insulated-wire':Object.freeze({name:'Insulated wiring lengths',unitPriceCents:190,minutes:6,
+  'insulated-wire':Object.freeze({name:'Insulated wiring lengths',unitPriceCents:190,minutes:180,
    inputs:{copper:2,insulation:2},station:'winder'}),
-  'battery-fitting':Object.freeze({name:'Battery terminal fittings',unitPriceCents:310,minutes:8,
+  'battery-fitting':Object.freeze({name:'Battery terminal fittings',unitPriceCents:310,minutes:180,
    inputs:{brass:2,copper:1,glass:1},station:'bench'}),
-  'insulator':Object.freeze({name:'Electrical insulator assemblies',unitPriceCents:260,minutes:9,
+  'insulator':Object.freeze({name:'Electrical insulator assemblies',unitPriceCents:260,minutes:180,
    inputs:{glass:2,iron:1,timber:1},station:'bench'}),
   // Deliberately impossible on the 1878 starting day. Actual late-era
   // licensing, inventions, tools and process realism remain future work.
@@ -70,7 +70,7 @@
  function cached(state,token){return Object.prototype.hasOwnProperty.call(state.receipts,token)?
   {...state.receipts[token],repeated:true}:null}
  function record(state,token,kind,details){
-  const r={token,kind,...details,sequence:Object.keys(state.receipts).length+1};
+  const r={token,kind,date:state.date,...details,sequence:Object.keys(state.receipts).length+1};
   state.receipts[token]=r;state.ledger.push(r);
   if(state.ledger.length>128)state.ledger.splice(0,state.ledger.length-128);
   return {...r,repeated:false};
@@ -150,7 +150,32 @@
   return record(state,token,'shipment',{ok:true,orderId,units,productId:job.productId,
    revenueCents,complete:job.status==='delivered',late:state.date>job.deadline});
  }
- const api=Object.freeze({START_DATE,MATERIALS,PRODUCTS,CUSTOMERS,createState,verify,
+
+ const RAILWAY_CUSTOMER='Capital Railway Telegraph';
+ const RAILWAY_ITEMS=Object.freeze([['telegraph-key',2],['telegraph-relay',2],['switch-contact',3]]);
+ function issueRailwayOrder(state,weekKey,deadline){
+  for(const [productId,quantity] of RAILWAY_ITEMS){
+   const result=order(state,{customer:RAILWAY_CUSTOMER,productId,quantity,deadline},
+    'railway:'+weekKey+':'+productId);
+   if(!result.ok)throw Error('Cannot issue railway order: '+result.reason);
+  }
+  state.standingOrderWeek=weekKey;
+ }
+ function createOpeningOrders(state){
+  verify(state);
+  if(state.date!==START_DATE||state.orders.length)return state;
+  // Jan 2 is Wednesday; the first full workshop week delivers Saturday Jan 12.
+  issueRailwayOrder(state,'1878-01-07','1878-01-12');return state;
+ }
+ function renewStandingOrders(state,date){
+  verify(state);
+  if(!validDate(date)||new Date(date+'T12:00:00Z').getUTCDay()!==1||
+     state.standingOrderWeek===date)return false;
+  if(state.orders.some(o=>o.customer===RAILWAY_CUSTOMER&&o.delivered<o.quantity))return false;
+  const saturday=new Date(date+'T12:00:00Z');saturday.setUTCDate(saturday.getUTCDate()+5);
+  issueRailwayOrder(state,date,saturday.toISOString().slice(0,10));return true;
+ }
+ const api=Object.freeze({START_DATE,MATERIALS,PRODUCTS,CUSTOMERS,createState,createOpeningOrders,renewStandingOrders,verify,
   eligibility,order,purchase,assemblyQuote,assemble,ship});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_COMPONENT_WORKS=api;
