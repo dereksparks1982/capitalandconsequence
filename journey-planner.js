@@ -1,6 +1,6 @@
 /* Federal Electric v0.6.19: travel route contracts without invented mileages.
-   No route has a verified length yet. Existing Go There remains a labeled
-   provisional direct movement, with no charged time or vehicle teleport. */
+   No route has a verified length yet. Go There costs one temporary game hour,
+   without claiming historic distances or transporting owned vehicles. */
 (function(){
 'use strict';
 const MODES=Object.freeze([
@@ -9,7 +9,8 @@ const MODES=Object.freeze([
  Object.freeze({id:'owned-carriage',name:'Owned Carriage',requires:'carriage-and-horse'}),
  Object.freeze({id:'hired-carriage',name:'Hired Carriage',requires:'hire-service'})
 ]);
-const VERIFIED_ROUTES=Object.freeze({}); // Fill only with historically researched site-to-site measurements.
+const DEFAULT_TRAVEL_MINUTES=60;
+const ROUTE_MINUTES=Object.freeze({}); // Override by sorted location IDs after map design.
 function getLocation(id){return window.FederalElectricCity?.getLocation?.(id)||null}
 function plan(from,to,mode='walk'){
  if(!getLocation(from)||!getLocation(to)||from===to)return {status:'invalid',minutes:null,miles:null,mode};
@@ -21,24 +22,30 @@ function plan(from,to,mode='walk'){
   const items=window.FE_TRANSPORT?.at?.(from)||[];
   if(!items.some(x=>x.kind==='carriage')||!items.some(x=>x.kind==='horse'))return {status:'no-team-and-carriage-here',minutes:null,miles:null,mode};
  }
- const record=VERIFIED_ROUTES[[from,to].sort().join('|')];
- if(!record)return {status:'route-survey-pending',minutes:null,miles:null,mode};
+ // Physical route duration is still unknown; the generic hour is a game cost.
  return {status:'route-survey-pending',minutes:null,miles:null,mode};
 }
 function notice(from,to){
  const status=plan(from,to,'walk').status;
  if(status==='invalid')return 'Already here or no valid destination.';
- return 'Street-route mileage and travel time are not yet verified. Go There currently moves directly without consuming journey time. Horses and carriages remain where left.';
+ return 'Travel between different locations costs one in-game hour for now. Walking between rooms at the same location is free. Distances are not yet surveyed.';
 }
 // Called as part of the same autosave as an actual player location change.
-// It does not imply a measured journey, transport mode, or charge.
+// It does not imply measured mileage or a transport mode; only location changes
+// incur a temporary hour. The factory and its executive office share an ID.
 function recordProvisional(from,to){
  if(!getLocation(from)||!getLocation(to)||from===to)return false;
  if(!S.transport||!Array.isArray(S.transport.journeys))return false;
  const id=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
- S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode:null,miles:null,minutes:null});
+ const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||DEFAULT_TRAVEL_MINUTES;
+ const bridge=window.FE_CALENDAR_BRIDGE;
+ const departedAt=bridge?.moment?.(S)?.iso||null;
+ const elapsed=bridge?.spend?.(S,gameMinutes*60)||0;
+ const arrivedAt=bridge?.moment?.(S)?.iso||null;
+ S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode:null,miles:null,minutes:null,
+  temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:elapsed===gameMinutes});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
 }
-window.FE_TRAVEL=Object.freeze({modes:MODES,plan,notice,recordProvisional});
+window.FE_TRAVEL=Object.freeze({DEFAULT_TRAVEL_MINUTES,ROUTE_MINUTES,modes:MODES,plan,notice,recordProvisional});
 })();

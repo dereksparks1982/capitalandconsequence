@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'app.js'
+      - 'journey-planner.js'
+      - 'calendar-bridge.js'
       - 'city.js'
       - 'npc-ai.js'
       - 'living-characters.js'
