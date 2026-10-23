@@ -2,7 +2,7 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) records the v0.6.65 verified AI baseline. **v0.6.66-dev** adds the floating developer panel and room unlock; CI for this slice must be checked separately. Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
 
-**Current source: v0.6.67-dev · Unscripted in-person local-model NPC conversations · October 23, 2026**
+**Current source: v0.6.68-dev · Local-model NPC speech and Washington sky almanac · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -29,6 +29,14 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.68-dev · Weather, sunrise, moon and eclipses in the top bar
+
+Washington's main gameplay daybar now has two compact readouts: **the current game's observed weather** and the **actual astronomical sun/moon cycle**. They update without artwork or overwriting existing finance/time controls. The weather report comes from the existing weather conditions produced by the gameplay economy each turn: rainy, snowy, partly cloudy, foggy, clear, stormy and similar text map to clear icons. This is not an independent hour-by-hour meteorology simulator yet.
+
+We imported a **pinned copy of Don Cross's MIT-licensed Astronomy Engine** from [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy) into `vendor/astronomy-engine/` with its license. It calculates **Washington sunrise and sunset**, the Moon's phase, and actual **locally observable solar eclipse intervals** and lunar eclipse timing for the saved in-game date. The summer **July 29, 1878 solar eclipse** is caught by the source tests at Washington. No random fabricated eclipses, reliance on today's device clock, or external weather/astronomy API is involved. Local astronomical times use provisional fixed Eastern Standard Time, with no modern daylight-saving adjustments. Weather may obscure viewing the event without changing its underlying astronomical existence.
+
+A criminal choosing eclipses as a pattern, a witness remembering a sky event, and a detective using that pattern to investigate still require the planned **NPC-originated event, evidence, and investigation integration**. This slice gives those systems a real astronomy source, not fabricated crime records. Source only; no packaged executable.
 
 ## v0.6.67-dev · Natural-language NPC conversation bridge
 

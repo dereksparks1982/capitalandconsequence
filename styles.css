@@ -1397,3 +1397,9 @@ body.elephant-easter-egg-open{overflow:hidden}
 .npc-itinerary-card{background:rgba(255,250,231,.7);border:1px solid rgba(89,70,43,.38);padding:12px;border-radius:3px}
 .npc-itinerary-card h4{font-size:1rem;margin:0 0 7px;color:#352a19}
 .npc-itinerary-card p{font-size:.92rem;line-height:1.5;margin:5px 0;color:#423522}
+
+/* v0.6.68: informative in-game Washington sky almanac, no new graphics. */
+.washington-sky{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;max-width:100%;font:700 12px/1.5 Georgia,serif}
+.washington-sky[hidden]{display:none!important}
+.washington-sky>span{padding:2px 6px;border:1px solid currentColor;border-radius:2px;white-space:nowrap}
+@media(max-width:700px){.washington-sky{gap:4px;font-size:11px}.washington-sky>span{padding:1px 4px}}

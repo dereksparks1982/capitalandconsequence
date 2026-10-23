@@ -1,5 +1,12 @@
 # Federal Electric · Recorded Design Decisions
 
+## 2026-10-23 · v0.6.68 Washington almanac
+
+- Place unobtrusive weather and sun/moon indicators in the game's existing upper information strip. The icons summarize the current simulated Washington conditions, not a real-world weather feed. Historical astronomical calculations must use the saved world clock.
+- Reuse licensed [Astronomy Engine](https://github.com/cosinekitty/astronomy) (MIT) rather than invent fragile lunar/solar/eclipse physics. Retain the upstream license verbatim and keep all calculations local. There is no need to cap game size merely for the sake of a smaller archive.
+- Eclipse observation is potential evidence only after a real NPC acts and a legitimate witness or investigator discovers it. The lunar calendar does not automatically create murderers or magically reveal crimes.
+
+
 ## 2026-10-23 · v0.6.67 local freeform conversation
 
 - The goal is **genuinely unscripted multi-turn conversations** with the NPCs, not only menus and fixed lines. The first implementation uses a local OpenAI-compatible model endpoint, no automatic cloud costs, and no required particular model architecture; bigger weights are allowed when their quality warrants it.

@@ -21,6 +21,8 @@ on:
       - 'npc-language.js'
       - 'npc-dialogue.js'
       - 'world-canon.js'
+      - 'sky-cycle.js'
+      - 'vendor/astronomy-engine/**'
       - 'desktop/npc-llm.cjs'
       - 'desktop/preload.cjs'
       - 'component-works.js'

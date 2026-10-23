@@ -8,6 +8,9 @@ For a project, licensing, or attribution concern, contact the maintainer through
 
 ## Third-party dependencies and research
 
+- **Astronomy Engine**, Copyright © 2019–2025 Don Cross, [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy), **MIT**. A copy of upstream `source/js/astronomy.browser.js` is bundled at `vendor/astronomy-engine/astronomy.browser.js` under `vendor/astronomy-engine/LICENSE`. Provides offline historical lunar/sun calculations and eclipses.
+
+
 - [llama.cpp](https://github.com/ggml-org/llama.cpp), MIT, reviewed as a supported **local inference server interface**. No upstream code or model weights bundled.
 - [Ollama](https://github.com/ollama/ollama), MIT, reviewed for local OpenAI-compatible API interoperability. No upstream service, source or model weights bundled.
 - [AI Town](https://github.com/a16z-infra/ai-town), MIT, and [Generative Agents](https://github.com/joonspk-research/generative_agents), Apache-2.0, reviewed for long-term generative resident design. No imported source code.
