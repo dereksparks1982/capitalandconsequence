@@ -8,7 +8,7 @@
  'use strict';
  const SETTINGS=Object.freeze({
   madamStar:{occupation:'club proprietor',workplace:'star',opening:8500,pay:185,betting:16},
-  foremanSullivan:{occupation:'factory foreman',workplace:'factory',opening:2100,pay:106,betting:9},
+  foremanSullivan:{occupation:'workshop assistant',workplace:'factory',opening:2100,pay:0,betting:9},
   eddieDoyle:{occupation:'bookmaker',workplace:'races',opening:3800,pay:120,betting:36},
   inspectorHayes:{occupation:'police inspector',workplace:'metropolitanPolice',opening:4100,pay:125,betting:12},
   chenMei:{occupation:'merchant',workplace:'oldChinatown',opening:2900,pay:95,betting:8},
@@ -80,7 +80,9 @@
    description=win?'Placed a wager and collected winnings at the race grounds.':
     'Placed a wager and lost at the race grounds.';
   }else if(work&&!context.rest){
-   const pay=cfg.pay+hash(tag+'|job')%46;
+   // Federal Electric pays its assistant at close from actual company cash.
+    // Never mint independent NPC wages for the same shift.
+    const pay=def.id==='foremanSullivan'?0:cfg.pay+hash(tag+'|job')%46;
    const repaid=Math.min(ec.debtCents,Math.floor(pay/4));
    ec.debtCents-=repaid;
    amount=pay-repaid;
@@ -88,7 +90,7 @@
    ec.earnedCents+=pay;
    ec.shiftsWorked++;
    kind='work';
-   activity=def.id==='foremanSullivan'?'attending production and worker safety':
+   activity=def.id==='foremanSullivan'?'assisting Charlie with component work and supplies':
     def.id==='inspectorHayes'?'reviewing District police duties':
     def.id==='eddieDoyle'?'taking bets and reviewing the racing books':
     def.id==='madamStar'?'overseeing the Star Club accounts':
