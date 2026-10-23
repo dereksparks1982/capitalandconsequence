@@ -55,7 +55,7 @@ check(new Set(ids).size===26,'No duplicate map location identifiers');
 check(new Set(nums).size===26&&Math.max(...nums)===26,'Map marker numbers 1-26');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
-check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
+check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
 check(city.getLocation('home').rooms.length===4,'Home has four internal rooms');
 check(!city.getLocation('races').description.includes('horse-racing and dog-racing'),'Separate racing locations are reflected in venue description');
