@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.49-dev · mapped-calendar NPC presence · October 22, 2026**
+**Current source: v0.6.50-dev · auditable game-time transactions and non-rewinding morning handoff · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -265,3 +265,12 @@ Travel between distinct registered Washington locations now records a **provisio
 Seven named residents now use persisted per-profile **8 AM/noon/5 PM/10 PM** routine boundaries when the calendar is mapped. Foreman Sullivan and Inspector Hayes are absent from their ordinary daytime workplaces on weekends. These are provisional gameplay schedules, **not verified nineteenth-century opening hours**. Actual travel can cause a missed encounter, but long jumps do not invent intervening meetings or private rumors. Face-to-face interaction records use the mapped date. Older `legacy-unmapped` profiles keep the previous day/night-phase routine. Save/reload and pause do not reroll routines. New source regression tests cover these behaviors.
 
 **Unfinished:** one authoritative 24-hour factory, payroll, market, venue and campaign-day clock; detailed independent NPC decisions and finalized weekly appointments. The old countdown is still in charge of core gameplay. No executable packaged.
+
+
+## v0.6.50-dev · Game-time transactions and safe morning handoff (source-only)
+
+The game now routes **passive simulation ticks, owner action durations and provisional inter-location journeys** through one saved per-profile calendar time-charge service. It records a bounded journal of the latest 128 intentional charges and a compact cumulative tick count rather than flooding the autosave every second. Repeat calls using the **same action/journey token** are idempotent within that journal, and paused play does not post a time charge. A legacy save with no truthful absolute hour retains the `legacy-unmapped` status, with no fabricated time inserted.
+
+When the legacy gameplay cycle explicitly starts another business turn, the calendar bridge now **advances to the scheduled next morning without ever resetting a later recorded minute backward**. Pending calendar event queue/history survive an advancing handoff. This prevents travel-accrued absolute time from being erased. If old turn dates lag behind time already accrued by travel, the calendar retains its later time instead of lying about an earlier arrival. Resolving any remaining turn-date mismatch requires the planned full campaign-day migration.
+
+This work is **infrastructure, not the final 24-hour conversion**: factories, payroll, published exchange quotes, venue hours, night reports, action caps and the visible 60-minute countdown still follow the legacy business/night phase. It does not yet claim an uninterrupted real-time city, or that a one-hour journey advances all legacy economic consumers. Tests cover double charges, same-building travel, midnight handoff, queued events, legacy saves, autosave reload, pause and profile isolation. No standalone executable or release was produced.

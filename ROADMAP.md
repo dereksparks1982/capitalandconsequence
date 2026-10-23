@@ -1120,3 +1120,15 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Preserve old `legacy-unmapped` NPC phase fallback, existing private memory and relationship state; add source-only regression tests.
 - [ ] Research and approve individual NPC hourly schedules, independent appointments, evolving goals and inter-character conflicts. Current timetable is a stepping-stone, not historical fact.
 - [ ] Coordinate factory/production, contracts/payroll, markets, venue hours, gambling costs, travel, UI and overnight behavior under the single saved 24-hour clock before retiring the 60-minute countdown.
+
+
+## v0.6.50-dev · Calendar transaction gateway and monotonic rollover · October 23, 2026
+
+- [x] Introduce `time-transactions.js`: per-profile **single entrypoint** for calendar time charged by actions, passive ticks, and provisional journeys. Recent explicit action IDs prevent double-application on callback retries; passive seconds are aggregated compactly.
+- [x] Guard paused changes and `legacy-unmapped` saves without generating inaccurate historical hours.
+- [x] Preserve clock queue and history on explicit business-turn handoff and prevent the saved absolute world minute from ever moving backward when legacy scheduled mornings trail player travel.
+- [x] Unify runtime call sites for `advanceWorldTime`, 1-second ticks and temporary city journeys. Continue existing travel contract for different locations and no same-building travel charge; reconcile NPCs when returning to the executive desk.
+- [x] Add regression tests and source QA wiring for time idempotence, paused behavior, autosave, profile isolation, forward rollover, queued events and old saves. No executable built.
+- [ ] Remove conflicting legacy `gameDate` / phase / `dayRemaining` as authoritative when factory, materials, wages, market open/close, venues, gambling and UI time are fully migrated together. For now, a calendar later than a legacy turn's target date is **retained** and any differing displayed campaign date remains a known transitional inconsistency.
+- [ ] Add event-type resolvers for scheduled-world event callbacks before relying on calendar event queue for gameplay outcomes. Current queue is kernel-level infrastructure, not live delivered telegrams.
+- [ ] Approved map route durations, actual transportation, and NPC-specific appointments remain separate future slices.

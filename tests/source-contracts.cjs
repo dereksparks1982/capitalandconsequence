@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['time-transactions.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.49','Current package version is v0.6.49');
-check(appSource.includes("APP_VERSION='v0.6.49-dev'"),'Game masthead uses v0.6.49');
-check(read('build-linux.sh').includes('0.6.49'),'Local packaging uses the same number');
+check(pkg.version==='0.6.50','Current package version is v0.6.50');
+check(appSource.includes("APP_VERSION='v0.6.50-dev'"),'Game masthead uses v0.6.50');
+check(read('build-linux.sh').includes('0.6.50'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.49-linux-x64.tar.gz'),'Manual workflow archives v0.6.49');
+check(workflow.includes('0.6.50-linux-x64.tar.gz'),'Manual workflow archives v0.6.50');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -368,6 +368,7 @@ check(leadApi.flag(leadSave,'embassyPoker','vale-invitation'),'Vale creates only
 check(appSource.includes('window.FE_MAP_LEADS?.visit?.(S,location.id)'),'Successful physical room entry consumes map lead');
 check(read('styles.css').includes('.title-map-marker.is-priority'),'Golden markers have CSS');
 
+check(index.includes('time-transactions.js?v=')&&index.indexOf('calendar-bridge.js?v=')<index.indexOf('time-transactions.js?v=')&&index.indexOf('time-transactions.js?v=')<index.indexOf('app.js?v='),'World-time gateway is loaded after bridge, before app');
 const bridge=require('../calendar-bridge.js');
 const freshCalendar={paused:false};
 bridge.start(freshCalendar,'1890-01-02');
@@ -379,8 +380,8 @@ check(bridge.spend(freshCalendar,4*60*60)===240&&bridge.moment(freshCalendar).da
 const readBack={};check(bridge.migrate(readBack,JSON.parse(JSON.stringify(freshCalendar)))&&bridge.label(readBack)==='12:00 AM','The exact saved absolute minute survives reload');
 readBack.paused=true;check(bridge.spend(readBack,300)===0&&bridge.label(readBack)==='12:00 AM','Paused game cannot advance the calendar');
 const oldCalendar={};check(bridge.migrate(oldCalendar,{gameDate:'1938-09-30',dayRemaining:100,phase:'night'})===false&&bridge.label(oldCalendar)===null&&oldCalendar.worldCalendarStatus==='legacy-unmapped','Legacy autosaves receive no invented absolute hour');
-check(appSource.includes('window.FE_CALENDAR_BRIDGE?.spend?.(S,spent)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.spend?.(S,1)'),'Instant actions and passive legacy ticks both maintain the shadow calendar');
-check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.start?.(S,S.gameDate)'),'Existing saves preserve unknown time until next known business opening');
+check(appSource.includes("window.FE_TIME_TX.advance(S,spent,'action')")&&appSource.includes("window.FE_TIME_TX.advance(S,1,'tick')"),'Timed owner actions and passive ticks use the same transaction gateway');
+check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.beginTurn?.(S,S.gameDate)'),'Legacy profiles map on next morning and mapped time never resets backward');
 const midnightClock=clock.create('1890-01-02T23:55');
 check(clock.timeLabel(midnightClock)==='11:55 PM','Simulated time displays 12-hour clock without countdown');
 check(clock.calendar(midnightClock).date==='1890-01-02','Calendar date comes from saved world minute');

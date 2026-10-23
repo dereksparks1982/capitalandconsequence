@@ -7,6 +7,7 @@ on:
       - 'app.js'
       - 'journey-planner.js'
       - 'calendar-bridge.js'
+      - 'time-transactions.js'
       - 'city.js'
       - 'npc-ai.js'
       - 'npc-calendar.js'

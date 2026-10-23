@@ -33,14 +33,17 @@ function notice(from,to){
 // Called as part of the same autosave as an actual player location change.
 // It does not imply measured mileage or a transport mode; only location changes
 // incur a temporary hour. The factory and its executive office share an ID.
-function recordProvisional(from,to){
- if(!getLocation(from)||!getLocation(to)||from===to)return false;
+function recordProvisional(from,to,journeyId=null){
+ if(!getLocation(from)||!getLocation(to)||from===to||S.paused)return false;
  if(!S.transport||!Array.isArray(S.transport.journeys))return false;
- const id=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+ const id=journeyId===null?(window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):journeyId;
+ if(typeof id!=='string'||!id||id.length>128||S.transport.journeys.some(v=>v.id===id))return false;
  const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||DEFAULT_TRAVEL_MINUTES;
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
- const elapsed=bridge?.spend?.(S,gameMinutes*60)||0;
+ const receipt=window.FE_TIME_TX?.advance?.(S,gameMinutes*60,'travel',id);
+ if(receipt?.status==='duplicate'||receipt?.status==='paused')return false;
+ const elapsed=receipt?receipt.wholeMinutes:(bridge?.spend?.(S,gameMinutes*60)||0);
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode:null,miles:null,minutes:null,
   temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:elapsed===gameMinutes});

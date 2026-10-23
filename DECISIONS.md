@@ -433,3 +433,10 @@ See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map desi
 
 - The seven named NPCs can resolve current presence from a mapped saved calendar. Legacy-unmapped profiles still use original phase slots; neither reload nor large time jumps invent earlier private meetings.
 - Temporary 8 AM/noon/5 PM/10 PM boundaries and weekday work absences are provisional gameplay definitions, not a permanent approval of historical business hours. The legacy day/night countdown remains the core gameplay clock. No executable candidate, release or tag is produced here.
+
+
+## 2026-10-23 · v0.6.50 source-only world-time bookkeeping
+
+- All active runtime charges of the *shadow absolute calendar* from passive ticks, timed owner actions and temporary city travel now go through one per-profile service, retaining a bounded audit trail. Actions may use a stable token to prevent duplicate charges; provisional travel uses the journey ID. No claim of a fully converted 24-hour factory, market or venue simulation.
+- A mapped absolute clock **must never rewind** during explicit next-turn morning setup, even when the old economic `gameDate` lags behind time accrued by travel. Save migration does not fabricate unknown hours for old profiles. Any out-of-sync legacy date is a known transitional discrepancy for the eventual complete migration, not a license to silently reset recorded time.
+- Preserve saved calendar event history and queue across advancing mornings. Future queued gameplay events require explicit event handling. Source-only push; no release, tag or binary.

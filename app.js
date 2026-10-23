@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.49-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.50-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -835,9 +835,9 @@ function advanceHiddenMarket(seconds){
  if(steps)setMarketWireOpen();
 }
 window.advanceWorldTime=(seconds,away=false)=>{
- const spent=Math.max(0,Math.min(Math.floor(seconds||0),S.dayRemaining));if(!spent)return 0;
+ if(S.paused)return 0;const spent=Math.max(0,Math.min(Math.floor(seconds||0),S.dayRemaining));if(!spent)return 0;
  if(businessOpen()){let productionSeconds=spent;const cond=S.turnConditions||{};if((cond.powerOutageSeconds||0)>0){const lost=Math.min(productionSeconds,cond.powerOutageSeconds);cond.powerOutageSeconds=Math.max(0,cond.powerOutageSeconds-lost);productionSeconds-=lost;if(activeContract()&&S.lineStatus==='running')S.lineMessage='Utility power failure stopped the production line for '+Math.ceil(lost/60)+' minute'+(Math.ceil(lost/60)===1?'':'s')+'.'}advanceProduction(productionSeconds,away);advanceHiddenMarket(spent)}
- S.dayRemaining=Math.max(0,S.dayRemaining-spent);window.FE_CALENDAR_BRIDGE?.spend?.(S,spent);window.FE_NPC_AI?.syncClock?.();return spent;
+ S.dayRemaining=Math.max(0,S.dayRemaining-spent);window.FE_TIME_TX.advance(S,spent,'action');window.FE_NPC_AI?.syncClock?.();return spent;
 };
 function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
@@ -904,7 +904,7 @@ function beginNextDay(){
  if(S.phase!=='report')return;
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
  archiveToday();const old=S.gameDate,next=S.endlessMode?nextBusinessTurn(S.gameDate):campaignDateForTurn((S.turnSerial||1)+1,S.campaignStartYear);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;payMonthlyDividends(old,S.gameDate);
- S.phase='day';S.dayRemaining=BUSINESS_DAY_SECONDS;window.FE_CALENDAR_BRIDGE?.start?.(S,S.gameDate);window.FE_NPC_AI?.syncClock?.();
+ S.phase='day';S.dayRemaining=BUSINESS_DAY_SECONDS;window.FE_CALENDAR_BRIDGE?.beginTurn?.(S,S.gameDate);window.FE_NPC_AI?.syncClock?.();
  for(const [ticker,x] of Object.entries(S.stocks)){const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
  if(S.raidMonth!==monthKey(S.gameDate)){S.raidMonth=monthKey(S.gameDate);S.raidDays=rollRaidDays(S.gameDate)}
@@ -2026,6 +2026,7 @@ function returnCityRoomToOffice(){
   const previous=currentCityLocation();
   S.currentLocation={locationId:'factory',roomId:'executive-office'};
   if(previous.locationId!=='factory')window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
+  window.FE_NPC_AI?.syncClock?.();
   save(true);
  }
  closeCityRoom();
@@ -2971,7 +2972,7 @@ function initTitleScreen(){
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
 marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()&&S.dayRemaining>0){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);window.FE_CALENDAR_BRIDGE?.spend?.(S,1);window.FE_NPC_AI?.syncClock?.();$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
+clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;if(businessOpen())advanceProduction(1,false);S.dayRemaining=Math.max(0,S.dayRemaining-1);window.FE_TIME_TX.advance(S,1,'tick');window.FE_NPC_AI?.syncClock?.();$('#dayClock').textContent=clockText();if(S.dayRemaining<=0){if(S.phase==='day')closeBusinessDay(false);else if(S.phase==='night')closeNight(false)}},1000);
 autosaveTimer=setInterval(()=>save(true),5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);

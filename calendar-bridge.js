@@ -51,12 +51,37 @@
   save.worldCalendarRemainder=accumulated%60;
   return wholeMinutes;
  }
+ function beginTurn(save,date,openingMinute=480,onEvent=()=>{}){
+  if(!save||typeof save!=='object'||typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||
+     !Number.isSafeInteger(openingMinute)||openingMinute<0||openingMinute>=1440)
+   throw Error('Invalid business turn date and opening minute');
+  const iso=date+'T'+String(Math.floor(openingMinute/60)).padStart(2,'0')+':'+
+   String(openingMinute%60).padStart(2,'0');
+  const desired=clock.create(iso);
+  if(!valid(save.worldCalendar)){
+   start(save,date,openingMinute);
+   return {status:'mapped',iso};
+  }
+  const before=save.worldCalendar.worldMinute;
+  if(desired.worldMinute<=before){
+   // Never rewind known saved time, even if provisional travel crossed a
+   // scheduled future morning earlier than the legacy turn transition.
+   save.worldCalendarStatus='ready';
+   return {status:'retained',iso:clock.formatMinute(before)};
+  }
+  // Keep the queue and record chronological delivery during an explicit turn
+  // transition; consumers must supply handling for future event types.
+  clock.advanceTo(save.worldCalendar,desired.worldMinute,onEvent);
+  save.worldCalendarRemainder=0;
+  save.worldCalendarStatus='ready';
+  return {status:'advanced',iso};
+ }
  function label(save){
   if(!valid(save?.worldCalendar))return null;
   return clock.timeLabel(save.worldCalendar);
  }
  function moment(save){return valid(save?.worldCalendar)?clock.calendar(save.worldCalendar):null}
- const api=Object.freeze({start,migrate,spend,label,moment,valid});
+ const api=Object.freeze({start,beginTurn,migrate,spend,label,moment,valid});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_CALENDAR_BRIDGE=api;
 })(typeof window!=='undefined'?window:typeof globalThis!=='undefined'?globalThis:null);
