@@ -976,3 +976,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Add independent broker goals, varying expertise, delayed telegram delivery, rumor sources and relationship consequences.
 - [ ] Migrate the 60-minute legacy countdown to the agreed 24-hour calendar and activity-based time.
 - [ ] No executable without an explicit packaging request.
+
+
+## v0.6.37-dev · Safe 24-hour clock kernel
+- [x] Extend `world-clock.js` with absolute saved calendar date, weekday, midnight crossing, 12-hour AM/PM formatting and explicit venue schedule checks.
+- [x] Calculate next opening from caller-supplied weekday/hour rules without presuming venue hours.
+- [x] Deterministic event jumps crossing calendar days, and safe JSON save restoration with no offline time.
+- [x] Dependency-free source tests for precise 9 AM open, 5 PM close and weekend skip in an explicit test schedule, not universal game rules.
+- [ ] Integrate `worldMinute` as sole authoritative player clock. Replace legacy countdown only after activity, production, markets, NPCs, and saves are adapted; do not fabricate old-save clock times.
+- [ ] Keep original playable mechanics intact during transition. Packaging requires separate approval.

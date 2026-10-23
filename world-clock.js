@@ -1,4 +1,4 @@
-/* Federal Electric world-time and event-queue foundation, v0.6.32.
+/* Federal Electric world-time and event-queue calendar kernel, v0.6.37.
  * Engine-independent, offline, deterministic. NOT YET the live campaign clock.
  * Every time jump is explicit; reopening a saved game does not advance time.
  */
@@ -78,7 +78,42 @@
   if(!Number.isSafeInteger(minutes)||minutes<0)throw new Error('Invalid duration');
   return advanceTo(world,validState(world).worldMinute+minutes,onEvent,maxEvents);
  }
- const api=Object.freeze({create,parseMinute,formatMinute,schedule,advanceTo,spend});
+ // Calendar reads one persisted absolute minute; never consults wall time.
+ const WEEKDAYS=Object.freeze(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']);
+ function calendar(world){
+  const iso=formatMinute(validState(world).worldMinute),utc=new Date(iso+':00Z');
+  return {iso,date:iso.slice(0,10),weekday:utc.getUTCDay(),weekdayName:WEEKDAYS[utc.getUTCDay()],
+   hour:utc.getUTCHours(),minute:utc.getUTCMinutes(),minuteOfDay:utc.getUTCHours()*60+utc.getUTCMinutes()};
+ }
+ function timeLabel(world){
+  const {hour,minute}=calendar(world);
+  return String(hour%12||12)+':'+String(minute).padStart(2,'0')+(hour>=12?' PM':' AM');
+ }
+ function validateHours(hours){
+  if(!hours||!Array.isArray(hours.weekdays)||!hours.weekdays.length||hours.weekdays.some(d=>!Number.isSafeInteger(d)||d<0||d>6)||
+    !Number.isSafeInteger(hours.opens)||!Number.isSafeInteger(hours.closes)||
+    hours.opens<0||hours.closes>1440||hours.opens>=hours.closes)
+   throw new Error('Explicit weekday and opening/closing minutes required');
+  return hours;
+ }
+ function isOpen(world,hours){
+  validateHours(hours);
+  const t=calendar(world);
+  return hours.weekdays.includes(t.weekday)&&t.minuteOfDay>=hours.opens&&t.minuteOfDay<hours.closes;
+ }
+ function nextOpening(world,hours){
+  validateHours(hours);
+  const t=validState(world),midnight=parseMinute(formatMinute(t.worldMinute).slice(0,10)+'T00:00');
+  for(let days=0;days<=7;days++){
+   const start=midnight+days*1440,weekday=new Date(start*MINUTE_MS).getUTCDay(),candidate=start+hours.opens;
+   if(hours.weekdays.includes(weekday)&&candidate>=t.worldMinute)return candidate;
+  }
+  throw new Error('Could not find next opening');
+ }
+ function spendUntil(world,targetIso,onEvent,maxEvents){
+  return advanceTo(world,parseMinute(targetIso),onEvent,maxEvents);
+ }
+ const api=Object.freeze({create,parseMinute,formatMinute,schedule,advanceTo,spend,calendar,timeLabel,isOpen,nextOpening,spendUntil});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_WORLD_CLOCK=api;
 })(typeof window!=='undefined'?window:typeof globalThis!=='undefined'?globalThis:null);
