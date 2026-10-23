@@ -1,5 +1,7 @@
 # Capital & Consequence · Recorded Design Decisions
 
+> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+
 ## 2026-10-23 · v0.6.72 · Playable founding company
 
 - New campaigns now start January 2, **1878**. Charlie owns Federal Electric's component works and begins with actual telegraph/electrical orders, material suppliers, timed assembly and paid warehouse shipments rather than a 1890 bulb-first contract.

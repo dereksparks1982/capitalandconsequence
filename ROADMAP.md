@@ -1,6 +1,8 @@
 # Capital & Consequence Development Roadmap
 
-> **Start new development threads here:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant codices. Last verified AI baseline is **v0.6.65-dev**; source **v0.6.66-dev** adds the persistent developer panel and player-only room access switch. The earlier [October 23 v0.6.58 handoff](HANDOFF-2026-10-23-THREAD-END.md) remains archived. Later decisions supersede old priorities.
+> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+
+> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source is **v0.6.72-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
 
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 

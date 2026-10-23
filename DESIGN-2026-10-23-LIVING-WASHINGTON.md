@@ -1,5 +1,7 @@
 # Capital & Consequence | Authoritative Thread Design, October 23, 2026
 
+> **Current source and next-thread operational handoff:** [CONTINUE-HERE.md](CONTINUE-HERE.md). This design file holds owner decisions; the handoff holds latest verified build state and next engineering steps.
+
 **This is the PRIMARY build specification.** It records explicit user requests and corrections in this thread. Read it before the README, ROADMAP, decisions, older handoffs, and code. Where they disagree, **the user's newer explicit correction wins**. The repo is the private `dereksparks1982/capitalconsequence`, single branch `main`. Source target at latest update: **v0.6.72-dev**; not an accepted executable. Do not describe planned features as implemented.
 
 **Title:** CAPITAL & CONSEQUENCE. **Motto:** "One city. Countless lives. Every choice has consequences." **Distinction:** "Federal Electric is the company you own. Washington is the world you inhabit."
@@ -74,9 +76,9 @@
 
 **v0.6.72 update:** The 1878 playable component workshop is connected. The remaining era-correct market, business accounting and NPC simulation systems are still open. **v0.6.71 code direction:** correct 1:1 active timer, explicit activity jump durations, chronological NPC slot catch-up during actions and travel, actual 5 PM/8 AM work handoffs without time teleportation, player-chosen Rest Until Morning. GitHub Source QA must pass before claiming a verified source build.
 
-**Still unfinished:** real 1878 component factory start; remove legacy four-turn/month company economics and account-date aliasing; richer hour-by-hour NPC behavior through all playable activities; real persistent offscreen character agency across poker/races/jobs/crimes; configurable venue stay/card duration; year-by-year historical facts and complete strong local LLM installation/inference; diverse weather changing within days; first-hand eclipse-driven investigations; steam-car permissions/routes/estate; complete visual day/night transitions; desktop gameplay acceptance.
+**Still unfinished after the v0.6.72 playable 1878 component-workshop submilestone:** historically plausible 1878 company and market economy throughout the UI, revised legacy four-turn/month company accounting and account-date aliasing; richer hour-by-hour NPC behavior through actual playable activities; persistent unplayed protagonist agency across poker/races/jobs/crimes; configurable venue stay/card duration; year-by-year historical facts and strong locally tested LLM inference; diverse changing weather; evidence-based eclipse investigations; steam-car permissions/routes/estate; complete visual day/night transitions; desktop gameplay acceptance.
 
-**Next priority:** finish testing and hardening 1:1 time and NPC catch-up, then wire 1878 components first, migrate old economics to continuous calendar, then connect unplayed protagonist/NPC actions to real venue systems, followed by deeper memory, conversational action tools, investigation/weather/vehicle arcs. **Never label scaffolds as finished gameplay.**
+**Next priority after the verified v0.6.72 workshop:** audit and correct remaining 1890-specific financial/news and legacy turn accounting exposed to 1878 users; then deepen genuinely independent NPC and unselected protagonist use of the same city workplaces, venues and financial systems, followed by natural conversation-to-action validation, historical memory, weather and investigation/vehicle arcs. Preserve the verified 1:1 running clock, no NPC-driven time jumps and no arbitrary day/night rhythm. **Never label scaffolds as finished gameplay.**
 
 ## 10. Explicit no-regression shorthand
 
