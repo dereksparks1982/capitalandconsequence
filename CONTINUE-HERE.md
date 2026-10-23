@@ -5,9 +5,18 @@
 
 This is the **single first-stop handoff** for the private GitHub repository `dereksparks1982/capitalconsequence`, **branch `main` only**. The owner repeatedly encountered conversation length limits and explicitly requested reliable handoff in GitHub to prevent accidental redesign or forgetfulness. **The latest explicit user decision is always authoritative over older speculative notes, implementation accidents, or an assistant's guesses.** Never silently reinterpret a rule. Read this file, [the authoritative design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), `ROADMAP.md`, `DECISIONS.md`, and the relevant source files before a new build.
 
-**As handed off, latest verified source:** `v0.6.72-dev`; code HEAD **`51e75f11546f6059776b10ae3a32d09cfe4da2b7`** before this docs-only handoff commit. **GitHub Source QA** run **`40028763629`** completed **success** on that exact source commit, including the 1878 adapter tests. The new docs-only commit will become the branch HEAD; check current HEAD and CI again whenever continuing. No desktop executable or release generated; the only historical private executable candidate is unaccepted v0.6.34. Avoid claims of desktop integration/playtesting or full feature completion from source tests.
+**Current implementation candidate:** `v0.6.73-dev`, created October 23. The 1878 stock-market slice was pushed as source changes through **`210aac15e77659f4dc95b5c8cb40cc158c940b8b`** (before documentation updates). Targeted runtime JavaScript checks passed, but the new GitHub Actions source run was **not independently verified** using the available connector. **Last independently verified full GitHub Source QA:** `v0.6.72` code commit `51e75f11546f6059776b10ae3a32d09cfe4da2b7`, run `40028763629`, success. Verify full QA before declaring v0.6.73 validated. No desktop executable or release generated; the unaccepted historical candidate is v0.6.34.
 
 **Next user prompt may simply say:** "Continue Capital & Consequence from `CONTINUE-HERE.md` on GitHub and start checking off the roadmap. Build the next slice." That means read all current files, inspect the active branch, implement a meaningful scoped change, update docs, and check the actual GitHub test run.
+
+## New October 23 continuation slice: v0.6.73 founding-era Exchange
+
+- `app.js` now seeds eight **fictional alternate-history 1878 listings** (railway, telegraph, banking, coal/iron, steamship and machinery). The original later-era share symbols and prices are retained for existing 1890-origin profiles, and 1878 founders can retain their own tickers as years pass.
+- The live quote sheet, filters and market index only count issuers eligible in the saved year. Stock market ticks and closing quotation histories cannot create pre-listing prices for future automobile, aircraft or radio-era companies. Trading keeps the existing physical broker relationship gate.
+- Saves infer a missing `campaignStartYear` from legacy 1890/1938 dates, and use that original start year to restore their own ticker/portfolio seed. Past legitimate holdings are retained.
+- New `tests/exchange-era.cjs` is added to `npm run test:source`; version, source contracts, manual-only build references and browser cache-buster now read v0.6.73. Direct execution checks on the extracted live JavaScript functions passed for both eras. **The new entire GitHub Actions suite and desktop playthrough are not yet independently confirmed.**
+- `ROADMAP.md` checks off **only the founding-era exchange listing submilestone**. Broader period economy remains open: inherited 1890 initial worker count/payroll, market/newspaper prose, 24-hour economic settlement, ownership and licensing, and downstream stock listing updates.
+- New threads must read THIS updated handoff and current GitHub head; do **not** undo these changes or call them untested old ideas.
 
 ## What was completed in the last thread
 
@@ -46,13 +55,13 @@ The owner asked to work through the roadmap in successive source slices. The new
 - `city.js`, `city-access.js`, `npc-mobility.js`, `journey-planner.js`: 26 named registered locations, restricted rooms, provisional **one in-game hour per interlocation journey** through the shared player time path, same-building room transition free.
 - `tests/source-contracts.cjs` plus `package.json` `test:source`: mandatory integration and behavior tests; `.github/workflows/source-qa.yml` triggers source-only QA on main, `.github/workflows/linux-build.yml` remains **manual-only** (no automatic game package).
 
-## Start here on the NEXT approved build: v0.6.73 or next available version
+## Start here on the NEXT approved build: v0.6.74 or next available version
 
-**Best immediately useful unfinished priority: genuinely period-correct 1878 economy integration.** A working component workshop is NOT the same as a coherent world economy. First examine `app.js`, `README.md`, and ROADMAP to identify inherited 1890 stock symbols, seeded stock histories, fictional/modern financial products, period-inappropriate news headlines, electric bulbs, payroll and four-turn-per-month economic or daily reporting assumptions. Preserve the separate older 1890 saved profiles. Do not make blanket search/replace changes or guess historical dates. Address one small integrated target at a time, backed by source-contract and behavior tests and relevant history/canon.
+**Best immediately useful unfinished priority: period-correct 1878 workshop payroll, staffing and cash reconciliation.** A working component workshop is NOT the same as a coherent world economy. First examine `app.js`, `README.md`, and ROADMAP to identify inherited 1890 stock symbols, seeded stock histories, fictional/modern financial products, period-inappropriate news headlines, electric bulbs, payroll and four-turn-per-month economic or daily reporting assumptions. Preserve the separate older 1890 saved profiles. Do not make blanket search/replace changes or guess historical dates. Address one small integrated target at a time, backed by source-contract and behavior tests and relevant history/canon.
 
 Recommended order for next assistant:
 1. **Read current GitHub HEAD, this file, design, roadmap, decisions, and source.** Confirm the 1878 workshop milestone and latest CI. No need to ask owner to repeat this project.
-2. **Audit 1878 legacy leakage across all visible tabs and headline/market/warehouse screens.** Build concrete gates/period-consistent content, distinguishing deliberate alternate history from factual chronology. Do **not** mark the full 1878 checkbox done yet.
+2. **Audit remaining 1878 legacy leakage across payroll, manpower, newspaper, warehouse and factory reports.** Build concrete gates/period-consistent content, distinguishing deliberate alternate history from factual chronology. Do **not** mark the full 1878 checkbox done yet.
 3. **Fix shared 24-hour economic/calendar calculations and daily settlements** when actually encountered. The old `app.js` still mentions `TURNS_PER_MONTH=4`, inherited 1890 wage constants, and old factory accounting. Remove these one slice at a time with realistic/no double-booked cash, sunrise/night and save tests. Avoid double spending between component integer cents and older `S.companyCash` dollars.
 4. **Deeper autonomous NPC simulation:** process meaningful intervals chronologically, ensure unselected protagonists perform genuine games/jobs/economic transactions and obey door/time restrictions. Tests for 3–8 hour player action gaps, events and secret knowledge, replay, and no NPC-created clock jumps.
 5. Then connect natural conversations to validated actions, richer period historical knowledge, weather, investigations and optional Drek estate/steam vehicle story. Reuse licensed GitHub projects. Art and executable packaging only on separate authorization.
@@ -61,9 +70,15 @@ Recommended order for next assistant:
 
 **Next-thread starting instruction to self:** "Follow CONTINUE-HERE.md in dereksparks1982/capitalconsequence; owner authorizes another source slice, not a downloadable build. Recheck GitHub main, inspect the actual 1878 economy/UI, make one integrated improvement, run all source tests, correct failures and update roadmap/checks/docs. Do not improvise time rules or falsely check off unfinished features."
 
+## v0.6.73 source validation boundary
+
+- The new `tests/exchange-era.cjs` is wired to package QA and should be exercised in the full GitHub Actions `Source QA` workflow. A targeted direct V8 execution of the real `app.js` exchange functions passed the eight-ticker founding sheet, prelisting history exclusions, portfolio split, listed-only index, and 1890 legacy seeded securities.
+- GitHub combined status returned no check statuses and the available GitHub connector could not locate the new push-triggered Actions run. **That is NOT evidence of green CI.** Owner or later assistant should check the actual Actions workflow run before checking off full QA.
+- No desktop executable or in-game Electron playthrough was performed. No new acceptance tag.
+
 ## GitHub status and verification
 
-- **Last tested source commit before this docs-only handoff:** `51e75f11546f6059776b10ae3a32d09cfe4da2b7` (v0.6.72).
+- **Last independently verified full-GitHub source CI:** `51e75f11546f6059776b10ae3a32d09cfe4da2b7` (v0.6.72); v0.6.73 remains a tested-target-only source candidate pending confirmation of the Actions run.
 - **Passing test run:** [Capital & Consequence Source QA run 40028763629](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40028763629). The run exercised source contracts, component factory, 1:1 clock, travel, NPC, astronomy, cases, careers and dev access. Tests are source-only, not a played Electron build.
-- This handoff is **documentation only**. GitHub's source-check workflow may not re-run for doc-only commits, so the previously passing run refers to exactly the unchanged source. Always inspect latest HEAD and current runs before building further.
+- This handoff follows new v0.6.73 source commits and later documentation commits. Documentation-only commits may not launch Source QA, and the previously passing v0.6.72 run does **not** validate v0.6.73. Always inspect latest HEAD and actual Actions runs before building further.
 - **Never claim you continued working asynchronously.** Wait for the owner's next build authorization/new-thread request.
