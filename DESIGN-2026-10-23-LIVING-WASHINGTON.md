@@ -6,6 +6,10 @@
 
 **Title:** CAPITAL & CONSEQUENCE. **Motto:** "One city. Countless lives. Every choice has consequences." **Distinction:** "Federal Electric is the company you own. Washington is the world you inhabit."
 
+## Explicit owner correction: NO old-save compatibility rule
+
+Earlier assistant-authored requirements to preserve 1890/legacy saves, keep obsolete production systems or migrate saved inventories were never approved by the owner and are **revoked**. Build the 1878 game correctly. Old saves can become incompatible; there is no obligation to maintain or test old save formats. Current-game autosave and game-state integrity remain important. No saved files are being deleted by this documentation correction. This overrides all earlier historical instructions.
+
 ## 1. The clock | unequivocal user rule
 
 - **One real second = one in-game second** while actively playing. The clock continues ticking while the player does nothing in the office, city, club or anywhere else. There is no accelerated 9x/15x rate, one-real-hour day, one-real-hour night, fixed two-hour loop, or artificial countdown exhaustion.
@@ -48,7 +52,7 @@
 - The real Civil War (1861–65) is the fork: after it, alternate America abolished the **Electoral College** and replaced states/old borders with **functional national districts** (breadbasket agriculture, industry, etc.). Presidents are elected by nationwide **popular vote only**.
 - The user suggested that **Samuel J. Tilden**, historical popular-vote winner in 1876, **could become president** in this alternate 1878. Treat Tilden as a *working candidate*, not a final entire political timeline; later elections, candidates and presidents are undecided until curated. Residents should refer to what the game actually establishes, not our real world's Hayes as if nothing changed.
 - The requested playable opening is **January 2, 1878**. Charlie first manufactures minor contemporary electrical components: telegraph parts/keys, switches, contacts, relays, insulated wire, insulators and battery fittings. Incandescent bulbs follow with later actual technological/patent progress. Afterward an **alternate-history 1893 Washington World's Fair** is a possible major bulb contract, followed by distinct Washington streetlighting modernization. Real-world Chicago fair history is not the same timeline.
-- **Updated v0.6.72:** New campaigns now **start January 2, 1878**, with Charlie's playable component workshop, actual material buying, order acceptance, timed manufacture, stocked shipments and company payments using the tested `component-works.js` engine. No 1890 bulb starter contract is created in new profiles. The surrounding older markets, wages, newspaper rules and period-company integration still need historical conversion. User says old saves do **not** matter, so preserving legacy save compatibility must not block the future proper 1878 rewrite. Do not just switch the date string and leave historical anachronisms.
+- **Updated v0.6.72:** New campaigns now **start January 2, 1878**, with Charlie's playable component workshop, actual material buying, order acceptance, timed manufacture, stocked shipments and company payments using the tested `component-works.js` engine. No 1890 bulb starter contract is created in new profiles. The surrounding older markets, wages, newspaper rules and period-company integration still need historical conversion. Old saves are **not supported as a compatibility requirement**; do not divert effort to preserve them. Do not just switch the date string and leave historical anachronisms.
 
 ## 6. Weather, day-night and celestial events
 
@@ -70,7 +74,7 @@
 - **Floating DEV PANEL should follow on every screen and room** while developing, with existing **Infinite Money** and temporary **Unlock All Rooms** toggles. Dev override is player-only, not permanent NPC permission or a discovered-secret spoiler in the actual campaign.
 - Single `main` branch; incremental tested source slices; **warnings are errors**; update README, roadmap, decisions and this design record with each meaningful scope change. Do not silently forget or override prior decisions. Stop means stop. No images/art unless requested.
 - **No executable, packaged candidate, tag or accepted release unless requested.** The old v0.6.34 Linux candidate is a private unaccepted draft. When packages become huge, changed-files-only ZIP delivery with SHA-256 and full release acceptance flow is appropriate.
-- Old saves are not binding. Keep new profile-local saves, reproducible ledger receipts, no automatic unseen time progression, no sham AI parity claims and honest tests.
+- Old saves are not a compatibility target. Keep new profile-local saves, reproducible ledger receipts, no automatic unseen time progression, no sham AI parity claims and honest tests.
 
 ## 9. Status and next work
 
