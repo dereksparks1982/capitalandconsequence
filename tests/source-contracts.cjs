@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','brokerage.js','app.js','npc-knowledge.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.43','Current package version is v0.6.43');
-check(appSource.includes("APP_VERSION='v0.6.43-dev'"),'Game masthead uses v0.6.43');
-check(read('build-linux.sh').includes('0.6.43'),'Local packaging uses the same number');
+check(pkg.version==='0.6.44','Current package version is v0.6.44');
+check(appSource.includes("APP_VERSION='v0.6.44-dev'"),'Game masthead uses v0.6.44');
+check(read('build-linux.sh').includes('0.6.44'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.43-linux-x64.tar.gz'),'Manual workflow archives v0.6.43');
+check(workflow.includes('0.6.44-linux-x64.tar.gz'),'Manual workflow archives v0.6.44');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -190,7 +190,7 @@ check(appSource.includes("type:refund?'poker-undealt-canceled':'poker-forfeit'")
 check(appSource.includes('store.settled.some(p=>p.id===token)'),'Forfeited poker token cannot settle twice');
 // Cross-module wiring must remain coherent when adding future modules.
 const runtimeSrc=['city.js','world-clock.js','character-routes.js','app.js','venue-opportunities.js',
- 'living-characters.js','npc-knowledge.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
+ 'living-characters.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','mobility.js','journey-planner.js','institution-ventures.js',
  'personal-effects.js','housing.js','paper-doll.js','racing.js','oval-racing.js','boxing.js','underworld.js','career-shell.js'];
 let priorOffset=-1;
 for(const src of runtimeSrc){
@@ -419,4 +419,16 @@ check(gossipExchanges>0&&!!liveKnowledge.belief(activeState,'eddieDoyle','introd
 check(liveKnowledge.belief(activeState,'inspectorHayes','introduced:industrialist')===null,'Remote police inspector does not receive another room\'s private rumor');
 check(activeState.events.some(e=>e.type==='private-rumor'&&e.locationId==='star'),'Private gossip keeps the actual meeting place in the event log');
 check(!JSON.stringify(npc.publicHistory||[]).includes('private-rumor'),'Private rumor has no public newspaper projection');
+const daybook=require('../npc-daybook.js');
+const weekly=[{id:'test-weekly-club',locationId:'star',weekdays:[5],from:22*60,until:2*60,activity:'test-only weekly appointment'}];
+check(daybook.at(clock.create('1890-01-03T23:00'),weekly).length===1,'Weekly appointment begins on its configured Friday night');
+check(daybook.at(clock.create('1890-01-04T01:00'),weekly).length===1,'Weekly overnight appointment persists into Saturday morning');
+check(daybook.at(clock.create('1890-01-04T03:00'),weekly).length===0,'Overnight appointment ends on exact clock boundary');
+check(daybook.at(clock.create('1890-01-05T23:00'),weekly).length===0,'Venue cannot run a weekly appointment on an unapproved day');
+check(daybook.next(clock.create('1890-01-03T21:00'),weekly,'star').iso==='1890-01-03T22:00','Next venue appointment found on same day');
+check(daybook.next(clock.create('1890-01-04T03:00'),weekly,'star').iso==='1890-01-10T22:00','Missed weekly appointment recurs next Friday, not tomorrow');
+check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'star').ongoing===true,'Current overnight event is still an available appointment');
+check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'factory')===null,'Unknown venue has no invented appointment');
+check(daybook.at(JSON.parse(JSON.stringify(clock.create('1890-01-03T23:00'))),weekly).length===1,'Appointment availability derives from saved world minute, not wall clock');
+check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real calendar appointment tool loads before NPC runtime');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

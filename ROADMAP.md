@@ -1041,3 +1041,11 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Source tests for one-person observation, co-located exchange, idempotence and no remote police-actor omniscience.
 - [ ] Convert schedule slots to actual 24-hour weekday routines and give actors meaningful trusted-source preferences and reaction consequences.
 - [ ] Public claims should require credible witnesses, an actual reporter/editor publication action, and saved provenance.
+
+
+## v0.6.44-dev · Actual calendar-based appointments
+- [x] Add `npc-daybook.js`: explicit weekday and minute-of-day schedules derived from per-profile absolute calendar time.
+- [x] Support overnight windows and exact start/end times; compute next meeting after a missed weekly event without rerolling dates.
+- [x] Test a *fixture* Friday-to-Saturday appointment without claiming the actual Commerce Club or any historical venue has approved hours yet.
+- [ ] Research/approve character-specific appointments, opening hours and social calendars before making the daybook authoritative for NPC city movement.
+- [ ] Replace older four NPC slots and 60-minute day/night countdown via the shared world clock after the market/factory/venue consumers are migrated in safe order.
