@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.35-dev · archived title navigation / shared city rooms · October 22, 2026**
+**Current source: v0.6.36-dev · archived title navigation / shared city rooms · October 22, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -17,7 +17,7 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 ## Current build status
 
-**Latest source:** `v0.6.35-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.36-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -179,3 +179,8 @@ Full records: [Drek character codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [m
 The map's Stockbroker pin 14 now has an in-room personal securities order desk. Trading requires the actual broker office or, after three separate dated visits, a telegram from the Federal Electric executive office. Saved relationships are per profile, one meeting per game date. Prior saves have no fictitious relationship. Brokerage trades use personal, never company, cash.
 
 This is an initial brokerage slice: orders currently confirm immediately, pending a real message-delivery model. **The old 60-minute day/night countdown is still active** despite the requested 24-hour game clock; it must be migrated across market, NPC and factory systems before claiming the time redesign is complete. Period-accurate securities and broker tips remain future work. Godot experimentation is shelved. No new executable or release is authorized.
+
+
+## v0.6.36-dev · Broker advisories (October 22, 2026)
+
+On a real broker office visit, owners of shares receive a cautious assessment from publicly posted quotation history. Declining holdings may prompt an opinion to consider selling, but the broker never reads hidden future prices. The advice is saved once per visited date, appears at the broker's desk and is copied to the personal journal. Reloading or visiting again on the same date does not reroll it. This is a rule-based NPC service, not predictive artificial intelligence. No executable or release produced.

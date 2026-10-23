@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-ai.js','world-clock.js'
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.35','Current package version is v0.6.35');
-check(appSource.includes("APP_VERSION='v0.6.35-dev'"),'Game masthead uses v0.6.35');
-check(read('build-linux.sh').includes('0.6.35'),'Local packaging uses the same number');
+check(pkg.version==='0.6.36','Current package version is v0.6.36');
+check(appSource.includes("APP_VERSION='v0.6.36-dev'"),'Game masthead uses v0.6.36');
+check(read('build-linux.sh').includes('0.6.36'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.35-linux-x64.tar.gz'),'Manual workflow archives v0.6.35');
+check(workflow.includes('0.6.36-linux-x64.tar.gz'),'Manual workflow archives v0.6.36');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -318,6 +318,18 @@ check(broker.channel(account,'factory')==='telegram'&&broker.channel(account,'st
 check(broker.channel(JSON.parse(JSON.stringify(account)),'factory')==='telegram','Broker relationship survives autosave');
 check(index.includes('brokerage.js?v=')&&index.includes('id="cityRoomBrokerage"'),'Broker service is present in the city room');
 check(appSource.includes('if(!brokerChannel())return note('),'Back-end stock order enforces broker relationship');
+const adviceStocks={
+ FALL:{price:82,prevClose:84,history:[{close:100},{close:97},{close:94},{close:90},{close:85}]},
+ RISE:{price:110,prevClose:109,history:[{close:100},{close:102},{close:104},{close:106},{close:109}]}
+};
+const advice=broker.observation(adviceStocks,{FALL:{shares:5},RISE:{shares:2}});
+check(advice.kind==='caution'&&advice.ticker==='FALL','Broker cautions about a decline using published quotes');
+check(broker.observation({RISE:adviceStocks.RISE},{RISE:{shares:2}}).kind==='routine','Broker cannot manufacture negative tips');
+const visited={brokerage:{version:1,visits:3,lastVisitDate:'1890-01-04'}};
+check(broker.recordObservation(visited,'1890-01-04',adviceStocks,{FALL:{shares:2}}).ticker==='FALL','Broker note saved on physical visit');
+check(broker.recordObservation(visited,'1890-01-04',adviceStocks,{FALL:{shares:2}})===null,'Same day does not reroll broker advice');
+check(broker.recordObservation(visited,'1890-01-05',adviceStocks,{FALL:{shares:2}})===null,'Absent visitor does not receive false in-person note');
+check(index.includes('id="brokerAdvisory"')&&appSource.includes('stockbroker consultation'),'Advisory appears in room and journal');
 const clock=require('../world-clock.js');
 const at=clock.parseMinute('1890-01-02T08:00');
 const agenda=clock.create('1890-01-02T08:00'),seen=[];

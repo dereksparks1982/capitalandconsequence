@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.35-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.36-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -739,6 +739,12 @@ function renderBrokerOffice(){
  panel.hidden=!active;if(!active)return;
  const info=window.FE_BROKER?.progress?.(S),label=document.getElementById('brokerRelationStatus');
  if(info&&label)label.textContent='Separate game-date visits: '+info.visits+'. '+(info.wireAllowed?'Telegram instructions accepted from your executive office.':'Return on '+info.remaining+' more separate day'+(info.remaining===1?'':'s')+' to establish correspondence privileges.');
+ const advisory=document.getElementById('brokerAdvisory');
+ if(advisory){
+  const notes=window.FE_BROKER?.ensure?.(S).notices||[];
+  const last=notes[notes.length-1];
+  advisory.textContent=last?("Broker note · "+last.date+": "+last.text):"The broker has no assessment of your holdings on record yet.";
+ }
  const select=document.getElementById('brokerStockTicker');
  if(select){
   const prev=select.value;
@@ -1973,7 +1979,12 @@ function openCityRoom(locationId,roomId,options={}){
  }
  // All room content is ready. Record movement only after success.
  if(!dev){
-  if(location.id==='brokerOffice'){window.FE_BROKER?.visit?.(S,S.gameDate);renderBrokerOffice()}
+  if(location.id==='brokerOffice'){
+   window.FE_BROKER?.visit?.(S,S.gameDate);
+   const advice=window.FE_BROKER?.recordObservation?.(S,S.gameDate,S.stocks,S.portfolio);
+   if(advice)S.notes.push({date:displayDate(),source:'stockbroker consultation',text:advice.text});
+   renderBrokerOffice();
+  }
   else{const panel=document.getElementById('cityRoomBrokerage');if(panel)panel.hidden=true}
   if(priorLocation.locationId!==location.id)window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
   save(true);

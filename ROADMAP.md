@@ -967,3 +967,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Migrate the 60-minute countdown to the real 24-hour game clock and activity-based time; unify all clock consumers and autosaves without fake elapsed hours.
 - [ ] Make telegram orders delayed, add office hours, broker warnings, price and company news influences, and period-appropriate securities.
 - [ ] Explicit approval required before executable packaging, release or Godot migration.
+
+
+## v0.6.36-dev · Broker opinion foundation · October 22, 2026
+
+- [x] Assess held stocks from public historical quotations without hidden-price leakage.
+- [x] Show a caution or routine broker opinion, persist once per dated visit, and retain it in the journal.
+- [ ] Add independent broker goals, varying expertise, delayed telegram delivery, rumor sources and relationship consequences.
+- [ ] Migrate the 60-minute legacy countdown to the agreed 24-hour calendar and activity-based time.
+- [ ] No executable without an explicit packaging request.
