@@ -1,4 +1,28 @@
-# Federal Electric Development Roadmap
+# Capital & Consequence Development Roadmap
+
+## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
+
+**Capital & Consequence is a Washington, D.C. life simulation.** Until the owner explicitly expands the scope, prioritize **only the playable city, its residents, institutions, rooms, four career paths, local history, and the interactions between them**. The rest of the restructured United States is **background canon and a deferred roadmap**, not a second playable map to build now.
+
+**Alternate-world design rule:** The city must remain *recognizably* nineteenth-century Washington, but it is **not a documentary reconstruction of the real United States**. Familiar buildings, social institutions, technology, contemporary personalities and historical reference points can coexist with deliberately changed politics, geography, districts, events, and outcomes. The inspiration is an alternate-reality variation: **similar, but not the same**. Keep changes internally consistent with the game's post-Civil-War United States of purpose-defined districts; avoid importing real state-based laws/elections automatically. The comparison to *Rick and Morty* describes the alternate-universe feeling, **not a crossover**.
+
+### Now · highest-priority D.C. playable slices
+
+- [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; existing autosaves preserve their historical dates and inventory until explicitly migrated and tested.
+- [ ] **Washington rooms and local map:** Strengthen the 26 recorded places into an accessible, legible city with real room navigation, player/NPC access parity, fixed or clearly provisional pins, category filters, discovery, and appropriate period openings. A pin is merely the location's map representation; its rooms are the simulation.
+- [ ] **Resident lives:** Improve locally consistent daily schedules, clock granularity, travel, jobs, pay, needs, savings, relationships, choices, private knowledge and observable consequences. NPCs should use the same doors, rules and workplaces as protagonists. Alexi Rurik remains a Russian-only, independently acting NPC, not a playable fifth career.
+- [ ] **Four separate desks and grounded entry jobs:** Charlie owns his modest component factory; Samuel “Sam” Harlan walks a beat and writes citations/incident reports, earning later advancement or pursuing personal inquiries off duty; Elias “Eli” Crowe is an obscure nightclub doorman paid by the shift; Edmund Wardman is the black-sheep orderly at District Asylum under his unnamed brother. All four may remain ordinary or advance; none is forced into an empire. Do not present a detective casebook as rookie beat duty.
+- [ ] **City as cause-and-effect engine:** Newspapers reflect verifiable local events, not arbitrary player-centered stories; crime, policing, institutional affairs, gambling, marriages, commerce, illness, employment and relationships affect residents over time. Start with small believable interactions in existing rooms rather than multiplying unfinished destinations.
+- [ ] **Longer local arcs:** Period-appropriate Washington electricity milestones, an alternate-history 1893 Washington World's Fair, a conditional Federal Electric bulb-supply contract, and a **later separate streetlighting bid**. Politics begins with city-based contacts/influence and may eventually lead to national office; build a nationally consistent election framework only when necessary.
+
+### Later · national worldbuilding backlog (deferred, not cancelled)
+
+- [ ] Decide the actual names, number, centers and **new geographic borders** of the postwar purpose-based districts. Never treat old state lines as their borders by default.
+- [ ] Create the national district map, transport links, trade networks, supply chains, migration, and cross-district simulation **only after Washington's systems support them**.
+- [ ] Determine district governance, constitution, taxation, courts, representation and federal election procedures compatible with a nation without states; then connect the businessman-to-president political arc.
+- [ ] Expand beyond D.C. only on a later explicit scope decision. Until then, external districts can appear as **background newspaper mentions, trade origins, visiting NPC backstories, or political references** without being visitable simulated worlds.
+
+**Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
 
 ## v0.6.51-dev · Washington public contact intelligence (source-only) · October 23, 2026
 

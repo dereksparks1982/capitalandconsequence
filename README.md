@@ -21,6 +21,12 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **The important part is that you cannot do everything.**
 
 
+## Active development scope · Washington first (October 23, 2026)
+
+The **only active gameplay-development area is Washington, D.C.**: its 26 registered locations and rooms, four playable careers, residents, local institutions, business, patrols, the asylum, criminal life, autonomous NPC movement and the historical 1878 electrical components economy. The reimagined United States of functional districts exists as **setting and future roadmap**, but its borders, national map, cross-country travel, government mechanics and economies are deferred. Districts elsewhere may be mentioned in newspapers, commercial contracts and NPC histories without becoming visitable regions.
+
+**Alternate history tone:** Familiar nineteenth-century Washington and American history with deliberate, coherent differences. The intended feel is an alternate reality, *similar but not the same*, not an exact historical simulator. The *Rick and Morty* analogy refers to this difference in worldbuilding, not characters or a crossover. See [the active Washington-first roadmap](ROADMAP.md#active-development-scope--washington-first-decision-of-october-23-2026).
+
 ## The alternate United States of Districts · v0.6.55
 
 **World canon:** The real American Civil War was fought **1861–1865**. **After** that war, this fictional United States eliminated its former states and their old borders, then reorganized into **purpose-based federal districts** intended to supply the nation's collective needs. The war dates are historical; the political reorganization is our **alternate history**. Its exact enactment date, district borders, final names and constitutional structure are not yet established.
