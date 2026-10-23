@@ -1,14 +1,14 @@
 # Capital & Consequence
 
-> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
 > **OWNER DESIGN (read after the handoff):** [Authoritative October 23 living-city record](DESIGN-2026-10-23-LIVING-WASHINGTON.md). The earlier v0.6.70 9x/15x one-hour phase clock was explicitly rejected and corrected, not an approved rule. Older handoffs are archived background.
 
-**Current source: v0.6.72-dev · First playable January 1878 Component Works · October 23, 2026**
+**Current source candidate: v0.6.73-dev · 1878 Component Works and founding-era Exchange · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**For all new work:** begin with [CONTINUE-HERE.md](CONTINUE-HERE.md), then consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.72 executable has been made; source-only development remains the rule.
+**For all new work:** begin with [CONTINUE-HERE.md](CONTINUE-HERE.md), then consult [the current October 23 living-city design](DESIGN-2026-10-23-LIVING-WASHINGTON.md), ROADMAP and DECISIONS. Older handoffs are historical and contain superseded versions. Travel still charges a provisional one in-game hour between locations, now through the NPC-aware action-time path. No v0.6.73 executable has been made; source-only development remains the rule.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -31,6 +31,12 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.73-dev · Founding-era exchange quotations (source-only candidate)
+
+The January 1878 founding campaign now has **eight fictional, period-suitable quoted securities** spanning railroads, telegraph, banks, mining, steam shipping and machine works. They are invented corporations in the alternate national-district setting, **not real-world historical listings or authenticated 1878 market prices**. They can be purchased using the existing earned broker relationship and personal funds; the Federal Exchange index and sector filter now include **only securities actually listed in the current year**. Future automobile, aviation, radio and other later-era listings are kept out of 1878 trading and do not accumulate fictional published history before becoming eligible.
+
+**Save compatibility:** 1890-origin profiles retain the prior quotation and portfolio universe; 1878-origin profiles retain their own founding tickers as time advances. The migration pathway preserves existing eligible saved prices, holdings and trades, and no existing game date is rewritten. The actual source code passed targeted JavaScript execution checks for the two eras; **new GitHub Actions CI and Electron desktop gameplay are not yet independently verified**. Do not mark the entire 1878 economic transition complete. Payroll, employee count, factory accounting, newspapers and legacy business-turn assumptions remain open.
 
 ## v0.6.72-dev · Owner-operated 1878 founding workshop
 
