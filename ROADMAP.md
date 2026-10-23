@@ -1032,3 +1032,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Add source regression cases for each non-business career, ordinary broker visits, and period-ineligible stock orders.
 - [ ] Order delivery latency, confirmations, office hours and remote wire costs need the unified 24-hour clock and historical research.
 - [ ] Continue person-specific relationships and information reliability without treating tips as certain predictions.
+
+
+## v0.6.43-dev · Co-located NPC rumor propagation
+- [x] Deterministic conditional NPC rumor exchanges only when both agents are scheduled present at the same physical room location.
+- [x] Pass NPC beliefs, not global truth, with reduced confidence and an explicit hearsay source; cap repeated reports and per-profile history.
+- [x] Record a private location-attributed conversation event, never expose hidden rumor fields through the public newspaper dispatch feed.
+- [x] Source tests for one-person observation, co-located exchange, idempotence and no remote police-actor omniscience.
+- [ ] Convert schedule slots to actual 24-hour weekday routines and give actors meaningful trusted-source preferences and reaction consequences.
+- [ ] Public claims should require credible witnesses, an actual reporter/editor publication action, and saved provenance.

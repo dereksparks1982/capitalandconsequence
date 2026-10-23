@@ -75,6 +75,35 @@
   const late=(max-remaining)>=max/2?1:0;
   return (turn-1)*4+(phase==='day'?0:2)+late;
  }
+ function exchangeLocalRumors(w,absolute){
+  const knowledge=window.FE_NPC_KNOWLEDGE,date=String(S.gameDate||'');
+  if(!knowledge||!/^\d{4}-\d{2}-\d{2}$/.test(date))return 0;
+  let exchanged=0;
+  // No broadcasts or global reputation query. Only physically co-located,
+  // currently present people with a sufficiently confident report may talk.
+  for(const speaker of DEFINITIONS){
+   const from=w.agents[speaker.id];
+   if(!from||from.status!=='present'||!from.locationId)continue;
+   const facts=knowledge.knownFacts(w,speaker.id).filter(r=>r.confidence>=.4).slice(-6);
+   if(!facts.length)continue;
+   for(const listener of DEFINITIONS){
+    if(listener.id===speaker.id)continue;
+    const to=w.agents[listener.id];
+    if(!to||to.status!=='present'||to.locationId!==from.locationId)continue;
+    const chance=Math.min(75,Math.floor((speaker.traits.sociability+listener.traits.sociability)/4));
+    for(const fact of facts){
+     const roll=hash(w.seed+'|gossip|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId)%100;
+     if(roll>=chance||!knowledge.share(w,speaker.id,listener.id,fact.factId,date))continue;
+     w.events.push({id:'rumor|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId,
+      type:'private-rumor',actorId:speaker.id,recipientId:listener.id,turn:Math.floor(absolute/4)+1,
+      locationId:from.locationId,factId:fact.factId});
+     exchanged++;
+    }
+   }
+  }
+  if(w.events.length>224)w.events.splice(0,w.events.length-224);
+  return exchanged;
+ }
  function stepOnce(w,absolute){
   const slot=absolute%4,turn=Math.floor(absolute/4)+1,night=slot>=2;
   for(const def of DEFINITIONS){
@@ -91,6 +120,7 @@
    // A private log of completed routine decisions, never a public newspaper assertion.
    w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal});
   }
+  exchangeLocalRumors(w,absolute);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function syncClock(){
@@ -183,5 +213,5 @@
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
  function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation}));}
- window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,recordInteraction,talkAtLocation,inspect,list,stepForState});
+ window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,recordInteraction,talkAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();

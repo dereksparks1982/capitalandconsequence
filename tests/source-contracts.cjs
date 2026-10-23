@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-knowledge.js','npc-ai.j
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.42','Current package version is v0.6.42');
-check(appSource.includes("APP_VERSION='v0.6.42-dev'"),'Game masthead uses v0.6.42');
-check(read('build-linux.sh').includes('0.6.42'),'Local packaging uses the same number');
+check(pkg.version==='0.6.43','Current package version is v0.6.43');
+check(appSource.includes("APP_VERSION='v0.6.43-dev'"),'Game masthead uses v0.6.43');
+check(read('build-linux.sh').includes('0.6.43'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.42-linux-x64.tar.gz'),'Manual workflow archives v0.6.42');
+check(workflow.includes('0.6.43-linux-x64.tar.gz'),'Manual workflow archives v0.6.43');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -406,4 +406,17 @@ check(knowledge.belief(mindB,'madamStar','visitor:industrialist')===null,'Indepe
 check(!JSON.stringify(knowledge.knownFacts(mindA,'madamStar')).includes('worldTruth'),'Belief API contains no global truth field');
 check(index.includes('npc-knowledge.js?v=')&&index.indexOf('npc-knowledge.js?v=')<index.indexOf('npc-ai.js?v='),'Knowledge service loads before NPC runtime');
 check(read('npc-ai.js').includes("'introduced:'+route,true,'direct-introduction'"),'Real player introductions create first-hand private records');
+check(knowledge.share(mindA,'madamStar','eddieDoyle','visitor:industrialist','1890-01-04')===false,'Repeating the same rumor does not fill the memory ledger on later days');
+const liveKnowledge=npcCtx.window.FE_NPC_KNOWLEDGE;
+const activeState=npcSave.npcSimulation;
+check(!!liveKnowledge.belief(activeState,'madamStar','introduced:industrialist'),'NPC retains first-hand player introduction as private knowledge');
+activeState.agents.madamStar.locationId='star';activeState.agents.madamStar.status='present';
+activeState.agents.eddieDoyle.locationId='star';activeState.agents.eddieDoyle.status='present';
+activeState.agents.inspectorHayes.locationId='metropolitanPolice';activeState.agents.inspectorHayes.status='present';
+let gossipExchanges=0;
+for(let step=3;step<50;step++)gossipExchanges+=npc.exchangeLocalRumors(activeState,step);
+check(gossipExchanges>0&&!!liveKnowledge.belief(activeState,'eddieDoyle','introduced:industrialist'),'Co-located residents eventually exchange individually held information');
+check(liveKnowledge.belief(activeState,'inspectorHayes','introduced:industrialist')===null,'Remote police inspector does not receive another room\'s private rumor');
+check(activeState.events.some(e=>e.type==='private-rumor'&&e.locationId==='star'),'Private gossip keeps the actual meeting place in the event log');
+check(!JSON.stringify(npc.publicHistory||[]).includes('private-rumor'),'Private rumor has no public newspaper projection');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

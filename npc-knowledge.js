@@ -39,7 +39,9 @@
   if(!validKey(fromActor)||!validKey(toActor)||fromActor===toActor||!validKey(factId))return false;
   const observed=belief(sim,fromActor,factId);
   if(!observed)return false;
-  return learn(sim,toActor,factId,observed.assertion,'heard-from:'+fromActor,date,Math.round(observed.confidence*60)/100);
+  const source='heard-from:'+fromActor;
+  if(ensure(sim).records.some(r=>r.actorId===toActor&&r.factId===factId&&r.assertion===observed.assertion&&r.source===source))return false;
+  return learn(sim,toActor,factId,observed.assertion,source,date,Math.round(observed.confidence*60)/100);
  }
  function knownFacts(sim,actorId){
   if(!validKey(actorId))return [];
