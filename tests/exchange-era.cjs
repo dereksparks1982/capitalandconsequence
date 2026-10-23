@@ -43,4 +43,5 @@ set(legacy,'1890-01-02');
 assert.ok(marketIndex()>0,'Legacy market index remains finite');
 assert.ok(source.includes('fresh.stocks=makeStocks(')&&source.includes('fresh.portfolio=makePortfolio(fresh.campaignStartYear)'),'Migration uses the saved campaign starting year');
 assert.ok(source.includes('stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))'),'Live buy/sell gate continues to check the year');
+assert.ok(source.includes('for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const priorClose='),'New-day market openings do not move securities before listing');
 console.log('PASS 1878 fictional securities, genuine-era UI/index, no premature quotes, legacy 1890 portfolio compatibility');
