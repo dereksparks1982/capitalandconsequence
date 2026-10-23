@@ -2,18 +2,22 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
+## 2026-10-23 · CORRECTION: old-save preservation was an invented rule
+
+**Owner never approved any requirement to preserve old saves.** The assistant introduced that constraint without authorization and wrongly treated it as policy. It is rescinded and supersedes every older or newer conflicting statement below: **do not perform compatibility engineering or retain obsolete 1890 gameplay solely to protect historical saves.** Old saves may break as the game evolves; focus on the real 1878 starting experience. The new/current campaign must still autosave correctly. No existing save files were deleted as part of this documentation correction.
+
 ## 2026-10-23 · v0.6.73 · Founding-era Exchange slice
 
 - For 1878-only new profiles, the share quotation sheet uses eight invented period-suitable railway, telegraph, banking, coal/iron, shipping and machine-works issuers. Fictional issuers and opening prices are **gameplay balancing and alternate-world canon**, not claims about real corporations or historical prices.
 - Only securities actually available in the current game year appear in the active quotation sheet, index and sector filters. Future-company symbols are gated at the back end and never accrue invented market movements or published history before their listing year.
-- Older 1890-origin profiles keep their historical stock symbol/portfolio seed. Save dates, share balances and legitimate trading history are not overwritten to force a new 1878 economy.
+- Older 1890-origin profiles keep their historical stock symbol/portfolio seed. This preservation is an incidental property of v0.6.73 code, **not an owner requirement** and may be discarded.
 - This is one small checked market submilestone, **not** a declaration that 1878 company payroll, cash settlement, newspaper or stock-market research are finished. Targeted V8 source execution has passed; full new GitHub Source QA status and a real Electron playtest remain unconfirmed. No executable authorized.
 
 ## 2026-10-23 · v0.6.72 · Playable founding company
 
 - New campaigns now start January 2, **1878**. Charlie owns Federal Electric's component works and begins with actual telegraph/electrical orders, material suppliers, timed assembly and paid warehouse shipments rather than a 1890 bulb-first contract.
 - Use the existing `component-works.js` integer-cents inventory/receipts. Only the `component-works-live.js` and `component-works-panel.js` adapters bind that module to the common normal-speed game clock and visible Factory. Do not recreate electrical manufacturing as an independent economy.
-- Historical 1890 saves remain separate. New 1878 workshop screens do not advertise incandescent bulbs or automatically grant technology, license or production stations.
+- New 1878 workshop screens do not advertise incandescent bulbs or automatically grant technology, license or production stations.
 - The full 1878 economy is **not** checked off. Period market, wages, newspaper, career NPC economy and later technical milestones still require work, tests and user acceptance.
 
 
@@ -76,7 +80,7 @@
 - The alternate-history **1893 Washington World's Fair** is the achievable major bulb-supply contract milestone and major newspaper feature **when won**, not an opening-day 1878 newspaper claim. Historically, the actual World's Columbian Exposition was in Chicago.
 - A **separate** District streetlighting modernization contract becomes competitively available **after the fair**; existing 1880s Washington electric arc streetlights are a distinct lighting technology and must not be rewritten out of history.
 - At least one NPC exclusively speaks **Russian**, affecting the actual accessibility of witness reports, negotiations and social exchanges; period language fluency, interpreters and earned translation apply.
-- Protect existing autosaves, old profiles, component-era pacing, NPC room access permissions and recorded history. Do not alter source gameplay or package a build until subsequently requested.
+- Protect current-game autosave, component-era pacing, NPC room permissions and recorded events. Old save formats are not a compatibility target. Do not alter source gameplay or package a build until subsequently requested.
 
 - The Russian-only NPC should carry the emotional and mechanical depth of a **Niko Bellic-type** dramatic character, but be wholly original, distinctly **Russian** rather than Serbian, and plausible in **Imperial Russia / Washington in 1878**. He speaks Russian only until in-world language development changes that, and his eventual morality/occupation is emergent, not fixed.
 - The fictional criminal protagonist may begin as a **nightclub doorman/bouncer for the Gay Tony-inspired proprietor**, with paid working shifts and free-time choices, without copying Luis Lopez or Tony Prince as characters. His sexual orientation may be gay or straight, separate from career and moral destiny.
@@ -146,7 +150,7 @@
 - The authoritative handoff for the next ChatGPT development thread is [`HANDOFF-2026-10-23-THREAD-END.md`](HANDOFF-2026-10-23-THREAD-END.md). It supersedes October 22's handoff for resume priorities; historic docs remain in GitHub.
 - **Final checked code** is `v0.6.58-dev`; the last green source run is [39962299550](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39962299550) at `99ab704ed8978fd78bc5edbe879b0264d56db6af`, including **424 source-contract checks**. Latest pre-handoff docs-only main head was `d3b72c2d033f238964e1367b6abb492441544973`. A documentation pointer commit after that does not create a new tested executable.
 - Reconfirm Washington-only priority and alternate-America background. Character names and jobs are canonical. **Sam's currently assigned on-duty beat is Hillsdale only**; off-duty Chinatown exploration as a civilian and the *proposed* smuggling/corruption arc remain distinct. Retain explicit unknown captain truth and a non-stereotyped neighborhood.
-- **Immediate next major source priority:** implement *modest owned electrical-component production* for Charlie at the approved January 2, 1878 future opening, by tested incremental save-compatible slices. Do not flip the current 1890 game date until products, production, customers, markets and save migration agree.
+- **Immediate next major source priority:** implement *modest owned electrical-component production* for Charlie at the approved January 2, 1878 future opening, by tested incremental 1878-focused slices. Do not flip the current 1890 game date until products, production, customers, markets and save migration agree.
 - This closeout changes **documentation only**. No code, executable, assets, game calendar or save records are modified. Keep future snapshots, decisions and build evidence documented as development advances.
 
 ## 2026-10-23 · v0.6.59 purposeful autonomous movement
@@ -169,7 +173,7 @@
 
 ## 2026-10-23 · v0.6.62 independent component factory
 
-- Build and source-test a separate integer-cents 1878 electrical component manufacturing/warehouse/contract engine before touching the 1890 bulb-first live factory. Existing old-profile production, saves and dates remain intact.
+- Build and source-test a separate integer-cents 1878 electrical component manufacturing/warehouse/contract engine before touching the 1890 bulb-first live factory. Old-profile preservation is not required.
 - Production inventory is **not** automatic contract delivery; only a separate shipment earns customer payment. Replayed tokens never duplicate material spend, manufacturing output or settlement.
 - Opening cash, wages, material recipes, customers, prices and workshop tools are explicitly provisional gameplay balancing pending historical research. A conservative future lamp eligibility gate requires calendar advancement plus license and equipment. No new 1878 profile UI, historical authenticity claim or downloadable release.
 
