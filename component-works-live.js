@@ -6,7 +6,7 @@
  const works=typeof module==='object'&&module.exports?require('./component-works.js'):root.FE_COMPONENT_WORKS;
  if(!works)throw Error('Component Works must load first');
  const periods=Object.freeze({order:5,purchase:5,ship:15});
- function transact(save,kind,details,token,spend){
+ function transact(save,kind,details,token,spend,finishAtBell=null){
   if(!save?.componentWorks||save.paused)return {ok:false,reason:'Workshop unavailable or paused'};
   works.verify(save.componentWorks);
   if(!['order','purchase','assemble','ship'].includes(kind)||typeof token!=='string'||!token||token.length>120)
@@ -31,14 +31,20 @@
   }
   if(!receipt.ok)return receipt;
   const seconds=minutes*60,remaining=(1020-date.minuteOfDay)*60-(save.worldCalendarRemainder||0);
-  if(!Number.isSafeInteger(seconds)||seconds<=0||seconds>=remaining)
+  if(!Number.isSafeInteger(seconds)||seconds<=0||seconds>remaining)
    return {ok:false,reason:'Not enough time before 5 PM closing'};
-  if(typeof spend!=='function'||spend(seconds,true)!==seconds)
+  const atBell=seconds===remaining;
+  if(atBell&&typeof finishAtBell!=='function')
+   return {ok:false,reason:'5 PM settlement requires a workshop closing callback'};
+  if(typeof spend!=='function'||spend(seconds,true,atBell)!==seconds)
    return {ok:false,reason:'Player clock could not complete this action'};
   save.componentWorks=next;save.companyCash=next.cashCents/100;
   if(kind==='purchase'||kind==='assemble')save.lastExpenses=(save.lastExpenses||0)+
    (kind==='purchase'?receipt.costCents:receipt.laborCostCents)/100;
   if(kind==='ship')save.lastRevenue=(save.lastRevenue||0)+receipt.revenueCents/100;
+  // Only now may the 5 PM closing bell settle assistant payroll and the
+  // day's company ledger. The old callback-free path cannot reach 5 PM.
+  if(atBell&&finishAtBell()!==true)throw Error('Workshop closing bell could not settle');
   return {...receipt,elapsedSeconds:seconds};
  }
  const api=Object.freeze({transact});
