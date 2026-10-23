@@ -31,7 +31,7 @@
   }
   if(!receipt.ok)return receipt;
   const seconds=minutes*60,remaining=(1020-date.minuteOfDay)*60-(save.worldCalendarRemainder||0);
-  if(!Number.isSafeInteger(seconds)||seconds<=0||seconds>remaining)
+  if(!Number.isSafeInteger(seconds)||seconds<=0||seconds>=remaining)
    return {ok:false,reason:'Not enough time before 5 PM closing'};
   if(typeof spend!=='function'||spend(seconds,true)!==seconds)
    return {ok:false,reason:'Player clock could not complete this action'};
