@@ -26,10 +26,10 @@ Edmund might remain an orderly, become a respected attendant, pursue further pro
 
 ## Four protagonists and the shared world
 
-1. **Businessman:** owns **Federal Electric** from the beginning; initially manufactures modest electrical components.
-2. **Patrolman:** begins as a low-ranking beat cop, walks his beat without an assigned horse or car, performs routine police work and desk paperwork, and may pursue independent investigations outside his ordinary duties.
-3. **Criminal/doorman:** begins at the bottom as a nightclub doorman, with his own desk and an open-ended life; criminal success is optional, not guaranteed.
-4. **Edmund Wardman:** black sheep of the Wardman family, assigned an orderly job under his brother at **District Asylum**, with his own desk.
+1. **Charles “Charlie” Whitcomb (businessman):** owns **Federal Electric** from the beginning; initially manufactures modest electrical components.
+2. **Samuel “Sam” Harlan (patrolman):** begins as a low-ranking beat cop, walks his beat without an assigned horse or car, performs routine police work and desk paperwork, and may pursue independent investigations outside his ordinary duties.
+3. **Elias “Eli” Crowe (criminal/doorman):** begins at the bottom as a nightclub doorman, with his own desk and an open-ended life; criminal success is optional, not guaranteed.
+4. **Edmund Wardman (orderly):** black sheep of the Wardman family, assigned an orderly job under his brother at **District Asylum**, with his own desk.
 
 Every route participates in Washington's common world and NPC ecology; existing separate-save implementations do not yet constitute one synchronized cross-profile simulation.
 

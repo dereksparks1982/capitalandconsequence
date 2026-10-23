@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict'),eco=require('../npc-economy.js');
+const worker={id:'foremanSullivan',traits:{caution:81,sociability:45}};
+const state={goal:'maintain-machinery',energy:88};
+const ctx={date:'1890-01-03',key:'1890-01-03|0',slot:0,weekday:5,seed:1290,
+ defaultLocation:'factory',defaultActivity:'checking machines',rest:false};
+const first=eco.actionFor(worker,state,ctx);
+assert.equal(first.repeated,false);
+assert.equal(first.action.kind,'work');
+assert.equal(state.economy.shiftsWorked,1);
+assert.ok(state.economy.balanceCents>2100);
+const saved=JSON.stringify(state.economy),other=eco.actionFor(worker,state,ctx);
+assert.equal(other.repeated,true);
+assert.equal(JSON.stringify(state.economy),saved,'No double wages after a repeat');
+const clone=JSON.parse(JSON.stringify(state));
+assert.equal(eco.actionFor(worker,clone,ctx).repeated,true,'Autosave survives repeat');
+const late={...ctx,key:'1890-01-03|3',slot:3,defaultLocation:null,defaultActivity:null};
+eco.actionFor(worker,state,late);
+assert.ok(state.economy.history.length===2);
+assert.ok(state.economy.balanceCents>=0);
+const book={id:'eddieDoyle',traits:{caution:45,sociability:91}};
+const money={energy:80};
+for(let i=0;i<30;i++)eco.actionFor(book,money,{date:'1890-01-03',key:'1890-01-03|'+i,slot:1,weekday:6,seed:i,defaultLocation:'races',defaultActivity:'at the track'});
+assert.ok(money.economy.wageredCents>=0);
+assert.ok(money.economy.betsWon+money.economy.betsLost<=30);
+assert.equal(typeof eco.pressure(money.economy),'number');
+const alexi={id:'alexiRurik',traits:{caution:78,sociability:39}};
+const courier={energy:83};
+const shift=eco.actionFor(alexi,courier,{date:'1890-01-03',key:'courier|0',slot:0,weekday:5,seed:4,
+ defaultLocation:'russianTradeHall',defaultActivity:'arranging deliveries',rest:false});
+assert.equal(shift.action.kind,'work');
+console.log('PASS NPC earned shifts, household costs, credit, idempotence and Russian courier');

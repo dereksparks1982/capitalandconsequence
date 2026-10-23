@@ -10,8 +10,8 @@
  menu.id='careerMainMenu';menu.className='career-main-menu';
  menu.setAttribute('aria-label','Federal Electric main menu');
  menu.innerHTML=`<div class="career-menu-paper">
-   <header class="career-menu-heading"><small>WASHINGTON, DISTRICT OF COLUMBIA</small><h1>FEDERAL ELECTRIC</h1><p>THE CITY AND ITS PEOPLE</p><div class="career-menu-rule"></div>
-   <p class="career-menu-motto">Federal Electric is the company you own.<br>Washington is the world you inhabit.</p>
+   <header class="career-menu-heading"><small>WASHINGTON, DISTRICT OF COLUMBIA</small><h1>CAPITAL &amp; CONSEQUENCE</h1><p>THE CITY AND ITS PEOPLE</p><div class="career-menu-rule"></div>
+   <p class="career-menu-motto">One city. Countless lives. Every choice has consequences.</p>
    <output id="careerMenuDate">No profile selected</output></header>
    <section class="career-menu-careers" aria-label="Four playable character foundations"><h2>Choose a Life</h2><div id="careerMenuRoutes" class="career-menu-routes"></div></section>
    <section class="career-menu-records" aria-label="Saved lives"><h2>Saved Profiles</h2><div id="careerMenuProfiles"></div></section>
@@ -50,7 +50,7 @@
  function renderMenu(){
   const profiles=readProfiles(),active=activeProfileId();
   menu.querySelector('#careerMenuDate').textContent=dateLabel(profiles.find(p=>p.id===active)||profiles[0]);
-  menu.querySelector('#careerMenuRoutes').innerHTML=routes.list().map(r=>`<button type="button" data-career-pick="${escape(r.id)}" class="career-menu-route ${r.id===choice?'selected':''}" aria-pressed="${r.id===choice}" data-color="${escape(r.deskColor)}"><b>${escape(r.name)}</b><small>${r.status==='playable'?'FULL BUSINESS CAREER':'DESK & CITY FOUNDATION'}</small><span>${escape(r.summary)}</span></button>`).join('');
+  menu.querySelector('#careerMenuRoutes').innerHTML=routes.list().map(r=>`<button type="button" data-career-pick="${escape(r.id)}" class="career-menu-route ${r.id===choice?'selected':''}" aria-pressed="${r.id===choice}" data-color="${escape(r.deskColor)}"><b>${escape(r.characterName||r.name)}</b><small>${escape(r.name)} · ${r.status==='playable'?'BUSINESS CAREER':'DESK & CITY FOUNDATION'}</small><span>${escape(r.summary)}</span></button>`).join('');
   menu.querySelector('#careerMenuProfiles').innerHTML=profiles.length?profiles.map(p=>{
    let saved=null;try{saved=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
    const route=routes.label(saved?.characterRoute);
@@ -98,8 +98,8 @@
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
-    ${route.id==='investigator'?'<section id="detectiveCasePanel" class="detective-case-panel" aria-label="Detective casebook"></section>':''}
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Most profession-specific assignments and promotions are under development. The detective casebook is playable on the Patrolman route. The factory is not yours.</p>'}
+    ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Most profession-specific assignments and promotions are under development. Detective investigations require a later career advancement. The factory is not yours.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
@@ -116,7 +116,7 @@
   }
   const d=desk.querySelector('#careerDeskDate');
   if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase)+' · '+clockText()+' remaining';
-  if(route.id==='investigator')window.FE_DETECTIVE_CASES?.render?.();
+  // The preexisting detective casebook engine stays offline until a promotion system grants investigative authority.
  }
  menu.addEventListener('click',e=>{
   const button=e.target.closest('button');if(!button)return;

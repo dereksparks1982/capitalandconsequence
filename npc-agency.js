@@ -61,7 +61,8 @@
   else if(def.id==='chenMei'||def.id==='liWen'||def.id==='pavelOrlov'){
    workPressure=bounded(36+hearsay*4);
   }
-  return Object.freeze({workPressure:bounded(workPressure),risk:bounded(risk),
+  const finance=agent.economy?Math.round((agent.economy.balanceCents<600?(600-agent.economy.balanceCents)/8:0)+(agent.economy.debtCents||0)/30):0;
+  return Object.freeze({financialStrain:bounded(finance),workPressure:bounded(workPressure),risk:bounded(risk),
    social:bounded(social),rumors,firstHand:bounded(firstHand*10),
    fatigue:bounded(100-(Number.isFinite(+agent.energy)?+agent.energy:80))});
  }
@@ -82,7 +83,7 @@
     p[2]*bounded(situation.social)*sociability+
     p[3]*bounded(situation.risk)*caution+
     p[4]*(bounded(situation.rumors)+bounded(situation.firstHand))*.35-
-    (goal===agent.goal?8:0);
+    (goal===agent.goal?8:0)+(['balance-finances','find-new-buyers','develop-trade'].includes(goal)?bounded(situation.financialStrain)*.35:0);
    const item={goal,score:Math.round(score*100)/100};
    scores.push(item);
    if(!best||score>best.score)best={goal,score};

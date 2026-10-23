@@ -1,15 +1,14 @@
-# Federal Electric
+# Capital & Consequence
 
-**Current source: v0.6.53-dev · playable detective casebook and mystery deduction · October 23, 2026**
+**Current source: v0.6.54-dev · capital-city identity, 26 map pins, named protagonists and independent NPC activity · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
 **New-thread continuation:** [October 22 development handoff](HANDOFF-2026-10-22-THREAD-END.md). The default city travel charge is one provisional in-game hour; no executable has been generated for this new source work.
 
-> **Federal Electric is the company you own.**  
-> **Washington is the world you inhabit.**
+> **One city. Countless lives. Every choice has consequences.**
 
-**Build an electrical empire in alternate-history Washington, D.C., in the late nineteenth century.**
+**Live an ordinary or extraordinary life in alternate-history Washington, D.C., in the late nineteenth century.**
 
 **Approved future campaign opening: January 2, 1878.** Federal Electric's earliest products will be **electrical and telegraph components**, not mass-produced light bulbs. A working component business and its customers must come first. Later, technological advances, manufacturing investment, and possible patent or licensing arrangements allow incandescent lamp production. The **1893 alternate-history Washington World's Fair** offers a major contract to supply fairground bulbs and a possible front-page Metropolitan Ledger story if awarded; only **afterward** does a separate opportunity to compete for a modernized D.C. streetlighting contract arise. Washington's earlier 1880s electric **arc** streetlights are historically distinct from ordinary incandescent lamps. The actual 1893 World's Columbian Exposition took place in Chicago.
 
@@ -21,9 +20,20 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 **The important part is that you cannot do everything.**
 
+## Canonical four lives
+
+- **Charles “Charlie” Whitcomb, businessman:** owns the **Federal Electric** company from his first day. Electrical **component** manufacture at the proposed 1878 opening is the approved future conversion; current manufacturing mechanics remain earlier prototype lighting systems.
+- **Samuel “Sam” Harlan, patrolman:** a Black rookie walking his beat, issuing routine tickets, answering calls, and finishing reports at his desk. Investigations and rank advancement must be earned. The previously prototyped detective casebook is disconnected from rookie desk presentation.
+- **Elias “Eli” Crowe, nightclub doorman:** earns wages at the door while his boss barely knows he exists. His off-duty choices can lead to legitimate work or the criminal underworld.
+- **Edmund Wardman, asylum orderly:** the wealthy Wardman family's black sheep, deliberately assigned an undesirable orderly job by his brother, who runs **District Asylum**.
+
+Every protagonist retains a personal desk and a separate autosave. **Alexi Rurik** is a Russian-speaking-only **autonomous NPC**, never a fifth playable protagonist.
+
+**Implemented in this source slice:** all **26** map destinations have visual pins, including **12 explicitly provisional placements** that still need historically appropriate coordinates; per-type location filtering; staff and restricted-room entry checks; saved independent NPC shift wages/household charges, occasional gambling and room-level visits; a Russian-only named resident with simple authored Russian conversation. **Not implemented:** the 1878 component conversion, minute-resolution NPC travel, fully autonomous crime, complete four-career duties, the fair's contract chain, political career, and a synchronized city across saves. No executable produced or personally play-tested.
+
 ## Current build status
 
-**Latest source:** `v0.6.53-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
+**Latest source:** `v0.6.54-dev` on the single `main` branch. The latest source is an **unaccepted development candidate**, not the packaged build. The **v0.6.32 Linux x64 standalone executable** was packaged from commit `8c449b6380f6c1172afe57c2b56c0c5dc1f80555` and is available in the [private unaccepted v0.6.32 draft](https://github.com/dereksparks1982/federalelectric/releases/tag/untagged-01b2835c3de880bb6251). The build is **unaccepted**, not a final/public release.
 
 Federal Electric is now being developed as a **standalone Linux game**, with Windows and macOS possibilities later. The previous GitHub Pages/browser distribution is **not the current supported build**; do not treat the old Pages link as the updated game. The v0.6.32 source-contract suite, desktop runtime preparation, artwork/offline audits, packaged Electron smoke test (including real navigation and the atomic-save bridge), checksum verification, and private draft upload completed successfully on October 22. Owner gameplay acceptance remains pending.
 
@@ -47,7 +57,7 @@ The Metropolitan Ledger, Contacts, Journal, and pastimes introduce information t
 
 ## Getting around Washington
 
-The city registry contains **14 editable numbered map pins**, currently using a temporary later-era Washington illustration. The map positions are **display coordinates, not surveyed road distances**.
+The city registry contains **26 editable numbered map pins**, currently using a temporary later-era Washington illustration. The map positions are **display coordinates, not surveyed road distances**.
 
 Press **M** to open or close the Washington map. Closing it should return you to the room or game interface you were using, **without moving your character**. Selecting **Go There** enters that location's current placeholder room; when you are already there, the Go There action is hidden. Verified route durations and transport costs remain unfinished. **Go There now charges a configurable provisional 60 in-game minutes between distinct locations** through the saved calendar bridge; transfers between rooms at the same site cost zero. This is a gameplay placeholder, not a claimed surveyed journey. The legacy gameplay countdown remains active until the full calendar migration. Travel records retain origin/destination, and owned transport stays where left.
 

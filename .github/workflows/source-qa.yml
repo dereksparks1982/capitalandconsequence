@@ -1,4 +1,4 @@
-name: Federal Electric Source QA
+name: Capital & Consequence Source QA
 # Lightweight source checks only; NEVER package or publish a game on push.
 on:
   push:
@@ -13,6 +13,11 @@ on:
       - 'npc-calendar.js'
       - 'npc-itinerary.js'
       - 'npc-agency.js'
+      - 'npc-economy.js'
+      - 'npc-mobility.js'
+      - 'city-access.js'
+      - 'career-shell.js'
+      - 'desktop/main.cjs'
       - 'murder-cases.js'
       - 'detective-cases.js'
       - 'living-characters.js'

@@ -1,5 +1,5 @@
 'use strict';
-/* Federal Electric source-only regression tests, no Electron/downloads needed. */
+/* Capital & Consequence source-only regression tests, no Electron/downloads needed. */
 const fs=require('fs');
 const path=require('path');
 const vm=require('vm');
@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.53','Current package version is v0.6.53');
-check(appSource.includes("APP_VERSION='v0.6.53-dev'"),'Game masthead uses v0.6.53');
-check(read('build-linux.sh').includes('0.6.53'),'Local packaging uses the same number');
+check(pkg.version==='0.6.54','Current package version is v0.6.54');
+check(appSource.includes("APP_VERSION='v0.6.54-dev'"),'Game masthead uses v0.6.54');
+check(read('build-linux.sh').includes('0.6.54'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.53-linux-x64.tar.gz'),'Manual workflow archives v0.6.53');
+check(workflow.includes('0.6.54-linux-x64.tar.gz'),'Manual workflow archives v0.6.54');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -36,9 +36,9 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===14,'Fourteen distinct Washington map pins');
-check(new Set(ids).size===14,'No duplicate map location identifiers');
-check(new Set(nums).size===14&&Math.max(...nums)===14,'Map marker numbers 1-14');
+check(pins.length===26,'All 26 city destinations have distinct map pins');
+check(new Set(ids).size===26,'No duplicate map location identifiers');
+check(new Set(nums).size===26&&Math.max(...nums)===26,'Map marker numbers 1-26');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
@@ -110,7 +110,11 @@ check(routes.list().length===4,'Four selectable careers share one Washington');
 check(routes.canStart('industrialist'),'Existing factory story remains playable');
 check(routes.canStart('investigator')&&routes.canStart('criminal')&&routes.canStart('wardman'),'All four desks may be opened in a new career foundation');
 check(routes.list().filter(r=>r.status==='foundation').length===3,'Unfinished careers are honestly marked as foundations');
-check(routes.label('wardman')==='Wardman'&&routes.label('criminal')==='Layman','Agreed character labels retained');
+check(routes.get('industrialist').characterName==='Charles “Charlie” Whitcomb','Businessman name is recorded');
+check(routes.get('investigator').characterName==='Samuel “Sam” Harlan','Sam Harlan surname is recorded');
+check(routes.get('criminal').characterName==='Elias “Eli” Crowe','Doorman name is recorded');
+check(routes.get('wardman').characterName==='Edmund Wardman','Edmund Wardman is recorded');
+check(routes.get('industrialist').startingLocationId==='factory'&&routes.get('wardman').startingLocationId==='blackwoodAsylum','Four-route openings have stable locations');
 check(routes.get('investigator').deskColor==='blue'&&routes.get('wardman').deskColor==='cream','Personal desk colors are distinct');
 check(routes.normalize('unknown')==='industrialist','Old saves migrate to executive');
 check(routes.get('industrialist').paperDoll==='assets/artwork/characters/paperdolls/paperdoll.png','Approved paper doll unchanged');
@@ -258,11 +262,11 @@ check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migra
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
 let npcSaved=0;
-const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_NPC_ECONOMY:require('../npc-economy.js'),FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:city,FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===7,'Seven named NPCs use persistent scheduling groundwork');
+check(npc.list().length===8,'Eight named NPCs including Russian-only Alexi Rurik are registered');
 check(npc.syncClock()===true,'Initial clock slot schedules residents');
 check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Factory foreman works at the factory');
 const npcOriginal=JSON.stringify(npcSave.npcSimulation);
@@ -470,19 +474,26 @@ check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'star').ongoing===tru
 check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'factory')===null,'Unknown venue has no invented appointment');
 check(daybook.at(JSON.parse(JSON.stringify(clock.create('1890-01-03T23:00'))),weekly).length===1,'Appointment availability derives from saved world minute, not wall clock');
 check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real calendar appointment tool loads before NPC runtime');
+check(index.indexOf('npc-economy.js?v=')>index.indexOf('npc-agency.js?v=')&&index.indexOf('npc-economy.js?v=')<index.indexOf('npc-ai.js?v='),'Economic NPC action planner is loaded between intelligence and runtime');
+check(read('npc-ai.js').includes("FE_NPC_ECONOMY.actionFor")&&read('npc-ai.js').includes("'Ask About Today'"),'Background NPC actions and earned in-person conversation wired');
+check(index.indexOf('city-access.js?v=')<index.indexOf('npc-mobility.js?v='),'Shared room permission rules load before autonomous travel');
+check(pkg.scripts['test:source'].includes('tests/city-access.cjs'),'Explicit room permission regression test required');
+check(index.indexOf('npc-mobility.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('npc-mobility.js?v='),'NPC room access loads before scheduling');
+check(npc.list().some(x=>x.id==='alexiRurik'&&x.language==='ru'),'Alexi Rurik speaks only Russian');
+check(pkg.scripts['test:source'].includes('tests/npc-economy.cjs'),'Economic idempotence regression tests required');
 check(index.includes('murder-cases.js?v=')&&index.includes('detective-cases.js?v='),'Investigator case engine and runtime are loaded');
 check(index.indexOf('murder-cases.js?v=')<index.indexOf('detective-cases.js?v=')&&index.indexOf('detective-cases.js?v=')<index.indexOf('career-shell.js?v='),'Case engine loads before desk wiring');
-check(read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career-shell.js').includes('FE_DETECTIVE_CASES?.render?.()'),'Investigator casebook panel and refreshing are wired');
+check(!read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career-shell.js').includes('Detective casework is not authorized at rookie rank.'),'Rookie patrolman has no investigator casebook access');
 check(read('career-shell.css').includes('.detective-case-person'),'Casebook responsive styles exist');
 check(read('README.md').includes('[LEGAL.md](LEGAL.md)')&&read('LEGAL.md').includes('Contact'),'README and GitHub legal contact notice registered');
 check(pkg.scripts['test:source'].includes('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
 check(city.getLocation('governmentHospital')?.name==='Government Hospital for the Insane','Government Hospital is registered under its 1890 historical name');
-check(city.getLocation('governmentHospital').map===null,'Hospital has no invented map pin or unapproved pixel coordinates');
+check(city.getLocation('governmentHospital').provisionalMapPosition===true,'Hospital pin is explicitly labeled provisional');
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
 check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city.getRoom('governmentHospital','superintendent-office')?.restricted===true,'Wards and superintendent office are access restricted');
 check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
-check(appSource.includes('if(room?.restricted&&!dev)')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev'),'Both direct room entry and room-directory controls enforce restrictions');
-check(city.mapLocations().length===14,'Hospital addition preserves all 14 approved map pins');
+check(appSource.includes('if(room?.restricted&&!dev&&!window.FE_CITY_ACCESS')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev'),'Room entry and room buttons enforce shared staff permissions');
+check(city.mapLocations().length===26,'Existing pins retained and provisional markers fill the remaining 12');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};

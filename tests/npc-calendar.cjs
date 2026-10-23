@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),vm=require('vm');
 const bridge=require('../calendar-bridge.js'),schedule=require('../npc-calendar.js'),knowledge=require('../npc-knowledge.js');
 const source=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
-const itinerary=require('../npc-itinerary.js'),agency=require('../npc-agency.js');
+const itinerary=require('../npc-itinerary.js'),agency=require('../npc-agency.js'),economy=require('../npc-economy.js');
 assert.equal(schedule.slot(480),0);assert.equal(schedule.slot(720),1);
 assert.equal(schedule.slot(1020),2);assert.equal(schedule.slot(1320),3);
 assert.equal(schedule.slot(479),3);assert.throws(()=>schedule.slot(-1));
@@ -11,7 +11,7 @@ assert.equal(schedule.at({date:'1890-01-03',weekday:5,minuteOfDay:480},worker).l
 assert.equal(schedule.at({date:'1890-01-04',weekday:6,minuteOfDay:480},worker).locationId,null);
 let writes=0;
 function attach(S,id){
- const window={FE_NPC_CALENDAR:schedule,FE_CALENDAR_BRIDGE:bridge,FE_NPC_KNOWLEDGE:knowledge,FE_NPC_ITINERARY:itinerary,FE_NPC_AGENCY:agency,
+ const window={FE_NPC_CALENDAR:schedule,FE_CALENDAR_BRIDGE:bridge,FE_NPC_KNOWLEDGE:knowledge,FE_NPC_ITINERARY:itinerary,FE_NPC_AGENCY:agency,FE_NPC_ECONOMY:economy,FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:(()=>{const c={window:{}};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../city.js'),'utf8'),c);return c.window.FederalElectricCity;})(),
   FE_CITY:{currentLocation:()=>({locationId:'star'}),refreshRoomPeople(){}},
   FE_LIVING_CHARACTERS:{renderRoomVisitors(){}}};
  vm.runInNewContext(source,{S,window,activeProfileId:()=>id,save:()=>writes++,

@@ -1,6 +1,6 @@
 name: Linux Desktop Build
 
-# Developer workflow is manual-only while multiple 0.6.53 source slices are underway.
+# Developer workflow is manual-only while multiple 0.6.54 source slices are underway.
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
@@ -40,8 +40,8 @@ jobs:
 
       - name: Build double-click Linux launcher
         run: |
-          mv dist/linux-unpacked/federal-electric dist/linux-unpacked/federal-electric-bin
-          cat > /tmp/federal-electric-launcher.c <<'EOF'
+          mv dist/linux-unpacked/capital-consequence dist/linux-unpacked/capital-consequence-bin
+          cat > /tmp/capital-consequence-launcher.c <<'EOF'
           #define _GNU_SOURCE
           #include <limits.h>
           #include <stdio.h>
@@ -53,7 +53,7 @@ jobs:
             char self[PATH_MAX];
             ssize_t n = readlink("/proc/self/exe", self, sizeof(self) - 1);
             if (n < 0) {
-              perror("Federal Electric launcher");
+              perror("Capital & Consequence launcher");
               return 1;
             }
             self[n] = '\0';
@@ -62,7 +62,7 @@ jobs:
             *slash = '\0';
 
             char target[PATH_MAX];
-            if (snprintf(target, sizeof(target), "%s/federal-electric-bin", self) >= (int)sizeof(target)) {
+            if (snprintf(target, sizeof(target), "%s/capital-consequence-bin", self) >= (int)sizeof(target)) {
               return 1;
             }
 
@@ -74,24 +74,24 @@ jobs:
             next[argc + 1] = NULL;
 
             execv(target, next);
-            perror("Federal Electric");
+            perror("Capital & Consequence");
             free(next);
             return 1;
           }
           EOF
-          gcc -Wall -Wextra -Werror -O2 -s /tmp/federal-electric-launcher.c -o dist/linux-unpacked/federal-electric
-          chmod 0755 dist/linux-unpacked/federal-electric
-          ln -s federal-electric "dist/linux-unpacked/Federal Electric"
+          gcc -Wall -Wextra -Werror -O2 -s /tmp/capital-consequence-launcher.c -o dist/linux-unpacked/capital-consequence
+          chmod 0755 dist/linux-unpacked/capital-consequence
+          ln -s capital-consequence "dist/linux-unpacked/Capital & Consequence"
 
       - name: Smoke-test exact double-click launcher
         run: |
-          xvfb-run -a timeout 30s dist/linux-unpacked/federal-electric --smoke-test
+          xvfb-run -a timeout 30s dist/linux-unpacked/capital-consequence --smoke-test
 
       - name: Package standalone alpha
         run: |
-          mv dist/linux-unpacked "dist/Federal Electric Standalone"
-          tar -C dist -czf "dist/Federal-Electric-0.6.53-linux-x64.tar.gz" "Federal Electric Standalone"
-          (cd dist && sha256sum Federal-Electric-0.6.53-linux-x64.tar.gz > Federal-Electric-0.6.53-linux-x64.tar.gz.sha256)
+          mv dist/linux-unpacked "dist/Capital & Consequence Standalone"
+          tar -C dist -czf "dist/Capital-and-Consequence-0.6.54-linux-x64.tar.gz" "Capital & Consequence Standalone"
+          (cd dist && sha256sum Capital-and-Consequence-0.6.54-linux-x64.tar.gz > Capital-and-Consequence-0.6.54-linux-x64.tar.gz.sha256)
 
       # GitHub Actions artifact storage is full. Draft release assets use GitHub
       # Releases storage instead, while preserving existing artifacts and backups.
@@ -103,14 +103,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          tag="candidate-v0.6.53-unaccepted"
-          archive="dist/Federal-Electric-0.6.53-linux-x64.tar.gz"
+          tag="candidate-v0.6.54-unaccepted"
+          archive="dist/Capital-and-Consequence-0.6.54-linux-x64.tar.gz"
           checksum="${archive}.sha256"
-          title="Federal Electric v0.6.53 | UNACCEPTED LINUX CANDIDATE"
+          title="Capital & Consequence v0.6.54 | UNACCEPTED LINUX CANDIDATE"
           notes="Private Linux test candidate built from commit ${GITHUB_SHA}. NOT ACCEPTED, NOT PUBLISHED. This draft does not represent an approved game release. Validate the executable before release acceptance or tagging."
           test -s "$archive"
           test -s "$checksum"
-          (cd dist && sha256sum --check "Federal-Electric-0.6.53-linux-x64.tar.gz.sha256")
+          (cd dist && sha256sum --check "Capital-and-Consequence-0.6.54-linux-x64.tar.gz.sha256")
           if gh release view "$tag" --json isDraft >/dev/null 2>&1; then
             test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true" || {
               echo "Refusing to overwrite a published release." >&2

@@ -4,7 +4,11 @@ const path = require('path');
 const { fileURLToPath } = require('url');
 const fileSaves=require('./save-store.cjs');
 
-app.setName('Federal Electric');
+// Keep the established save directory when renaming the visible application.
+const existingData=path.join(app.getPath('appData'),'Federal Electric');
+fs.mkdirSync(existingData,{recursive:true});
+app.setPath('userData',existingData);
+app.setName('Capital & Consequence');
 
 const APP_ROOT = path.resolve(__dirname, '..');
 const SMOKE_TEST = process.argv.includes('--smoke-test');
@@ -26,7 +30,7 @@ function initDiagnostics() {
   try {
     const dir = app.getPath('userData');
     fs.mkdirSync(dir, { recursive: true });
-    logFile = path.join(dir, 'Federal-Electric.log');
+    logFile = path.join(dir, 'Capital-and-Consequence.log');
     writeLog('startup', { version: app.getVersion(), platform: process.platform, arch: process.arch });
     writeLog('log-file', logFile);
   } catch (e) {
@@ -121,7 +125,7 @@ async function runSmokeTest(win) {
       mapTravel:!!document.getElementById('titleMapLocationTravel'),
       profileLabel:!!document.getElementById('activeProfileLabel')
     }))()`);
-    if(structure.title!=='Federal Electric'||!structure.city||structure.cityCount<10||!structure.roomOverlay||!structure.mapTravel||!structure.profileLabel){
+    if(structure.title!=='Capital & Consequence'||!structure.city||structure.cityCount<10||!structure.roomOverlay||!structure.mapTravel||!structure.profileLabel){
       throw new Error('DOM/city smoke check failed: '+JSON.stringify(structure));
     }
 

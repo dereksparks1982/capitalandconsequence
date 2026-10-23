@@ -13,9 +13,11 @@
    radioContext:'office',
    description:'Federal Electric works and company offices in the northeast industrial corridor.',
    map:{n:1,x:.6150,y:.3830},
-   defaultRoom:'executive-office',
+   defaultRoom:'receiving-office',
    rooms:[
-    {id:'executive-office',name:'Executive Office',description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'}
+    {id:'receiving-office',name:'Receiving Office',description:'Customers and deliveries are received at this public factory office.'},
+    {id:'production-floor',name:'Production Floor',restricted:true,description:'Employees and authorized visitors work with machinery and materials.'},
+    {id:'executive-office',name:'Executive Office',restricted:true,description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'}
    ]
   },
   {
@@ -206,7 +208,7 @@
   {"id":"licensedGamingHall","name":"Licensed Gaming Hall","area":"Washington, D.C. · undecided address","category":"gaming","plannedOnly":true,"description":"Proposed regulated game hall; the allowed games and site are not yet settled.","map":null,"defaultRoom":"gaming-floor","rooms":[{"id":"gaming-floor","name":"Gaming Floor","description":"Planning only."}]},
   {"id":"privateFightHall","name":"Private Prizefight Venue","area":"Location undisclosed","category":"underground","hiddenFromDirectory":true,"description":"Invitation-only private fight location.","map":null,"defaultRoom":"private-ring","rooms":[{"id":"private-ring","name":"Private Ring","description":"Placeholder private venue."}]},
   {"id":"cockfightingDen","name":"Private Cockfighting Circle","area":"Location undisclosed","category":"underground","hiddenFromDirectory":true,"description":"Hidden private contest venue.","map":null,"defaultRoom":"meeting-yard","rooms":[{"id":"meeting-yard","name":"Meeting Yard","description":"Placeholder private venue."}]},
-  {"id":"blackwoodAsylum","name":"Blackwood Asylum (Working Concept)","area":"Washington region · site and governance not yet chosen","category":"institution","plannedOnly":true,"description":"Proposed fictional Victorian-era asylum and possible long-term investment or management venture; neither property rights nor admission policies have been established.","map":null,"defaultRoom":"superintendent-office","rooms":[{"id":"superintendent-office","name":"Superintendent Office","description":"Proposed future operating desk, not an open game location."},{"id":"patient-ward","name":"Patient Ward","description":"Proposed ward shell; confidential records and staffing await design."},{"id":"administration","name":"Administration","description":"Proposed financial and inspection recordkeeping."}]},
+  {"id":"blackwoodAsylum","name":"District Asylum","area":"Washington region · fictional address pending","category":"institution","description":"Fictional District Asylum directed by Edmund Wardman’s unnamed brother. Edmund is the family black sheep and begins here as an orderly. Separate from the historical federal hospital.","map":null,"defaultRoom":"reception","rooms":[{"id":"reception","name":"Asylum Reception","description":"Public entrance and inquiries."},{"id":"orderly-station","name":"Orderly Station","restricted":true,"description":"Attendant duty desk, assignment book, and supply register."},{"id":"patient-ward","name":"Patient Ward","restricted":true,"description":"Care area accessible to authorized staff."},{"id":"superintendent-office","name":"Superintendent Office","restricted":true,"description":"Private management offices. Not accessible to family merely by surname."},{"id":"administration","name":"Administration","restricted":true,"description":"Restricted institutional finance records."}]},
   {
    id:'whiteHouse',
    name:'White House',
@@ -258,6 +260,24 @@
   }
  ];
 
+ // All 26 registered locations have a map marker. New markers are deliberately
+ // provisional display coordinates, never audited street addresses or travel times.
+ // Future/hidden/planned venues remain subject to their original access gates.
+ const PROVISIONAL_MAP_PINS=Object.freeze({
+  secondNightclub:[15,.425,.483],governmentHospital:[16,.733,.680],
+  potomacKennelTrack:[17,.843,.543],capitalSpeedway:[18,.875,.585],
+  licensedGamingHall:[19,.517,.463],privateFightHall:[20,.535,.515],
+  cockfightingDen:[21,.643,.502],blackwoodAsylum:[22,.772,.723],
+  whiteHouse:[23,.434,.454],washingtonArena:[24,.580,.425],
+  washingtonAirport:[25,.305,.664],metropolitanPolice:[26,.571,.510]
+ });
+ for(const location of LOCATIONS){
+  const position=PROVISIONAL_MAP_PINS[location.id];
+  if(!location.map&&position){
+   location.map={n:position[0],x:position[1],y:position[2]};
+   location.provisionalMapPosition=true;
+  }
+ }
  function copyRoom(room){return Object.assign({},room)}
  function copyLocation(location){
   const copy=Object.assign({},location);
@@ -286,7 +306,8 @@
    category:v.category,
    x:v.map.x,
    y:v.map.y,
-   description:v.description
+   description:v.description,
+   provisional:!!v.provisionalMapPosition
   }));
  }
 

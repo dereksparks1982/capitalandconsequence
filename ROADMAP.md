@@ -86,3 +86,20 @@
 - [ ] Test 1878 new-profile starting inventory and products, pre-invention bulb lockouts, license/technology decisions, fair eligibility and branch outcomes, delivery timing, historical arc/incandescent distinction, save/reload, and post-fair bid requirements.
 - [ ] Keep NPC jobs and travel grounded in actual registered rooms; map markers are only visual navigation. Apply venue and room-specific authorization equally to player and NPCs except for justified job/household permissions, with time-dependent availability.
 - [ ] No code, playable starting-year changes, builds, binaries, or asset replacements are authorized by this **documentation-only planning update**.
+
+## v0.6.54-dev · Capital & Consequence foundation · October 23, 2026
+
+- [x] Rename visible title/menu, desktop package metadata, Linux launch/archive labels and development docs to **Capital & Consequence**. Federal Electric remains the businessman's company, not the whole game. Keep legacy save namespaces for compatibility.
+- [x] Preserve **four** canonical protagonists in code: **Charles “Charlie” Whitcomb** (businessman/factory owner), **Samuel “Sam” Harlan** (rookie Black patrolman), **Elias “Eli” Crowe** (anonymous nightclub doorman), **Edmund Wardman** (District Asylum orderly). Show established names on career selection without changing persistent route IDs.
+- [x] Keep the rookie cop on beat duty and desk reports rather than presenting detective work at starting rank. Existing standalone mystery engine remains as unassigned groundwork for future promotion/career progression.
+- [x] Name the **District Asylum** (historically fictional, separate from the Government Hospital for the Insane) in the city registry, with public reception, orderly station, patient ward, administration and superintendent office. Edmund begins as an orderly; his unnamed brother directs the institution.
+- [x] Register **26 numbered pins**, with 14 previously positioned and 12 **provisional**. Add map category labels for institutions, gaming and underground locations. Do not treat a pin as a separate entity from its room registry.
+- [x] Add staff/permission-checked room entry shared by player and NPCs; restricted factory offices and hospital areas are not available to ordinary visitors. Build a deterministic NPC visit planner across visitable city rooms.
+- [x] Add per-profile NPC income, shift attendance, small expenses, gambling and loan ledger, settled once per observed clock period. No away-from-game progression; no unpublished omniscient NPC data. Add **Alexi Rurik** to autonomous cast, Russian-only.
+- [x] Create source tests for room access, NPC economics and named protagonist/locale contracts, and trigger source QA on main.
+- [ ] Finish verified beginning in **1878**, with component manufacturing, authentic 1878 customers, tooling and orders before incandescent lamps; do not swap the date while bulb-first production is still hardcoded.
+- [ ] Replace provisional map positions with historically surveyed locations or map redesign; do not claim placeholder locations are historical.
+- [ ] Implement real patrol citations, repeatable shift assignments, paperwork, wages, promotion, independent inquiries; doorman duty, shifts and personal desk; Edmund's institutional duties and family drama; industrialist production overhaul.
+- [ ] Integrate NPC money and movement with journey duration, local work, encounters and the shared minute-accurate world clock. Currently period-based deterministic groundwork; not a simulated round-the-clock society.
+- [ ] Add the alternate-history **1893 Washington World's Fair** competitive bulb-supply contract and later separate D.C. streetlighting opportunity, with branching business outcomes.
+- [ ] Verify manual packaged executable under real desktop interactions after source test acceptance. Packaging remains manual, not triggered by every source push.

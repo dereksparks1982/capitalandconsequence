@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.53-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.54-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1732,7 +1732,10 @@ function showNewProfileForm(){
 function createProfile(name,routeId='industrialist'){
  const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Four profiles already exist. Delete one before creating another.');return}
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
- profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
+ profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';
+ const start=window.FE_CHARACTERS?.get?.(S.characterRoute)?.startingLocationId;
+ if(start){const loc=window.FederalElectricCity?.getLocation?.(start);if(loc)S.currentLocation={locationId:start,roomId:S.characterRoute==='wardman'?'orderly-station':loc.defaultRoom}}
+ profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
 function showSavedCityLocation(){
  const current=currentCityLocation();
@@ -1917,7 +1920,7 @@ function renderCityRoomDirectory(location,activeRoomId){
   const button=document.createElement('button');
   button.type='button';
   button.textContent=room.name;
-  button.disabled=!!room.restricted&&!cityRoomSession.dev;
+  button.disabled=!!room.restricted&&!cityRoomSession.dev&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok;
   if(button.disabled)button.title='Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
   button.onclick=()=>openCityRoom(location.id,room.id,{dev:cityRoomSession.dev,source:cityRoomSession.source});
@@ -1932,11 +1935,11 @@ function openCityRoom(locationId,roomId,options={}){
  if(!dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
- if(location.id==='factory'&&!dev&&S.characterRoute==='industrialist'){
+ if(location.id==='factory'&&!dev&&S.characterRoute==='industrialist'&&(!roomId||roomId==='executive-office')){
   returnCityRoomToOffice();closeTitleMap();return true;
  }
  const room=cityRoom(location.id,roomId||location.defaultRoom);
- if(room?.restricted&&!dev){
+ if(room?.restricted&&!dev&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok){
   console.warn('Federal Electric: restricted room entry refused',location.id,room.id);
   return false;
  }
@@ -2505,7 +2508,7 @@ let titleMapShowNames=false,titleMapCategory='all';
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
  sport:'Sports & Recreation',fair:'Fairgrounds',transport:'Transportation',
- finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government'
+ finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gaming',underground:'Underground'
 });
 function syncTitleMapFilters(){
  const layer=document.getElementById('titleMapMarkers'),show=document.getElementById('titleMapShowNames');
@@ -2624,7 +2627,7 @@ function openTitleMapLocation(id){
  $('#titleMapLocationDescription').textContent=location.description;
  const reason=mapTravelRestriction(location);
  const journeyNotice=document.getElementById('titleMapTravelNote');
- if(journeyNotice)journeyNotice.textContent=reason||window.FE_TRAVEL?.notice?.(currentCityLocation().locationId,id)||'Travel times not yet surveyed; direct movement is provisional.';
+ if(journeyNotice)journeyNotice.textContent=(location.provisional?'PROVISIONAL PIN · historical placement pending. ':'')+(reason||window.FE_TRAVEL?.notice?.(currentCityLocation().locationId,id)||'Travel times not yet surveyed; direct movement is provisional.');
  const travel=$('#titleMapLocationTravel');
  if(travel){
   const alreadyHere=!!activeProfileId()&&currentCityLocation()?.locationId===id;

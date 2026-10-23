@@ -1,4 +1,4 @@
-/* Federal Electric NPC intelligence slice 2.
+/* Capital & Consequence NPC intelligence slice 5.
  * Engine-independent, offline, deterministic routines and persistent decisions.
  * Mapped profiles use saved-calendar routines; legacy-unmapped profiles keep
  * their original phase routine without invented historical time.
@@ -32,12 +32,19 @@
    publicRemark:"A good price is only part of a trade. Buyers also remember whether the shipment arrived.",traits:{sociability:56,caution:75,ambition:74},places:['oldChinatown','oldChinatown',null,null],
    activities:['meeting with merchants','following new business opportunities',null,null],
    goals:['find-new-buyers','protect-local-trust','maintain-business']},
+  {id:'alexiRurik',name:'Alexi Rurik',occupation:'Russian immigrant and courier',language:'ru',ambition:'build-a-life-on-his-own-terms',
+   publicRemark:'Я сам решаю, кому доверять. Разговоры ничего не стоят.',
+   traits:{sociability:39,caution:78,ambition:87},
+   places:['russianTradeHall','races','workingPoker','star'],
+   activities:['looking for a new contract','following a delivery','watching the card game','waiting for a late appointment'],
+   goals:['find-honest-work','protect-allies','establish-independence']},
   {id:'pavelOrlov',name:'Pavel Orlov',occupation:'Visiting Russian merchant',ambition:'establish-reliable-overseas-trade',
    publicRemark:"Washington has many doors for a trader, but an introduction is not the same as a contract.",traits:{sociability:70,caution:69,ambition:78},places:['russianTradeHall','russianTradeHall','star',null],
    activities:['meeting commercial visitors','discussing engineering and trade','attending an evening gathering',null],
    goals:['develop-trade','expand-connections','protect-reputation']}
  ]);
  const BY_ID=new Map(DEFINITIONS.map(d=>[d.id,d]));
+ const WORKPLACES={madamStar:'star',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
@@ -93,7 +100,7 @@
    for(const listener of DEFINITIONS){
     if(listener.id===speaker.id)continue;
     const to=w.agents[listener.id];
-    if(!to||to.status!=='present'||to.locationId!==from.locationId)continue;
+    if(!to||to.status!=='present'||to.locationId!==from.locationId||(to.roomId&&from.roomId&&to.roomId!==from.roomId))continue;
     const chance=Math.min(75,Math.floor((speaker.traits.sociability+listener.traits.sociability)/4));
     for(const fact of facts){
      const roll=hash(w.seed+'|gossip|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId)%100;
@@ -117,41 +124,64 @@
    situation:{...situation},at:signature};
   return choice;
  }
+ function pickRoom(def,action,w){
+  if(!window.FE_NPC_MOBILITY||!window.FederalElectricCity)throw Error('NPC city mobility module required');
+  return window.FE_NPC_MOBILITY.visit(window.FederalElectricCity,
+   {kind:'npc',id:def.id,workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
+   {date:action.date,key:action.key,seed:w.seed,slot:action.slot,
+    defaultLocation:action.locationId,defaultActivity:action.activity,
+    priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss'});
+ }
  function stepOnce(w,absolute){
+  if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
   const slot=absolute%4,turn=Math.floor(absolute/4)+1;
   for(const def of DEFINITIONS){
    const a=w.agents[def.id];
    const decision=planDecision(w,def,a,SLOT_NAMES[slot],'legacy|'+absolute);
-   const rest=decision.rest;
-   const destination=rest?null:def.places[slot];
+   const rest=decision.rest,date=observedDate(),natural=rest?null:def.places[slot];
+   const weekday=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+'T12:00:00Z').getUTCDay():1;
+   const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
+    key:'legacy|'+absolute,date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'1890-01-02',
+    slot,weekday,seed:w.seed,rest,
+    defaultLocation:natural,defaultActivity:rest?null:def.activities[slot]});
+   const action=completed.action,moved=pickRoom(def,action,w),destination=moved.locationId;
    a.goal=decision.goal;
    a.locationId=destination;
-   a.activity=rest?null:def.activities[slot];
+   a.roomId=moved.roomId;
+   a.activity=moved.activity;
    a.status=destination?'present':'off-duty';
    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastStep=absolute;
-   // A private log of completed routine decisions, never a public newspaper assertion.
-   w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal,decisionReason:decision.reason});
+   // Private events and cash remain in this profile; no false public dispatch.
+   w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal,decisionReason:decision.reason,
+    action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,absolute);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function calendarOnce(w,c,key){
+  if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
   // Resolve the reached period once, never manufacture missed encounters
   // or private gossip for periods not actually observed by the player.
   const turn=Math.max(1,Math.floor(+S.turnSerial||1));
   for(const def of DEFINITIONS){
    const a=w.agents[def.id],period=window.FE_NPC_CALENDAR.at(c,def);
    const decision=planDecision(w,def,a,period.name,key);
-   const rest=decision.rest,destination=rest?null:period.locationId;
+   const rest=decision.rest,natural=rest?null:period.locationId;
+   const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
+    key,date:c.date,slot:period.slot,weekday:c.weekday,seed:w.seed,
+    rest,defaultLocation:natural,defaultActivity:rest?null:period.activity});
+   const action=completed.action,moved=pickRoom(def,action,w),destination=moved.locationId;
    a.goal=decision.goal;
    a.locationId=destination;
-   a.activity=rest?null:period.activity;
+   a.roomId=moved.roomId;
+   a.activity=moved.activity;
    a.status=destination?'present':'off-duty';
    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastCalendarSlot=key;
    w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
-    slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason});
+    slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason,
+    action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,hash(key),turn);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
@@ -186,14 +216,14 @@
  function visibleAt(locationId){
   const w=ensure();if(!w||!locationId)return [];
   return DEFINITIONS.filter(d=>w.agents[d.id]?.locationId===locationId)
-   .map(d=>({id:d.id,name:d.name,activity:w.agents[d.id].activity||'present'}));
+   .map(d=>({id:d.id,name:d.name,roomId:w.agents[d.id].roomId||null,activity:w.agents[d.id].activity||'present'}));
  }
  // Face-to-face contact only. This uses the NPC's public routine, not
  // hidden personal goals, confidential motives or unscheduled future events.
  function talkAtLocation(id,topic='greet'){
-  if(!['greet','work','city'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
+  if(!['greet','work','city','today'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
-  if(!def||!a||!position||a.locationId!==position.locationId||a.status!=='present')
+  if(!def||!a||!position||a.locationId!==position.locationId||(position.roomId&&a.roomId&&position.roomId!==a.roomId)||a.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
   const route=S.characterRoute||'industrialist',date=observedDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
@@ -201,9 +231,11 @@
   if(already)return {ok:false,reason:'You have already discussed that today.'};
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
-  const reply=topic==='greet'
+  const reply=def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
    ?(known?(affinity>=4?'Welcome back. It is good to have a familiar face here.':'Good to see you again.'):'Good day. I am '+def.name+'.')
-   :topic==='city'?def.publicRemark:(a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
+   :topic==='city'?def.publicRemark:topic==='today'?
+    (a.economy?.lastAction?.publicLine||'I have been attending to ordinary matters.'):
+    (a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
   // The first introduction improves familiarity once; repeating visits cannot
   // generate unlimited reputation or cash.
   if(!recordInteraction(id,route,topic,topic==='greet'?1:topic==='city'?1:0))
@@ -271,12 +303,13 @@
   const panel=document.getElementById('cityRoomVisitors'),list=document.getElementById('cityRoomVisitorList');
   if(!panel||!list)return;
   list.replaceChildren();
-  for(const visitor of visibleAt(locationId)){
+  const currentRoom=window.FE_CITY?.currentLocation?.()?.roomId||null;
+  for(const visitor of visibleAt(locationId).filter(v=>!currentRoom||!v.roomId||v.roomId===currentRoom)){
    const row=document.createElement('article');row.className='fe-npc-visitor';
    const p=document.createElement('p');p.textContent=visitor.name+' is '+visitor.activity+'.';row.appendChild(p);
    const controls=document.createElement('div');controls.className='fe-npc-visitor-actions';
    const response=document.createElement('p');response.className='fe-npc-response';response.setAttribute('role','status');
-   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington']]){
+   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington'],['today','Ask About Today']]){
     const button=document.createElement('button');button.type='button';button.textContent=label;
     button.addEventListener('click',()=>{
      const result=talkAtLocation(visitor.id,topic);
@@ -305,6 +338,6 @@
   return {id,name:def.name,occupation:def.occupation,ambition:def.ambition,
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
- function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation}));}
+ function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
  window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();
