@@ -2,7 +2,7 @@
 
 > **Current source and next-thread operational handoff:** [CONTINUE-HERE.md](CONTINUE-HERE.md). This design file holds owner decisions; the handoff holds latest verified build state and next engineering steps.
 
-**This is the PRIMARY build specification.** It records explicit user requests and corrections in this thread. Read it before the README, ROADMAP, decisions, older handoffs, and code. Where they disagree, **the user's newer explicit correction wins**. The repo is the private `dereksparks1982/capitalconsequence`, single branch `main`. Source target at latest update: **v0.6.72-dev**; not an accepted executable. Do not describe planned features as implemented.
+**This is the PRIMARY build specification.** It records explicit user requests and corrections in this thread. Read it before the README, ROADMAP, decisions, older handoffs, and code. Where they disagree, **the user's newer explicit correction wins**. The repo is the private `dereksparks1982/capitalconsequence`, single branch `main`. Source target at latest update: **v0.6.75-dev**; not an accepted executable. Do not describe planned features as implemented.
 
 **Title:** CAPITAL & CONSEQUENCE. **Motto:** "One city. Countless lives. Every choice has consequences." **Distinction:** "Federal Electric is the company you own. Washington is the world you inhabit."
 
@@ -46,6 +46,10 @@ Earlier assistant-authored requirements to preserve 1890/legacy saves, keep obso
 - **A 100 GB game install is acceptable to the owner** if stronger AI is worthwhile. Do not turn down a good open model merely because it is large. Still measure memory/VRAM/latency and licensing; eventually changed-files-only ZIP delivery may avoid oversize full archives.
 - Each NPC believes it is **the current game year** and accesses **curated and date-gated historical/alternate events** appropriate to its actual lived knowledge. No future election, technology or gossip spoilers. Even the model's answers should be grounded in authorized game facts; model prose alone must never authorize money movement, travel, guilt or outcomes.
 - Current v0.6.67+ source has a **Speak** field, local OpenAI-compatible model-server bridge, basic individualized personality/year context and saved per-resident conversation transcripts. **No model weights/server are bundled and live multi-hour freeform conversations have not been benchmarked.**
+
+## Implemented 5 PM workshop correctness · October 23, v0.6.75
+
+An explicit player action producing an order, assembled component, purchased material or shipped stock may **finish exactly at the workshop's 5 PM closing bell**, with the stock and cash receipt recorded before payroll and report closure. The same authoritative player-time clock is used; NPCs consume elapsed time without advancing it. Actions whose work would extend **past** the 5 PM business closing remain unavailable; after-hours workshop operating policy has not been expanded. The 5 PM check is a narrow transaction atomicity measure, **not** a requirement that the playable character retire or end the day. Source code and isolated real-gateway tests exist; no fresh Electron acceptance test exists.
 
 ## Latest opening staffing decision · October 23, v0.6.74
 
