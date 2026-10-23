@@ -8,7 +8,7 @@
   const factory=document.getElementById('factory');if(!factory)return;
   const panel=document.createElement('section');
   panel.id='componentWorkshop';panel.className='sheet component-workshop';
-  panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph apparatus and electrical components. Incandescent lamps are not yet available.</p>'+
+  panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph apparatus and electrical components. Incandescent lamps are not yet available.</p><p>Railway standing batch: 2 keys, 2 relays, 3 switch contacts. $30.80 sales, $5.40 materials (estimates). Mon-Fri 9 AM-5 PM production. Saturday 9 AM-5 PM shipments and weekly pay. Closed Sunday.</p>'+
    '<p id="componentBalance"></p><p id="componentStaff"></p>'+
    '<form id="cwOrder"><h4>Accept a customer order</h4><label>Customer <select name="customer"></select></label><label>Product <select name="productId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="4" required></label><button type="submit">Accept order · 5 min</button></form>'+
    '<form id="cwBuy"><h4>Buy stock</h4><label>Material <select name="materialId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="20" required></label><button type="submit">Buy materials · 5 min</button></form>'+
@@ -60,7 +60,7 @@
        return root.finishWorkshopClosingBell();
       });
      panel.querySelector('#cwMessage').textContent=result.ok?
-      'Recorded '+kind+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
+      'Recorded '+kind+(kind==='assemble'&&result.requestedUnits>result.units?' · '+result.units+' unit(s) finished, remainder still ordered':'')+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
      if(result.ok&&!result.repeated){S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence);save(true)}
      render();
     }catch(err){panel.querySelector('#cwMessage').textContent='Workshop action failed: '+String(err.message||err).slice(0,150)}
@@ -80,7 +80,7 @@
    Object.entries(state.materials).map(([k,v])=>k+' '+v).join(', ');
   const assistant=S.npcSimulation?.agents?.foremanSullivan;
   const unpaid=S.workshopPayroll?.owedCents||0;
-  panel.querySelector('#componentStaff').textContent='Staff: Charlie Whitcomb (owner, working) + Sullivan (one paid assistant) · assistant wage $1.00 per worked day'+
+  panel.querySelector('#componentStaff').textContent='Staff: Charlie Whitcomb (owner, working) + Sullivan (one paid assistant) · $1.20 per worked weekday, paid Saturday (up to $6/week)'+
    (unpaid?' · outstanding wages $'+(unpaid/100).toFixed(2):'')+
    (assistant?.status==='present'&&assistant.locationId==='factory'?' · assistant at the works':' · assistant not currently at the works');
   const out=panel.querySelector('#cwOrders');out.replaceChildren();
