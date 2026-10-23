@@ -2,18 +2,18 @@
 const assert=require('node:assert/strict');
 const agency=require('../npc-agency.js');
 const foreman={id:'foremanSullivan',traits:{ambition:85,caution:90,sociability:45},
- goals:['maintain-machinery','meet-contract-deadlines','protect-workforce']};
-const agent={goal:'maintain-machinery',energy:88,memories:[]};
+ goals:['check-workshop-tools','fill-component-orders','handle-supplies']};
+const agent={goal:'check-workshop-tools',energy:88,memories:[]};
 const s={npcSimulation:{knowledge:{version:1,records:[]}},workforce:{absent:0},
  lineStatus:'running',turnConditions:{powerOutageSeconds:0}};
 let observed=agency.observe(foreman,agent,s,s.npcSimulation);
 assert.equal(observed.workPressure,75);assert.equal(observed.risk,15);
 let choice=agency.choose(foreman,agent,observed);
-assert.equal(choice.goal,'meet-contract-deadlines','Deadline priority can override baseline equipment checks');
+assert.equal(choice.goal,'fill-component-orders','Deadline priority can override baseline equipment checks');
 s.lineStatus='idle';s.workforce.absent=6;s.turnConditions.powerOutageSeconds=420;
 observed=agency.observe(foreman,agent,s,s.npcSimulation);
 choice=agency.choose(foreman,agent,observed);
-assert.equal(choice.goal,'protect-workforce','Staff danger changes independent foreman decision');
+assert.equal(choice.goal,'handle-supplies','Staff danger changes independent assistant decision');
 assert.equal(observed.risk,100);
 const copy=JSON.parse(JSON.stringify(s));
 assert.deepEqual(agency.choose(foreman,agent,agency.observe(foreman,agent,copy,copy.npcSimulation)),
