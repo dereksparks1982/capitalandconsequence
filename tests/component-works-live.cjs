@@ -19,7 +19,7 @@ assert.equal(clock.now(s).time,'8:41 AM');
 assert.equal(s.componentWorks.warehouse['telegraph-key'],4);
 const c=live.transact(s,'ship',{orderId:a.id,quantity:4},'ship:1',spend);
 assert.equal(c.ok,true);assert.equal(clock.now(s).time,'8:56 AM');
-assert.equal(s.companyCash,2500-b.laborCostCents/100+c.revenueCents/100);
+assert.equal(Math.round(s.companyCash*100),250000-b.laborCostCents+c.revenueCents,'Cash compared in exact integer cents');
 const d=live.transact(s,'purchase',{materialId:'brass',quantity:10},'purchase:1',spend);
 assert.equal(d.ok,true);assert.equal(s.componentWorks.materials.brass,172);
 const original=JSON.stringify(s);
