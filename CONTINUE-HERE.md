@@ -1,5 +1,7 @@
 # Capital & Consequence · CONTINUE HERE
 
+**Verified v0.6.76 source QA:** Complete GitHub Actions Source QA **SUCCESS** on source/test commit ac9c1b890e1d12e8d7adadc9e946fd8b00aa23bb, run 40041780868, including the mandatory new standing-order, week-day assembly, full-week Saturday payroll, shop bills, and real 5 PM clock-gateway tests. Subsequent commits are documentation-only. No Electron UI playthrough or executable has been independently verified, built, or accepted.
+
 
 ## v0.6.76 · Weekly 1878 telegraph works and household economy (source-only)
 
