@@ -174,3 +174,10 @@ body > #titleDevPanel .title-dev-panel-body{max-height:calc(100dvh - 65px);overf
 body > #titleDevPanel .title-dev-panel-head{cursor:grab}
 body > #titleDevPanel.is-dragging .title-dev-panel-head{cursor:grabbing}
 @media(max-width:900px){body > #titleDevPanel.title-dev-panel{display:block!important}}
+
+/* v0.6.67: in-person local-model dialogue, works on narrow city rooms. */
+.fe-npc-freeform{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.fe-npc-freeform input{min-width:140px;flex:1 1 220px;max-width:100%;padding:8px;background:#fffaf0;color:#252019;border:1px solid #8a795e;font:14px Georgia,serif}
+.fe-npc-freeform button{padding:7px 13px;cursor:pointer;min-height:38px}
+.fe-npc-freeform button:disabled{opacity:.55;cursor:progress}
+.fe-npc-response{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}

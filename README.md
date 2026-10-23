@@ -2,7 +2,7 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) records the v0.6.65 verified AI baseline. **v0.6.66-dev** adds the floating developer panel and room unlock; CI for this slice must be checked separately. Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
 
-**Current source: v0.6.66-dev · Persistent developer panel and room unlock · October 23, 2026**
+**Current source: v0.6.67-dev · Unscripted in-person local-model NPC conversations · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -29,6 +29,18 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.67-dev · Natural-language NPC conversation bridge
+
+**New gameplay source:** Whenever a simulated resident is genuinely present in your current Washington room, they now have a **Speak** text field alongside their existing authored conversation buttons. Type a question or statement in a language your character and that resident share, and the game can ask a **locally running OpenAI-compatible model** for a reply. Tested protocol supports llama.cpp's built-in HTTP server and the compatible Ollama API, without exposing arbitrary network destinations to game HTML. A sandboxed Electron preload calls a localhost-only Node IPC bridge. Conversations are **not scripted**, and the model backend can be replaced with stronger models later without rewriting NPC logic.
+
+**To activate later during desktop testing:** run a compatible local model server on `127.0.0.1:8080` (e.g., llama.cpp `llama-server -m /path/to/model.gguf --host 127.0.0.1 --port 8080`) before opening the game. Set `FE_LLM_PORT` and `FE_LLM_MODEL` in the launch environment if using another model/port, e.g., Ollama's local OpenAI-compatible API on port 11434. A **model/server and model weights are not bundled**; without an active server the user receives an explicit error rather than fake generated speech. No internet inference is requested.
+
+The system supplies current **saved game date, observed weather, current room, NPC identity and occupation, shared language and the resident's own per-profile conversation history**. It also supplies an explicitly curated *alternate* federal history: national popular-vote elections after the Civil War; a **working 1878 timeline** in which Tilden won 1876; presidents after that point remain undecided until curated. It does not consult today's real-world history and never intentionally teaches NPCs future events. The model may still invent inaccuracies, so factual enforcement and larger curated historical retrieval remain roadmap work.
+
+The generated text is dialogue **only**. Saying an NPC will lend money or meet at a poker table does not transfer money, set a meeting, or give a character information they haven't earned. It records the player and NPC's actual exchange in that profile's bounded, per-resident transcript, survives autosave, and never grants free social influence from repetitive chat. Russian-only Alexi remains inaccessible to English-only player characters until a genuine Russian fluency/interpreter system is earned. Dialogues cease if player switches profiles, NPC leaves the room, or the game date changes during generation. The legacy 1890 live starting year, factory and previous button-based conversations are unchanged.
+
+**Validation scope:** New core and local-loopback automated tests, GitHub Source QA, no packaged executable or real large-model gameplay benchmark in this slice. GitHub research used: [llama.cpp](https://github.com/ggml-org/llama.cpp), [Ollama](https://github.com/ollama/ollama), [AI Town](https://github.com/a16z-infra/ai-town), [Generative Agents](https://github.com/joonspk-research/generative_agents). These are reference/interface choices, not claimed bundled libraries.
 
 ## v0.6.66-dev · Developer panel follows the entire game
 

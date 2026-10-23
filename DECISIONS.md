@@ -1,5 +1,14 @@
 # Federal Electric · Recorded Design Decisions
 
+## 2026-10-23 · v0.6.67 local freeform conversation
+
+- The goal is **genuinely unscripted multi-turn conversations** with the NPCs, not only menus and fixed lines. The first implementation uses a local OpenAI-compatible model endpoint, no automatic cloud costs, and no required particular model architecture; bigger weights are allowed when their quality warrants it.
+- The Electron main process owns the loopback-only model transport. The renderer has no direct network, filesystem or process execution privilege; NPCs only receive context relevant to their own date, location, personality, public known facts and actual saved conversation.
+- Conversation is separate from game-state authority: generated promises or boasts must not move actors, expose secret files, spend money or create evidence without subsequent validated game actions.
+- The Electoral College was abolished after the Civil War in the alternate United States; presidential elections use national popular vote only. **Working 1878 chronology: Samuel J. Tilden is president after winning 1876.** Later presidential selections remain unsettled pending political chronology approval. The live playable factory still opens 1890 and is not relabeled.
+- Player-to-Russian-only speech requires an acquired common language or future real interpreter. Autosaved dialogue belongs exclusively to its current profile. A local model/server must be installed separately; no executable is being built now.
+
+
 ## 2026-10-23 · v0.6.51 learned public itineraries
 
 - The Contact File must never provide remote surveillance of strangers. Only residents **personally greeted by the active playable character** appear in earned itinerary cards. Cards show provisional *public* whereabouts, not NPC secrets, private beliefs or future guarantees.

@@ -12,12 +12,12 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','world-canon.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.66','Current package version is v0.6.66');
-check(appSource.includes("APP_VERSION='v0.6.66-dev'"),'Game masthead uses v0.6.66');
+check(pkg.version==='0.6.67','Current package version is v0.6.66');
+check(appSource.includes("APP_VERSION='v0.6.67-dev'"),'Game masthead uses v0.6.66');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -271,6 +271,12 @@ check(index.includes('component-works.js?v=')&&index.indexOf('component-works.js
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
 check(index.includes('npc-intentions.js?v=')&&index.indexOf('npc-intentions.js?v=')<index.indexOf('npc-ai.js?v='),'NPC intentional travel planner loads before runtime');
 check(index.includes('npc-social.js?v=')&&index.indexOf('npc-social.js?v=')<index.indexOf('npc-ai.js?v='),'Social encounter module loads before NPC runtime');
+check(index.includes('npc-dialogue.js?v=')&&index.indexOf('npc-dialogue.js?v=')<index.indexOf('npc-ai.js?v='),'Dialogue runtime loads before NPC conversation UI');
+check(index.includes('world-canon.js?v=')&&index.indexOf('world-canon.js?v=')<index.indexOf('npc-dialogue.js?v='),'Dated alternate history is injected before dialogue prompts');
+check(pkg.scripts['test:source'].includes('tests/npc-dialogue.cjs')&&pkg.scripts['test:source'].includes('tests/npc-llm.cjs'),'Unscripted language and loopback test suites included');
+check(read('npc-ai.js').includes('converseAtLocation(visitor.id,words)'),'In-person residents accept arbitrary typed conversation');
+check(read('desktop/preload.cjs').includes('FE_NPC_LLM')&&read('desktop/main.cjs').includes('fe:llm:chat'),'Sandboxed local-model bridge wired');
+check(pkg.build.files.includes('desktop/npc-llm.cjs'),'Native local-model transport included in future desktop package');
 check(index.includes('npc-language.js?v=')&&index.indexOf('npc-language.js?v=')<index.indexOf('npc-social.js?v='),'Language comprehension governs resident interaction before social and rumor resolution');
 check(read('npc-ai.js').includes('FE_NPC_LANGUAGE?.common?.(speaker,listener)'),'NPC hearsay cannot travel across language barriers without shared fluency');
 check(read('npc-ai.js').includes('FE_NPC_SOCIAL?.meet?.'),'NPC simulation records room-level witnessed resident relationships');

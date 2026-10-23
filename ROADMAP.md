@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.67:** In-person named residents can now accept free-text speech through a sandboxed, loopback-only local OpenAI-compatible LLM server. Each actor receives its own bounded profile conversation transcript, date-gated alternate-history briefing, public personality, current observed weather and room, and genuine shared-language checks. NPC responses alone perform NO irreversible world actions. The actual local model/server is not bundled or performance-validated. Next: properly licensed model recommendations/weights, curated year-by-year Washington historical knowledge retrieval, translation earnability, truthful NPC conversational claims, and validated conversation-to-action tools that affect the same shared world.
+
 **Source advancement v0.6.66:** Existing developer controls float above every live game screen and room (collapsible and draggable). Unlock All Rooms lets the selected player inspect all registered Washington locations and rooms regardless of normal duties, invitations, opening date or door permissions without giving NPCs unrestricted access. Developer sessions never create non-existent scenes or permanent access entitlements.
 
 **Source advancement v0.6.65:** Gossip now depends on precise co-room presence, shared language, relationship strength and source confidence. Classified private records are barred from casual hearsay; private events retain room and language provenance. Future full NPC evidence and investigation systems should build on these guarded facts without treating rumor as confirmed truth.

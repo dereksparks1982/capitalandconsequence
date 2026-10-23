@@ -268,6 +268,36 @@
   if(topic==='greet'&&typeof renderWashington==='function')renderWashington();
   return {ok:true,name:def.name,reply,relationship:a.relationships[route]||0};
  }
+ async function converseAtLocation(id,utterance){
+  const dev=window.FE_NPC_DIALOGUE,model=window.FE_NPC_LLM;
+  if(!profile()||!dev||!model?.chat)return {ok:false,reason:'Connect a local language model to converse freely.'};
+  if(S.paused||S.phase==='report')return {ok:false,reason:'Conversation is unavailable while the game is paused.'};
+  const def=BY_ID.get(id),w=ensure(),actor=w?.agents[id],position=window.FE_CITY?.currentLocation?.(),profileId=profile();
+  if(!def||!actor||actor.status!=='present'||!position||
+   actor.locationId!==position.locationId||actor.roomId!==position.roomId)
+   return {ok:false,reason:'That resident is not in this room.'};
+  const date=observedDate(),route=S.characterRoute||'industrialist';
+  let query;
+  try{query=dev.prepare({save:S,npc:def,utterance,date,weather:S.turnConditions?.weather||'unavailable',
+    location:window.FederalElectricCity?.getLocation?.(position.locationId)?.name||position.locationId,
+    playerName:window.FE_CHARACTERS?.get?.(route)?.characterName||route,
+    playerLanguages:Array.isArray(S.playerLanguages)?S.playerLanguages:['en'],
+    activity:actor.activity,relationship:Number(actor.relationships?.[route]||0)})}
+  catch(e){return {ok:false,reason:String(e.message||e)}}
+  if(!query.ok)return query;
+  const result=await model.chat({messages:query.messages});
+  if(!result?.ok||typeof result.text!=='string'||!result.text.trim())return {ok:false,reason:result?.reason||'The resident did not respond.'};
+  const now=window.FE_CITY?.currentLocation?.(),latest=S.npcSimulation?.agents?.[id];
+  if(profile()!==profileId||observedDate()!==date||!now||now.locationId!==position.locationId||
+    now.roomId!==position.roomId||latest?.status!=='present'||
+    latest.locationId!==position.locationId||latest.roomId!==position.roomId)
+   return {ok:false,reason:'The meeting ended before the reply arrived. No conversation was saved.'};
+  dev.record(S,id,{date,user:utterance.trim(),reply:result.text,place:position.locationId});
+  recordInteraction(id,route,'freeform',0);
+  // Spoken dialogue is a record, not a performed action or a verified clue.
+  if(typeof save==='function')save(true);
+  return {ok:true,name:def.name,reply:result.text};
+ }
  function publicContacts(){
   // Only face-to-face greetings by this character reveal an NPC's usual routine.
   // Private goals, inferred secrets and rumor contents never reach these cards.
@@ -325,7 +355,23 @@
      response.textContent=result.ok?result.name+': '+result.reply:result.reason;
     });controls.appendChild(button);
    }
-   row.appendChild(controls);row.appendChild(response);list.appendChild(row);
+   const form=document.createElement('form');form.className='fe-npc-freeform';
+   const input=document.createElement('input');input.type='text';input.maxLength=600;input.required=true;
+   input.placeholder='Ask anything in your shared language';input.setAttribute('aria-label','Speak to '+visitor.name);
+   const ask=document.createElement('button');ask.type='submit';ask.textContent='Speak';
+   form.append(input,ask);
+   form.addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(ask.disabled)return;
+    const words=input.value.trim();if(!words)return;
+    ask.disabled=true;response.textContent=visitor.name+' is considering your words…';
+    try{const reply=await converseAtLocation(visitor.id,words);
+     response.textContent=reply.ok?visitor.name+': '+reply.reply:reply.reason;
+     if(reply.ok)input.value='';
+    }catch(e){response.textContent='Conversation failed: '+String(e.message||e).slice(0,140)}
+    finally{ask.disabled=false}
+   });
+   row.appendChild(controls);row.appendChild(form);row.appendChild(response);list.appendChild(row);
   }
   panel.hidden=!list.children.length;
  }
@@ -348,5 +394,5 @@
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
  function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
- window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,inspect,list,stepForState,exchangeLocalRumors});
+ window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,converseAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();

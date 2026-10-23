@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { fileURLToPath } = require('url');
 const fileSaves=require('./save-store.cjs');
+const npcLLM=require('./npc-llm.cjs');
 
 // Keep the established save directory when renaming the visible application.
 const existingData=path.join(app.getPath('appData'),'Federal Electric');
@@ -534,6 +535,16 @@ app.whenReady().then(()=>{
   ipcMain.handle('fe:saves:write',(event,{profileId,json})=>{fromGame(event);return fileSaves.atomicSave(saveDirectory,profileId,json)});
   ipcMain.handle('fe:saves:read',(event,{profileId})=>{fromGame(event);return fileSaves.readSave(saveDirectory,profileId)});
   ipcMain.handle('fe:saves:remove',(event,{profileId})=>{fromGame(event);return fileSaves.deleteSave(saveDirectory,profileId)});
+  // The renderer can send validated dialogue only. It cannot choose host, URL or process commands.
+  let conversationBusy=false;
+  ipcMain.handle('fe:llm:chat',async(event,{messages}={})=>{
+    fromGame(event);
+    if(conversationBusy)return {ok:false,reason:'Another local conversation is being processed.'};
+    conversationBusy=true;
+    try{return await npcLLM.chat(messages)}
+    catch(error){return {ok:false,reason:'Local language model unavailable: '+String(error.message||error).slice(0,120)}}
+    finally{conversationBusy=false}
+  });
   createMainWindow();
   app.on('activate',()=>{if(BrowserWindow.getAllWindows().length===0)createMainWindow();});
 });

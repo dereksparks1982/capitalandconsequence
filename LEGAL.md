@@ -8,6 +8,12 @@ For a project, licensing, or attribution concern, contact the maintainer through
 
 ## Third-party dependencies and research
 
+- [llama.cpp](https://github.com/ggml-org/llama.cpp), MIT, reviewed as a supported **local inference server interface**. No upstream code or model weights bundled.
+- [Ollama](https://github.com/ollama/ollama), MIT, reviewed for local OpenAI-compatible API interoperability. No upstream service, source or model weights bundled.
+- [AI Town](https://github.com/a16z-infra/ai-town), MIT, and [Generative Agents](https://github.com/joonspk-research/generative_agents), Apache-2.0, reviewed for long-term generative resident design. No imported source code.
+- AI model weights may have their own licenses and distribution restrictions independent from these runtimes. No model license is implicitly granted by this repository.
+
+
 - **Mysterious Murder**, © 2018–2019 Corinna Jaschek and Tom Beckmann, has an [MIT license](https://github.com/corinnaj/mysterious-murder/blob/master/LICENSE). The published agent-rule research informed the case design.
 - **Cold Truth**, © 2026 Ellie-Fox-AI, has an [MIT license](https://github.com/elliefox-ai/cold-truth/blob/master/LICENSE). Its truth-first, evidence-based puzzle design informed the new casebook.
 - **AI Murder Mystery v2**, https://github.com/DilanRG/ai-murder-mystery-v2, declares MIT in its README but had no separate root LICENSE in the reviewed checkout. Reviewed for architecture; no upstream source imported in this slice.
