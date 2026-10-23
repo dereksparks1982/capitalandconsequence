@@ -32,4 +32,11 @@ assert.equal(live.transact(close,'order',args,'too:late',()=>{throw Error('Canno
 assert.equal(JSON.stringify(close),copy);
 assert.equal(live.transact(close,'order',{...args,productId:'incandescent-lamp'},'bulbs',spend).ok,false);
 assert.equal(engine.verify(JSON.parse(JSON.stringify(s.componentWorks))).orders.length,1);
+const exactlyBell={paused:false,phase:'day',companyCash:2500,lastRevenue:0,lastExpenses:0,
+ componentWorks:engine.createState()};
+bridge.start(exactlyBell,'1878-01-02',1015);
+const bellSnapshot=JSON.stringify(exactlyBell);
+assert.equal(live.transact(exactlyBell,'order',args,'ends-at-bell',()=>{throw Error('Should not spend time')}).ok,false,
+ 'An uncommitted workshop transaction cannot cross the 5 PM payroll boundary');
+assert.equal(JSON.stringify(exactlyBell),bellSnapshot,'Denied boundary action does not change time or cash');
 console.log('PASS component orders, materials, timed assembly, shipments, nonduplicated cash and 1878 gate');
