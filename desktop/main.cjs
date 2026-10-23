@@ -510,7 +510,7 @@ async function runSmokeTest(win) {
 
 function createMainWindow() {
   const win=new BrowserWindow({
-    title:'Federal Electric',width:1440,height:900,minWidth:1100,minHeight:720,
+    title:'Capital & Consequence',width:1440,height:900,minWidth:1100,minHeight:720,
     backgroundColor:'#111111',autoHideMenuBar:true,show:false,
     webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,preload:path.join(__dirname,'preload.cjs')}
   });

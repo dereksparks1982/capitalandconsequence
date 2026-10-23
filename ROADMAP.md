@@ -103,3 +103,15 @@
 - [ ] Integrate NPC money and movement with journey duration, local work, encounters and the shared minute-accurate world clock. Currently period-based deterministic groundwork; not a simulated round-the-clock society.
 - [ ] Add the alternate-history **1893 Washington World's Fair** competitive bulb-supply contract and later separate D.C. streetlighting opportunity, with branching business outcomes.
 - [ ] Verify manual packaged executable under real desktop interactions after source test acceptance. Packaging remains manual, not triggered by every source push.
+
+## v0.6.55-dev · United States of Districts · October 23, 2026
+
+- [x] Verify the **live** title screen, not the retired title scaffold, says **CAPITAL & CONSEQUENCE** and **One city. Countless lives. Every choice has consequences.**
+- [x] Add the national post-Civil-War alternate history. The real U.S. Civil War ended **1865**; a *fictional postwar reorganization* then dissolved states and erased their old boundaries in favor of purpose-based federal districts.
+- [x] Provide a title-screen **District Register** and testable national charter. The capital is Washington, District of Columbia; **Agriculture & Husbandry District** represents the national breadbasket; foundry, mining, timber, maritime, transport and commercial divisions are working concepts.
+- [x] Clearly mark the reorganization date, noncapital names, district capitals, new borders and national government architecture as **undecided**, not fabricated historical geography.
+- [x] Preserve existing 26 local Washington pins, career saves and factory systems without pretending that a whole U.S. national map or electoral system has been built.
+- [ ] Design geographically coherent **new** district boundaries that **do not trace the abolished states**, with appropriate agricultural regions, industrial areas, harbors, mines, rail routes and capital access.
+- [ ] Define the alternate government's legislature, district representation, courts, revenues, constitutional powers and the businessman's presidential candidacy and election requirements.
+- [ ] Connect district economic specializations to future Federal Electric supply chains, national trade, NPC migration, politics, transportation and newspaper stories.
+- [ ] Complete the separate 1878 component-factory conversion and source-tested save migration before switching the live campaign start.

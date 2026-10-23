@@ -1,6 +1,6 @@
 # Capital & Consequence
 
-**Current source: v0.6.54-dev · capital-city identity, 26 map pins, named protagonists and independent NPC activity · October 23, 2026**
+**Current source: v0.6.55-dev · the United States of Districts and live title register · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -19,6 +19,17 @@ Federal Electric is a standalone historical business and life simulation about r
 You buy materials, negotiate contracts, run the factory, trade stocks, manage company money, follow the newspaper, make contacts, attend races and fights, sit in poker rooms, and decide how much of your limited day you are willing to spend away from the business.
 
 **The important part is that you cannot do everything.**
+
+
+## The alternate United States of Districts · v0.6.55
+
+**World canon:** The real American Civil War was fought **1861–1865**. **After** that war, this fictional United States eliminated its former states and their old borders, then reorganized into **purpose-based federal districts** intended to supply the nation's collective needs. The war dates are historical; the political reorganization is our **alternate history**. Its exact enactment date, district borders, final names and constitutional structure are not yet established.
+
+The concept begins with an **Agriculture & Husbandry District**, the nation's breadbasket for grain, livestock and food. Working counterparts include the **Foundry**, **Mineral**, **Timber**, **Maritime**, **Transport** and **Commerce** districts. These are **temporary descriptive names**, not finalized names or an approved new map. **Washington, District of Columbia** remains the federal seat of government and our first playable city. No old state border serves as an automatic new district boundary.
+
+The live **Capital & Consequence** title menu displays the motto **“One city. Countless lives. Every choice has consequences.”** and an accessible **District Register** that describes the current national charter. The register is information only: no fictitious nationwide travel, economics, voting or border geography are presented as playable. These are **national districts**, distinct from the game's **26 Washington map pins**, each of which belongs to a local location with rooms.
+
+The future political career must use an internally coherent postwar district constitution and representation system, not the unchanged real-world state-based electoral system. The original **Federal Electric** remains Charlie Whitcomb's small owned business. The approved **1878 component-manufacturing start** is still planned; current prototype new saves use **1890**.
 
 ## Canonical four lives
 

@@ -1,4 +1,4 @@
-/* Federal Electric v0.6.34. Shared title and career desk foundation.
+/* Capital & Consequence v0.6.55. Shared title and career desk foundation.
    Does not simulate unbuilt police, civilian or hospital careers. */
 (function(){
  'use strict';
@@ -8,16 +8,17 @@
  let choice='industrialist',showNew=false,lastRenderedRoute='';
  const menu=document.createElement('section');
  menu.id='careerMainMenu';menu.className='career-main-menu';
- menu.setAttribute('aria-label','Federal Electric main menu');
+ menu.setAttribute('aria-label','Capital & Consequence main menu');
  menu.innerHTML=`<div class="career-menu-paper">
-   <header class="career-menu-heading"><small>WASHINGTON, DISTRICT OF COLUMBIA</small><h1>CAPITAL &amp; CONSEQUENCE</h1><p>THE CITY AND ITS PEOPLE</p><div class="career-menu-rule"></div>
+   <header class="career-menu-heading"><small>WASHINGTON · THE CAPITAL DISTRICT</small><h1>CAPITAL &amp; CONSEQUENCE</h1><p>LIVES IN AN ALTERNATE UNITED STATES</p><div class="career-menu-rule"></div>
    <p class="career-menu-motto">One city. Countless lives. Every choice has consequences.</p>
+   <p class="career-nation-premise">After the Civil War, the United States abolished state borders and reorganized into districts serving national needs.</p>
    <output id="careerMenuDate">No profile selected</output></header>
    <section class="career-menu-careers" aria-label="Four playable character foundations"><h2>Choose a Life</h2><div id="careerMenuRoutes" class="career-menu-routes"></div></section>
    <section class="career-menu-records" aria-label="Saved lives"><h2>Saved Profiles</h2><div id="careerMenuProfiles"></div></section>
    <section id="careerMenuCreateBox" class="career-menu-create" hidden><label>Character / Profile Name <input id="careerMenuName" type="text" maxlength="28" autocomplete="off" placeholder="Enter a name"></label><p id="careerMenuCreateRoute"></p><button id="careerMenuCreateConfirm" type="button">Start This Life</button><button id="careerMenuCreateCancel" type="button">Cancel</button></section>
    <p id="careerMenuMessage" class="career-menu-message" role="status" aria-live="polite"></p>
-   <div class="career-menu-buttons"><button id="careerMenuContinue" type="button">Continue</button><button id="careerMenuNew" type="button">New Profile</button><button id="careerMenuArchives" type="button">Archives</button><button id="careerMenuOptions" type="button">Options</button></div>
+   <div class="career-menu-buttons"><button id="careerMenuContinue" type="button">Continue</button><button id="careerMenuNew" type="button">New Profile</button><button id="careerMenuArchives" type="button">Archives</button><button id="careerMenuDistricts" type="button">District Register</button><button id="careerMenuOptions" type="button">Options</button></div>
    <footer>FOUR LIVES · ONE WASHINGTON · AUTOSAVE ENABLED</footer>
  </div>`;
  document.body.appendChild(menu);
@@ -133,6 +134,13 @@
    case 'careerMenuCreateConfirm':create();break;
    case 'careerMenuCreateCancel':showNew=false;renderMenu();break;
    case 'careerMenuArchives':renderTitleArchives();break;
+   case 'careerMenuDistricts':{
+    const nation=window.FE_NATIONAL_DISTRICTS;
+    if(!nation)return message('The national district charter is unavailable.');
+    openTitleDialog('The United States of Districts',
+     '<p>'+escape(nation.publicDescription())+'</p><pre class="career-district-register">'+escape(nation.registerText())+'</pre>');
+    break;
+   }
    case 'careerMenuOptions':openTitleDialog('Options','<p>Period menu settings will be added in later builds.</p>');break;
   }
  });

@@ -125,3 +125,16 @@ body>#titleDialog{z-index:3100000}
 .detective-case-person,.detective-case-evidence{border:1px solid #b8a98b;background:#fcf8ec;padding:11px;margin:8px 0}
 .detective-case-person>p,.detective-case-evidence>p{margin:6px 0;overflow-wrap:anywhere}
 .detective-case-suspects{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px}
+
+/* Nation charter appears on the live 1870s newspaper-style title, without
+   turning provisional district names into a misleading geographic map. */
+.career-menu-heading .career-nation-premise{
+ max-width:680px;margin:12px auto 4px;font-size:14px;line-height:1.55;
+ letter-spacing:0;color:#524738
+}
+.career-district-register{
+ white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;
+ font-family:Georgia,'Times New Roman',serif;font-size:14px;
+ background:#f3ebd9;border-left:4px solid #7a6650;
+ padding:14px 18px;max-height:55vh;overflow-y:auto
+}
