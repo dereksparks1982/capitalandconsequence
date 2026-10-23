@@ -9,31 +9,31 @@
  const SLOT_NAMES=Object.freeze(['early-business','late-business','early-night','late-night']);
  const DEFINITIONS=Object.freeze([
   {id:'madamStar',name:'Madam Star',occupation:'Star Club proprietor',ambition:'protect-and-develop-the-star-club',
-   traits:{sociability:82,caution:79,ambition:73},places:['star','star','star','star'],
+   publicRemark:"The evening crowd does not always agree with the morning newspapers. Ask people directly, and remember which ones actually saw an event.",traits:{sociability:82,caution:79,ambition:73},places:['star','star','star','star'],
    activities:['reviewing the day’s appointments','receiving callers','overseeing the evening','concluding private business'],
    goals:['maintain-the-club','cultivate-trusted-contacts','protect-staff']},
   {id:'foremanSullivan',name:'Foreman Sullivan',occupation:'Federal Electric foreman',ambition:'maintain-reliable-production',
-   traits:{sociability:45,caution:81,ambition:59},places:['factory','factory',null,null],
+   publicRemark:"The factory bell governs the crew's day. An overdue order may be more costly than a slow afternoon.",traits:{sociability:45,caution:81,ambition:59},places:['factory','factory',null,null],
    activities:['organizing the production floor','checking the factory schedule',null,null],
    goals:['maintain-machinery','meet-contract-deadlines','protect-workforce']},
   {id:'eddieDoyle',name:'Eddie Doyle',occupation:'Bookmaker',ambition:'build-a-reliable-network-of-contacts',
-   traits:{sociability:91,caution:56,ambition:77},places:['races','races','star',null],
+   publicRemark:"The race grounds are busy with talk. Half of it is hearsay, and the rest still needs checking.",traits:{sociability:91,caution:56,ambition:77},places:['races','races','star',null],
    activities:['speaking with racegoers','following the racing business','making evening introductions',null],
    goals:['expand-connections','protect-reputation','balance-finances']},
   {id:'inspectorHayes',name:'Inspector Arthur Hayes',occupation:'Police inspector',ambition:'advance-his-investigative-career',
-   traits:{sociability:54,caution:87,ambition:81},places:['metropolitanPolice','metropolitanPolice','washingtonArena',null],
+   publicRemark:"A police report and a public rumor are different things. I cannot discuss an open investigation.",traits:{sociability:54,caution:87,ambition:81},places:['metropolitanPolice','metropolitanPolice','washingtonArena',null],
    activities:['reviewing reports','attending to District police business','visiting a public event',null],
    goals:['review-open-cases','maintain-public-order','build-professional-standing']},
   {id:'chenMei',name:'Chen Mei',occupation:'Chinatown merchant contact',ambition:'support-her-neighborhood-business',
-   traits:{sociability:76,caution:72,ambition:62},places:['oldChinatown','oldChinatown',null,null],
+   publicRemark:"Merchants in the neighborhood know who keeps promises. Business relationships are built through repeat visits.",traits:{sociability:76,caution:72,ambition:62},places:['oldChinatown','oldChinatown',null,null],
    activities:['speaking with neighbors','attending to merchants’ concerns',null,null],
    goals:['maintain-business','help-neighbors','develop-contacts']},
   {id:'liWen',name:'Li Wen',occupation:'Chinatown merchant contact',ambition:'develop-local-commercial-relationships',
-   traits:{sociability:56,caution:75,ambition:74},places:['oldChinatown','oldChinatown',null,null],
+   publicRemark:"A good price is only part of a trade. Buyers also remember whether the shipment arrived.",traits:{sociability:56,caution:75,ambition:74},places:['oldChinatown','oldChinatown',null,null],
    activities:['meeting with merchants','following new business opportunities',null,null],
    goals:['find-new-buyers','protect-local-trust','maintain-business']},
   {id:'pavelOrlov',name:'Pavel Orlov',occupation:'Visiting Russian merchant',ambition:'establish-reliable-overseas-trade',
-   traits:{sociability:70,caution:69,ambition:78},places:['russianTradeHall','russianTradeHall','star',null],
+   publicRemark:"Washington has many doors for a trader, but an introduction is not the same as a contract.",traits:{sociability:70,caution:69,ambition:78},places:['russianTradeHall','russianTradeHall','star',null],
    activities:['meeting commercial visitors','discussing engineering and trade','attending an evening gathering',null],
    goals:['develop-trade','expand-connections','protect-reputation']}
  ]);
@@ -172,6 +172,7 @@
     renderRoomVisitors(location.locationId);
    }
   }
+  renderContactItineraries();
   return true;
  }
  function visibleAt(locationId){
@@ -182,7 +183,7 @@
  // Face-to-face contact only. This uses the NPC's public routine, not
  // hidden personal goals, confidential motives or unscheduled future events.
  function talkAtLocation(id,topic='greet'){
-  if(!['greet','work'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
+  if(!['greet','work','city'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
   if(!def||!a||!position||a.locationId!==position.locationId||a.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
@@ -193,10 +194,10 @@
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const reply=topic==='greet'
    ?(known?'Good to see you again.':'Good day. I am '+def.name+'.')
-   :(a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
+   :topic==='city'?def.publicRemark:(a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
   // The first introduction improves familiarity once; repeating visits cannot
   // generate unlimited reputation or cash.
-  if(!recordInteraction(id,route,topic,topic==='greet'?1:0))
+  if(!recordInteraction(id,route,topic,topic==='greet'?1:topic==='city'?1:0))
    return {ok:false,reason:'The meeting could not be recorded.'};
   a.memories[a.memories.length-1].date=date;
   a.memories[a.memories.length-1].locationId=position.locationId;
@@ -212,19 +213,61 @@
   }
   if(Array.isArray(S.notes))S.notes.push({date,source:'conversation with '+def.name,text:'Spoke with '+def.name+': '+reply});
   if(typeof save==='function')save(true);
+  renderContactItineraries();
   if(typeof renderNotes==='function')renderNotes();
   if(topic==='greet'&&typeof renderWashington==='function')renderWashington();
   return {ok:true,name:def.name,reply,relationship:a.relationships[route]||0};
  }
+ function publicContacts(){
+  // Only face-to-face greetings by this character reveal an NPC's usual routine.
+  // Private goals, inferred secrets and rumor contents never reach these cards.
+  const w=ensure(),route=S.characterRoute||'industrialist';
+  if(!w)return [];
+  return DEFINITIONS.filter(d=>w.agents[d.id]?.memories.some(m=>m.key==='greet'&&m.withId===route))
+   .map(d=>{
+    const a=w.agents[d.id],next=window.FE_NPC_ITINERARY?.next?.(d,S)||null;
+    return {id:d.id,name:d.name,occupation:d.occupation,affinity:a.relationships[route]||0,
+     next:next?{locationId:next.locationId,from:next.from,until:next.until,
+      ongoing:next.ongoing,activity:next.activity}:null};
+   });
+ }
+ function renderContactItineraries(){
+  const panel=document.getElementById('npcContactItinerary');if(!panel)return;
+  panel.replaceChildren();
+  const contacts=publicContacts();
+  if(!contacts.length){const p=document.createElement('p');p.className='fine';
+   p.textContent='No residents personally introduced themselves yet. Meet someone in Washington to learn their usual public hours.';
+   panel.appendChild(p);return}
+  const scheduleKnown=S.worldCalendarStatus==='ready'&&!!window.FE_NPC_ITINERARY;
+  if(!scheduleKnown){const p=document.createElement('p');p.className='fine';
+   p.textContent='Precise usual hours are unavailable until this legacy profile reaches a mapped morning.';
+   panel.appendChild(p)}
+  for(const c of contacts){
+   const card=document.createElement('article');card.className='npc-itinerary-card';
+   const h=document.createElement('h4');h.textContent=c.name;card.appendChild(h);
+   const job=document.createElement('p');job.textContent=c.occupation+' · Acquaintance '+c.affinity;card.appendChild(job);
+   const p=document.createElement('p');
+   if(c.next){
+    const loc=window.FederalElectricCity?.getLocation?.(c.next.locationId);
+    const place=loc?.name||'a known public location';
+    p.textContent=(c.next.ongoing?'Usual hours now at ':'Next usual appearance at ')+place+
+      ' · '+window.FE_NPC_ITINERARY.label(c.next.from)+
+      ' to '+window.FE_NPC_ITINERARY.label(c.next.until)+
+      '. Attendance is not guaranteed.';
+   }else p.textContent=scheduleKnown?'No published routine in the coming week.':'Usual hours not mapped.';
+   card.appendChild(p);panel.appendChild(card);
+  }
+ }
  function renderRoomVisitors(locationId){
   const panel=document.getElementById('cityRoomVisitors'),list=document.getElementById('cityRoomVisitorList');
   if(!panel||!list)return;
+  list.replaceChildren();
   for(const visitor of visibleAt(locationId)){
    const row=document.createElement('article');row.className='fe-npc-visitor';
    const p=document.createElement('p');p.textContent=visitor.name+' is '+visitor.activity+'.';row.appendChild(p);
    const controls=document.createElement('div');controls.className='fe-npc-visitor-actions';
    const response=document.createElement('p');response.className='fe-npc-response';response.setAttribute('role','status');
-   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work']]){
+   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington']]){
     const button=document.createElement('button');button.type='button';button.textContent=label;
     button.addEventListener('click',()=>{
      const result=talkAtLocation(visitor.id,topic);
@@ -254,5 +297,5 @@
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
  function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation}));}
- window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,recordInteraction,talkAtLocation,inspect,list,stepForState,exchangeLocalRumors});
+ window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();

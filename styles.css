@@ -1391,3 +1391,9 @@ body.elephant-easter-egg-open{overflow:hidden}
 /* Golden pins are known, earned invitations until an actual destination visit. */
 #titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin{background:linear-gradient(135deg,#f5d77e,#bd8b2c)!important;border-color:#77531c!important;color:#312006!important;box-shadow:0 0 0 2px #f2d48b,0 0 13px rgba(244,181,39,.8)!important}
 #titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin b{color:#241705}
+
+/* v0.6.51: readable, responsive public NPC contact itinerary cards. */
+.npc-itinerary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-top:10px}
+.npc-itinerary-card{background:rgba(255,250,231,.7);border:1px solid rgba(89,70,43,.38);padding:12px;border-radius:3px}
+.npc-itinerary-card h4{font-size:1rem;margin:0 0 7px;color:#352a19}
+.npc-itinerary-card p{font-size:.92rem;line-height:1.5;margin:5px 0;color:#423522}

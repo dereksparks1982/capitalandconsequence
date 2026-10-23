@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.50-dev · auditable game-time transactions and non-rewinding morning handoff · October 23, 2026**
+**Current source: v0.6.51-dev · earned NPC contacts, itineraries and local talk · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -274,3 +274,10 @@ The game now routes **passive simulation ticks, owner action durations and provi
 When the legacy gameplay cycle explicitly starts another business turn, the calendar bridge now **advances to the scheduled next morning without ever resetting a later recorded minute backward**. Pending calendar event queue/history survive an advancing handoff. This prevents travel-accrued absolute time from being erased. If old turn dates lag behind time already accrued by travel, the calendar retains its later time instead of lying about an earlier arrival. Resolving any remaining turn-date mismatch requires the planned full campaign-day migration.
 
 This work is **infrastructure, not the final 24-hour conversion**: factories, payroll, published exchange quotes, venue hours, night reports, action caps and the visible 60-minute countdown still follow the legacy business/night phase. It does not yet claim an uninterrupted real-time city, or that a one-hour journey advances all legacy economic consumers. Tests cover double charges, same-building travel, midnight handoff, queued events, legacy saves, autosave reload, pause and profile isolation. No standalone executable or release was produced.
+
+
+## v0.6.51-dev · Residents, acquaintance cards and usual visiting hours (source-only)
+
+Seven recurring Washington residents now have **usual public visiting windows**, derived from the saved calendar instead of the computer clock. Weekday work absences are honored for Foreman Sullivan and Inspector Hayes; overnight appearances cross midnight correctly. After an **actual face-to-face greeting**, the player's Contact File gains a personal itinerary card for that resident, showing their ordinary next known place and 12-hour time window. This is a planning hint, **not an appointment guarantee**, and it reveals no unobserved NPC private goals or rumors. Legacy-unmapped profiles show no invented time.
+
+In-room residents also accept a third conversation topic, **Ask About Washington**, with seven individually authored public remarks. It adds one modest acquaintance point on the first local talk that day, records an ordinary personal journal note, and cannot be repeated for unlimited points. A room visitor refresh now clears old rows before rendering, preventing duplicate visitor cards. The system remains offline and deterministic; no cloud-generated AI, fabricated historical hours, or executable was produced.

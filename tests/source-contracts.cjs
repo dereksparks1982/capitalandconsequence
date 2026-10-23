@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['time-transactions.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['time-transactions.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.50','Current package version is v0.6.50');
-check(appSource.includes("APP_VERSION='v0.6.50-dev'"),'Game masthead uses v0.6.50');
-check(read('build-linux.sh').includes('0.6.50'),'Local packaging uses the same number');
+check(pkg.version==='0.6.51','Current package version is v0.6.51');
+check(appSource.includes("APP_VERSION='v0.6.51-dev'"),'Game masthead uses v0.6.51');
+check(read('build-linux.sh').includes('0.6.51'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.50-linux-x64.tar.gz'),'Manual workflow archives v0.6.50');
+check(workflow.includes('0.6.51-linux-x64.tar.gz'),'Manual workflow archives v0.6.51');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -248,6 +248,10 @@ check(city.getLocation('hillsdale').map?.n===13,'Barry Farm is numbered map pin 
 check(city.getRoom('hillsdale','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
 
 check(index.includes('src="npc-ai.js?v='),'NPC AI loads as a local offline module');
+check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('id="npcContactItinerary"'),'Public itinerary module and Contact File panel are wired');
+check(appSource.includes('window.FE_NPC_AI?.renderContactItineraries?.()'),'Main journal rendering refreshes learned NPC itineraries');
+check(read('npc-ai.js').includes("['city','Ask About Washington']"),'A separate public conversation topic is offered');
+check(read('npc-ai.js').includes("m.key==='greet'&&m.withId===route"),'Only personally greeted contacts are eligible for itinerary cards');
 check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migrate to NPC simulation safely');
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};

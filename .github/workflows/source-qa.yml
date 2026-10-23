@@ -11,6 +11,7 @@ on:
       - 'city.js'
       - 'npc-ai.js'
       - 'npc-calendar.js'
+      - 'npc-itinerary.js'
       - 'living-characters.js'
       - 'character-routes.js'
       - 'venue-opportunities.js'
