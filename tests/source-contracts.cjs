@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['city.js','brokerage.js','app.js','npc-ai.js','world-clock.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.34','Current package version is v0.6.34');
-check(appSource.includes("APP_VERSION='v0.6.34-dev'"),'Game masthead uses v0.6.34');
-check(read('build-linux.sh').includes('0.6.34'),'Local packaging uses the same number');
+check(pkg.version==='0.6.35','Current package version is v0.6.35');
+check(appSource.includes("APP_VERSION='v0.6.35-dev'"),'Game masthead uses v0.6.35');
+check(read('build-linux.sh').includes('0.6.35'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.34-linux-x64.tar.gz'),'Manual workflow archives v0.6.34');
+check(workflow.includes('0.6.35-linux-x64.tar.gz'),'Manual workflow archives v0.6.35');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -36,9 +36,10 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===13,'Thirteen distinct Washington map pins');
-check(new Set(ids).size===13,'No duplicate map location identifiers');
-check(new Set(nums).size===13&&Math.max(...nums)===13,'Map marker numbers 1-13');
+check(pins.length===14,'Fourteen distinct Washington map pins');
+check(new Set(ids).size===14,'No duplicate map location identifiers');
+check(new Set(nums).size===14&&Math.max(...nums)===14,'Map marker numbers 1-14');
+check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
@@ -304,6 +305,19 @@ try{
  check(bad,'Profile IDs cannot traverse out of storage directory');
 }finally{fs.rmSync(diskRoot,{recursive:true,force:true})}
 
+const broker=require('../brokerage.js');
+const account={};
+check(broker.channel(account,'factory')===null,'Unintroduced clients cannot remotely buy securities');
+check(broker.channel(account,'brokerOffice')==='office','Broker office accepts in-person orders');
+check(broker.visit(account,'1890-01-02').visits===1,'First meeting starts broker relationship');
+check(broker.visit(account,'1890-01-02').visits===1,'Repeated same-date visits do not increase trust');
+broker.visit(account,'1890-01-03');
+check(broker.channel(account,'factory')===null,'Two meetings do not unlock telegraph');
+check(broker.visit(account,'1890-01-04').wireAllowed,'Third distinct meeting unlocks telegraph');
+check(broker.channel(account,'factory')==='telegram'&&broker.channel(account,'star')===null,'Only the executive office can send distant stock instructions');
+check(broker.channel(JSON.parse(JSON.stringify(account)),'factory')==='telegram','Broker relationship survives autosave');
+check(index.includes('brokerage.js?v=')&&index.includes('id="cityRoomBrokerage"'),'Broker service is present in the city room');
+check(appSource.includes('if(!brokerChannel())return note('),'Back-end stock order enforces broker relationship');
 const clock=require('../world-clock.js');
 const at=clock.parseMinute('1890-01-02T08:00');
 const agenda=clock.create('1890-01-02T08:00'),seen=[];

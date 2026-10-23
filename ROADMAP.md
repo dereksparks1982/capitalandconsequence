@@ -956,3 +956,14 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 
 
 **v0.6.34 verification (October 22, 2026):** Source contract tests PASS, GitHub Actions Linux x64 build `39865269226` completed **SUCCESS** from source commit `d60e2fef63839aa2741ddf0d81ed99bb5e37f72d`. Packaged Electron smoke specifically verified: old title always hidden/inert; map/dialog physically detached; Step Away opens map; map close cannot expose old office; generic city room styled like menu; city room Main Menu button opens neutral menu; prior four-role autosave, room travel, packaging, offline and artwork tests still PASS. Draft archive and SHA-256 file uploaded privately under candidate `untagged-59128d984047199e6989`; still NOT accepted or published. One-shot workflow removed. Legacy title handlers remain in code invisibly as transitional compatibility; follow-up refactor can remove them separately.
+
+
+## v0.6.35-dev · Return to existing Electron/JavaScript path · October 22, 2026
+
+- [x] Keep current engine; suspend Godot port work without disturbing either project.
+- [x] Make Stockbroker pin 14 a playable in-person stock-order room; gate all stock trades through the broker channel in the transaction function, not just UI controls.
+- [x] Save distinct-date brokerage visits and allow executive-office telegram dealing after three visits. Existing portfolios and old profiles retain their state.
+- [x] Repair old 13-pin source QA assumptions for 14-pin map and add broker regression tests.
+- [ ] Migrate the 60-minute countdown to the real 24-hour game clock and activity-based time; unify all clock consumers and autosaves without fake elapsed hours.
+- [ ] Make telegram orders delayed, add office hours, broker warnings, price and company news influences, and period-appropriate securities.
+- [ ] Explicit approval required before executable packaging, release or Godot migration.
