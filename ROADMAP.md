@@ -24,6 +24,17 @@
 
 **Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
 
+## v0.6.57-dev · The Unknown Doorman · October 23, 2026
+
+- [x] Give Eli Crowe his actual **restricted Doorman’s Station** at the existing second nightclub. The club’s permanent public name and proprietor identity remain **undecided**. A generic club room and closed proprietor office remain separate.
+- [x] Create a playable night-only employee loop: spend **10 in-game minutes** minding the door, handle one of five everyday visitor situations in **5 more minutes**, and earn **$0.30 provisional wage per completed segment**, capped at four segments per game night.
+- [x] Save actual cash, activity, pending visitors and ledger records to the criminal protagonist’s own autosave. Reject multiple wages for the same segment, incorrect location, another career and day-only activity.
+- [x] Provide Eli’s personal desk **work ledger** and a live room UI at the nightclub door. Add **Enter Current Location** to each of the four desks, so a new character can enter an assigned workplace directly.
+- [x] Regression-test wage payments, night windows, caps, duplicate pay denial, staff-only room access, and source/runtime wiring. Preserve existing police, industrialist, Wardman and NPC systems.
+- [ ] Replace provisional shift wages with researched, period-appropriate pay rules integrated into the same labor/economy simulator used by all four careers and NPCs.
+- [ ] Build owner/floor-manager relationships, genuinely autonomous club customers, the nightclub's permanent design/name, job discipline and advancement, and optional underworld contacts that arise from actual interactions rather than predetermined crime.
+- [ ] Complete the **1878 component-first Federal Electric factory** and authoritative continuous Washington world clock next, before broadening the rest of the city.
+
 ## v0.6.56-dev · The Patrolman’s Beat · October 23, 2026
 
 - [x] Introduce a Metropolitan Police **restricted patrolmen's duty room** and **sergeant's office**, separate from the existing public station entrance. Sam begins at his authorized desk; ordinary visitors and rookies cannot access the sergeant's private office.

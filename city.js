@@ -138,9 +138,13 @@
   {
    id:'secondNightclub',name:'Second Nightclub',
    area:'Washington, D.C.',category:'social',
-   description:'Another Washington social circle whose proprietor will contrast with Madam Star.',
+   description:'An operating social establishment. Its proprietor and final public name have not been approved. A low-ranking doorman works the entrance at night.',
    map:null,defaultRoom:'main-room',
-   rooms:[{id:'main-room',name:'Main Room',description:'Reserved placeholder room. Name, owner and artwork remain undecided.'}]
+   rooms:[
+    {id:'main-room',name:'Public Club Room',description:'Patrons gather in the main room; the proprietor’s identity and final artwork remain undecided.'},
+    {id:'doorman-post',name:'Doorman’s Station',restricted:true,description:'A modest employee post by the entrance, with an admission book and a working shift ledger.'},
+    {id:'proprietor-office',name:'Proprietor’s Private Office',restricted:true,description:'Private business records. Eli is not trusted with access.'}
+   ]
   },
   {
    id:'capitolAirport',

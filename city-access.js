@@ -28,6 +28,9 @@
    if(room.id==='production-floor'&&(role==='industrialist'||(person==='foremanSullivan'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};
   }
+  if(id==='secondNightclub'){
+   if(room.id==='doorman-post'&&role==='criminal')return {ok:true,locationId:id,roomId:room.id};
+  }
   if(id==='metropolitanPolice'){
    if(room.id==='station-duty-room'&&(role==='investigator'||(person==='inspectorHayes'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};

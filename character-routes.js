@@ -1,4 +1,4 @@
-/* Capital & Consequence v0.6.56: four independent Washington career foundations.
+/* Capital & Consequence v0.6.57: four independent Washington career foundations.
    Industrialist retains the only complete profession-specific gameplay.
    The other three open honest, shared-city desk previews for later expansion. */
 (function(){
@@ -13,9 +13,9 @@
    summary:'Sam starts as a rookie Black walking-beat officer. Walk Barry Farm or Chinatown, settle routine incidents, and file reports at the station duty desk. Detective cases require a later promotion.',
    systems:Object.freeze(['walking beat','ordinary incidents','station paperwork','future promotions'])}),
   Object.freeze({id:'criminal',name:'Doorman',characterName:'Elias “Eli” Crowe',status:'foundation',deskTitle:'Private Writing Desk',deskColor:'red',
-   startingLocationId:'secondNightclub',paperDoll:null,
-   summary:'Eli is an unknown nightclub doorman, paid by the shift. The proprietor does not even know his name. Crime and influence are optional, not guaranteed.',
-   systems:Object.freeze(['civilian life','work','opportunity','underworld choices'])}),
+   startingLocationId:'secondNightclub',startingRoomId:'doorman-post',paperDoll:null,
+   summary:'Eli is an obscure nightclub doorman. Work paid nighttime entrance shifts, handle ordinary visitors, and live freely off-duty. The proprietor hardly knows his name.',
+   systems:Object.freeze(['nightclub doorman shifts','wages','ordinary visitors','off-duty choices'])}),
   Object.freeze({id:'wardman',name:'Edmund Wardman',characterName:'Edmund Wardman',status:'foundation',deskTitle:'Hospital Duty Desk',deskColor:'cream',
    startingLocationId:'blackwoodAsylum',paperDoll:null,
    summary:'The Wardman family black sheep works as an orderly at District Asylum, which is run by his unnamed brother. His status grants no automatic authority.',

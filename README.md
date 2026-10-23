@@ -1,6 +1,6 @@
 # Capital & Consequence
 
-**Current source: v0.6.56-dev · Samuel Harlan's first active walking-beat and station-paperwork gameplay · October 23, 2026**
+**Current source: v0.6.57-dev · paid nightclub doorman work plus rookie patrol gameplay · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -23,6 +23,16 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 
 
 **Character detail:** [Samuel Harlan's permanent character codex](CODEX-SAMUEL-HARLAN-2026-10-23.md).
+
+**Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
+
+## v0.6.57-dev · Eli Crowe’s first paid nightclub shifts (October 23, 2026)
+
+**Elias “Eli” Crowe is still a nobody, not a mob boss or a nightclub partner.** The player begins the criminal/doorman career physically at the registered nightclub **Doorman’s Station**, a restricted staff area within the currently provisionally named **Second Nightclub**. The proprietor’s office is off-limits and the proprietor’s **name remains undecided**; do not insert any earlier speculative name as established canon.
+
+During **Washington Night**, Eli can spend **10 charged in-game minutes** watching the door and draw a deterministic visitor situation. The player chooses how to respond over **5 more charged minutes**. Encounters include an uninvited visitor, delivery, crowded entrance, mistaken address and impatient patron. Completing a duty segment earns **$0.30 in provisional game-balance wages**, credited **once** to personal cash and recorded in a profile-local pay ledger. Four completed segments are available per night ($1.20 maximum), with no infinite wage farming from repeated clicks or save reloading. Pending visitors and prior work survive autosave and date changes. Each duty action is physically gated to the nightclub staff post, with the public club room and proprietor office remaining separate and properly permission-checked. His personal desk contains his shift ledger and earned income; **Enter Current Location** on every career desk opens the exact currently saved workroom.
+
+This is **actual playable groundwork**, not full historically researched nightclub wages, a comprehensive 1878 shift calendar, a permanent role as criminal, an NPC-run employer economy, or a free-standing club management game. Eli may still leave and pursue ordinary city activities in his free time. The real 1878 component-factory start, the world clock upgrade, Sam’s advancement, and Edmund's asylum duties remain separate Washington-first milestones. The 1890 start persists for newly created profiles until the factory conversion is validated.
 
 ## v0.6.56-dev · Samuel Harlan's first walking-beat duties (October 23, 2026)
 

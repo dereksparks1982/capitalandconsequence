@@ -18,6 +18,8 @@ on:
       - 'npc-mobility.js'
       - 'patrol-duty.js'
       - 'patrol-ui.js'
+      - 'doorman-duty.js'
+      - 'doorman-ui.js'
       - 'city-access.js'
       - 'career-shell.js'
       - 'desktop/main.cjs'

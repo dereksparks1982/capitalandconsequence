@@ -1,6 +1,6 @@
 {
   "name": "capital-consequence",
-  "version": "0.6.56",
+  "version": "0.6.57",
   "private": true,
   "description": "Capital & Consequence historical Washington life simulation (development alpha)",
   "main": "desktop/main.cjs",
@@ -12,7 +12,7 @@
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never",
     "audit:offline": "node desktop/check-offline-runtime.cjs",
     "audit:artwork": "node desktop/check-artwork-paths.cjs",
-    "test:source": "node tests/source-contracts.cjs && node tests/travel-duration.cjs && node tests/npc-calendar.cjs && node tests/time-transactions.cjs && node tests/npc-itinerary.cjs && node tests/npc-agency.cjs && node tests/murder-cases.cjs && node tests/npc-economy.cjs && node tests/city-access.cjs && node tests/national-districts.cjs && node tests/patrol-duty.cjs"
+    "test:source": "node tests/source-contracts.cjs && node tests/travel-duration.cjs && node tests/npc-calendar.cjs && node tests/time-transactions.cjs && node tests/npc-itinerary.cjs && node tests/npc-agency.cjs && node tests/murder-cases.cjs && node tests/npc-economy.cjs && node tests/city-access.cjs && node tests/national-districts.cjs && node tests/patrol-duty.cjs && node tests/doorman-duty.cjs"
   },
   "devDependencies": {
     "electron": "44.5.1",
