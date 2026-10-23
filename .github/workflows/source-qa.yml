@@ -13,6 +13,8 @@ on:
       - 'npc-calendar.js'
       - 'npc-itinerary.js'
       - 'npc-agency.js'
+      - 'murder-cases.js'
+      - 'detective-cases.js'
       - 'living-characters.js'
       - 'character-routes.js'
       - 'venue-opportunities.js'

@@ -10,7 +10,7 @@
    systems:Object.freeze(['factory','Federal Exchange','contracts','society'])}),
   Object.freeze({id:'investigator',name:'Patrolman',status:'foundation',deskTitle:'Station Duty Desk',deskColor:'blue',
    startingLocationId:null,paperDoll:null,
-   summary:'Start on the beat. Cases, evidence, promotion and police politics will be added gradually.',
+   summary:'Start on the beat. Investigate a murder, interview suspects, compare evidence and submit an accusation. Promotions and patrols will follow.',
    systems:Object.freeze(['patrol','incident reports','case files','evidence'])}),
   Object.freeze({id:'criminal',name:'Layman',status:'foundation',deskTitle:'Private Writing Desk',deskColor:'red',
    startingLocationId:null,paperDoll:null,

@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.52-dev · seven independent NPC utility planners · October 23, 2026**
+**Current source: v0.6.53-dev · playable detective casebook and mystery deduction · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -288,3 +288,14 @@ In-room residents also accept a third conversation topic, **Ask About Washington
 All seven recurring named NPCs now run their individual **offline utility planners**, replacing the former seeded random goal selection. Their choices weigh occupation-specific priorities, temperament (ambition, sociability and caution), fatigue, immediate local operating conditions and **only the personally held observations or rumors they have actually learned**. For example, the foreman may prioritize a late contract, switch to workforce protection when staff conditions deteriorate, and take rest when exhausted after hours; Madam Star can prioritize staff protection after a reported club raid; Inspector Hayes reacts to public news, not hidden police case data. The three alternate protagonist biographies and existing scripted pathways remain unchanged.
 
 Each reached routine period records the NPC's chosen goal, reason and compact decision evidence inside the active character's private save. No unattended/offline decision processing, speculative retroactive encounters or omniscient rumor-sharing was introduced. Public contact cards still show only usual public whereabouts after an earned greeting, **never private motive scores**. Conversations adapt slightly to established acquaintance while remaining authored and limited to one topic per resident per day. Tests cover changing goals, role-specific triggers, private evidence, fatigue, legacy routines and repeatable autosaves. **This is deterministic simulation AI, not an LLM or open-ended dialogue generator.** No executable was packaged.
+
+
+## v0.6.53-dev · Detective casebook: evidence-driven murder mysteries (source-only)
+
+The Patrolman route has its first genuinely playable investigation. A per-profile case records the underlying victim, time, place, cause, and culprit privately. Four suspects each have interviews; three **independent** witness, physical, and financial-evidence threads must intersect on one uniquely supported culprit. The player investigates the scene, searches business records, takes witness statements, interviews suspects and decides whom to accuse; unverified rumor is distinguished from evidence. Each action spends **two in-game minutes** through the existing time gateway. Duplicate investigations or interviews cannot farm time or evidence, bad accusations have consequences, and completed cases can be followed by new casework. The game autosaves these records in the investigator's own profile.
+
+This is a **first playable detective-case simulation**, not yet a crime organically committed by an independently acting Washington resident. A future slice will connect the authoritative crime truth to living NPC deaths, movement, eyewitness memories, police records and newspaper coverage, without injecting inconsistent events into existing profiles. Industrialist factory and market operation remains unchanged. No downloadable build or release was created.
+
+## Legal and third-party notices
+
+See [LEGAL.md](LEGAL.md) for maintainer contact information, license status of the murder-mystery repositories reviewed, and existing dependency notices. The new JavaScript engine is independently written using designs studied from MIT-licensed Cold Truth and Mysterious Murder; no third-party executable code was imported in this slice.

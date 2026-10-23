@@ -109,3 +109,19 @@ body[data-career]:not([data-career=industrialist]) .daybar b:has(+ #headerCompan
    descendants of the hidden former office. */
 body>#titleMapViewer{z-index:2900000}
 body>#titleDialog{z-index:3100000}
+
+/* v0.6.53: Investigator casebook. Readable responsive evidence and controls. */
+.detective-case-panel{margin:16px 0;background:#f7f1de;color:#322b20;border:3px double #76654f;padding:clamp(12px,2.5vw,20px);font:15px/1.5 Georgia,serif}
+.detective-case-panel h3{font-size:clamp(19px,2.6vw,25px);margin:0 0 9px}
+.detective-case-panel h4{font-size:17px;margin:19px 0 7px;border-bottom:1px solid #ab9b80;padding-bottom:5px}
+.detective-case-heading{font-weight:700}
+.detective-case-summary{font-size:15px}
+.detective-case-muted{font-size:13px;color:#675a49}
+.detective-case-feedback{padding:9px 12px;background:#e1e6d9;border-left:4px solid #40694d;font-weight:700}
+.detective-case-actions{display:flex;flex-wrap:wrap;gap:9px;margin:9px 0}
+.detective-case-panel .detective-case-button{border:1px solid #675d4a;background:#e8e0ca;color:#32291e;padding:8px 11px;min-height:42px;cursor:pointer;font:700 14px Georgia,serif}
+.detective-case-panel .detective-case-button:disabled{cursor:not-allowed;opacity:.53}
+.detective-case-panel .detective-case-button:focus-visible{outline:3px solid #24618e;outline-offset:2px}
+.detective-case-person,.detective-case-evidence{border:1px solid #b8a98b;background:#fcf8ec;padding:11px;margin:8px 0}
+.detective-case-person>p,.detective-case-evidence>p{margin:6px 0;overflow-wrap:anywhere}
+.detective-case-suspects{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px}

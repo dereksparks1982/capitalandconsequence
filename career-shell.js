@@ -98,7 +98,8 @@
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Profession-specific assignments, promotions and autonomous decisions are not implemented yet. The Federal Electric factory is not yours.</p>'}
+    ${route.id==='investigator'?'<section id="detectiveCasePanel" class="detective-case-panel" aria-label="Detective casebook"></section>':''}
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Early career foundation: your desk, profile, saved time and Washington are usable. Most profession-specific assignments and promotions are under development. The detective casebook is playable on the Patrolman route. The factory is not yours.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
@@ -115,6 +116,7 @@
   }
   const d=desk.querySelector('#careerDeskDate');
   if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase)+' · '+clockText()+' remaining';
+  if(route.id==='investigator')window.FE_DETECTIVE_CASES?.render?.();
  }
  menu.addEventListener('click',e=>{
   const button=e.target.closest('button');if(!button)return;

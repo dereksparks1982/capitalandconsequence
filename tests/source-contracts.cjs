@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.52','Current package version is v0.6.52');
-check(appSource.includes("APP_VERSION='v0.6.52-dev'"),'Game masthead uses v0.6.52');
-check(read('build-linux.sh').includes('0.6.52'),'Local packaging uses the same number');
+check(pkg.version==='0.6.53','Current package version is v0.6.53');
+check(appSource.includes("APP_VERSION='v0.6.53-dev'"),'Game masthead uses v0.6.53');
+check(read('build-linux.sh').includes('0.6.53'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.52-linux-x64.tar.gz'),'Manual workflow archives v0.6.52');
+check(workflow.includes('0.6.53-linux-x64.tar.gz'),'Manual workflow archives v0.6.53');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -470,6 +470,12 @@ check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'star').ongoing===tru
 check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'factory')===null,'Unknown venue has no invented appointment');
 check(daybook.at(JSON.parse(JSON.stringify(clock.create('1890-01-03T23:00'))),weekly).length===1,'Appointment availability derives from saved world minute, not wall clock');
 check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real calendar appointment tool loads before NPC runtime');
+check(index.includes('murder-cases.js?v=')&&index.includes('detective-cases.js?v='),'Investigator case engine and runtime are loaded');
+check(index.indexOf('murder-cases.js?v=')<index.indexOf('detective-cases.js?v=')&&index.indexOf('detective-cases.js?v=')<index.indexOf('career-shell.js?v='),'Case engine loads before desk wiring');
+check(read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career-shell.js').includes('FE_DETECTIVE_CASES?.render?.()'),'Investigator casebook panel and refreshing are wired');
+check(read('career-shell.css').includes('.detective-case-person'),'Casebook responsive styles exist');
+check(read('README.md').includes('[LEGAL.md](LEGAL.md)')&&read('LEGAL.md').includes('Contact'),'README and GitHub legal contact notice registered');
+check(pkg.scripts['test:source'].includes('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
 check(city.getLocation('governmentHospital')?.name==='Government Hospital for the Insane','Government Hospital is registered under its 1890 historical name');
 check(city.getLocation('governmentHospital').map===null,'Hospital has no invented map pin or unapproved pixel coordinates');
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
