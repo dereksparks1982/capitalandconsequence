@@ -8,6 +8,7 @@ on:
       - 'journey-planner.js'
       - 'calendar-bridge.js'
       - 'time-transactions.js'
+      - 'washington-time.js'
       - 'city.js'
       - 'national-districts.js'
       - 'npc-ai.js'

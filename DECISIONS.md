@@ -1,5 +1,13 @@
 # Federal Electric · Recorded Design Decisions
 
+## 2026-10-23 · v0.6.69 real saved Washington clock integration
+
+- Use existing `world-clock.js`, `calendar-bridge.js` and `time-transactions.js`, not a second moon/calendar library or invented time formulas. Expose one `washington-time.js` adapter to gameplay, NPCs, dialogue and the sky.
+- The player sees a 12-hour time of day and date from that saved calendar, not the legacy minutes-remaining countdown. Explicit closing and new-day decisions may advance time to the next boundary; no background time passes while the game is closed.
+- NPC decisions and local model prompt grounding may use **current observed** night/day, bad weather, moon phase and eclipses. They cannot learn future eclipse dates merely because the astronomy engine can compute them.
+- Legacy phase budgets, periodic stock/contract settlement and 1890 bulb factory are still transitional; do not claim the full 24-hour economic clock or real 1878 start is completed until each actual consumer has been migrated and QA tested.
+
+
 ## 2026-10-23 · v0.6.68 Washington almanac
 
 - Place unobtrusive weather and sun/moon indicators in the game's existing upper information strip. The icons summarize the current simulated Washington conditions, not a real-world weather feed. Historical astronomical calculations must use the saved world clock.

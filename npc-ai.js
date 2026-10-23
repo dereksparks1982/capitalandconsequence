@@ -123,7 +123,7 @@
  function planDecision(w,def,a,period,signature){
   const agency=window.FE_NPC_AGENCY;
   if(!agency)throw Error('NPC agency module required before world simulation');
-  const situation=agency.observe(def,a,S,w),choice=agency.choose(def,a,situation,period);
+  const situation=agency.observe(def,a,S,w,window.FE_WASHINGTON_TIME?.environment?.(S)),choice=agency.choose(def,a,situation,period);
   // Private intention, updated only once per reached routine period.
   a.lastDecision={goal:choice.goal,reason:choice.reason,score:choice.score,
    situation:{...situation},at:signature};
@@ -278,7 +278,8 @@
    return {ok:false,reason:'That resident is not in this room.'};
   const date=observedDate(),route=S.characterRoute||'industrialist';
   let query;
-  try{query=dev.prepare({save:S,npc:def,utterance,date,weather:S.turnConditions?.weather||'unavailable',
+  const environment=window.FE_WASHINGTON_TIME?.environment?.(S);
+  try{query=dev.prepare({save:S,npc:def,utterance,date,weather:environment?.weather||S.turnConditions?.weather||'unavailable',sky:environment,
     location:window.FederalElectricCity?.getLocation?.(position.locationId)?.name||position.locationId,
     playerName:window.FE_CHARACTERS?.get?.(route)?.characterName||route,
     playerLanguages:Array.isArray(S.playerLanguages)?S.playerLanguages:['en'],

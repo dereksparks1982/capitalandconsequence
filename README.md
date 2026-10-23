@@ -2,7 +2,7 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) records the v0.6.65 verified AI baseline. **v0.6.66-dev** adds the floating developer panel and room unlock; CI for this slice must be checked separately. Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
 
-**Current source: v0.6.68-dev · Local-model NPC speech and Washington sky almanac · October 23, 2026**
+**Current source: v0.6.69-dev · Common saved Washington time gateway and NPC environment · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -29,6 +29,12 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.69-dev · Moving the city onto one saved clock
+
+The active Washington header now reads the **12-hour time and actual date from the saved world clock**, rather than displaying a separate 60-minute countdown as though it were the time of day. Timed player actions and passive ticks now pass through the same `washington-time.js` authority, which composes the already-tested world-clock, calendar bridge and transaction ledger. Legacy business-to-night and night-to-report transitions explicitly advance the saved clock to **5:00 PM** and the following **8:00 AM**, without rewinding later reached dates or duplicating queued events. NPC routines and the astronomy almanac use the same saved minute; an NPC's private utility planner now sees actual daylight/darkness, observed adverse weather and current local eclipses. The freely typed conversation prompt receives that same clock and moon context, without revealing astronomical events from the future.
+
+**Important honest boundary:** Federal Electric production shifts, exchange settlement, wages and many old activities still obey the inherited one-hour day/night accounting budget and turn-based deadlines. Closing a legacy phase can jump the clock past unobserved hours, and neither NPCs nor the press fabricate events during those skipped hours. This build does **not** finish the comprehensive always-running 24-hour labor/economy migration, eliminate all separate phase budgets, or convert the still-bulb-first **1890** opening into the planned **1878** component factory. Next build slices will migrate those remaining consumers while protecting one-time financial settlements. Source-only, no executable or desktop playtest.
 
 ## v0.6.68-dev · Weather, sunrise, moon and eclipses in the top bar
 

@@ -39,7 +39,7 @@
  // Only witnessed operational conditions, public current headlines, and the
  // actor's OWN beliefs may shape choices. Never inspect global hidden odds,
  // unpublished investigations or another NPC's confidential facts.
- function observe(def,agent,save,simulation){
+ function observe(def,agent,save,simulation,environment=null){
   if(!def||!agent||!save||!simulation)throw Error('NPC world context required');
   const known=Array.isArray(simulation.knowledge?.records)?
     simulation.knowledge.records.filter(f=>f.actorId===def.id&&f.confidence>=.40):[];
@@ -62,10 +62,18 @@
   else if(def.id==='chenMei'||def.id==='liWen'||def.id==='pavelOrlov'){
    workPressure=bounded(36+hearsay*4);
   }
+  // Environmental input is public at the actor's present time. A clear night,
+  // bad weather or an actual eclipse can change practical caution; neither
+  // exposes hidden intentions, future sky events or secret witness knowledge.
+  const weather=String(environment?.weather||'').toLowerCase();
+  if(/storm|lightning|blizzard|ice|heavy snow/.test(weather))risk=bounded(risk+15);
+  if(environment?.sunlight===false)risk=bounded(risk+7);
+  if(environment?.eclipse)risk=bounded(risk+9);
   const finance=agent.economy?Math.round((agent.economy.balanceCents<600?(600-agent.economy.balanceCents)/8:0)+(agent.economy.debtCents||0)/30):0;
   return Object.freeze({financialStrain:bounded(finance),workPressure:bounded(workPressure),risk:bounded(risk),
    social:bounded(social),rumors,firstHand:bounded(firstHand*10),
-   fatigue:bounded(100-(Number.isFinite(+agent.energy)?+agent.energy:80))});
+   fatigue:bounded(100-(Number.isFinite(+agent.energy)?+agent.energy:80)),
+   weather:environment?.weather||null,daylight:environment?.sunlight??null,eclipse:environment?.eclipse||null});
  }
  function choose(def,agent,situation,period='early-business'){
   if(!def||!Array.isArray(def.goals)||!def.goals.length||!agent||

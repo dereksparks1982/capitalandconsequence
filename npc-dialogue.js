@@ -34,6 +34,7 @@
    'Your aims include '+String(npc.ambition||'an ordinary life')+'. Current known activity: '+String(args.activity||'unknown').slice(0,120)+'.',
    'The player character is '+String(args.playerName||'a Washington resident').slice(0,80)+'. Relationship measure (not an absolute truth): '+relationship+'.',
    'Your conversation is happening in '+place+'. The observed local weather is '+weather+'.',
+   ...(args.sky&&typeof args.sky==='object'?[ 'The saved Washington clock reads '+String(args.sky.time||'unknown')+'. '+(args.sky.sunlight===true?'It is daylight.':args.sky.sunlight===false?'It is night.':'The light level is unconfirmed.')+' Moon phase: '+String(args.sky.moonPhase||'unknown')+'. '+(args.sky.eclipse?'A '+String(args.sky.eclipse)+' is now occurring.':'No eclipse is currently confirmed.') ]:[]),
    'You are speaking '+(shared==='ru'?'Russian':shared==='en'?'English':shared)+'. Do not silently switch languages or translate unknown speech.',
    ...c.lines,
    'Be a believable person in your own era. Reply conversationally to the specific question; do not dump historical exposition unnecessarily.',

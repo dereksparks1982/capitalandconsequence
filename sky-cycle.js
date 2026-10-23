@@ -60,7 +60,7 @@
   if(typeof document==='undefined'||typeof S==='undefined')return;
   const el=document.getElementById('washingtonSky'),wx=document.getElementById('washingtonWeather'),sun=document.getElementById('washingtonSunMoon');
   if(!el||!wx||!sun)return;
-  const moment=S.worldCalendarStatus==='ready'?root.FE_CALENDAR_BRIDGE?.moment?.(S):null;
+  const moment=root.FE_WASHINGTON_TIME?.now?.(S)|| (S.worldCalendarStatus==='ready'?root.FE_CALENDAR_BRIDGE?.moment?.(S):null);
   if(!moment?.iso){el.hidden=true;return}
   try{
    const sky=snapshot(moment.iso,S.turnConditions?.weather);

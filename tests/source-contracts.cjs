@@ -12,12 +12,12 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','world-canon.js','sky-cycle.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.68','Current package version is v0.6.68');
-check(appSource.includes("APP_VERSION='v0.6.68-dev'"),'Game masthead uses v0.6.68');
+check(pkg.version==='0.6.69','Current package version is v0.6.69');
+check(appSource.includes("APP_VERSION='v0.6.69-dev'"),'Game masthead uses v0.6.69');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.68'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.69'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.68-linux-x64.tar.gz'),'Manual workflow archives v0.6.68');
+check(workflow.includes('0.6.69-linux-x64.tar.gz'),'Manual workflow archives v0.6.69');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -428,8 +428,11 @@ check(bridge.spend(freshCalendar,4*60*60)===240&&bridge.moment(freshCalendar).da
 const readBack={};check(bridge.migrate(readBack,JSON.parse(JSON.stringify(freshCalendar)))&&bridge.label(readBack)==='12:00 AM','The exact saved absolute minute survives reload');
 readBack.paused=true;check(bridge.spend(readBack,300)===0&&bridge.label(readBack)==='12:00 AM','Paused game cannot advance the calendar');
 const oldCalendar={};check(bridge.migrate(oldCalendar,{gameDate:'1938-09-30',dayRemaining:100,phase:'night'})===false&&bridge.label(oldCalendar)===null&&oldCalendar.worldCalendarStatus==='legacy-unmapped','Legacy autosaves receive no invented absolute hour');
-check(appSource.includes("window.FE_TIME_TX.advance(S,spent,'action')")&&appSource.includes("window.FE_TIME_TX.advance(S,1,'tick')"),'Timed owner actions and passive ticks use the same transaction gateway');
-check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes('window.FE_CALENDAR_BRIDGE?.beginTurn?.(S,S.gameDate)'),'Legacy profiles map on next morning and mapped time never resets backward');
+check(appSource.includes("window.FE_WASHINGTON_TIME.advance(S,spent,'action')")&&appSource.includes("window.FE_WASHINGTON_TIME.advance(S,1,'tick')"),'Timed owner actions and passive ticks route through the saved time authority');
+check(index.includes('washington-time.js?v=')&&index.indexOf('time-transactions.js?v=')<index.indexOf('washington-time.js?v=')&&index.indexOf('washington-time.js?v=')<index.indexOf('app.js?v='),'One Washington clock gateway loads before the game');
+check(read('app.js').includes("handoff?.(S,'close-business',S.gameDate)")&&read('app.js').includes("handoff?.(S,'close-night',S.gameDate)"),'Phase handoffs advance actual Washington date instead of freezing the sky');
+check(pkg.scripts['test:source'].includes('tests/washington-time.cjs'),'One-world-time and midnight regression tests are mandatory');
+check(appSource.includes('window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x)')&&appSource.includes("FE_WASHINGTON_TIME?.handoff?.(S,'new-day',S.gameDate)"),'Legacy profiles map on explicit next-day handoff without rewinding saved game time');
 const midnightClock=clock.create('1890-01-02T23:55');
 check(clock.timeLabel(midnightClock)==='11:55 PM','Simulated time displays 12-hour clock without countdown');
 check(clock.calendar(midnightClock).date==='1890-01-02','Calendar date comes from saved world minute');
