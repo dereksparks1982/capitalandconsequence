@@ -123,3 +123,9 @@
 - Build and source-test a separate integer-cents 1878 electrical component manufacturing/warehouse/contract engine before touching the 1890 bulb-first live factory. Existing old-profile production, saves and dates remain intact.
 - Production inventory is **not** automatic contract delivery; only a separate shipment earns customer payment. Replayed tokens never duplicate material spend, manufacturing output or settlement.
 - Opening cash, wages, material recipes, customers, prices and workshop tools are explicitly provisional gameplay balancing pending historical research. A conservative future lamp eligibility gate requires calendar advancement plus license and equipment. No new 1878 profile UI, historical authenticity claim or downloadable release.
+
+## 2026-10-23 · v0.6.63 Edmund Wardman's low-ranking employment
+
+- Edmund begins and remains a **lowly orderly**, not a manager or owner. His brother still runs fictional District Asylum; no brother name or automatic inheritance is invented.
+- Three provisional daily ward tasks maximum. Each is received in the orderly station (5 minutes), carried out on the patient ward (10 minutes), and reported back at the orderly station (5 minutes). Only a recorded report pays the provisional $0.35 wage.
+- Pending work, completed entries and earnings belong to Edmund's own autosave. Ordinary care service contains no speculative private patient diagnoses or access to restricted superintendent accounts. The live game remains 1890 until the larger 1878 conversion.

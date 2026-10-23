@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.63:** Edmund Wardman now has an actual playable District Asylum work loop: assignment at the orderly desk, service inside the patient ward, filed report and one bounded earned wage. Shift logs, pending tasks and funds persist per profile; medical confidentiality and restricted superintendent access remain intact. Next: institutional roster and brother's managerial decisions grounded in local cause and effect.
+
 **Source advancement v0.6.62:** Independent component-works module now supports owner-specific 1878 component recipes, inventory purchase, transaction-proof assembly, contracted customer orders, physical warehouse shipments and technology prerequisites, with dedicated save/reload tests. **Not yet connected to playable new 1878 saves or authoritative calendar.** The existing 1890 profiles remain unchanged. See `COMPONENT-WORKS-1878-FOUNDATION.md`.
 
 **Source advancement v0.6.61:** Russian-only NPCs no longer exchange rumors or conversational relationship gains with English-only residents without a shared spoken language. Pavel Orlov has explicit English/Russian fluency as a provisional trade intermediary. Interpreters, player language study, earned translated testimony and period-correct dialogue still require future gameplay.

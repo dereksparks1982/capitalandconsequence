@@ -36,3 +36,7 @@ Every route participates in Washington's common world and NPC ecology; existing 
 ## Implementation boundary
 
 This document records decisions and corrects a gap in the October 21 character design and current route descriptions. At the time of recording, gameplay still uses the generic route label `Wardman` and has only an institutional desk/career foundation. **No code, player-facing names, story logic, or assets are changed by this documentation commit.**
+
+## Implemented source slice v0.6.63 · First ordinary paid ward rounds
+
+Edmund's desk now displays a saved orderly duty book. The actual District Asylum orderly station issues short work assignments, the restricted patient ward offers two commonplace care-service responses, and returning to the orderly station to file a report completes the action. The 5+10+5 minute gameplay time charge is routed through the present `advanceWorldTime` service; reporting pays one provisional $0.35 wage, no more than three per game date. Outstanding assignments, work entries and personal funds survive autosave. Only the assigned, observed service is recorded: no invented patient medical histories or fabricated confidential diagnoses. Access to management offices remains denied. This is an early salaried employee loop, not a real researched institutional roster or complete care simulation. No brother identity, family control, superintendence, asylum acquisition or promotion has been granted.

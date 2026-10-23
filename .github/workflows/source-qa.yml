@@ -23,6 +23,8 @@ on:
       - 'patrol-duty.js'
       - 'patrol-ui.js'
       - 'doorman-duty.js'
+      - 'orderly-duty.js'
+      - 'orderly-ui.js'
       - 'doorman-ui.js'
       - 'city-access.js'
       - 'career-shell.js'

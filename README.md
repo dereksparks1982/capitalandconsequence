@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.62-dev · Separate 1878 electrical-component company ledger and production engine · October 23, 2026**
+**Current source: v0.6.63-dev · Playable District Asylum orderly rounds for Edmund Wardman · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.62-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.63-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.63-dev · Edmund Wardman's first paid asylum work
+
+Edmund can now **receive ordinary tasks at District Asylum's restricted orderly station, perform service in the authorized patient ward, return to write a report, and earn a modest wage only on filing**. Routine assignments include supplies, linens, meal assistance, access clearance and visitor directions. One assignment requires 5 minutes for scheduling, 10 for ward care, and 5 for filing, using the existing saved game clock and normal autosave. At most three complete assignments pay per date, with **provisional $0.35 per assignment**, no infinite wage repeats, and records preserved across loading. Staff entry rights do **not** grant access to the superintendent's office or management accounts. His brother's name, institutional finances, staffing dynamics, historical medical practice, promotions and career advancement are still unfinished. This does not change the 1890 source-era starting year or launch an executable.
 
 ## v0.6.62-dev · Historic component factory transaction foundation
 
