@@ -2,7 +2,7 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
-> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.73-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
+> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.74-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
 
 ## Current policy: remove invented old-save preservation constraint
 
@@ -15,6 +15,10 @@
 **Alternate-world design rule:** The city must remain *recognizably* nineteenth-century Washington, but it is **not a documentary reconstruction of the real United States**. Familiar buildings, social institutions, technology, contemporary personalities and historical reference points can coexist with deliberately changed politics, geography, districts, events, and outcomes. The inspiration is an alternate-reality variation: **similar, but not the same**. Keep changes internally consistent with the game's post-Civil-War United States of purpose-defined districts; avoid importing real state-based laws/elections automatically. The comparison to *Rick and Morty* describes the alternate-universe feeling, **not a crossover**.
 
 ### Now · highest-priority D.C. playable slices
+
+**v0.6.74 SOURCE UPDATE:** Charlie Whitcomb is owner/operator, supported by exactly **one paid workshop assistant, Sullivan**, using the existing named NPC schedule and personal economy. New profiles begin with one worker. Provisional $1.00 wage is funded once from company money for a worked day at 5 PM, with arrears tracked instead of overdraft. Manual assembly no longer charges an additional fictional labor wage. Focused V8 behavior checks passed; full new GitHub Actions CI and desktop playthrough have NOT been independently confirmed. Full continuous economics and hourly autonomous employee work are still unfinished.
+
+
 
 **v0.6.73 SOURCE UPDATE:** The 1878 Exchange gains eight fictional, founding-era railway/telegraph/financial/industrial listings with year-gated published quotations, index, sectors and portfolios. Existing 1890-origin markets are kept separate; unlisted securities do not gain pre-listing prices. Targeted JavaScript checks passed; GitHub Actions CI and desktop gameplay have **not** yet been independently confirmed. Company payroll, 1878 staff, newspapers and 24-hour economic settlement remain separate open work. The broader 1878 economy is **not complete**.
 
@@ -47,6 +51,7 @@
 **Source advancement v0.6.59:** Intent-driven personal travel is now implemented and source-testable. An NPC's chosen goal may direct optional personal time toward an accessible registered workplace/contact, but never bypass a restricted room, wager result or mandatory shift. Still pending: independent social transactions, actual journey traversal, household links, proper 24-hour clock authority and genuine witnessed city events.
 
 - [x] **1878 founding-era exchange listings (v0.6.73; targeted source checks).** Eight invented, era-consistent securities are visible and tradable via the existing broker, with no future-company pre-listing quotation history and no change to 1890-origin portfolios. Broader historical economics, payroll, reporting and full CI/desktop verification remain open.
+- [x] **1878 two-person workshop and funded wages (v0.6.74, targeted source checks).** Charlie works as owner; Sullivan is the only starting employee, an independent named NPC with 8 AM–5 PM weekday routine, recorded work actions, personal off-duty life and wages actually deducted from Federal Electric. No double-charged per-assembly salary; unpaid wages are tracked. Full real-time payroll and staffing/hiring development remains open.
 - [x] **1878 Component Works: playable owner manufacturing (v0.6.72).** Start a new January 2, 1878 profile; buy actual materials, accept real customer component orders, assemble at workbench/winder with the shared world-clock time cost and ship warehouse stock for recorded company cash. Bulb-era starter contract/controls no longer appear in that profile.
 - [ ] **1878 market and historical-economy follow-through.** Correct legacy stock-listing, newspaper, employee/payroll, production and market assumptions before declaring a fully historical 1878 economy. Later licensing, 1893 fair and streetlights also remain separate work.
 - [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; implement the actual 1878 products and systems. Old-save migration and preservation are not requirements.
