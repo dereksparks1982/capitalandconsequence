@@ -99,3 +99,9 @@
 - Reconfirm Washington-only priority and alternate-America background. Character names and jobs are canonical. **Sam's currently assigned on-duty beat is Hillsdale only**; off-duty Chinatown exploration as a civilian and the *proposed* smuggling/corruption arc remain distinct. Retain explicit unknown captain truth and a non-stereotyped neighborhood.
 - **Immediate next major source priority:** implement *modest owned electrical-component production* for Charlie at the approved January 2, 1878 future opening, by tested incremental save-compatible slices. Do not flip the current 1890 game date until products, production, customers, markets and save migration agree.
 - This closeout changes **documentation only**. No code, executable, assets, game calendar or save records are modified. Keep future snapshots, decisions and build evidence documented as development advances.
+
+## 2026-10-23 · v0.6.59 purposeful autonomous movement
+
+- NPC utility goals may shape **only personal-time destination selection**. Employment, settled wagering, privacy, locked rooms and venue availability remain stronger constraints.
+- Directed destinations are existing Washington room-registry locations, not new locations or teleportable cross-district travel. A guard at the same shared access service vets each attempt.
+- The movement remains offline deterministic per saved period; it does not infer secret information, retroactively create meetings, or rewrite unplayed time. No release executable.

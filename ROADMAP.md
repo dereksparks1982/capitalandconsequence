@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.59:** Intent-driven personal travel is now implemented and source-testable. An NPC's chosen goal may direct optional personal time toward an accessible registered workplace/contact, but never bypass a restricted room, wager result or mandatory shift. Still pending: independent social transactions, actual journey traversal, household links, proper 24-hour clock authority and genuine witnessed city events.
+
 - [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; existing autosaves preserve their historical dates and inventory until explicitly migrated and tested.
 - [ ] **Washington rooms and local map:** Strengthen the 26 recorded places into an accessible, legible city with real room navigation, player/NPC access parity, fixed or clearly provisional pins, category filters, discovery, and appropriate period openings. A pin is merely the location's map representation; its rooms are the simulation.
 - [ ] **Resident lives:** Improve locally consistent daily schedules, clock granularity, travel, jobs, pay, needs, savings, relationships, choices, private knowledge and observable consequences. NPCs should use the same doors, rules and workplaces as protagonists. Alexi Rurik remains a Russian-only, independently acting NPC, not a playable fifth career.

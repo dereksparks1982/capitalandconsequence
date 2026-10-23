@@ -124,13 +124,14 @@
    situation:{...situation},at:signature};
   return choice;
  }
- function pickRoom(def,action,w){
+ function pickRoom(def,agent,action,w){
   if(!window.FE_NPC_MOBILITY||!window.FederalElectricCity)throw Error('NPC city mobility module required');
   return window.FE_NPC_MOBILITY.visit(window.FederalElectricCity,
    {kind:'npc',id:def.id,workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
    {date:action.date,key:action.key,seed:w.seed,slot:action.slot,
     defaultLocation:action.locationId,defaultActivity:action.activity,
-    priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss'});
+    priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
+    preferredDestination:window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
  }
  function stepOnce(w,absolute){
   if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
@@ -144,8 +145,8 @@
     key:'legacy|'+absolute,date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'1890-01-02',
     slot,weekday,seed:w.seed,rest,
     defaultLocation:natural,defaultActivity:rest?null:def.activities[slot]});
-   const action=completed.action,moved=pickRoom(def,action,w),destination=moved.locationId;
    a.goal=decision.goal;
+   const action=completed.action,moved=pickRoom(def,a,action,w),destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
    a.activity=moved.activity;
@@ -171,8 +172,8 @@
    const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
     key,date:c.date,slot:period.slot,weekday:c.weekday,seed:w.seed,
     rest,defaultLocation:natural,defaultActivity:rest?null:period.activity});
-   const action=completed.action,moved=pickRoom(def,action,w),destination=moved.locationId;
    a.goal=decision.goal;
+   const action=completed.action,moved=pickRoom(def,a,action,w),destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
    a.activity=moved.activity;

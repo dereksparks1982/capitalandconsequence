@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.58-dev · Hillsdale-only on-duty foot patrol; citywide civilian movement · October 23, 2026**
+**Current source: v0.6.59-dev · Intent-driven NPC travel respects work, money, and room permissions · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.58-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.59-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.59-dev · NPC decisions reach actual Washington destinations
+
+The first situation-aware NPC movement extension turns a resident's saved utility-selected goal into a **preference for an accessible Washington location** during genuinely personal activity. Alexi Rurik can pursue legal courier contacts at Russian Trade Hall or make independent community visits; merchants, staff and city contacts have distinct work/social priorities. Employment shifts, paid races, rest, private doors and location availability cannot be overwritten by an intention. The existing 26 city locations and all save IDs remain stable. Direction remains deterministic, local to the active campaign, and only advanced upon an observed NPC clock period. It is not freeform language-model AI or an accurate simulation of street-by-street travel time. Automated source QA covers access, idempotence and independence from work payments.
 
 ## v0.6.58-dev · Sam Harlan's Hillsdale-only beat and off-duty freedom
 

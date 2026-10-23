@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.58','Current package version is v0.6.58');
-check(appSource.includes("APP_VERSION='v0.6.58-dev'"),'Game masthead uses v0.6.58');
+check(pkg.version==='0.6.59','Current package version is v0.6.59');
+check(appSource.includes("APP_VERSION='v0.6.59-dev'"),'Game masthead uses v0.6.59');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.58'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.59'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.58-linux-x64.tar.gz'),'Manual workflow archives v0.6.58');
+check(workflow.includes('0.6.59-linux-x64.tar.gz'),'Manual workflow archives v0.6.59');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -267,6 +267,8 @@ check(city.getLocation('hillsdale').map?.n===13,'Barry Farm is numbered map pin 
 check(city.getRoom('hillsdale','neighborhood-street')?.id==='neighborhood-street','Barry Farm neighborhood room is accessible');
 
 check(index.includes('src="npc-ai.js?v='),'NPC AI loads as a local offline module');
+check(index.includes('npc-intentions.js?v=')&&index.indexOf('npc-intentions.js?v=')<index.indexOf('npc-ai.js?v='),'NPC intentional travel planner loads before runtime');
+check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
 check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
 check(read('npc-ai.js').includes('planDecision(w,def,a'),'Both NPC period types use private utility planning');
 check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('id="npcContactItinerary"'),'Public itinerary module and Contact File panel are wired');

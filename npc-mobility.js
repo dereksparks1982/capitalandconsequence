@@ -16,9 +16,14 @@
   const choices=destinations(city,actor,context.date);
   const working=!!actor.onDuty&&actor.workplaceId===initial;
   let loc=primary;
+  // A valid personal intention may redirect an actual journey. Check the same
+  // gate as any other visitor; private homes and staff rooms stay restricted.
+  const preferred=!working&&!context.priorityDestination&&context.preferredDestination?
+   entry(city,actor,context.preferredDestination,null,context.date):null;
+  if(preferred?.ok)loc=city.getLocation(context.preferredDestination);
   // Existing job obligations take precedence. Gambling losses cannot be
   // reassigned to a random room after the bet was actually settled.
-  if(!working&&!context.priorityDestination&&context.slot===1&&choices.length&&hash(prefix+'|outing')%100<35)
+  if(!working&&!preferred?.ok&&!context.priorityDestination&&context.slot===1&&choices.length&&hash(prefix+'|outing')%100<35)
    loc=choices[hash(prefix+'|outing-place')%choices.length];
   else if(!loc&&!working&&context.slot<3&&choices.length&&hash(prefix+'|errand')%100<28)
    loc=choices[hash(prefix+'|errand-place')%choices.length];
@@ -33,7 +38,7 @@
   if(!allowed.includes(room))room=allowed[hash(prefix+'|room')%allowed.length];
   return {locationId:loc.id,roomId:room,activity:loc.id===initial?
    (context.defaultActivity||'attending to personal business'):'visiting '+loc.name,
-   reason:working?'work':loc.id===initial?'routine':'errand'};
+   reason:working?'work':preferred?.ok?'goal-directed':loc.id===initial?'routine':'errand'};
  }
  const api=Object.freeze({entry,destinations,visit});
  if(typeof module==='object'&&module.exports)module.exports=api;
