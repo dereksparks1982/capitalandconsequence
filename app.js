@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.6.74-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.75-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -873,7 +873,7 @@ function advanceHiddenMarket(seconds){
 }
 // World time moves at 1:1. Player actions add their duration, split at
 // schedule/shift boundaries to simulate other lives chronologically.
-function advanceWorldSimulation(seconds,away=false,kind='action'){
+function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopClose=false){
  if(S.paused||S.phase==='report'||!Number.isSafeInteger(seconds)||seconds<=0)return 0;
  let remaining=seconds,spent=0;
  const oldAway=!!S.npcOffscreenCatchup;
@@ -897,7 +897,11 @@ function advanceWorldSimulation(seconds,away=false,kind='action'){
    }
    spent+=delta;remaining-=delta;
    const reached=window.FE_WASHINGTON_TIME.now(S);
-   if(reached?.minuteOfDay===1020&&S.phase==='day')closeBusinessDay(false);
+   if(reached?.minuteOfDay===1020&&S.phase==='day'){
+     // At the exact bell, a workshop order must be committed to company cash
+     // before the closing-bell report and assistant payroll are calculated.
+     if(!(deferWorkshopClose&&S.componentWorks&&remaining===0))closeBusinessDay(false);
+    }
    else if(reached?.minuteOfDay===480&&S.phase==='night'){closeNight(false);beginNextDay();}
    window.FE_NPC_AI?.syncClock?.();
   }
@@ -905,6 +909,15 @@ function advanceWorldSimulation(seconds,away=false,kind='action'){
  return spent;
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
+// Component transactions that land exactly at 5 PM hold the bell only until
+// their inventory/cash receipt has been committed. No NPC adds clock time.
+window.advanceWorkshopTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action',true);
+window.finishWorkshopClosingBell=()=>{
+ const reached=window.FE_WASHINGTON_TIME?.now?.(S);
+ if(!S.componentWorks||S.phase!=='day'||reached?.minuteOfDay!==1020)return false;
+ closeBusinessDay(false);
+ return S.phase==='night';
+};
 
 function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
