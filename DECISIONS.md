@@ -2,6 +2,13 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
+## 2026-10-23 · v0.6.75 · Exact closing-bell component transactions
+
+- The player may perform an electrical-component workshop action whose **actual duration ends at exactly 5:00 PM**. The owner's component materials/cash/receipt must commit **before** Sullivan's once-per-worked-day salary and Federal Electric's closing report settle. Spending *past* the bell is still refused. This does not change the 1 real second = 1 game second clock rule or let NPC actions advance time.
+- The actual `app.js` master-clock advance supports a narrowly scoped `deferWorkshopClose` mechanism, used **only** by the component action adapter. Ordinary world ticks, travel and other activities keep normal time boundaries. `component-works-live.js` requires an explicit post-commit closing callback for a 5 PM action; the playable factory panel supplies it.
+- Since `closeBusinessDay` autosaves, the panel sets `componentTransactionSequence` **before** the bell's first save, avoiding an autosaved receipt with a stale next-token counter. The assistant receives the same single company-funded wage, after the actual customer payment is recorded.
+- The new `tests/workshop-closing.cjs` integrates the real application time gateway, the component order/shipment engine and assistant payroll to verify payment/report/clock/token ordering. Six focused source suites passed in V8; the full GitHub Actions run and actual Electron UI remain unverified. No package or release created. Old-save compatibility remains **not required**.
+
 ## 2026-10-23 · v0.6.74 · Only Charlie and one assistant at opening
 
 - The starting January 1878 Federal Electric workshop has exactly **two people**: owner/operator Charles “Charlie” Whitcomb and **one paid assistant, Sullivan**. There is no inherited twelve-person crew or starting general manager.
