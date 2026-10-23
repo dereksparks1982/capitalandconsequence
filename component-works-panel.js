@@ -52,7 +52,8 @@
     btn.disabled=true;
     try{
      const token='cw:'+String((S.componentTransactionSequence||0)+1);
-     const result=live.transact(S,kind,details,token,(sec,away)=>root.advanceWorldTime(sec,away));
+     const result=live.transact(S,kind,details,token,
+      (sec,away)=>root.advanceWorkshopTime(sec,away),()=>root.finishWorkshopClosingBell());
      panel.querySelector('#cwMessage').textContent=result.ok?
       'Recorded '+kind+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
      if(result.ok&&!result.repeated){S.componentTransactionSequence=(S.componentTransactionSequence||0)+1;save(true)}
