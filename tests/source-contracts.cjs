@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.64','Current package version is v0.6.64');
-check(appSource.includes("APP_VERSION='v0.6.64-dev'"),'Game masthead uses v0.6.64');
+check(pkg.version==='0.6.65','Current package version is v0.6.65');
+check(appSource.includes("APP_VERSION='v0.6.65-dev'"),'Game masthead uses v0.6.65');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.64'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.65'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.64-linux-x64.tar.gz'),'Manual workflow archives v0.6.64');
+check(workflow.includes('0.6.65-linux-x64.tar.gz'),'Manual workflow archives v0.6.65');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -275,6 +275,9 @@ check(index.includes('npc-language.js?v=')&&index.indexOf('npc-language.js?v=')<
 check(read('npc-ai.js').includes('FE_NPC_LANGUAGE?.common?.(speaker,listener)'),'NPC hearsay cannot travel across language barriers without shared fluency');
 check(read('npc-ai.js').includes('FE_NPC_SOCIAL?.meet?.'),'NPC simulation records room-level witnessed resident relationships');
 check(index.includes('npc-witness.js?v=')&&index.indexOf('npc-witness.js?v=')<index.indexOf('npc-ai.js?v='),'First-hand witness journal engine loads before the NPC simulator');
+check(index.includes('npc-rumors.js?v=')&&index.indexOf('npc-rumors.js?v=')<index.indexOf('npc-ai.js?v='),'Rumor privacy and trust policy loads before NPC execution');
+check(read('npc-ai.js').includes('FE_NPC_RUMORS?.coPresent?.(from,to)'),'Rumors require identical actual rooms');
+check(pkg.scripts['test:source'].includes('tests/npc-rumors.cjs'),'Rumor relationship and privacy tests are part of mandatory QA');
 check(read('npc-ai.js').includes('recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.'),'New meetings may become personally witnessed journal events');
 check(pkg.scripts['test:source'].includes('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
 check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
@@ -288,7 +291,7 @@ check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migra
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
 let npcSaved=0;
-const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:require('../npc-language.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_NPC_ECONOMY:require('../npc-economy.js'),FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:city,FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:require('../npc-language.js'),FE_NPC_RUMORS:require('../npc-rumors.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_NPC_ECONOMY:require('../npc-economy.js'),FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:city,FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
@@ -479,8 +482,8 @@ check(knowledge.share(mindA,'madamStar','eddieDoyle','visitor:industrialist','18
 const liveKnowledge=npcCtx.window.FE_NPC_KNOWLEDGE;
 const activeState=npcSave.npcSimulation;
 check(!!liveKnowledge.belief(activeState,'madamStar','introduced:industrialist'),'NPC retains first-hand player introduction as private knowledge');
-activeState.agents.madamStar.locationId='star';activeState.agents.madamStar.status='present';
-activeState.agents.eddieDoyle.locationId='star';activeState.agents.eddieDoyle.status='present';
+activeState.agents.madamStar.locationId='star';activeState.agents.madamStar.roomId='star-room';activeState.agents.madamStar.status='present';
+activeState.agents.eddieDoyle.locationId='star';activeState.agents.eddieDoyle.roomId='star-room';activeState.agents.eddieDoyle.status='present';
 activeState.agents.inspectorHayes.locationId='metropolitanPolice';activeState.agents.inspectorHayes.status='present';
 let gossipExchanges=0;
 for(let step=3;step<50;step++)gossipExchanges+=npc.exchangeLocalRumors(activeState,step);

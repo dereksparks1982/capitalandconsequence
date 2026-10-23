@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.64-dev · First-hand NPC encounters become earned private journal observations · October 23, 2026**
+**Current source: v0.6.65-dev · Room-verified and relationship-sensitive NPC information exchange · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.64-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.65-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.65-dev · Rumors stay behind the doors where conversations happen
+
+Resident-to-resident information exchange now requires an **actual identical registered room**, not merely the same location pin or neighborhood. Residents must understand a shared language as before. The chance that one resident tells another about an individually known fact varies with their **mutual saved affinity**, sociability, and the original confidence; hostility can deter disclosure while trust may modestly encourage it. Explicitly classified confidential records are not spread through this informal rumor path. Each private gossip record now includes the actual room and shared conversation language, preserving traceability inside simulation state without broadcasting secrets in the newspaper or player contact file. No unobserved period progress, fabricated full interviews, or executable build is involved.
 
 ## v0.6.64-dev · Witnessing Washington's other lives
 

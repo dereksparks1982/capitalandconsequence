@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.65:** Gossip now depends on precise co-room presence, shared language, relationship strength and source confidence. Classified private records are barred from casual hearsay; private events retain room and language provenance. Future full NPC evidence and investigation systems should build on these guarded facts without treating rumor as confirmed truth.
+
 **Source advancement v0.6.64:** Actual co-room social meetings can now leave first-hand observations in the active character's private journal, without hidden motives or off-site hearsay. Seen meetings are idempotent and bounded, and no newspaper claim is created. Next: deeper evidence provenance, witness disagreement and earned follow-up contact actions.
 
 **Source advancement v0.6.63:** Edmund Wardman now has an actual playable District Asylum work loop: assignment at the orderly desk, service inside the patient ward, filed report and one bounded earned wage. Shift logs, pending tasks and funds persist per profile; medical confidentiality and restricted superintendent access remain intact. Next: institutional roster and brother's managerial decisions grounded in local cause and effect.

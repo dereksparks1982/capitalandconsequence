@@ -94,20 +94,20 @@
   // currently present people with a sufficiently confident report may talk.
   for(const speaker of DEFINITIONS){
    const from=w.agents[speaker.id];
-   if(!from||from.status!=='present'||!from.locationId)continue;
-   const facts=knowledge.knownFacts(w,speaker.id).filter(r=>r.confidence>=.4).slice(-6);
+   if(!from||from.status!=='present'||!from.locationId||!from.roomId)continue;
+   const facts=knowledge.knownFacts(w,speaker.id).filter(r=>window.FE_NPC_RUMORS?.shareable?.(r)).slice(-6);
    if(!facts.length)continue;
    for(const listener of DEFINITIONS){
     if(listener.id===speaker.id||!window.FE_NPC_LANGUAGE?.common?.(speaker,listener))continue;
     const to=w.agents[listener.id];
-    if(!to||to.status!=='present'||to.locationId!==from.locationId||(to.roomId&&from.roomId&&to.roomId!==from.roomId))continue;
-    const chance=Math.min(75,Math.floor((speaker.traits.sociability+listener.traits.sociability)/4));
+    if(!window.FE_NPC_RUMORS?.coPresent?.(from,to))continue;
     for(const fact of facts){
+     const chance=window.FE_NPC_RUMORS.chance(speaker,listener,from,to,fact);
      const roll=hash(w.seed+'|gossip|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId)%100;
      if(roll>=chance||!knowledge.share(w,speaker.id,listener.id,fact.factId,date))continue;
      w.events.push({id:'rumor|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId,
       type:'private-rumor',actorId:speaker.id,recipientId:listener.id,turn:Number.isSafeInteger(turnOverride)?turnOverride:Math.floor(absolute/4)+1,
-      locationId:from.locationId,factId:fact.factId});
+      locationId:from.locationId,roomId:from.roomId,language:window.FE_NPC_LANGUAGE.common(speaker,listener),factId:fact.factId});
      exchanged++;
     }
    }

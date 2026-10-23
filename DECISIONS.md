@@ -135,3 +135,9 @@
 - A private NPC social encounter becomes a player journal observation **only when the active character is in the same real room at the same reached simulation period**, with developer navigation excluded.
 - A witnessed act may reveal the identities of people publicly visible and whether they converse, disagree or assist. It does not supply secret speech, motives, trusted rumor or authoritative criminal guilt.
 - Observations are capped, idempotent and retained in the observing profile's autosave; remote social acts remain completely unobserved. Do not publish a newspaper article merely because an NPC event exists.
+
+## 2026-10-23 · v0.6.65 earned hearsay and trust
+
+- No information exchange merely from occupying a single map pin: both NPCs must occupy the **same room**, be actively present and speak a language both understand.
+- Saved reciprocal relationships, personality and an observation's confidence influence whether an NPC voluntarily repeats a rumor. Neither positive affinity nor distrust proves the assertion true or false.
+- Explicitly designated confidential facts stay out of casual rumor spread. Rumor event provenance includes location, room, language, people and original fact reference. Rumors do not enter newspaper reporting or the player's notebook without actual future observation/investigation.
