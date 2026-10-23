@@ -47,7 +47,8 @@
   const hearsay=known.filter(f=>String(f.source).startsWith('heard-from:')).length;
   const conversations=Array.isArray(agent.memories)?
     agent.memories.filter(m=>m.key==='greet'||m.key==='city').length:0;
-  let workPressure=25,risk=10,social=bounded(22+conversations*6),rumors=bounded(hearsay*12);
+  let workPressure=25,risk=10,social=bounded(22+conversations*6+
+   Math.min(24,Math.max(0,Math.floor(agent.social?.encounters||0))*3)),rumors=bounded(hearsay*12);
   if(def.id==='foremanSullivan'){
    workPressure=save.lineStatus==='awaiting'?93:save.lineStatus==='running'?75:36;
    risk=bounded(15+(save.workforce?.absent||0)*13+(save.turnConditions?.powerOutageSeconds>0?30:0));

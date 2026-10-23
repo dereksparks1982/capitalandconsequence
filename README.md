@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.59-dev · Intent-driven NPC travel respects work, money, and room permissions · October 23, 2026**
+**Current source: v0.6.60-dev · Private room-level NPC encounters and persistent personal relationships · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.59-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.60-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.60-dev · Residents can meet, remember, and change their opinions
+
+NPCs who **actually occupy the same authorized Washington room** during a reached period can now have a bounded deterministic conversation, minor disagreement or mutual assistance. One encounter per participant per period at most. The event, mutual relationship change, and each person's private memory persist in the profile's NPC simulation; the planner may recognize accumulated social experience on future decisions. Reopening a room, reloading a saved period, or pausing cannot reroll a meeting or award repeated affinity. No NPC instantly learns a hidden plot or remotely knows others' private schedules. The contact topic Ask About Today can now acknowledge a same-date interaction without revealing the partner or a confidential detail. This is foundational emergent social behavior, not a claim of unlimited AI conversations or active protagonist-to-protagonist missions. Source tests exercise relationship persistence, co-room constraints, per-period caps and memory privacy.
 
 ## v0.6.59-dev · NPC decisions reach actual Washington destinations
 

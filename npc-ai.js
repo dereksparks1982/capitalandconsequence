@@ -158,6 +158,8 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,absolute);
+  window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{
+   key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'});
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function calendarOnce(w,c,key){
@@ -185,6 +187,7 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,hash(key),turn);
+  window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{key,turn,date:c.date});
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function syncClock(){
@@ -235,7 +238,7 @@
   const reply=def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
    ?(known?(affinity>=4?'Welcome back. It is good to have a familiar face here.':'Good to see you again.'):'Good day. I am '+def.name+'.')
    :topic==='city'?def.publicRemark:topic==='today'?
-    (a.economy?.lastAction?.publicLine||'I have been attending to ordinary matters.'):
+    (a.social?.last?.date===date?'I spent some time speaking with another resident today.':a.economy?.lastAction?.publicLine||'I have been attending to ordinary matters.'):
     (a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
   // The first introduction improves familiarity once; repeating visits cannot
   // generate unlimited reputation or cash.

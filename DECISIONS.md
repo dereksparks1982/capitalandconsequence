@@ -105,3 +105,9 @@
 - NPC utility goals may shape **only personal-time destination selection**. Employment, settled wagering, privacy, locked rooms and venue availability remain stronger constraints.
 - Directed destinations are existing Washington room-registry locations, not new locations or teleportable cross-district travel. A guard at the same shared access service vets each attempt.
 - The movement remains offline deterministic per saved period; it does not infer secret information, retroactively create meetings, or rewrite unplayed time. No release executable.
+
+## 2026-10-23 · v0.6.60 witnessed resident interactions
+
+- Only residents simultaneously present in the **same registered room** can receive an autonomous social encounter. Each resident participates at most once in a reached period; repeating the same period cannot reroll or multiply relationships.
+- Conversations, minor disagreements and assistance update both residents' private relationship memory and the active save's bounded encounter ledger. Mutual affinity matters to later planning; private actions do not automatically become public dispatches or knowable clues.
+- Today's conversation can reflect that a resident talked with another person, without revealing confidential identities. No generative dialogue claim, online service, crime truth, or packaged release.
