@@ -1403,3 +1403,15 @@ body.elephant-easter-egg-open{overflow:hidden}
 .washington-sky[hidden]{display:none!important}
 .washington-sky>span{padding:2px 6px;border:1px solid currentColor;border-radius:2px;white-space:nowrap}
 @media(max-width:700px){.washington-sky{gap:4px;font-size:11px}.washington-sky>span{padding:1px 4px}}
+
+/* v0.6.72: authentic founding company instead of 1890 bulb controls. */
+.component-workshop,.component-era-notice{display:none}
+body.component-era #factory>.component-workshop,body.component-era .component-era-notice{display:block}
+body.component-era #factory>:not(h2):not(.section-tabs):not(.component-workshop){display:none!important}
+body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-notice),body.component-era #contracts>:not(h2):not(.section-tabs):not(.component-era-notice){display:none!important}
+.component-workshop form{display:flex;flex-wrap:wrap;align-items:end;gap:8px;border-top:1px solid currentColor;padding:10px 0}
+.component-workshop h4{width:100%;margin:3px 0}
+.component-workshop label{display:flex;flex-direction:column;gap:4px;flex:1 1 150px}
+.component-workshop select,.component-workshop input{min-height:38px;max-width:100%;font:inherit}
+.component-workshop button{min-height:38px;padding:6px 12px}
+.component-workshop #cwOrders p{border-bottom:1px solid currentColor;padding:6px 0}

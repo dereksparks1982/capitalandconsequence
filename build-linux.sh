@@ -54,9 +54,9 @@ ln -sfn capital-consequence "dist/linux-unpacked/Capital & Consequence"
 rm -rf "dist/Capital & Consequence Standalone"
 mv dist/linux-unpacked "dist/Capital & Consequence Standalone"
 
-archive="dist/Capital-and-Consequence-0.6.71-linux-x64.tar.gz"
+archive="dist/Capital-and-Consequence-0.6.72-linux-x64.tar.gz"
 tar -C dist -czf "$archive" "Capital & Consequence Standalone"
-(cd dist && sha256sum "Capital-and-Consequence-0.6.71-linux-x64.tar.gz" > "Capital-and-Consequence-0.6.71-linux-x64.tar.gz.sha256")
+(cd dist && sha256sum "Capital-and-Consequence-0.6.72-linux-x64.tar.gz" > "Capital-and-Consequence-0.6.72-linux-x64.tar.gz.sha256")
 
 printf '\nBuild complete: %s\nSHA-256: %s.sha256\n' "$archive" "$archive"
 printf 'To launch: extract the archive and double-click Capital & Consequence.\n'

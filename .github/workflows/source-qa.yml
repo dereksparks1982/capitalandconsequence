@@ -27,6 +27,8 @@ on:
       - 'desktop/npc-llm.cjs'
       - 'desktop/preload.cjs'
       - 'component-works.js'
+      - 'component-works-live.js'
+      - 'component-works-panel.js'
       - 'npc-economy.js'
       - 'npc-mobility.js'
       - 'patrol-duty.js'
