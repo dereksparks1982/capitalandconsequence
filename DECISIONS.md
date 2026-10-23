@@ -111,3 +111,9 @@
 - Only residents simultaneously present in the **same registered room** can receive an autonomous social encounter. Each resident participates at most once in a reached period; repeating the same period cannot reroll or multiply relationships.
 - Conversations, minor disagreements and assistance update both residents' private relationship memory and the active save's bounded encounter ledger. Mutual affinity matters to later planning; private actions do not automatically become public dispatches or knowable clues.
 - Today's conversation can reflect that a resident talked with another person, without revealing confidential identities. No generative dialogue claim, online service, crime truth, or packaged release.
+
+## 2026-10-23 · v0.6.61 speech and hearsay integrity
+
+- Co-location is necessary but no longer sufficient for sharing testimony: both NPCs need a mutually comprehended spoken language.
+- Alexi Rurik retains **Russian-only** speech. Pavel Orlov is explicitly bilingual English/Russian, consistent with his existing English public dialogue and Russian merchant setting. Other listed English speakers remain English only for now unless later documented in-world language learning or biography warrants another fluency.
+- Neither the player's notebook nor the press gains automatic translations. Interpreter mechanics, player-earned Russian learning, and nonverbal interactions are future work; no new criminal truth or packaged release.

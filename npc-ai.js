@@ -38,7 +38,7 @@
    places:['russianTradeHall','races','workingPoker','star'],
    activities:['looking for a new contract','following a delivery','watching the card game','waiting for a late appointment'],
    goals:['find-honest-work','protect-allies','establish-independence']},
-  {id:'pavelOrlov',name:'Pavel Orlov',occupation:'Visiting Russian merchant',ambition:'establish-reliable-overseas-trade',
+  {id:'pavelOrlov',name:'Pavel Orlov',occupation:'Visiting Russian merchant',languages:['en','ru'],ambition:'establish-reliable-overseas-trade',
    publicRemark:"Washington has many doors for a trader, but an introduction is not the same as a contract.",traits:{sociability:70,caution:69,ambition:78},places:['russianTradeHall','russianTradeHall','star',null],
    activities:['meeting commercial visitors','discussing engineering and trade','attending an evening gathering',null],
    goals:['develop-trade','expand-connections','protect-reputation']}
@@ -98,7 +98,7 @@
    const facts=knowledge.knownFacts(w,speaker.id).filter(r=>r.confidence>=.4).slice(-6);
    if(!facts.length)continue;
    for(const listener of DEFINITIONS){
-    if(listener.id===speaker.id)continue;
+    if(listener.id===speaker.id||!window.FE_NPC_LANGUAGE?.common?.(speaker,listener))continue;
     const to=w.agents[listener.id];
     if(!to||to.status!=='present'||to.locationId!==from.locationId||(to.roomId&&from.roomId&&to.roomId!==from.roomId))continue;
     const chance=Math.min(75,Math.floor((speaker.traits.sociability+listener.traits.sociability)/4));

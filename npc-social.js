@@ -7,6 +7,7 @@
  'use strict';
  const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
  const clamp=v=>Math.max(-100,Math.min(100,Number.isFinite(v)?v:0));
+ const language=typeof module==='object'&&module.exports?require('./npc-language.js'):root.FE_NPC_LANGUAGE;
  function ensure(world){
   if(!world||typeof world!=='object'||!world.agents||typeof world.agents!=='object')
    throw Error('Persistent NPC simulation required');
@@ -29,7 +30,7 @@
   const pairs=[];
   for(let i=0;i<people.length;i++)for(let j=i+1;j<people.length;j++){
    const left=people[i],right=people[j],a=world.agents[left.id],b=world.agents[right.id];
-   if(a.locationId!==b.locationId||a.roomId!==b.roomId)continue;
+   if(a.locationId!==b.locationId||a.roomId!==b.roomId||!language?.common(left,right))continue;
    const lo=left.id<right.id?left:right,hi=left.id<right.id?right:left;
    pairs.push({left:lo,right:hi,locationId:a.locationId,roomId:a.roomId,
     order:hash(String(world.seed)+'|'+context.key+'|'+lo.id+'|'+hi.id+'|order')});

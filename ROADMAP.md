@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.61:** Russian-only NPCs no longer exchange rumors or conversational relationship gains with English-only residents without a shared spoken language. Pavel Orlov has explicit English/Russian fluency as a provisional trade intermediary. Interpreters, player language study, earned translated testimony and period-correct dialogue still require future gameplay.
+
 **Source advancement v0.6.60:** NPCs now make one bounded social encounter per reached period with co-located residents in the same room, create reciprocal private relationship changes, and persist ordinary contact memories. No meetings occur merely from opening a panel. Continue with consequences linked to careers, witnesses and transactions. The earlier intentional travel improvement remains documented below.
 
 **Source advancement v0.6.59:** Intent-driven personal travel is now implemented and source-testable. An NPC's chosen goal may direct optional personal time toward an accessible registered workplace/contact, but never bypass a restricted room, wager result or mandatory shift. Still pending: independent social transactions, actual journey traversal, household links, proper 24-hour clock authority and genuine witnessed city events.

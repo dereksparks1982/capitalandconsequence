@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.60-dev · Private room-level NPC encounters and persistent personal relationships · October 23, 2026**
+**Current source: v0.6.61-dev · Russian/English comprehension gates real NPC gossip and conversation · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.60-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.61-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.61-dev · No imaginary translation for Russian conversations
+
+A resident must genuinely share a spoken language with another resident to exchange private rumors or have a meaningful conversational social encounter. **Alexi Rurik remains Russian-only**; most existing English-language residents therefore cannot pick up his testimony. **Pavel Orlov** has the provisional English/Russian fluency consistent with his established public English trade remarks and Russian merchant background, making him a possible real intermediary. Fluency is an explicit validated characteristic of character definitions. No player interpretation, automatic interpreter hire, player language-learning system, or translated witness deposition exists yet. Existing authored Russian lines remain Russian. The city retains its own access rules; conversations and confidential claims are never imported from omniscient case truth. Source tests demonstrate incompatible speech blocks rumors, compatible speech permits human-level conversation, and silence never creates evidence.
 
 ## v0.6.60-dev · Residents can meet, remember, and change their opinions
 
