@@ -169,10 +169,20 @@
    return {ok:false,reason:'The meeting could not be recorded.'};
   a.memories[a.memories.length-1].date=date;
   a.memories[a.memories.length-1].locationId=position.locationId;
-  if(topic==='greet')window.FE_NPC_KNOWLEDGE?.learn?.(w,id,'introduced:'+route,true,'direct-introduction',date,1);
+  if(topic==='greet'){
+   window.FE_NPC_KNOWLEDGE?.learn?.(w,id,'introduced:'+route,true,'direct-introduction',date,1);
+   // Contacts are only earned through an actual, present, face-to-face greeting.
+   // A contact card establishes acquaintance, not trust or access to secrets.
+   if(S.contacts&&typeof S.contacts==='object'){
+    const contact=S.contacts[id]&&typeof S.contacts[id]==='object'?S.contacts[id]:{name:def.name,met:false,trust:0};
+    contact.name=def.name;contact.met=true;
+    S.contacts[id]=contact;
+   }
+  }
   if(Array.isArray(S.notes))S.notes.push({date,source:'conversation with '+def.name,text:'Spoke with '+def.name+': '+reply});
   if(typeof save==='function')save(true);
   if(typeof renderNotes==='function')renderNotes();
+  if(topic==='greet'&&typeof renderWashington==='function')renderWashington();
   return {ok:true,name:def.name,reply,relationship:a.relationships[route]||0};
  }
  function renderRoomVisitors(locationId){

@@ -9,7 +9,7 @@ Federal Electric is a long-save historical industrial, financial, social, and po
 3. Corporate spreadsheet/paperwork presentation in deep navy, ivory, and restrained red.
 4. Company money and personal money stay separate.
 5. Federal Electric starts private; IPO is optional.
-6. Each active date has a 60-minute Business Day followed by a 60-minute Washington Night.
+6. CURRENT LEGACY IMPLEMENTATION: 60-minute business and night countdown phases. LOCKED REPLACEMENT GOAL: one continuous 24-hour in-game calendar with action-driven elapsed time, no player-facing countdown; runtime migration is not complete.
 7. No offline progression.
 8. No universal morality meter.
 9. Historical specifics are researched.
@@ -1049,3 +1049,12 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Test a *fixture* Friday-to-Saturday appointment without claiming the actual Commerce Club or any historical venue has approved hours yet.
 - [ ] Research/approve character-specific appointments, opening hours and social calendars before making the daybook authoritative for NPC city movement.
 - [ ] Replace older four NPC slots and 60-minute day/night countdown via the shared world clock after the market/factory/venue consumers are migrated in safe order.
+
+
+## v0.6.45-dev · Real greetings enter the Contacts register
+- [x] When the player physically greets a present schedule-driven NPC, create/update that profile's Contact File card with their public name and met status.
+- [x] Do not grant trust, friendships, private information or contacts merely by opening a room or seeing a visitor.
+- [x] Keep existing scripted/social contact records and autosaved histories intact; test that real greetings earn an entry once.
+- [x] Correct current README summary for 14 map pins, four profile slots and four starting desk/city foundations (only Businessman profession-complete).
+- [ ] Deepen contact discovery, private communication availability, and when individuals agree to future meetings.
+- [ ] Migrate legacy countdown consumers to actual 24-hour action-driven shared world time.
