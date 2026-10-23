@@ -3,14 +3,40 @@ const assert=require('node:assert/strict');
 const patrol=require('../patrol-duty.js');
 const {STREETS,INCIDENTS}=patrol;
 const station='metropolitanPolice',date='1890-01-02';
-const fresh=()=>({characterRoute:'investigator',phase:'day',paused:false});
-assert.equal(STREETS.length,2);
-assert.deepEqual(STREETS.map(s=>s.id),['hillsdale','oldChinatown']);
+const fresh=()=>{const s={characterRoute:'investigator',phase:'day',paused:false};
+ assert.equal(patrol.shift(s,station,'station-duty-room',true).ok,true);return s;};
+assert.equal(STREETS.length,1);
+assert.deepEqual(STREETS.map(s=>s.id),['hillsdale']);
+assert.equal(STREETS[0].name,'Hillsdale neighborhood street');
 assert.equal(INCIDENTS.length,5);
 for(const scene of INCIDENTS){
  assert.ok(scene.choices.length>=2);
  assert.ok(scene.choices.every(c=>c.record&&c.label),'Explicit choices and recorded outcomes');
 }
+const civilian={characterRoute:'investigator',phase:'day',paused:false};
+assert.equal(patrol.travel(civilian,'oldChinatown').ok,true,'Off-duty Sam can visit Chinatown as a civilian');
+assert.equal(patrol.travel(civilian,'races').ok,true,'Off-duty Sam can visit other venues');
+assert.equal(patrol.access(civilian,'walk','hillsdale').ok,false,'Off-duty Sam cannot conduct police patrols');
+assert.equal(patrol.shift(civilian,'hillsdale','neighborhood-street',true).ok,false,'Clock in only at station');
+assert.equal(patrol.shift(civilian,station,'station-duty-room',true).ok,true);
+assert.equal(patrol.travel(civilian,'hillsdale').ok,true,'On-duty Sam may patrol Hillsdale');
+assert.equal(patrol.travel(civilian,station).ok,true,'On-duty Sam may return to station');
+assert.equal(patrol.travel(civilian,'oldChinatown').ok,false,'On-duty Sam cannot visit Chinatown');
+assert.equal(patrol.travel(civilian,'races').ok,false,'On-duty Sam stays assigned');
+assert.equal(patrol.access(civilian,'walk','oldChinatown').ok,false,'No Chinatown police beat');
+assert.equal(patrol.shift(civilian,station,'station-duty-room',false).ok,true);
+assert.equal(patrol.travel(civilian,'oldChinatown').ok,true,'Clock out restores civilian Chinatown visits');
+assert.equal(patrol.access(civilian,'walk','hillsdale').ok,false,'Civilian time cannot be patrol time');
+const legacy={characterRoute:'investigator',phase:'day',paused:false,patrolDuty:{
+ version:1,nextId:3,beatMinutes:20,walks:2,summons:0,contacts:1,reportsFiled:1,logs:[],
+ pending:{id:'PAT-0002',locationId:'oldChinatown',typeId:'street-assistance',status:'awaiting-response'}}};
+assert.equal(patrol.ensure(legacy).onDuty,false,'Legacy save not silently on duty');
+assert.equal(patrol.ensure(legacy).pending.locationId,'oldChinatown','Old incident remains preserved');
+assert.equal(patrol.dismissOldAssignment(legacy,station,'station-duty-room').ok,true,'Refer obsolete old assignment to sergeant');
+assert.equal(patrol.ensure(legacy).pending,null);
+assert.equal(patrol.ensure(legacy).logs[0].status,'transferred','Original incident preserved as transferred');
+assert.equal(patrol.ensure(legacy).reportsFiled,1,'Transfer is not filed resolution');
+assert.equal(patrol.travel({characterRoute:'industrialist',patrolDuty:{onDuty:true}},'oldChinatown').ok,true,'Other careers unrestricted');
 let save=fresh();
 assert.equal(patrol.access({characterRoute:'industrialist',phase:'day'},'walk','hillsdale').ok,false);
 assert.equal(patrol.access(save,'walk','factory').ok,false);
@@ -51,10 +77,10 @@ const encounterB=patrol.walk(profileB,{locationId:'hillsdale',date,profileId:'an
 assert.equal(encounterB.incident.id,'PAT-0001','Profiles have independent ledgers');
 assert.equal(patrol.summary(profileB).reportsFiled,0);
 for(let i=0;i<100;i++){
- const scene=patrol.walk(save,{locationId:'oldChinatown',date:'1890-01-'+String(1+(i%28)).padStart(2,'0'),profileId:'sam',spentSeconds:600});
+ const scene=patrol.walk(save,{locationId:'hillsdale',date:'1890-01-'+String(1+(i%28)).padStart(2,'0'),profileId:'sam',spentSeconds:600});
  assert.equal(scene.ok,true);
  const valid=scene.scene.choices[0];
- assert.equal(patrol.respond(save,{locationId:'oldChinatown',choiceId:valid.id,spentSeconds:300}).ok,true);
+ assert.equal(patrol.respond(save,{locationId:'hillsdale',choiceId:valid.id,spentSeconds:300}).ok,true);
  assert.equal(patrol.report(save,{locationId:station,roomId:'station-duty-room',spentSeconds:300}).ok,true);
 }
 assert.equal(patrol.ensure(save).reportsFiled,101);

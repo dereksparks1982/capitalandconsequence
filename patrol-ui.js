@@ -12,9 +12,16 @@
    const section=document.createElement('section');
    section.id='patrolDutyDesk';section.className='patrol-duty-box';
    section.setAttribute('aria-label','Patrolman duty book');
-   section.innerHTML='<h3>Samuel “Sam” Harlan · Duty Book</h3><p id="patrolDutyLedger"></p><p id="patrolDutyInstruction"></p><button type="button" id="patrolFileReport">File Station Report · 5 Minutes</button><p id="patrolDeskNotice" role="status"></p><h4>Filed Reports</h4><ol id="patrolFiledReports"></ol>';
+   section.innerHTML='<h3>Samuel “Sam” Harlan · Duty Book</h3><p id="patrolDutyLedger"></p><p id="patrolDutyInstruction"></p><button type="button" id="patrolClockIn">Clock In · Hillsdale Beat</button><button type="button" id="patrolClockOut">Clock Out · Civilian Time</button><button type="button" id="patrolTransferLegacy" hidden>Refer Former Chinatown Assignment to Sergeant</button><button type="button" id="patrolFileReport">File Station Report · 5 Minutes</button><p id="patrolDeskNotice" role="status"></p><h4>Filed Reports</h4><ol id="patrolFiledReports"></ol>';
    desk.querySelector('.career-desk-actions')?.before(section);
    section.querySelector('#patrolFileReport').onclick=()=>perform('report');
+   section.querySelector('#patrolClockIn').onclick=()=>changeShift(true);
+   section.querySelector('#patrolClockOut').onclick=()=>changeShift(false);
+   section.querySelector('#patrolTransferLegacy').onclick=()=>{
+    const result=logic.dismissOldAssignment(S,location(),room());
+    if(result.ok){save(true);render();refresh()}
+    setText('patrolDeskNotice',result.ok?'Old assignment preserved as a transferred station record.':result.reason);
+   };
   }
   const placeholder=document.querySelector('.city-room-placeholder');
   if(placeholder&&!$$('patrolStreetPanel')){
@@ -30,6 +37,13 @@
  function setText(id,text){const el=$$(id);if(el)el.textContent=text}
  function button(label,fn){
   const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;return b;
+ }
+ function changeShift(clockIn){
+  if(S.characterRoute!=='investigator'||!activeProfileId())return;
+  const result=logic.shift(S,location(),room(),clockIn);
+  if(!result.ok){setText('patrolDeskNotice',result.reason);return}
+  save(true);render();refresh();
+  setText('patrolDeskNotice',result.onDuty?'Clocked in. Your police beat is Hillsdale only.':'Clocked out. You may now visit Chinatown and other locations in your civilian time.');
  }
  function perform(action,choiceId=null){
   if(S.characterRoute!=='investigator'||!activeProfileId())return;
@@ -66,11 +80,18 @@
   if(!isCop)return;
   const record=logic.summary(S),pending=record.pending;
   const atStation=location()==='metropolitanPolice'&&room()==='station-duty-room';
-  setText('patrolDutyLedger','Circuits: '+record.walks+' · Beat duty: '+record.beatMinutes+' minutes · Street contacts: '+record.contacts+' · Summons records: '+record.summons+' · Station reports: '+record.reportsFiled+'.');
-  setText('patrolDutyInstruction',pending?pending.id+' · '+(pending.status==='awaiting-response'?'Unresolved at '+pending.locationId+'. Return to that street.':'Handled at '+pending.locationId+'. Return to the police station duty room and write your report.'):'Assigned street beats: Barry Farm and Chinatown. Travel with the Washington map to begin. All duty actions consume game time.');
-  const filing=$$('patrolFileReport');
+  setText('patrolDutyLedger',(record.onDuty?'ON DUTY · HILLSDALE BEAT · ':'OFF DUTY · CIVILIAN TIME · ')+'Circuits: '+record.walks+' · Beat duty: '+record.beatMinutes+' minutes · Street contacts: '+record.contacts+' · Summons records: '+record.summons+' · Station reports: '+record.reportsFiled+'.');
+  setText('patrolDutyInstruction',pending?pending.id+' · '+(pending.status==='awaiting-response'?'Unresolved at '+pending.locationId+'. Return to that street.':'Handled at '+pending.locationId+'. Return to the police station duty room and write your report.'):'Assigned police beat: Hillsdale only. Clock in at the station, patrol Hillsdale, return to your desk for reports, and clock out for unrestricted civilian visits elsewhere.');
+  const clockIn=$('patrolClockIn'),clockOut=$('patrolClockOut'),transfer=$('patrolTransferLegacy');
+  if(clockIn)clockIn.disabled=!atStation||record.onDuty||S.paused||S.phase!=='day';
+  if(clockOut)clockOut.disabled=!atStation||!record.onDuty||S.paused;
+  if(transfer){
+   transfer.hidden=!(pending?.locationId==='oldChinatown'&&pending.status==='awaiting-response');
+   transfer.disabled=!atStation||S.paused;
+  }
+  const filing=$('patrolFileReport');
   if(filing){
-   filing.disabled=!atStation||!pending||pending.status!=='awaiting-report'||S.paused||S.phase==='report'||S.dayRemaining<300;
+   filing.disabled=!atStation||!record.onDuty||!pending||pending.status!=='awaiting-report'||S.paused||S.phase==='report'||S.dayRemaining<300;
    filing.title=atStation?'File the completed incident in the station duty book.':'Enter the Metropolitan Police patrolmen’s duty room to write reports.';
   }
   const log=$$('patrolFiledReports');if(log){
@@ -83,10 +104,12 @@
   if(!street||street.hidden)return;
   const choices=$$('patrolStreetChoices');if(!choices)return;
   choices.replaceChildren();
-  const blocked=S.paused||S.phase!=='day';
+  const blocked=!record.onDuty||S.paused||S.phase!=='day';
   const onThisStreet=pending?.locationId===location();
   let summary;
-  if(pending?.status==='awaiting-response'){
+  if(!record.onDuty){
+   summary='You are off duty. Hillsdale is accessible for civilian visits, but patrol actions require clocking in at the police station.';
+  }else if(pending?.status==='awaiting-response'){
    if(!onThisStreet)summary='Your open encounter is at another street. Return there.';
    else{
     const incident=logic.scene(S);

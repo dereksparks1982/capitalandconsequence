@@ -1,4 +1,4 @@
-/* Capital & Consequence v0.6.57: four independent Washington career foundations.
+/* Capital & Consequence v0.6.58: four independent Washington career foundations.
    Industrialist retains the only complete profession-specific gameplay.
    The other three open honest, shared-city desk previews for later expansion. */
 (function(){
@@ -10,7 +10,7 @@
    systems:Object.freeze(['factory','Federal Exchange','contracts','society'])}),
   Object.freeze({id:'investigator',name:'Patrolman',characterName:'Samuel “Sam” Harlan',status:'foundation',deskTitle:'Station Duty Desk',deskColor:'blue',
    startingLocationId:'metropolitanPolice',startingRoomId:'station-duty-room',paperDoll:null,
-   summary:'Sam starts as a rookie Black walking-beat officer. Walk Barry Farm or Chinatown, settle routine incidents, and file reports at the station duty desk. Detective cases require a later promotion.',
+   summary:'Sam is a rookie Black patrolman assigned exclusively to the Hillsdale beat. Clock in at the police station, walk Hillsdale on duty, and file routine reports; off duty he may visit Chinatown or anywhere else in Washington.',
    systems:Object.freeze(['walking beat','ordinary incidents','station paperwork','future promotions'])}),
   Object.freeze({id:'criminal',name:'Doorman',characterName:'Elias “Eli” Crowe',status:'foundation',deskTitle:'Private Writing Desk',deskColor:'red',
    startingLocationId:'secondNightclub',startingRoomId:'doorman-post',paperDoll:null,

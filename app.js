@@ -19,7 +19,7 @@ const stockSeed=[
 ];
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1890, CAMPAIGN_START_DATE='1890-01-02';
-const APP_VERSION='v0.6.57-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.6.58-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1932,6 +1932,7 @@ function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
  const dev=!!options.dev,source=options.source||'dev';
+ if(!dev&&!window.FE_PATROL?.travel?.(S,location.id)?.ok)return false;
  if(!dev&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
@@ -2618,6 +2619,8 @@ function mapTravelRestriction(location){
  if(!entry)return 'This location has no registered entrance.';
  if(entry.plannedOnly)return 'This location is planned but not yet open.';
  if(entry.availableFrom&&S.gameDate<entry.availableFrom)return 'Not open until '+entry.availableFrom+'.';
+ const dutyRestriction=window.FE_PATROL?.travel?.(S,entry.id);
+ if(dutyRestriction&&!dutyRestriction.ok)return dutyRestriction.reason;
  if(window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(entry.id))return 'This location is not yet accessible. Discover an invitation or satisfy its entry conditions.';
  return '';
 }

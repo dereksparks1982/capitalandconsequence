@@ -3,6 +3,9 @@ const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm'),pat
 const cityCtx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../city.js'),'utf8'),cityCtx);
 const city=cityCtx.window.FederalElectricCity,access=require('../city-access.js'),mobility=require('../npc-mobility.js');
+const patrol=require('../patrol-duty.js');
+assert.equal(patrol.travel({characterRoute:'investigator'},'oldChinatown').ok,true,'Off-duty Sam can go to Chinatown');
+assert.equal(patrol.travel({characterRoute:'investigator',patrolDuty:{onDuty:true}},'oldChinatown').ok,false,'Duty-bound Sam cannot leave his beat');
 const day='1890-01-03',employee={kind:'npc',id:'foremanSullivan',workplaceId:'factory',onDuty:true};
 assert.equal(city.listLocations().length,26);
 assert.equal(city.mapLocations().length,26);

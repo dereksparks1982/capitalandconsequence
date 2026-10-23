@@ -24,6 +24,17 @@
 
 **Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
 
+## v0.6.58-dev · Hillsdale patrol jurisdiction, civilian freedom · October 23, 2026
+
+- [x] Display **Hillsdale** as the neighborhood and its street; keep the existing `hillsdale` place identifier for autosave/map compatibility. Mention Barry Farm only as a historical alternative name.
+- [x] Limit **Samuel “Sam” Harlan's official police foot patrol to Hillsdale**. The only places accessible for *on-duty travel* are his Hillsdale neighborhood beat and the Metropolitan Police station where he writes reports.
+- [x] Provide **clock-in and clock-out controls at the police duty-room desk**. While on duty, both map navigation and direct city-room travel prevent visits outside the police station and Hillsdale. Police encounters cannot be started in Chinatown.
+- [x] Once **off duty**, Sam is free to visit Chinatown and other normally accessible Washington locations **as a civilian**, without special policing privileges. No global location ban on Chinatown or other profiles/NPCs.
+- [x] Preserve patrol autosaves. Missing duty flags default to off duty. A formerly assigned, unresolved Chinatown patrol incident can be transferred to a sergeant from the station, retaining its history without inventing a solved case or deleting it.
+- [x] Update Sam's character codex, canonical route description, README and regression tests for on-duty/off-duty restrictions and saved incidents.
+- [ ] Design future promotions, new assignments and any possible change of jurisdiction **only after explicit later approval**. Hillsdale is Sam's sole current police beat.
+- [ ] Complete richer Hillsdale neighborhood events, residents, policing, and an earned career path while respecting unrestricted *civilian* movement.
+
 ## v0.6.57-dev · The Unknown Doorman · October 23, 2026
 
 - [x] Give Eli Crowe his actual **restricted Doorman’s Station** at the existing second nightclub. The club’s permanent public name and proprietor identity remain **undecided**. A generic club room and closed proprietor office remain separate.

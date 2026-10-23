@@ -1,13 +1,14 @@
-/* Capital & Consequence v0.6.56-dev: Samuel Harlan's first routine patrol.
+/* Capital & Consequence v0.6.58-dev: Samuel Harlan's first routine patrol.
  * Deterministic, profile-local data; no automatic arrests, casebook authority
  * or omniscient police dispatch. Minutes are charged by the caller first.
  */
 (function(root){
  'use strict';
  const STREETS=Object.freeze([
-  Object.freeze({id:'hillsdale',name:'Barry Farm neighborhood street'}),
-  Object.freeze({id:'oldChinatown',name:'Chinatown market street'})
+  Object.freeze({id:'hillsdale',name:'Hillsdale neighborhood street'})
  ]);
+ const STATION='metropolitanPolice',STATION_ROOM='station-duty-room';
+ const ON_DUTY_PLACES=new Set(['hillsdale',STATION]);
  const INCIDENTS=Object.freeze([
   Object.freeze({id:'wagon-obstruction',name:'Wagon blocking the crossing',
    description:'A wagon has stopped across a busy crossing. Nearby pedestrians ask you to clear the way.',
@@ -45,19 +46,52 @@
  function hash(key){let h=2166136261;for(const ch of String(key)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function isDate(x){return /^\d{4}-\d{2}-\d{2}$/.test(x||'')}
  function starter(){return {version:1,nextId:1,beatMinutes:0,walks:0,summons:0,
-  contacts:0,reportsFiled:0,pending:null,logs:[],lastAction:null}}
+  contacts:0,reportsFiled:0,pending:null,logs:[],onDuty:false,lastAction:null}}
  function ensure(save){
   if(!save||typeof save!=='object')throw Error('Patrol needs a save');
   const old=save.patrolDuty;
   if(!old||old.version!==1||!Array.isArray(old.logs))save.patrolDuty=starter();
+  // Old saves did not track shifts; no player is silently marked on duty.
+  if(typeof save.patrolDuty.onDuty!=='boolean')save.patrolDuty.onDuty=false;
   return save.patrolDuty;
+ }
+ function isOnDuty(save){return save?.characterRoute==='investigator'&&save?.patrolDuty?.onDuty===true}
+ function travel(save,destination){
+  if(isOnDuty(save)&&!ON_DUTY_PLACES.has(destination))
+   return {ok:false,reason:'Sam is on his Hillsdale patrol assignment. Return to the police station and clock out before visiting other neighborhoods as a civilian.'};
+  return {ok:true};
+ }
+ function shift(save,locationId,roomId,clockIn){
+  if(save?.characterRoute!=='investigator')return {ok:false,reason:'Only Sam can manage this patrol shift.'};
+  if(save.paused)return {ok:false,reason:'The duty clock is paused.'};
+  if(locationId!==STATION||roomId!==STATION_ROOM)
+   return {ok:false,reason:'Clock in or out at the patrolmen’s duty room in the station.'};
+  if(clockIn&&save.phase!=='day')return {ok:false,reason:'The current prototype starts new beat shifts during Business Day.'};
+  const duty=ensure(save);
+  if(duty.onDuty===!!clockIn)return {ok:false,reason:clockIn?'Already on duty.':'Already off duty.'};
+  duty.onDuty=!!clockIn;
+  duty.lastAction=clockIn?'Reported for assigned Hillsdale foot patrol.':'Clocked out at the station; travel elsewhere is personal time.';
+  return {ok:true,onDuty:duty.onDuty};
+ }
+ function dismissOldAssignment(save,locationId,roomId){
+  if(save?.characterRoute!=='investigator'||locationId!==STATION||roomId!==STATION_ROOM)
+   return {ok:false,reason:'You must report to the police duty room.'};
+  const duty=ensure(save),incident=duty.pending;
+  if(!incident||incident.locationId!=='oldChinatown'||incident.status!=='awaiting-response')
+   return {ok:false,reason:'No older unassigned Chinatown incident needs transfer.'};
+  duty.logs.push({...incident,status:'transferred',reportText:'Older Chinatown assignment was withdrawn and referred to the duty sergeant when Sam’s beat was limited to Hillsdale.'});
+  if(duty.logs.length>80)duty.logs.shift();
+  duty.pending=null;
+  duty.lastAction='Referred the obsolete Chinatown duty assignment to the desk sergeant without claiming the incident was resolved.';
+  return {ok:true};
  }
  function access(save,action,locationId,roomId=null){
   if(save?.characterRoute!=='investigator')return {ok:false,reason:'Patrol duty belongs to the appointed patrolman.'};
+  if(!isOnDuty(save))return {ok:false,reason:'Report to the police station and clock in for the Hillsdale beat first.'};
   if(save.paused||save.phase==='report'||(action!=='report'&&save.phase!=='day'))return {ok:false,reason:'The duty window is closed.'};
-  if(action==='walk'&&!BEATS.has(locationId))return {ok:false,reason:'Travel to a designated neighborhood street to walk the beat.'};
+  if(action==='walk'&&!BEATS.has(locationId))return {ok:false,reason:'Sam’s assigned police beat is Hillsdale only.'};
   if(action==='report'&&(locationId!=='metropolitanPolice'||roomId!=='station-duty-room'))return {ok:false,reason:'Return to the patrolmen’s duty room at the Metropolitan Police station to complete the report.'};
-  if(action==='respond'&&!BEATS.has(locationId))return {ok:false,reason:'You must remain on the street where the incident occurred.'};
+  if(action==='respond'&&!BEATS.has(locationId))return {ok:false,reason:'On-duty police work is confined to Hillsdale.'};
   return {ok:true};
  }
  function walk(save,{locationId,date,profileId,spentSeconds}){
@@ -101,10 +135,10 @@
   return {ok:true,record};
  }
  function scene(save){const incident=ensure(save).pending;return incident?SCENE_BY_ID.get(incident.typeId)||null:null}
- function summary(save){const duty=ensure(save);return {walks:duty.walks,beatMinutes:duty.beatMinutes,
+ function summary(save){const duty=ensure(save);return {onDuty:duty.onDuty,walks:duty.walks,beatMinutes:duty.beatMinutes,
   contacts:duty.contacts,summons:duty.summons,reportsFiled:duty.reportsFiled,
   pending:duty.pending?{...duty.pending}:null,lastAction:duty.lastAction,logs:duty.logs.map(x=>({...x}))};}
- const api=Object.freeze({STREETS,INCIDENTS,ensure,access,walk,respond,report,scene,summary});
+ const api=Object.freeze({STREETS,INCIDENTS,ensure,isOnDuty,travel,shift,dismissOldAssignment,access,walk,respond,report,scene,summary});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_PATROL=api;
 })(typeof window!=='undefined'?window:globalThis);

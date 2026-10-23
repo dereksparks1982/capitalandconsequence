@@ -1,6 +1,6 @@
 # Capital & Consequence
 
-**Current source: v0.6.57-dev · paid nightclub doorman work plus rookie patrol gameplay · October 23, 2026**
+**Current source: v0.6.58-dev · Hillsdale-only on-duty foot patrol; citywide civilian movement · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -25,6 +25,18 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Samuel Harlan's permanent character codex](CODEX-SAMUEL-HARLAN-2026-10-23.md).
 
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
+
+## v0.6.58-dev · Sam Harlan's Hillsdale-only beat and off-duty freedom
+
+**Washington-first correction (October 23, 2026):** The historically known neighborhood previously displayed as **Barry Farm** is now displayed in the game as **Hillsdale**, including its location pin and street room. Its original registry ID, `hillsdale`, remains unchanged to preserve earlier profiles and map records. **Barry Farm** remains an alternate historical place-name in the descriptive text only.
+
+**Sam's police assignment is Hillsdale and nowhere else.** At his Metropolitan Police duty-room desk he **clocks in** for the foot beat. While marked **on duty**, the game lets Sam travel to **Hillsdale** for routine patrol activities and back to **Metropolitan Police** for reports. On-duty travel to **Chinatown**, other neighborhoods, private clubs, and other unrelated destinations is blocked through both map travel and direct room entry. Police incident actions themselves are available only in Hillsdale.
+
+After **clocking out at the station**, Sam is a **civilian free to go to Chinatown and other open Washington locations** under their ordinary access rules. The city, including Chinatown, has **not** been globally restricted. Other playable characters and autonomous NPCs retain their normal city access. The on/off-duty flag is stored with Sam's patrol ledger in his own autosave; previously saved patrol ledgers default safely to **off duty** when loaded.
+
+For older saved patrols with an unresolved Chinatown police incident, the station duty book provides **Refer Former Chinatown Assignment to Sergeant**. This preserves its original details as **transferred**, not resolved, without pretending he can work the old beat today. Already handled encounters waiting for a written station report remain fileable. No police authority is gained by visiting a neighborhood as a civilian.
+
+This narrows the earlier two-beat `v0.6.56` prototype; that older implementation is historical, **not a current player assignment**. All four protagonists keep their established identities and roles. Washington-only scope and the unimplemented 1878 component-factory conversion remain unchanged.
 
 ## v0.6.57-dev · Eli Crowe’s first paid nightclub shifts (October 23, 2026)
 

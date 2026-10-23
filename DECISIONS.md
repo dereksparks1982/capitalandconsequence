@@ -75,3 +75,11 @@
 - All four career desks gain an **Enter Current Location** action allowing their saved workplace’s actual room to open directly. The non-owner doorman cannot access private business files; the businessman's factory ownership and Sam’s patrol authorization remain role-specific.
 - **Future research required:** real period wages and opening hours, staff identities, owner/manager relationships, visitor AI, club operations, nightlife customs and local laws. Do not mistake this first scripted visitor loop for a fully autonomous NPC clientele.
 - Preserve existing autosave IDs, game clock charges, the 1890 prototype date pending 1878 factory work, the postwar national district background and the Washington-only development scope.
+
+## 2026-10-23 · v0.6.58 Hillsdale-only police assignment, off-duty citywide access
+
+- The map and location registry must **call the neighborhood Hillsdale**, not Barry Farm in normal UI. Barry Farm is an alternate historical label that may appear only in supporting descriptions. Keep the established `hillsdale` internal ID so no old save or pin is broken.
+- **Samuel “Sam” Harlan can conduct police work ONLY in Hillsdale for now.** After he clocks in at Metropolitan Police, both the map and direct room navigation restrict travel to **Hillsdale** and the **police station** for reports and official shift management.
+- **Clocking out at the station restores ordinary personal freedom**. Sam may then visit Chinatown or any other open Washington location under civilian rules. Chinatown is **not permanently closed to Sam**, and other careers and NPCs face no new restrictions.
+- Duty status persists per Sam's profile; old saves lacking it are **off duty**. Previously saved pending Chinatown police incidents can be preserved by formally transferring them to a supervisor at the station, not erased or falsely solved.
+- The previously implemented two-beat patrol circuit was an early prototype superseded by this correction. No expanded jurisdiction, police horse, detective duties or promotion is approved by this change.

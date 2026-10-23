@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.57','Current package version is v0.6.57');
-check(appSource.includes("APP_VERSION='v0.6.57-dev'"),'Game masthead uses v0.6.57');
+check(pkg.version==='0.6.58','Current package version is v0.6.58');
+check(appSource.includes("APP_VERSION='v0.6.58-dev'"),'Game masthead uses v0.6.58');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.57'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.58'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.57-linux-x64.tar.gz'),'Manual workflow archives v0.6.57');
+check(workflow.includes('0.6.58-linux-x64.tar.gz'),'Manual workflow archives v0.6.58');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -511,6 +511,9 @@ check(pkg.scripts['test:source'].includes('tests/doorman-duty.cjs'),'Source QA e
 check(city.getRoom('metropolitanPolice','station-duty-room')?.restricted===true,'Police station has a restricted patrol duty room');
 check(city.getRoom('metropolitanPolice','sergeant-office')?.restricted===true,'Rookie does not inherit supervisor access');
 check(routes.get('investigator').startingRoomId==='station-duty-room','Samuel begins at the station duty desk');
+check(city.getLocation('hillsdale').name==='Hillsdale'&&city.getRoom('hillsdale','neighborhood-street').name==='Hillsdale Street','Hillsdale is the neighborhood display name');
+check(require('../patrol-duty.js').STREETS.length===1&&require('../patrol-duty.js').STREETS[0].id==='hillsdale','Sam has only one assigned police beat');
+check(read('app.js').includes('FE_PATROL?.travel?.(S,entry.id)')&&read('app.js').includes('FE_PATROL?.travel?.(S,location.id)'), 'Map and direct travel enforce active patrol limits');
 check(require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','station-duty-room','1890-01-02').ok,'Officer may use his own duty room');
 check(!require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','sergeant-office','1890-01-02').ok,'Officer cannot enter his superior’s private office');
 check(pkg.scripts['test:source'].includes('tests/patrol-duty.cjs'),'Source QA includes actual patrol loop');
