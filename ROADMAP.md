@@ -1,8 +1,8 @@
 # Capital & Consequence Development Roadmap
 
-> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted v0.6.72 handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
+> **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
-> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source is **v0.6.72-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
+> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.73-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
 
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 
@@ -11,6 +11,8 @@
 **Alternate-world design rule:** The city must remain *recognizably* nineteenth-century Washington, but it is **not a documentary reconstruction of the real United States**. Familiar buildings, social institutions, technology, contemporary personalities and historical reference points can coexist with deliberately changed politics, geography, districts, events, and outcomes. The inspiration is an alternate-reality variation: **similar, but not the same**. Keep changes internally consistent with the game's post-Civil-War United States of purpose-defined districts; avoid importing real state-based laws/elections automatically. The comparison to *Rick and Morty* describes the alternate-universe feeling, **not a crossover**.
 
 ### Now · highest-priority D.C. playable slices
+
+**v0.6.73 SOURCE UPDATE:** The 1878 Exchange gains eight fictional, founding-era railway/telegraph/financial/industrial listings with year-gated published quotations, index, sectors and portfolios. Existing 1890-origin markets are kept separate; unlisted securities do not gain pre-listing prices. Targeted JavaScript checks passed; GitHub Actions CI and desktop gameplay have **not** yet been independently confirmed. Company payroll, 1878 staff, newspapers and 24-hour economic settlement remain separate open work. The broader 1878 economy is **not complete**.
 
 **v0.6.72 SOURCE UPDATE:** The new January 1878 campaign now contains the first actually playable component works, not a renamed 1890 bulb factory. Materials, electrical/telegraph orders, assembly time, receipts and shipments are integrated with the owner's cash and the single world clock. The **1878 workshop submilestone below is checked**, while the broader period/economy integration remains open and must be independently verified.
 
@@ -40,6 +42,7 @@
 
 **Source advancement v0.6.59:** Intent-driven personal travel is now implemented and source-testable. An NPC's chosen goal may direct optional personal time toward an accessible registered workplace/contact, but never bypass a restricted room, wager result or mandatory shift. Still pending: independent social transactions, actual journey traversal, household links, proper 24-hour clock authority and genuine witnessed city events.
 
+- [x] **1878 founding-era exchange listings (v0.6.73; targeted source checks).** Eight invented, era-consistent securities are visible and tradable via the existing broker, with no future-company pre-listing quotation history and no change to 1890-origin portfolios. Broader historical economics, payroll, reporting and full CI/desktop verification remain open.
 - [x] **1878 Component Works: playable owner manufacturing (v0.6.72).** Start a new January 2, 1878 profile; buy actual materials, accept real customer component orders, assemble at workbench/winder with the shared world-clock time cost and ship warehouse stock for recorded company cash. Bulb-era starter contract/controls no longer appear in that profile.
 - [ ] **1878 market and historical-economy follow-through.** Correct legacy stock-listing, newspaper, employee/payroll, production and market assumptions before declaring a fully historical 1878 economy. Later licensing, 1893 fair and streetlights also remain separate work.
 - [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; existing autosaves preserve their historical dates and inventory until explicitly migrated and tested.
