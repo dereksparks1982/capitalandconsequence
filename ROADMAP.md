@@ -4,6 +4,10 @@
 
 > **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.73-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
 
+## Current policy: remove invented old-save preservation constraint
+
+**NO old-save compatibility requirement.** The previous assistant invented it; the owner did not approve it. Old 1890 saves and legacy save formats do not need preservation, migration, or regression work. Remove obsolete compatibility paths when useful for the current 1878 campaign. Keep proper autosave and replay protection for **new/current profiles**. Earlier historical checklist statements to the contrary are superseded.
+
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 
 **Capital & Consequence is a Washington, D.C. life simulation.** Until the owner explicitly expands the scope, prioritize **only the playable city, its residents, institutions, rooms, four career paths, local history, and the interactions between them**. The rest of the restructured United States is **background canon and a deferred roadmap**, not a second playable map to build now.
@@ -45,7 +49,7 @@
 - [x] **1878 founding-era exchange listings (v0.6.73; targeted source checks).** Eight invented, era-consistent securities are visible and tradable via the existing broker, with no future-company pre-listing quotation history and no change to 1890-origin portfolios. Broader historical economics, payroll, reporting and full CI/desktop verification remain open.
 - [x] **1878 Component Works: playable owner manufacturing (v0.6.72).** Start a new January 2, 1878 profile; buy actual materials, accept real customer component orders, assemble at workbench/winder with the shared world-clock time cost and ship warehouse stock for recorded company cash. Bulb-era starter contract/controls no longer appear in that profile.
 - [ ] **1878 market and historical-economy follow-through.** Correct legacy stock-listing, newspaper, employee/payroll, production and market assumptions before declaring a fully historical 1878 economy. Later licensing, 1893 fair and streetlights also remain separate work.
-- [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; existing autosaves preserve their historical dates and inventory until explicitly migrated and tested.
+- [ ] **1878 real starting experience:** Convert *new* profiles from the old 1890 bulb-first factory to **January 2, 1878** with correct component-making machinery, recipes, suppliers, inventory, and contracts. Charles “Charlie” Whitcomb **owns Federal Electric** immediately. Historical electrical lighting R&D and eventual bulb lines must follow technology progression. Do not change the calendar alone; implement the actual 1878 products and systems. Old-save migration and preservation are not requirements.
 - [ ] **Washington rooms and local map:** Strengthen the 26 recorded places into an accessible, legible city with real room navigation, player/NPC access parity, fixed or clearly provisional pins, category filters, discovery, and appropriate period openings. A pin is merely the location's map representation; its rooms are the simulation.
 - [ ] **Resident lives:** Improve locally consistent daily schedules, clock granularity, travel, jobs, pay, needs, savings, relationships, choices, private knowledge and observable consequences. NPCs should use the same doors, rules and workplaces as protagonists. Alexi Rurik remains a Russian-only, independently acting NPC, not a playable fifth career.
 - [ ] **Four separate desks and grounded entry jobs:** Charlie owns his modest component factory; Samuel “Sam” Harlan walks a beat and writes citations/incident reports, earning later advancement or pursuing personal inquiries off duty; Elias “Eli” Crowe is an obscure nightclub doorman paid by the shift; Edmund Wardman is the black-sheep orderly at District Asylum under his unnamed brother. All four may remain ordinary or advance; none is forced into an empire. Do not present a detective casebook as rookie beat duty.
@@ -59,7 +63,7 @@
 - [ ] Determine district governance, constitution, taxation, courts, representation and federal election procedures compatible with a nation without states; then connect the businessman-to-president political arc.
 - [ ] Expand beyond D.C. only on a later explicit scope decision. Until then, external districts can appear as **background newspaper mentions, trade origins, visiting NPC backstories, or political references** without being visitable simulated worlds.
 
-**Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Existing source and save compatibility, single-branch Git workflow and tested incremental builds remain in force.
+**Implementation discipline:** Design decisions go immediately into this roadmap and `DECISIONS.md`. Previous work remains preserved below as chronological history, including older national-feature proposals; **this section supersedes their priority**. No national code expansion is authorized by this scoped planning instruction. Current-game reliability, single-branch Git workflow and tested incremental builds remain in force. Old-save compatibility is not required.
 
 ## Future Washington case arc: Chinatown smuggling and police corruption · proposed 2026-10-23
 
@@ -147,7 +151,7 @@
 
 ## Approved campaign direction · January 2, 1878 opening and the electric-lighting revolution (planning only, October 23, 2026)
 
-**Design target:** A new Federal Electric campaign opens on **January 2, 1878**, before commercially practical incandescent bulbs. This is a decision about future gameplay, not a change to the currently implemented **January 1890** start. Audit every historical location, machine, vehicle, electrical process, newspaper, political event, and contract for date accuracy. Existing autosaves are never silently rewound or remapped; any migration needs dedicated tests, explicit compatibility rules and owner acceptance.
+**Design target:** A new Federal Electric campaign opens on **January 2, 1878**, before commercially practical incandescent bulbs. This is a decision about future gameplay, not a change to the currently implemented **January 1890** start. Audit every historical location, machine, vehicle, electrical process, newspaper, political event, and contract for date accuracy. Obsolete autosaves are not a compatibility target; no old-save migration or its tests are required.
 
 ### 1878–1879 · A component factory, not a light-bulb factory
 
@@ -201,7 +205,7 @@
 
 ## v0.6.54-dev · Capital & Consequence foundation · October 23, 2026
 
-- [x] Rename visible title/menu, desktop package metadata, Linux launch/archive labels and development docs to **Capital & Consequence**. Federal Electric remains the businessman's company, not the whole game. Keep legacy save namespaces for compatibility.
+- [x] Rename visible title/menu, desktop package metadata, Linux launch/archive labels and development docs to **Capital & Consequence**. Federal Electric remains the businessman's company, not the whole game. Legacy save namespaces can be cleaned up; no compatibility obligation applies.
 - [x] Preserve **four** canonical protagonists in code: **Charles “Charlie” Whitcomb** (businessman/factory owner), **Samuel “Sam” Harlan** (rookie Black patrolman), **Elias “Eli” Crowe** (anonymous nightclub doorman), **Edmund Wardman** (District Asylum orderly). Show established names on career selection without changing persistent route IDs.
 - [x] Keep the rookie cop on beat duty and desk reports rather than presenting detective work at starting rank. Existing standalone mystery engine remains as unassigned groundwork for future promotion/career progression.
 - [x] Name the **District Asylum** (historically fictional, separate from the Government Hospital for the Insane) in the city registry, with public reception, orderly station, patient ward, administration and superintendent office. Edmund begins as an orderly; his unnamed brother directs the institution.
@@ -226,4 +230,4 @@
 - [ ] Design geographically coherent **new** district boundaries that **do not trace the abolished states**, with appropriate agricultural regions, industrial areas, harbors, mines, rail routes and capital access.
 - [ ] Define the alternate government's legislature, district representation, courts, revenues, constitutional powers and the businessman's presidential candidacy and election requirements.
 - [ ] Connect district economic specializations to future Federal Electric supply chains, national trade, NPC migration, politics, transportation and newspaper stories.
-- [ ] Complete the separate 1878 component-factory conversion and source-tested save migration before switching the live campaign start.
+- [ ] Complete the remaining 1878 factory/economy integration; obsolete save migrations are not a prerequisite.
