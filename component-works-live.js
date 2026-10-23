@@ -5,14 +5,20 @@
  'use strict';
  const works=typeof module==='object'&&module.exports?require('./component-works.js'):root.FE_COMPONENT_WORKS;
  if(!works)throw Error('Component Works must load first');
+ const operations=typeof module==='object'&&module.exports?require('./workshop-operations.js'):root.FE_WORKSHOP_OPERATIONS;
+ if(!operations)throw Error('Workshop operations must load first');
  const periods=Object.freeze({order:5,purchase:5,ship:15});
  function transact(save,kind,details,token,spend,finishAtBell=null){
   if(!save?.componentWorks||save.paused)return {ok:false,reason:'Workshop unavailable or paused'};
   works.verify(save.componentWorks);
-  if(!['order','purchase','assemble','ship'].includes(kind)||typeof token!=='string'||!token||token.length>120)
+  if(!['order','purchase','assemble','ship','repair'].includes(kind)||typeof token!=='string'||!token||token.length>120)
    return {ok:false,reason:'Invalid component action'};
   const earlier=Object.prototype.hasOwnProperty.call(save.componentWorks.receipts,token)?save.componentWorks.receipts[token]:null;
   if(earlier)return {...earlier,repeated:true};
+  if(kind==='repair'){
+   const repaired=save.workshopOperations?.repairReceipts?.[token];
+   if(repaired)return {...repaired,repeated:true};
+  }
   const date=root.FE_WASHINGTON_TIME?.now?.(save);
   if(!date)return {ok:false,reason:'Game clock is unavailable'};
   const weekday=new Date(date.date+'T12:00:00Z').getUTCDay();
@@ -20,7 +26,10 @@
   if(kind==='ship'&&weekday!==6)return {ok:false,reason:'Customer deliveries are on Saturday'};
   if(kind!=='ship'&&weekday===6)return {ok:false,reason:'Saturday is for deliveries, not production'};
   if(date.minuteOfDay<540||date.minuteOfDay>=1020)return {ok:false,reason:'Workshop operates 9 AM to 5 PM'};
+  if(kind==='repair')return operations.repair(save,token,date,spend,finishAtBell);
   if(kind==='assemble'){
+   const permission=operations.availability(save,date);
+   if(!permission.ok)return permission;
    const assistant=save.npcSimulation?.agents?.foremanSullivan;
    if(assistant?.locationId!=='factory'||assistant?.status!=='present')
     return {ok:false,reason:'Sullivan must be at the factory to produce components'};
@@ -58,10 +67,13 @@
   if(kind==='purchase'||kind==='assemble')save.lastExpenses=(save.lastExpenses||0)+
    (kind==='purchase'?receipt.costCents:receipt.laborCostCents)/100;
   if(kind==='ship')save.lastRevenue=(save.lastRevenue||0)+receipt.revenueCents/100;
+  // Assistant attempts first aid on equipment after a completed work lot;
+  // serious faults persist and block the next lot until Charlie intervenes.
+  const incident=kind==='assemble'?operations.afterAssembly(save,receipt,receipt.productId,date.date):null;
   // Only now may the 5 PM closing bell settle assistant payroll and the
   // day's company ledger. The old callback-free path cannot reach 5 PM.
   if(atBell&&finishAtBell()!==true)throw Error('Workshop closing bell could not settle');
-  return {...receipt,elapsedSeconds:seconds,remainingOnOrder:kind==='assemble'?next.orders.find(o=>o.id===details.orderId).quantity-next.orders.find(o=>o.id===details.orderId).made:undefined};
+  return {...receipt,elapsedSeconds:seconds,incident,remainingOnOrder:kind==='assemble'?next.orders.find(o=>o.id===details.orderId).quantity-next.orders.find(o=>o.id===details.orderId).made:undefined};
  }
  const api=Object.freeze({transact});
  if(typeof module==='object'&&module.exports)module.exports=api;
