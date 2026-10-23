@@ -283,7 +283,7 @@ check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migra
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
 const npcSave={npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},turnSerial:1,phase:'day',dayRemaining:3600,paused:false};
 let npcSaved=0;
-const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_NPC_ECONOMY:require('../npc-economy.js'),FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:city,FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
+const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:require('../npc-language.js'),FE_NPC_KNOWLEDGE:require('../npc-knowledge.js'),FE_NPC_ECONOMY:require('../npc-economy.js'),FE_NPC_MOBILITY:require('../npc-mobility.js'),FederalElectricCity:city,FE_LIVING_CHARACTERS:{renderRoomVisitors(){}},FE_CITY:{currentLocation:()=>({locationId:'factory'})}},S:npcSave,
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
