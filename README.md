@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.48-dev · calendar bridge, earned map leads and provisional city travel · October 22, 2026**
+**Current source: v0.6.49-dev · mapped-calendar NPC presence · October 22, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -258,3 +258,10 @@ Gold numbered markers signal a **known, unvisited destination**, currently Comme
 ## v0.6.48-dev · Temporary hour-per-location travel (source-only)
 
 Travel between distinct registered Washington locations now records a **provisional 60-minute cost** in the saved 24-hour **calendar bridge**, while moving between rooms at the same location costs no travel hour. This is temporary until street geography and pin placement are approved. Real mileage remains unknown; transport assets do not teleport; old-profile unknown hours are not fabricated. **The legacy 60-minute day/night gameplay loop has not been replaced.** The [temporary travel decision](TRAVEL-DECISION-2026-10-22.md) and [October 22 thread handoff](HANDOFF-2026-10-22-THREAD-END.md) distinguish implemented behavior from unfinished calendar migration. Source QA passed; **no new executable packaged**.
+
+
+## v0.6.49-dev · Mapped-calendar NPC routines (source-only)
+
+Seven named residents now use persisted per-profile **8 AM/noon/5 PM/10 PM** routine boundaries when the calendar is mapped. Foreman Sullivan and Inspector Hayes are absent from their ordinary daytime workplaces on weekends. These are provisional gameplay schedules, **not verified nineteenth-century opening hours**. Actual travel can cause a missed encounter, but long jumps do not invent intervening meetings or private rumors. Face-to-face interaction records use the mapped date. Older `legacy-unmapped` profiles keep the previous day/night-phase routine. Save/reload and pause do not reroll routines. New source regression tests cover these behaviors.
+
+**Unfinished:** one authoritative 24-hour factory, payroll, market, venue and campaign-day clock; detailed independent NPC decisions and finalized weekly appointments. The old countdown is still in charge of core gameplay. No executable packaged.

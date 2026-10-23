@@ -9,6 +9,7 @@ on:
       - 'calendar-bridge.js'
       - 'city.js'
       - 'npc-ai.js'
+      - 'npc-calendar.js'
       - 'living-characters.js'
       - 'character-routes.js'
       - 'venue-opportunities.js'

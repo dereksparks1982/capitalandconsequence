@@ -1110,3 +1110,13 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [ ] Design approved game difficulty: friendly testing odds, harder modes and optional hiding of gold destination signals. Research period-appropriate mechanical slot machines and license/code options before implementing.
 - [ ] Continue nonplayer career autonomy and missed-opportunity-by-day/weekday behavior as real time schedules mature.
 - [ ] **Handoff:** read [HANDOFF-2026-10-22-THREAD-END.md](HANDOFF-2026-10-22-THREAD-END.md) before the next source build. No executable unless owner explicitly asks.
+
+
+## v0.6.49-dev · NPC calendar runtime slice · October 22, 2026
+
+- [x] When a calendar is mapped, use persisted profile date/time periods for the seven named NPCs rather than day/night-phase slots.
+- [x] Introduce provisional weekday vs weekend workplace presence and arrival-time missed encounters.
+- [x] Resolve only the reached timetable window with no retroactive invented meetings, no offline progress and no reroll on reload.
+- [x] Preserve old `legacy-unmapped` NPC phase fallback, existing private memory and relationship state; add source-only regression tests.
+- [ ] Research and approve individual NPC hourly schedules, independent appointments, evolving goals and inter-character conflicts. Current timetable is a stepping-stone, not historical fact.
+- [ ] Coordinate factory/production, contracts/payroll, markets, venue hours, gambling costs, travel, UI and overnight behavior under the single saved 24-hour clock before retiring the 60-minute countdown.

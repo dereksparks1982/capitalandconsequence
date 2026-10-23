@@ -427,3 +427,9 @@ See [Drek codex](CODEX-DREK-WAINWRIGHT-2026-10-22.md) and [menu/careers/map desi
 - Exact campaign start year/date remains **undecided**, within the **late nineteenth-century Washington** design. January 1890 is the current prototype default, not a permanently locked historical start.
 - Keep source-only development on the established Electron/JavaScript main branch; **no executable**, new artwork, engine migration or release without explicit owner request/acceptance.
 - Next thread starts from [HANDOFF-2026-10-22-THREAD-END.md](HANDOFF-2026-10-22-THREAD-END.md); retain old notes as historical record.
+
+
+## 2026-10-22 · v0.6.49 calendar NPC transition
+
+- The seven named NPCs can resolve current presence from a mapped saved calendar. Legacy-unmapped profiles still use original phase slots; neither reload nor large time jumps invent earlier private meetings.
+- Temporary 8 AM/noon/5 PM/10 PM boundaries and weekday work absences are provisional gameplay definitions, not a permanent approval of historical business hours. The legacy day/night countdown remains the core gameplay clock. No executable candidate, release or tag is produced here.

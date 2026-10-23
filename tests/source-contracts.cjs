@@ -12,17 +12,17 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['npc-calendar.js','city.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.48','Current package version is v0.6.48');
-check(appSource.includes("APP_VERSION='v0.6.48-dev'"),'Game masthead uses v0.6.48');
-check(read('build-linux.sh').includes('0.6.48'),'Local packaging uses the same number');
+check(pkg.version==='0.6.49','Current package version is v0.6.49');
+check(appSource.includes("APP_VERSION='v0.6.49-dev'"),'Game masthead uses v0.6.49');
+check(read('build-linux.sh').includes('0.6.49'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.48-linux-x64.tar.gz'),'Manual workflow archives v0.6.48');
+check(workflow.includes('0.6.49-linux-x64.tar.gz'),'Manual workflow archives v0.6.49');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');

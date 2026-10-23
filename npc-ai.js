@@ -1,6 +1,7 @@
-/* Federal Electric NPC intelligence slice 1.
+/* Federal Electric NPC intelligence slice 2.
  * Engine-independent, offline, deterministic routines and persistent decisions.
- * The current day/night phase clock is a transitional input, NOT the proposed 24-hour world clock.
+ * Mapped profiles use saved-calendar routines; legacy-unmapped profiles keep
+ * their original phase routine without invented historical time.
  * NPC state belongs to the active profile. Never tick while the game is closed.
  */
 (function(){
@@ -75,8 +76,12 @@
   const late=(max-remaining)>=max/2?1:0;
   return (turn-1)*4+(phase==='day'?0:2)+late;
  }
- function exchangeLocalRumors(w,absolute){
-  const knowledge=window.FE_NPC_KNOWLEDGE,date=String(S.gameDate||'');
+ function observedDate(){
+  const now=S.worldCalendarStatus==='ready'?window.FE_CALENDAR_BRIDGE?.moment?.(S):null;
+  return now?.date||String(S.gameDate||'');
+ }
+ function exchangeLocalRumors(w,absolute,turnOverride=null){
+  const knowledge=window.FE_NPC_KNOWLEDGE,date=observedDate();
   if(!knowledge||!/^\d{4}-\d{2}-\d{2}$/.test(date))return 0;
   let exchanged=0;
   // No broadcasts or global reputation query. Only physically co-located,
@@ -95,7 +100,7 @@
      const roll=hash(w.seed+'|gossip|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId)%100;
      if(roll>=chance||!knowledge.share(w,speaker.id,listener.id,fact.factId,date))continue;
      w.events.push({id:'rumor|'+absolute+'|'+speaker.id+'|'+listener.id+'|'+fact.factId,
-      type:'private-rumor',actorId:speaker.id,recipientId:listener.id,turn:Math.floor(absolute/4)+1,
+      type:'private-rumor',actorId:speaker.id,recipientId:listener.id,turn:Number.isSafeInteger(turnOverride)?turnOverride:Math.floor(absolute/4)+1,
       locationId:from.locationId,factId:fact.factId});
      exchanged++;
     }
@@ -123,14 +128,40 @@
   exchangeLocalRumors(w,absolute);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
+ function calendarOnce(w,c,key){
+  // Resolve the reached period once, never manufacture missed encounters
+  // or private gossip for periods not actually observed by the player.
+  const turn=Math.max(1,Math.floor(+S.turnSerial||1));
+  for(const def of DEFINITIONS){
+   const a=w.agents[def.id],period=window.FE_NPC_CALENDAR.at(c,def);
+   const index=hash(w.seed+'|'+def.id+'|'+key+'|goal')%def.goals.length;
+   const rest=a.energy<=32&&period.slot>=2,destination=rest?null:period.locationId;
+   a.goal=rest?'rest-and-recover':def.goals[index];
+   a.locationId=destination;
+   a.activity=rest?null:period.activity;
+   a.status=destination?'present':'off-duty';
+   a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
+   a.lastCalendarSlot=key;
+   w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
+    slot:period.name,locationId:destination,goal:a.goal});
+  }
+  exchangeLocalRumors(w,hash(key),turn);
+  if(w.events.length>224)w.events.splice(0,w.events.length-224);
+ }
  function syncClock(){
   if(!profile()||S.paused||S.phase==='report')return false;
-  const target=stepForState(),w=ensure();
-  if(target===null||!w||target<=w.lastStep)return false;
-  // Reconcile skipped slots exactly once. No offline time advances on its own.
-  // A new save starts at its current turn and only replays within that turn.
-  for(let step=w.lastStep+1;step<=target;step++)stepOnce(w,step);
-  w.lastStep=target;
+  const w=ensure();if(!w)return false;
+  const c=S.worldCalendarStatus==='ready'?window.FE_CALENDAR_BRIDGE?.moment?.(S):null;
+  if(c&&window.FE_NPC_CALENDAR){
+   const key=window.FE_NPC_CALENDAR.signature(c);
+   if(key===w.lastCalendarSlot)return false;
+   calendarOnce(w,c,key);w.lastCalendarSlot=key;
+  }else{
+   const target=stepForState();
+   if(target===null||target<=w.lastStep)return false;
+   for(let step=w.lastStep+1;step<=target;step++)stepOnce(w,step);
+   w.lastStep=target;
+  }
   if(typeof save==='function')save(true);
   const overlay=document.getElementById('cityRoomOverlay');
   if(overlay&&!overlay.hidden){
@@ -155,7 +186,7 @@
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
   if(!def||!a||!position||a.locationId!==position.locationId||a.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
-  const route=S.characterRoute||'industrialist',date=String(S.gameDate||'');
+  const route=S.characterRoute||'industrialist',date=observedDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
   const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
   if(already)return {ok:false,reason:'You have already discussed that today.'};
@@ -210,7 +241,7 @@
   const delta=Math.max(-10,Math.min(10,Math.floor(+relationshipDelta||0)));
   a.relationships[withId]=Math.max(-100,Math.min(100,(+a.relationships[withId]||0)+delta));
   a.memories.push({key:kind,withId,turn:Math.max(1,Math.floor(+S.turnSerial||1)),
-   date:/^\d{4}-\d{2}-\d{2}$/.test(S.gameDate||'')?S.gameDate:null,
+   date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():null,
    locationId:window.FE_CITY?.currentLocation?.()?.locationId||null,relationshipDelta:delta});
   if(a.memories.length>32)a.memories.splice(0,a.memories.length-32);
   if(typeof save==='function')save(true);

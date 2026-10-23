@@ -1,6 +1,6 @@
 {
   "name": "federal-electric",
-  "version": "0.6.48",
+  "version": "0.6.49",
   "private": true,
   "description": "Federal Electric desktop alpha",
   "main": "desktop/main.cjs",
@@ -12,7 +12,7 @@
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never",
     "audit:offline": "node desktop/check-offline-runtime.cjs",
     "audit:artwork": "node desktop/check-artwork-paths.cjs",
-    "test:source": "node tests/source-contracts.cjs && node tests/travel-duration.cjs"
+    "test:source": "node tests/source-contracts.cjs && node tests/travel-duration.cjs && node tests/npc-calendar.cjs"
   },
   "devDependencies": {
     "electron": "44.5.1",
