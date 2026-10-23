@@ -1372,10 +1372,18 @@ body.elephant-easter-egg-open{overflow:hidden}
 .save-failure-banner{position:fixed;left:12px;right:12px;top:10px;z-index:3000000;background:#4e1b1b;color:#fff3d9;border:2px solid #dc8c68;padding:12px 16px;font:700 14px/1.45 Arial,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.65)}
 .save-failure-banner[hidden]{display:none}
 
-/* v0.6.38: numbered map pins, with labels only on hover, focus, selection
+/* v0.6.39: numbered map pins, with labels only on hover, focus, selection
  * or by the explicit Show Names control. Category filtering is visual only. */
 #titleMapMarkers .title-map-marker[hidden]{display:none!important}
 #titleMapMarkers:not(.show-all-names) .title-map-marker-label{display:none}
 #titleMapMarkers:not(.show-all-names) .title-map-marker:hover .title-map-marker-label,
 #titleMapMarkers:not(.show-all-names) .title-map-marker:focus-visible .title-map-marker-label,
 #titleMapMarkers:not(.show-all-names) .title-map-marker.is-selected .title-map-marker-label{display:block}
+
+/* v0.6.39: grounded, save-backed conversation affordances for residents. */
+.fe-npc-visitor{padding:10px;margin:8px 0;border:1px solid #9b845a;background:rgba(247,234,205,.82);color:#312819}
+.fe-npc-visitor p{margin:3px 0 8px}
+.fe-npc-visitor-actions{display:flex;gap:7px;flex-wrap:wrap}
+.fe-npc-visitor-actions button{border:1px solid #746043;border-radius:2px;background:#eee0c2;color:#2b2117;padding:6px 9px;font:600 12px Georgia,serif;cursor:pointer}
+.fe-npc-visitor-actions button:focus-visible{outline:2px solid #9b4e1e;outline-offset:2px}
+.fe-npc-response{font-style:italic;min-height:1.2em}

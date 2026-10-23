@@ -16,13 +16,13 @@ for(const rel of ['city.js','brokerage.js','app.js','npc-ai.js','world-clock.js'
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.38','Current package version is v0.6.38');
-check(appSource.includes("APP_VERSION='v0.6.38-dev'"),'Game masthead uses v0.6.38');
-check(read('build-linux.sh').includes('0.6.38'),'Local packaging uses the same number');
+check(pkg.version==='0.6.39','Current package version is v0.6.39');
+check(appSource.includes("APP_VERSION='v0.6.39-dev'"),'Game masthead uses v0.6.39');
+check(read('build-linux.sh').includes('0.6.39'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.38-linux-x64.tar.gz'),'Manual workflow archives v0.6.38');
+check(workflow.includes('0.6.39-linux-x64.tar.gz'),'Manual workflow archives v0.6.39');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -371,4 +371,16 @@ check(appSource.includes('names.onchange=()=>{titleMapShowNames=names.checked;sy
 check(index.includes('id="titleMapShowNames"')&&index.includes('id="titleMapCategory"'),'Map controls are present');
 check(read('styles.css').includes('#titleMapMarkers:not(.show-all-names) .title-map-marker-label{display:none}'),'Name labels are hidden until interaction by default');
 check(read('styles.css').includes('.title-map-marker.is-selected .title-map-marker-label{display:block}'),'Tapping/selecting a pin reveals its name');
+npcSave.gameDate='1890-01-02';npcSave.characterRoute='industrialist';npcSave.notes=[];
+npcCtx.window.FE_CITY.currentLocation=()=>({locationId:'star'});
+const greeting=npc.talkAtLocation('madamStar','greet');
+check(greeting.ok===true&&greeting.reply.includes('Madam Star'),'Face-to-face greeting records known in-room NPC');
+check(npc.talkAtLocation('madamStar','greet').ok===false,'Same-day greeting cannot be farmed');
+check(npc.talkAtLocation('madamStar','work').ok===true,'Other conversation subject can be discussed once');
+check(npcSave.notes.length===2,'Conversations leave journal records');
+check(npc.inspect('madamStar').memories.some(m=>m.date==='1890-01-02'&&m.locationId==='star'),'NPC memory stores observed date and place');
+npcCtx.window.FE_CITY.currentLocation=()=>({locationId:'factory'});
+check(npc.talkAtLocation('madamStar','work').ok===false,'NPC cannot be addressed from another building');
+check(npc.talkAtLocation('foremanSullivan','greet').ok===false,'Off-duty NPC cannot be talked to');
+check(read('npc-ai.js').includes('fe-npc-visitor-actions'),'NPCs have local contact buttons');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');

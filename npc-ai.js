@@ -116,13 +116,48 @@
   return DEFINITIONS.filter(d=>w.agents[d.id]?.locationId===locationId)
    .map(d=>({id:d.id,name:d.name,activity:w.agents[d.id].activity||'present'}));
  }
+ // Face-to-face contact only. This uses the NPC's public routine, not
+ // hidden personal goals, confidential motives or unscheduled future events.
+ function talkAtLocation(id,topic='greet'){
+  if(!['greet','work'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
+  const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
+  if(!def||!a||!position||a.locationId!==position.locationId||a.status!=='present')
+   return {ok:false,reason:'That person is not here now.'};
+  const route=S.characterRoute||'industrialist',date=String(S.gameDate||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
+  const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
+  if(already)return {ok:false,reason:'You have already discussed that today.'};
+  const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
+  const reply=topic==='greet'
+   ?(known?'Good to see you again.':'Good day. I am '+def.name+'.')
+   :(a.activity?'I am occupied with '+a.activity+'.':'I have no news about my work today.');
+  // The first introduction improves familiarity once; repeating visits cannot
+  // generate unlimited reputation or cash.
+  if(!recordInteraction(id,route,topic,topic==='greet'?1:0))
+   return {ok:false,reason:'The meeting could not be recorded.'};
+  a.memories[a.memories.length-1].date=date;
+  a.memories[a.memories.length-1].locationId=position.locationId;
+  if(Array.isArray(S.notes))S.notes.push({date,source:'conversation with '+def.name,text:'Spoke with '+def.name+': '+reply});
+  if(typeof save==='function')save(true);
+  if(typeof renderNotes==='function')renderNotes();
+  return {ok:true,name:def.name,reply,relationship:a.relationships[route]||0};
+ }
  function renderRoomVisitors(locationId){
   const panel=document.getElementById('cityRoomVisitors'),list=document.getElementById('cityRoomVisitorList');
   if(!panel||!list)return;
   for(const visitor of visibleAt(locationId)){
-   const p=document.createElement('p');
-   p.textContent=visitor.name+' is '+visitor.activity+'.';
-   list.appendChild(p);
+   const row=document.createElement('article');row.className='fe-npc-visitor';
+   const p=document.createElement('p');p.textContent=visitor.name+' is '+visitor.activity+'.';row.appendChild(p);
+   const controls=document.createElement('div');controls.className='fe-npc-visitor-actions';
+   const response=document.createElement('p');response.className='fe-npc-response';response.setAttribute('role','status');
+   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work']]){
+    const button=document.createElement('button');button.type='button';button.textContent=label;
+    button.addEventListener('click',()=>{
+     const result=talkAtLocation(visitor.id,topic);
+     response.textContent=result.ok?result.name+': '+result.reply:result.reason;
+    });controls.appendChild(button);
+   }
+   row.appendChild(controls);row.appendChild(response);list.appendChild(row);
   }
   panel.hidden=!list.children.length;
  }
@@ -143,5 +178,5 @@
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
  function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation}));}
- window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,recordInteraction,inspect,list,stepForState});
+ window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,recordInteraction,talkAtLocation,inspect,list,stepForState});
 })();

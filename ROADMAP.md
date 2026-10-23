@@ -994,3 +994,14 @@ Complete concepts archived in [Drek / Wainwright Codex](CODEX-DREK-WAINWRIGHT-20
 - [x] Include source-contract coverage of map control wiring and CSS behavior.
 - [ ] Place future vetted government locations as map pins after historical research; no invented marker positions.
 - [ ] Player discovery and known-versus-secret information remain a separate system.
+
+
+## v0.6.39-dev · Physically local NPC relationships
+- [x] Seven already-present scheduled residents show in-room Greet and Ask About Work controls, without building replacement artwork.
+- [x] Verify physical co-location, presence and active profile at conversation time; remote or off-duty talks are rejected.
+- [x] Persist per-character dated and located memories with route-specific familiarity; each topic is once per game date to prevent unlimited reputation farming.
+- [x] Journal records truthful observed replies, not NPC hidden intentions, secrets, or unknown future events.
+- [x] Source tests verify contact, repeats, journal, and remote restrictions.
+- [ ] Transition resident routine slots to the authoritative 24-hour calendar, with venue hours and schedules reviewed explicitly.
+- [ ] Implement deeper dialogue branches, personal goals and consequences after the existing location and time services stabilize.
+- [ ] No executable or accepted release in this slice.
