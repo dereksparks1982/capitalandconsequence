@@ -47,6 +47,10 @@ Earlier assistant-authored requirements to preserve 1890/legacy saves, keep obso
 - Each NPC believes it is **the current game year** and accesses **curated and date-gated historical/alternate events** appropriate to its actual lived knowledge. No future election, technology or gossip spoilers. Even the model's answers should be grounded in authorized game facts; model prose alone must never authorize money movement, travel, guilt or outcomes.
 - Current v0.6.67+ source has a **Speak** field, local OpenAI-compatible model-server bridge, basic individualized personality/year context and saved per-resident conversation transcripts. **No model weights/server are bundled and live multi-hour freeform conversations have not been benchmarked.**
 
+## Latest opening staffing decision · October 23, v0.6.74
+
+At the **1878 Federal Electric founding**, Charlie Whitcomb works in his own electrical/telegraph component workshop alongside exactly **one paid assistant**. The first implementation calls that assistant **Sullivan**, repurposing the established factory NPC rather than creating a second manager. Starting workforce = one employee, not twelve. Charlie performs actual player-timed work and is not paid an employee salary. The assistant has a real NPC schedule, expenses, public/personality history, workplace shifts and off-duty movement. His wages must be deducted from company funds and reflected in the NPC wallet, once, without a fabricated additional assembly labor debit. Future hiring and fully autonomous employee manufacturing remain planned. Provisional gameplay wages are not assertions of historical fact. No old-save compatibility engineering is required.
+
 ## 5. 1878 alternate history and factory
 
 - The real Civil War (1861–65) is the fork: after it, alternate America abolished the **Electoral College** and replaced states/old borders with **functional national districts** (breadbasket agriculture, industry, etc.). Presidents are elected by nationwide **popular vote only**.
