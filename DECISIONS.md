@@ -117,3 +117,9 @@
 - Co-location is necessary but no longer sufficient for sharing testimony: both NPCs need a mutually comprehended spoken language.
 - Alexi Rurik retains **Russian-only** speech. Pavel Orlov is explicitly bilingual English/Russian, consistent with his existing English public dialogue and Russian merchant setting. Other listed English speakers remain English only for now unless later documented in-world language learning or biography warrants another fluency.
 - Neither the player's notebook nor the press gains automatic translations. Interpreter mechanics, player-earned Russian learning, and nonverbal interactions are future work; no new criminal truth or packaged release.
+
+## 2026-10-23 · v0.6.62 independent component factory
+
+- Build and source-test a separate integer-cents 1878 electrical component manufacturing/warehouse/contract engine before touching the 1890 bulb-first live factory. Existing old-profile production, saves and dates remain intact.
+- Production inventory is **not** automatic contract delivery; only a separate shipment earns customer payment. Replayed tokens never duplicate material spend, manufacturing output or settlement.
+- Opening cash, wages, material recipes, customers, prices and workshop tools are explicitly provisional gameplay balancing pending historical research. A conservative future lamp eligibility gate requires calendar advancement plus license and equipment. No new 1878 profile UI, historical authenticity claim or downloadable release.

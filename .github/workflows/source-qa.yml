@@ -17,6 +17,7 @@ on:
       - 'npc-intentions.js'
       - 'npc-social.js'
       - 'npc-language.js'
+      - 'component-works.js'
       - 'npc-economy.js'
       - 'npc-mobility.js'
       - 'patrol-duty.js'

@@ -10,6 +10,8 @@
 
 ### Now · highest-priority D.C. playable slices
 
+**Source advancement v0.6.62:** Independent component-works module now supports owner-specific 1878 component recipes, inventory purchase, transaction-proof assembly, contracted customer orders, physical warehouse shipments and technology prerequisites, with dedicated save/reload tests. **Not yet connected to playable new 1878 saves or authoritative calendar.** The existing 1890 profiles remain unchanged. See `COMPONENT-WORKS-1878-FOUNDATION.md`.
+
 **Source advancement v0.6.61:** Russian-only NPCs no longer exchange rumors or conversational relationship gains with English-only residents without a shared spoken language. Pavel Orlov has explicit English/Russian fluency as a provisional trade intermediary. Interpreters, player language study, earned translated testimony and period-correct dialogue still require future gameplay.
 
 **Source advancement v0.6.60:** NPCs now make one bounded social encounter per reached period with co-located residents in the same room, create reciprocal private relationship changes, and persist ordinary contact memories. No meetings occur merely from opening a panel. Continue with consequences linked to careers, witnesses and transactions. The earlier intentional travel improvement remains documented below.

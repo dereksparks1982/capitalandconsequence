@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.61-dev · Russian/English comprehension gates real NPC gossip and conversation · October 23, 2026**
+**Current source: v0.6.62-dev · Separate 1878 electrical-component company ledger and production engine · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.61-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.62-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.62-dev · Historic component factory transaction foundation
+
+The source now includes an **independent, testable 1878 factory engine** for Federal Electric's initial telegraph and electrical components. It maintains company funds, raw materials, separate finished warehouse stock, explicit customer contracts and transactional ledgers in integer cents/units. Assembly consumes validated materials and records production minutes; accepting a shipment credits customer payment only once. The starting 1878 component catalog prevents ordinary early incandescent manufacture and requires later technology/license/machinery gates. Existing 1890 bulb saves continue using the old factory until a separately tested migration and full UI/time integration are ready. These product recipes, costs and customers are provisional, not historically authenticated. Source only, no executable. See [1878 works foundation](COMPONENT-WORKS-1878-FOUNDATION.md) for boundaries.
 
 ## v0.6.61-dev · No imaginary translation for Russian conversations
 
