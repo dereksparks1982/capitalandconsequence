@@ -1,12 +1,12 @@
 # Capital & Consequence
 
-> **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
+> **CURRENT DEVELOPMENT HANDOFF:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md). **v0.6.65-dev source, latest green QA 441 checks + specialized suites.** Earlier [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md) remains a valuable historical snapshot of v0.6.58; later instructions supersede earlier dates and priority claims.
 
 **Current source: v0.6.65-dev · Room-verified and relationship-sensitive NPC information exchange · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.65-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [Current October 23 source handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) supersedes the pre-continuation [October 23 historical handoff](HANDOFF-2026-10-23-THREAD-END.md) and [October 22 handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.65-dev**; travel between different city locations still has a provisional game-hour charge. **No v0.6.65 executable has been packaged.**
 
 > **One city. Countless lives. Every choice has consequences.**
 

@@ -141,3 +141,9 @@
 - No information exchange merely from occupying a single map pin: both NPCs must occupy the **same room**, be actively present and speak a language both understand.
 - Saved reciprocal relationships, personality and an observation's confidence influence whether an NPC voluntarily repeats a rumor. Neither positive affinity nor distrust proves the assertion true or false.
 - Explicitly designated confidential facts stay out of casual rumor spread. Rumor event provenance includes location, room, language, people and original fact reference. Rumors do not enter newspaper reporting or the player's notebook without actual future observation/investigation.
+
+## 2026-10-23 · v0.6.65 source continuation handoff and verified QA
+
+- The **current resume reference** is [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), superseding the older pre-v0.6.59 handoff while retaining its canonical character and world decisions.
+- Latest tested source commit `de212efbda8ccf773f74e9258ace733c3704b7dc` passed GitHub Actions [39969296302](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39969296302) with **441 source-contract checks** and all supplemental suites, including 360 case truth tests. This is **not a Linux executable acceptance test**.
+- Remain Washington-first. AI improvements, isolated 1878 component groundwork and Edmund work loop are delivered, while the complete new 1878 campaign, unified clock and genuine autonomous city case consequences are future slices.

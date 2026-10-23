@@ -1,6 +1,6 @@
 # Capital & Consequence Development Roadmap
 
-> **Start new development threads here:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant character codices. The handoff confirms `v0.6.58-dev` source and last green QA. Older checked items chronicle past builds; **later decisions supersede earlier proposals**, especially Sam's former two-neighborhood prototype.
+> **Start new development threads here:** [October 23 source continuation handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md), then this document's **Washington-first** section, then `DECISIONS.md` and relevant codices. Latest verified source is **v0.6.65-dev** with green QA on the final source commit. The earlier [October 23 v0.6.58 handoff](HANDOFF-2026-10-23-THREAD-END.md) remains archived. Later decisions supersede old priorities.
 
 ## ACTIVE DEVELOPMENT SCOPE · WASHINGTON FIRST (decision of October 23, 2026)
 
