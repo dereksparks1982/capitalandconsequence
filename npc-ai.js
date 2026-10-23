@@ -41,7 +41,6 @@
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
- function randomIndex(seed,id,step,salt,size){return hash(seed+'|'+id+'|'+step+'|'+salt)%size}
  function ensure(){
   if(!profile())return null;
   const turn=Math.max(1,Math.floor(+S.turnSerial||1));
@@ -110,7 +109,7 @@
   return exchanged;
  }
  function stepOnce(w,absolute){
-  const slot=absolute%4,turn=Math.floor(absolute/4)+1,night=slot>=2;
+  const slot=absolute%4,turn=Math.floor(absolute/4)+1;
   for(const def of DEFINITIONS){
    const a=w.agents[def.id];
    const index=randomIndex(w.seed,def.id,absolute,'goal',def.goals.length);

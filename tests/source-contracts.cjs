@@ -16,13 +16,13 @@ for(const rel of ['time-transactions.js','npc-itinerary.js','npc-calendar.js','c
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.51','Current package version is v0.6.51');
-check(appSource.includes("APP_VERSION='v0.6.51-dev'"),'Game masthead uses v0.6.51');
-check(read('build-linux.sh').includes('0.6.51'),'Local packaging uses the same number');
+check(pkg.version==='0.6.52','Current package version is v0.6.52');
+check(appSource.includes("APP_VERSION='v0.6.52-dev'"),'Game masthead uses v0.6.52');
+check(read('build-linux.sh').includes('0.6.52'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.51-linux-x64.tar.gz'),'Manual workflow archives v0.6.51');
+check(workflow.includes('0.6.52-linux-x64.tar.gz'),'Manual workflow archives v0.6.52');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');

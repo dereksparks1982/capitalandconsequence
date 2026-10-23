@@ -1,6 +1,6 @@
 # Federal Electric
 
-**Current source: v0.6.51-dev · earned NPC contacts, itineraries and local talk · October 23, 2026**
+**Current source: v0.6.52-dev · seven independent NPC utility planners · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
@@ -281,3 +281,10 @@ This work is **infrastructure, not the final 24-hour conversion**: factories, pa
 Seven recurring Washington residents now have **usual public visiting windows**, derived from the saved calendar instead of the computer clock. Weekday work absences are honored for Foreman Sullivan and Inspector Hayes; overnight appearances cross midnight correctly. After an **actual face-to-face greeting**, the player's Contact File gains a personal itinerary card for that resident, showing their ordinary next known place and 12-hour time window. This is a planning hint, **not an appointment guarantee**, and it reveals no unobserved NPC private goals or rumors. Legacy-unmapped profiles show no invented time.
 
 In-room residents also accept a third conversation topic, **Ask About Washington**, with seven individually authored public remarks. It adds one modest acquaintance point on the first local talk that day, records an ordinary personal journal note, and cannot be repeated for unlimited points. A room visitor refresh now clears old rows before rendering, preventing duplicate visitor cards. The system remains offline and deterministic; no cloud-generated AI, fabricated historical hours, or executable was produced.
+
+
+## v0.6.52-dev · First situation-aware agent decision layer (source-only)
+
+All seven recurring named NPCs now run their individual **offline utility planners**, replacing the former seeded random goal selection. Their choices weigh occupation-specific priorities, temperament (ambition, sociability and caution), fatigue, immediate local operating conditions and **only the personally held observations or rumors they have actually learned**. For example, the foreman may prioritize a late contract, switch to workforce protection when staff conditions deteriorate, and take rest when exhausted after hours; Madam Star can prioritize staff protection after a reported club raid; Inspector Hayes reacts to public news, not hidden police case data. The three alternate protagonist biographies and existing scripted pathways remain unchanged.
+
+Each reached routine period records the NPC's chosen goal, reason and compact decision evidence inside the active character's private save. No unattended/offline decision processing, speculative retroactive encounters or omniscient rumor-sharing was introduced. Public contact cards still show only usual public whereabouts after an earned greeting, **never private motive scores**. Conversations adapt slightly to established acquaintance while remaining authored and limited to one topic per resident per day. Tests cover changing goals, role-specific triggers, private evidence, fatigue, legacy routines and repeatable autosaves. **This is deterministic simulation AI, not an LLM or open-ended dialogue generator.** No executable was packaged.
