@@ -129,3 +129,9 @@
 - Edmund begins and remains a **lowly orderly**, not a manager or owner. His brother still runs fictional District Asylum; no brother name or automatic inheritance is invented.
 - Three provisional daily ward tasks maximum. Each is received in the orderly station (5 minutes), carried out on the patient ward (10 minutes), and reported back at the orderly station (5 minutes). Only a recorded report pays the provisional $0.35 wage.
 - Pending work, completed entries and earnings belong to Edmund's own autosave. Ordinary care service contains no speculative private patient diagnoses or access to restricted superintendent accounts. The live game remains 1890 until the larger 1878 conversion.
+
+## 2026-10-23 · v0.6.64 visible encounters and player knowledge
+
+- A private NPC social encounter becomes a player journal observation **only when the active character is in the same real room at the same reached simulation period**, with developer navigation excluded.
+- A witnessed act may reveal the identities of people publicly visible and whether they converse, disagree or assist. It does not supply secret speech, motives, trusted rumor or authoritative criminal guilt.
+- Observations are capped, idempotent and retained in the observing profile's autosave; remote social acts remain completely unobserved. Do not publish a newspaper article merely because an NPC event exists.

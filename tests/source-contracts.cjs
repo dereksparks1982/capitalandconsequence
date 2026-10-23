@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.63','Current package version is v0.6.63');
-check(appSource.includes("APP_VERSION='v0.6.63-dev'"),'Game masthead uses v0.6.63');
+check(pkg.version==='0.6.64','Current package version is v0.6.64');
+check(appSource.includes("APP_VERSION='v0.6.64-dev'"),'Game masthead uses v0.6.64');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.63'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.64'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.63-linux-x64.tar.gz'),'Manual workflow archives v0.6.63');
+check(workflow.includes('0.6.64-linux-x64.tar.gz'),'Manual workflow archives v0.6.64');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -274,6 +274,9 @@ check(index.includes('npc-social.js?v=')&&index.indexOf('npc-social.js?v=')<inde
 check(index.includes('npc-language.js?v=')&&index.indexOf('npc-language.js?v=')<index.indexOf('npc-social.js?v='),'Language comprehension governs resident interaction before social and rumor resolution');
 check(read('npc-ai.js').includes('FE_NPC_LANGUAGE?.common?.(speaker,listener)'),'NPC hearsay cannot travel across language barriers without shared fluency');
 check(read('npc-ai.js').includes('FE_NPC_SOCIAL?.meet?.'),'NPC simulation records room-level witnessed resident relationships');
+check(index.includes('npc-witness.js?v=')&&index.indexOf('npc-witness.js?v=')<index.indexOf('npc-ai.js?v='),'First-hand witness journal engine loads before the NPC simulator');
+check(read('npc-ai.js').includes('recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.'),'New meetings may become personally witnessed journal events');
+check(pkg.scripts['test:source'].includes('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
 check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
 check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
 check(read('npc-ai.js').includes('planDecision(w,def,a'),'Both NPC period types use private utility planning');

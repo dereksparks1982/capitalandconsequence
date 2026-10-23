@@ -16,6 +16,7 @@ on:
       - 'npc-agency.js'
       - 'npc-intentions.js'
       - 'npc-social.js'
+      - 'npc-witness.js'
       - 'npc-language.js'
       - 'component-works.js'
       - 'npc-economy.js'

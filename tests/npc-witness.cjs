@@ -1,0 +1,25 @@
+'use strict';
+const assert=require('node:assert/strict'),witness=require('../npc-witness.js');
+const defs=[{id:'madamStar',name:'Madam Star'},{id:'eddieDoyle',name:'Eddie Doyle'}];
+const e={id:'meeting:day:madamStar:eddieDoyle',type:'private-encounter',actorId:'madamStar',
+ partnerId:'eddieDoyle',turn:3,date:'1890-01-03',locationId:'star',roomId:'main-room',kind:'conversation'};
+const saved={characterRoute:'wardman',notes:[]};
+assert.deepEqual(witness.record(saved,[e],{locationId:'oldChinatown',roomId:'main-room'},defs),[]);
+assert.deepEqual(witness.record(saved,[e],{locationId:'star',roomId:'private-office'},defs),[],'Other rooms cannot see through walls');
+assert.equal(saved.notes.length,0);
+const first=witness.record(saved,[e],{locationId:'star',roomId:'main-room'},defs);
+assert.equal(first.length,1);assert.equal(saved.notes.length,1);
+assert.ok(first[0].text.includes('Madam Star')&&first[0].text.includes('Eddie Doyle'));
+assert.ok(first[0].text.includes('private words and motives were not established'));
+assert.equal(saved.witnessedSocial.length,1);
+const after=JSON.stringify(saved);
+assert.deepEqual(witness.record(saved,[e],{locationId:'star',roomId:'main-room'},defs),[]);
+assert.equal(JSON.stringify(saved),after,'Reloading cannot generate repeated first-hand evidence');
+const clone=JSON.parse(after);
+assert.deepEqual(witness.record(clone,[e],{locationId:'star',roomId:'main-room'},defs),[]);
+assert.equal(JSON.stringify(clone),after);
+assert.deepEqual(witness.record({notes:[]},[e],null,defs),[]);
+const missing={...e,id:'missing',actorId:'unknown'};
+assert.deepEqual(witness.record(saved,[missing],{locationId:'star',roomId:'main-room'},defs),[]);
+const other={notes:[]};assert.equal(witness.record(other,[e],{locationId:'star',roomId:'main-room'},defs).length,1,'Independent profile gets only its own genuine observation');
+console.log('PASS actual room witnessed resident meetings, privacy of unseen rooms and persistent single-observation notes');

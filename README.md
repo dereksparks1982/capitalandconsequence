@@ -2,11 +2,11 @@
 
 > **CURRENT DEVELOPMENT HANDOFF:** [October 23 thread-end handoff](HANDOFF-2026-10-23-THREAD-END.md). This is the authoritative next-thread starting point, including v0.6.58 source status, tests, all four protagonists, Hillsdale-only on-duty patrol, approved 1878 factory roadmap and open risks. **Older milestone sections below are preserved as history, not necessarily current gameplay.**
 
-**Current source: v0.6.63-dev · Playable District Asylum orderly rounds for Edmund Wardman · October 23, 2026**
+**Current source: v0.6.64-dev · First-hand NPC encounters become earned private journal observations · October 23, 2026**
 
 **Latest packaged candidate: v0.6.34 Linux x64 · private draft, built and smoke-tested, NOT accepted.**
 
-**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.63-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
+**New-thread continuation:** [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) supersedes [the October 22 historical handoff](HANDOFF-2026-10-22-THREAD-END.md). Current source is **v0.6.64-dev**; a cross-location journey still carries a provisional one-hour in-game charge. No v0.6.58 executable has been packaged.
 
 > **One city. Countless lives. Every choice has consequences.**
 
@@ -29,6 +29,10 @@ You buy materials, negotiate contracts, run the factory, trade stocks, manage co
 **Character detail:** [Eli Crowe’s permanent character codex](CODEX-ELIAS-CROWE-2026-10-23.md).
 
 **Proposed local story (not active gameplay):** A specific drug/contraband smuggling ring with some corrupt police protection may operate through Chinatown. Sam can find leads as a civilian off duty, but his official assignment stays Hillsdale. The captain may or may not be involved in any given campaign. The truth, witnesses, money trail and consequences will be simulated in future Washington-only slices, with no assumption that Chinatown residents as a whole are criminals. See [Sam's codex](CODEX-SAMUEL-HARLAN-2026-10-23.md) and [roadmap](ROADMAP.md).
+
+## v0.6.64-dev · Witnessing Washington's other lives
+
+When two autonomous residents actually meet in the **same physical room as the active protagonist**, the player can now acquire a saved, first-hand journal observation naming those visible residents and the outward kind of encounter. Meetings in a different building or even a different room in the same building remain private. Duplicate periods/reloaded meetings do not multiply records; observed encounter receipts survive the same profile autosave. The text explicitly does **not** disclose private dialogue, suspicion, intent, languages understood, police secrets or criminal guilt. Developer-room navigation does not grant observations. The underlying NPC relationship event itself is still confidential to the simulation, and no automatic Metropolitan Ledger publication occurs. Source-only.
 
 ## v0.6.63-dev · Edmund Wardman's first paid asylum work
 

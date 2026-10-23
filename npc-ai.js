@@ -115,6 +115,11 @@
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
   return exchanged;
  }
+ function recordWitnessedMeetings(records){
+  if(!records?.length||window.FE_CITY?.isDevRoom?.())return;
+  const found=window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),DEFINITIONS);
+  if(found?.length&&typeof renderNotes==='function')renderNotes();
+ }
  function planDecision(w,def,a,period,signature){
   const agency=window.FE_NPC_AGENCY;
   if(!agency)throw Error('NPC agency module required before world simulation');
@@ -158,8 +163,8 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,absolute);
-  window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{
-   key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'});
+  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{
+   key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'}));
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function calendarOnce(w,c,key){
@@ -187,7 +192,7 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,hash(key),turn);
-  window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{key,turn,date:c.date});
+  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{key,turn,date:c.date}));
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function syncClock(){
