@@ -13,7 +13,7 @@
    starting:true,
    purchasePrice:null,
    upkeep:null,
-   amenities:Object.freeze(['private bedrooms','front room','household kitchen','storage'])
+   amenities:Object.freeze(['private bedrooms','front room','household kitchen','storage','private stable','carriage shed'])
   }),
   Object.freeze({
    id:'expanded-townhouse',
