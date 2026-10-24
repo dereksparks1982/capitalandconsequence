@@ -16,6 +16,46 @@
   const note=document.createElement('p');note.textContent='The proprietors are competing brothers. Prices are 1878 game estimates. Purchases require personal money, not Federal Electric company funds. Bought animals and vehicles remain at this stable until an actual player journey moves them. Charlie may take them to his home carriage house, bring them to the factory temporarily, or board them here. Personal feed, livery boarding and wagon storage bills accrue daily and settle on Saturday.';panel.appendChild(note);
   const cash=document.createElement('p');cash.textContent='Personal cash: $'+Number(save.personalCash||0).toFixed(2);panel.appendChild(cash);
   const status=document.createElement('p');status.setAttribute('role','status');panel.appendChild(status);
+  const rental=document.createElement('p');
+  rental.textContent='Hires include the first day. Extra days are charged to your personal account and paid to this stable on Saturday. Return hired horses and vehicles physically to this service desk.';
+  panel.appendChild(rental);
+  for(const [service,offer] of Object.entries(trade.HIRES||{})){
+   const button=document.createElement('button');button.type='button';
+   button.textContent=offer.label+' · $'+(offer.priceCents/100).toFixed(2)+' first day';
+   button.disabled=!live||save.paused||save.phase!=='day';
+   button.onclick=()=>{
+    const next=(save.liveryPurchaseSequence||0)+1,token='stable:'+next;
+    const result=trade.hire(save,locationId,service,token,(seconds,away)=>root.advanceWorldTime(seconds,away));
+    status.textContent=result.ok?'Hire recorded. Prepare the horse for travel when ready.':result.reason;
+    if(result.ok&&!result.repeated){
+     save.liveryPurchaseSequence=next;changed?.();
+     render(locationId,roomId,save,changed,live);
+     root.FE_HORSE_STABLE_UI?.render?.(locationId,roomId,save,changed,live);
+    }
+   };
+   panel.appendChild(button);
+  }
+  const hired=(save.transport?.assets||[]).filter(a=>a.owner==='rental'&&a.hiredAt===locationId);
+  const teams=new Map();
+  for(const asset of hired){
+   const group=asset.id.split(':').slice(0,-1).join(':');
+   if(!teams.has(group))teams.set(group,asset);
+  }
+  for(const asset of teams.values()){
+   const button=document.createElement('button');button.type='button';
+   button.textContent='Return hired team '+asset.id+' to this stable';
+   button.disabled=!live||save.paused||save.phase!=='day';
+   button.onclick=()=>{
+    const next=(save.liveryPurchaseSequence||0)+1,token='stable:'+next;
+    const result=trade.returnHire(save,asset.id,token,(seconds,away)=>root.advanceWorldTime(seconds,away));
+    status.textContent=result.ok?'Hired team returned to its owner.':result.reason;
+    if(result.ok&&!result.repeated){
+     save.liveryPurchaseSequence=next;changed?.();
+     render(locationId,roomId,save,changed,live);
+     root.FE_HORSE_STABLE_UI?.render?.(locationId,roomId,save,changed,live);
+    }
+   };panel.appendChild(button);
+  }
   for(const item of Object.keys(stable.prices)){
    const offer=trade.quote(locationId,item);
    const button=document.createElement('button');button.type='button';
