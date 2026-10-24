@@ -2661,6 +2661,18 @@ function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()
 // The city registry is the single source of truth; missing city.js must not
 // silently fall back to six obsolete, geographically incorrect map pins.
 const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(v=>Object.assign({},v));
+// Previous V2 defaults were serialized even if a player only renamed one pin.
+// A matching old default is not a hand-adjusted placement. Preserve different
+// stored coordinates exactly, but let untouched pins adopt the reviewed map.
+const TITLE_MAP_OLD_DEFAULTS=Object.freeze({
+ whiteHouse:[.434,.454],washingtonAirport:[.305,.664],
+ governmentHospital:[.733,.680],georgetownCanal:[.271,.475],
+ easternBranchFishing:[.758,.642],star:[.400,.453],
+ oldChinatown:[.508,.489],russianTradeHall:[.372,.358],
+ commercePoker:[.300,.646],home:[.619,.580],
+ fletchersCove:[.184,.402],chainBridgeFishing:[.139,.326],
+ potomacFishingBank:[.340,.690]
+});
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
@@ -2797,10 +2809,15 @@ function loadTitleMapLocationLayout(){
   const p=saved[location.id];
   if(!p||typeof p!=='object')continue;
   if(Number.isFinite(+p.x)&&Number.isFinite(+p.y)){
-   location.x=Math.max(0,Math.min(1,+p.x));
-   location.y=Math.max(0,Math.min(1,+p.y));
-   const base=TITLE_MAP_LOCATION_DEFAULTS.find(v=>v.id===location.id);
-   location.userPlaced=!!base&&(Math.abs(location.x-base.x)>0.000001||Math.abs(location.y-base.y)>0.000001);
+   const legacy=TITLE_MAP_OLD_DEFAULTS[location.id];
+   const wasUntouchedOldDefault=!!legacy&&
+    Math.abs(+p.x-legacy[0])<0.000002&&Math.abs(+p.y-legacy[1])<0.000002;
+   if(!wasUntouchedOldDefault){
+    location.x=Math.max(0,Math.min(1,+p.x));
+    location.y=Math.max(0,Math.min(1,+p.y));
+    const base=TITLE_MAP_LOCATION_DEFAULTS.find(v=>v.id===location.id);
+    location.userPlaced=!!base&&(Math.abs(location.x-base.x)>0.000002||Math.abs(location.y-base.y)>0.000002);
+   }
   }
   if(typeof p.label==='string'&&p.label.trim()&&p.label.trim().length<=64)
    location.pinLabel=p.label.trim();
