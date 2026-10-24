@@ -8,8 +8,7 @@ const SPORTS=Object.freeze({
  boxing:Object.freeze({label:'D.C. Boxing Champion',earliest:1878,field:4,advance:1}),
  poker:Object.freeze({label:'D.C. Poker Champion',earliest:1878,field:8,advance:2}),
  dog:Object.freeze({label:'D.C. Kennel Champion',earliest:1919,field:12,advance:3}),
- car:Object.freeze({label:'D.C. Motor Racing Champion',earliest:1933,field:12,advance:3}),
- underground:Object.freeze({label:'Underground Fighting Champion',earliest:1878,field:4,advance:1})
+ car:Object.freeze({label:'D.C. Motor Racing Champion',earliest:1933,field:12,advance:3})
 });
 const clone=x=>JSON.parse(JSON.stringify(x));
 function checkDate(date){
@@ -35,6 +34,7 @@ function key(sport,date){return (sport==='poker'?'dc-poker-challenge':sport)+'-'
 function open(state,{sport,date,entrants}){
  init(state);const config=validSport(sport,date),id=key(sport,date);
  if(state.tournaments[id])return clone(state.tournaments[id]);
+ if(Object.values(state.tournaments).some(t=>t.sport===sport&&t.status!=='complete'))throw Error('A previous championship in this sport is still running');
  if(!Array.isArray(entrants)||entrants.length!==config.field||new Set(entrants).size!==entrants.length||
  !entrants.every(x=>typeof x==='string'&&x.length>0&&x.length<=70))throw Error('Tournament requires distinct seeded entrants');
  const half=config.field/2,rounds=sport==='horse'?{
@@ -56,7 +56,7 @@ function open(state,{sport,date,entrants}){
 function round(state,{tournamentId,roundId,order,date}){
  init(state);checkDate(date);
  const t=state.tournaments[tournamentId];if(!t)throw Error('Tournament not found');
- if(t.month!==date.slice(0,7))throw Error('Wrong tournament month');
+ if(date.slice(0,7)<t.month)throw Error('Tournament has not begun yet');
  validSport(t.sport,date);
  if(!Object.prototype.hasOwnProperty.call(t.rounds,roundId))throw Error('Unrecognized round');
  const r=t.rounds[roundId];if(r.result)throw Error('Results already finalized');
@@ -85,7 +85,7 @@ function round(state,{tournamentId,roundId,order,date}){
 function placeBet(state,{betId,tournamentId,roundId,market,selection,stake,decimalOdds,personalCash,date,law,venueId,game,explicitIllicit}){
  init(state);checkDate(date);
  const t=state.tournaments[tournamentId];if(!t)throw Error('Tournament not found');
- if(t.month!==date.slice(0,7))throw Error('Tournament month mismatch');
+ if(date.slice(0,7)<t.month)throw Error('Tournament has not begun yet');
  const stage=market==='champion'?'final':roundId;
  if(market!=='round-winner'&&market!=='champion')throw Error('Unsupported wager market');
  if(!Object.prototype.hasOwnProperty.call(t.rounds,stage))throw Error('Unsupported betting stage');
