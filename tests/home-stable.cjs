@@ -38,6 +38,7 @@ assert.equal(s.transport.assets[0].locationId,'factory','Walking home cannot tel
 assert.equal(move.prepare(s,'horse1','factory').ok,true);
 assert.equal(trip('factory','home','ride-back').ok,true);
 assert.equal(s.transport.assets[0].locationId,'home');
+s.currentLocation={locationId:'home',roomId:'private-stable'};
 const snapshot=JSON.stringify(s);
 assert.equal(move.onArrival(s,'factory','home',true).ok,false);
 assert.equal(JSON.stringify(s),snapshot);
