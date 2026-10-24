@@ -2693,7 +2693,7 @@ let titleMapShowNames=false,titleMapCategory='all',titleMapOrigin='all',titleMap
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
  sport:'Recreation & Competition',leisure:'Leisure & Outdoors',fair:'Fairgrounds',transport:'Transportation',
- finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gambling & Games',underground:'Underground',religious:'Religious Sites'
+ finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gambling & Games',underground:'Underground',religious:'Religious Sites',commerce:'Markets & Repairs'
 });
 // Printed Washington In and Out Guide raster: grid 1-30 / A-R.
 function titleMapGridAt(x,y){
