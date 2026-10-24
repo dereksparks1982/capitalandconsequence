@@ -19,9 +19,12 @@ precedence over approximate street/block deductions.
 The registry retains all **34 original numbered destinations and IDs**.
 Pins are **red when the destination is historically real** and **blue when the
 destination is invented**, even if the fictional venue occupies a real building.
-Unverified markers have dashed borders. Unplaced markers outside the printed
-image are listed in the location directory and appear for manual repositioning
-when Edit Pins mode is on, rather than pointing at the printed legend.
+Approximate area-located markers have dashed borders. Unverified default
+pins without an established site are **directory-only** in regular map view,
+including those that would otherwise appear on the printed index, water or
+incorrect streets. Edit Pins mode reveals all 34 draft markers so the owner
+can position them. If the owner has manually saved a different location for
+a pin, that profile's placement takes precedence and remains visible.
 
 ## Current full registry
 
@@ -70,8 +73,10 @@ when Edit Pins mode is on, rather than pointing at the printed legend.
 - **Address / area only**: relocated to a specified district, street intersection
   or river reach, but the individual fictional room/building or public entrance
   is not printed. Not declared historically verified.
-- **Unverified**: still has its previous default value to avoid erasing pin identity.
-  A newly invented address was **not** assigned. The coordinate must be confirmed
+- **Unverified**: retains its previous draft value for ID/save compatibility,
+  but its default marker is hidden outside Edit Pins mode until positioned;
+  it is still selectable from the directory. A newly invented address was
+  **not** assigned. The coordinate must be confirmed
   from the right-hand index / grid or an owner-approved fictional address.
 - Profile-specific positions and renamed labels use the existing V2 key,
   `federalElectricTitleMapLocationsV2:<profile>`. Saved positions override new
