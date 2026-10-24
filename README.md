@@ -1,5 +1,18 @@
 # Capital & Consequence
 
+## CURRENT SOURCE · v0.6.88-dev · fishing and living Washington merchant market (October 24, 2026)
+
+**[x] Playable shore fishing:** Six existing locations (pins 29–34) now host a location-bound rod-and-line game. A personal 75¢ tackle purchase equips the character; casting takes six player-controlled minutes and reel/hold/steer/give-line each take one minute using the canonical 1:1 clock. Fish have visible direction, tension, distance and stamina, and can be landed, escape or break free. Caught fish remain in the player's saved eight-fish creel, with voluntary release only. No aquarium, automatic sale, new map artwork or additional map is included. Fishing tests verify save/load and reachable catches.
+
+**[x] Shared finite merchant economy:** Chinatown's existing Market Street lets players buy physical supplies with **personal** cash. NPCs autonomously buy from the **same** finite merchant stock and tills, and Sullivan's Saturday groceries draw from that stock without changing his $6 weekly wage or 25¢ factory rent. Supplier deliveries are recorded on observed Monday/Thursday morning slots, add physical quantities and explicitly track wholesale payments/debts. The seller can run out of an item. Player purchases persist in a saved shopping bag. NPC choices never independently advance time. Deterministic source tests cover market cash, supplier deliveries, stockouts, duplicate prevention, and shared NPC/player purchases.
+
+**[x] Original map and UI stay:** One canonical alternate-history map for 1878, 1938 and every other year. All **34 numbered pins**, editable profile-local names, Save Name, Reset Name, and all Locations filters are retained and source-tested.
+
+**Verified full Source QA:** [run 40069611982](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982), source commit `4eaf1d55b652c8d8b7d8222b8af0777742cb135b`, passed. This is not proof of interactive human playthrough. Desktop candidate pending. The approved packaging process is one **private, unaccepted Linux v0.6.88 test executable** after all source slices, source QA, desktop smoke test and SHA-256; do not publish/tag/accept until owner validates it. GitHub release-upload by bot was denied (403), so the manual-only Linux workflow now tries a **private Actions artifact** with an archive and checksum. GitHub artifact storage may be full; if so, report the actual delivery blocker without calling the build downloadable.
+
+**Future concept, not implemented:** The user likes vintage engraved banknote-style square `Ledger Marks` icons and saved concept art for later. Do not integrate the icon set or modify map art in this gameplay candidate without a new approval.
+
+
 > **CURRENT OWNER DECISION · OCTOBER 24, 2026 · PERMANENT MAP CANON:** The bundled Washington map is the single authoritative alternate-history map for **1878, 1938 and every playable year**. It never changes with the calendar. No historical replacement, reconstruction, map survey or map-image swap is authorized or planned. The asset filename `title-map-1938.jpg` is a legacy name, **not** the map's in-world date. Preserve all 34 numbered markers, working editable per-profile pin names, Save/Reset Name, map pin dragging/zoom and Locations category filters. Map pin labels are user-editable display names; location identity and access logic are separate. **This overrides all earlier 1878-map replacement requests, research, checklists, and draft roadmap items.** See [MAP-CANON.md](MAP-CANON.md).
 
 

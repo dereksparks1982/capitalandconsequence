@@ -1,11 +1,24 @@
 # Capital & Consequence · CONTINUE HERE
 
+## CURRENT SOURCE · v0.6.88-dev · fishing and living Washington merchant market (October 24, 2026)
+
+**[x] Playable shore fishing:** Six existing locations (pins 29–34) now host a location-bound rod-and-line game. A personal 75¢ tackle purchase equips the character; casting takes six player-controlled minutes and reel/hold/steer/give-line each take one minute using the canonical 1:1 clock. Fish have visible direction, tension, distance and stamina, and can be landed, escape or break free. Caught fish remain in the player's saved eight-fish creel, with voluntary release only. No aquarium, automatic sale, new map artwork or additional map is included. Fishing tests verify save/load and reachable catches.
+
+**[x] Shared finite merchant economy:** Chinatown's existing Market Street lets players buy physical supplies with **personal** cash. NPCs autonomously buy from the **same** finite merchant stock and tills, and Sullivan's Saturday groceries draw from that stock without changing his $6 weekly wage or 25¢ factory rent. Supplier deliveries are recorded on observed Monday/Thursday morning slots, add physical quantities and explicitly track wholesale payments/debts. The seller can run out of an item. Player purchases persist in a saved shopping bag. NPC choices never independently advance time. Deterministic source tests cover market cash, supplier deliveries, stockouts, duplicate prevention, and shared NPC/player purchases.
+
+**[x] Original map and UI stay:** One canonical alternate-history map for 1878, 1938 and every other year. All **34 numbered pins**, editable profile-local names, Save Name, Reset Name, and all Locations filters are retained and source-tested.
+
+**Verified full Source QA:** [run 40069611982](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982), source commit `4eaf1d55b652c8d8b7d8222b8af0777742cb135b`, passed. This is not proof of interactive human playthrough. Desktop candidate pending. The approved packaging process is one **private, unaccepted Linux v0.6.88 test executable** after all source slices, source QA, desktop smoke test and SHA-256; do not publish/tag/accept until owner validates it. GitHub release-upload by bot was denied (403), so the manual-only Linux workflow now tries a **private Actions artifact** with an archive and checksum. GitHub artifact storage may be full; if so, report the actual delivery blocker without calling the build downloadable.
+
+**Future concept, not implemented:** The user likes vintage engraved banknote-style square `Ledger Marks` icons and saved concept art for later. Do not integrate the icon set or modify map art in this gameplay candidate without a new approval.
+
+
 > **CURRENT OWNER DECISION · OCTOBER 24, 2026 · PERMANENT MAP CANON:** The bundled Washington map is the single authoritative alternate-history map for **1878, 1938 and every playable year**. It never changes with the calendar. No historical replacement, reconstruction, map survey or map-image swap is authorized or planned. The asset filename `title-map-1938.jpg` is a legacy name, **not** the map's in-world date. Preserve all 34 numbered markers, working editable per-profile pin names, Save/Reset Name, map pin dragging/zoom and Locations category filters. Map pin labels are user-editable display names; location identity and access logic are separate. **This overrides all earlier 1878-map replacement requests, research, checklists, and draft roadmap items.** See [MAP-CANON.md](MAP-CANON.md).
 
 
 > **ONLY CURRENT DEVELOPMENT HANDOFF.** Read this file's first CURRENT SOURCE section, then confirm `app.js`, `package.json`, and the latest GitHub Source QA. Older milestones below are **historical**, even when they quote outdated "current" claims. `HANDOFF-2026-10-23-THREAD-END.md` is **archived**, not a competing handoff. **Keep `app.js` and other existing source files intact; the owner explicitly forbids splitting them.** Do not add requirements to preserve old 1890/1938 saves. Do not build, package, release, or push code without authorization.
 
-## CURRENT SOURCE · v0.6.86-dev · six fishing map locations and named pins (October 23, 2026)
+## HISTORICAL SOURCE · v0.6.86-dev · six fishing map locations and named pins (October 23, 2026)
 
 **[x] Six mapped fishing areas, NO fishing minigame.** 1878-appropriate map destinations in **Leisure & Outdoors**, separated from `sport` (competitive racing and boxing) and `gaming` (gambling): **29 Potomac River Fishing Bank** (`potomacFishingBank`), **30 Babcock Lake** (`babcockLake`, closes after 1888), **31 Fletcher's Cove** (`fletchersCove`), **32 Georgetown Canal Towpath** (`georgetownCanal`), **33 Eastern Branch Fishing Shore** (`easternBranchFishing`), and **34 Chain Bridge Riverbank** (`chainBridgeFishing`). The five new spots have public shoreline rooms; six markers total. All markers appear on the **permanent alternate-history Washington map**. Do not present any fishing, fish inventory, aquarium, gear, battle or auto-selling system as completed.
 
@@ -21,7 +34,7 @@
 
 **Map discussion, superseded by October 24 correction:** The earlier historical-map request/research is withdrawn. The current Washington map is canon for all years, not a 1938 placeholder. Retain 34 pins, editable names, drag/zoom and category filters. No replacement-map planning or image changes. [Binding map canon](MAP-CANON.md).
 
-**Fishing spot scope:** Six public map destinations, no implemented fishing game. The dialog-driven minigame with a reactive fish, visible direction and line tension, giving line/reeling/steering, and no aquarium or compulsory selling is future design work. Babcock Lake has a time gate; investigate alternate annual map presentation later rather than falsely presenting a static 1878 lake into all future decades.
+**Fishing spot scope:** Six public map destinations, no implemented fishing game. The dialog-driven minigame with a reactive fish, visible direction and line tension, giving line/reeling/steering, and no aquarium or compulsory selling is future design work. Babcock Lake's existing location access has a date gate. This does NOT authorize a map-image change: the alternate-history map remains permanent for every year.
 
 **GitHub handoff housekeeping:** `ROADMAP.md`, `README.md`, `DECISIONS.md` now reflect v0.6.86 instead of falsely labelling v0.6.84/0.6.85 as current. A new `MAP-1878-RESEARCH.md` fixes an earlier broken reference. All these final commits are **documentation-only** after the last green Source QA and do not imply game-code modification or desktop verification. One `main` branch; no split `app.js`.
 
