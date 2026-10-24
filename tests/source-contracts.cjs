@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.81','Current package version is v0.6.81');
-check(appSource.includes("APP_VERSION='v0.6.81-dev'"),'Game masthead uses v0.6.81');
+check(pkg.version==='0.6.82','Current package version is v0.6.82');
+check(appSource.includes("APP_VERSION='v0.6.82-dev'"),'Game masthead uses v0.6.82');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.81'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.82'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.81-linux-x64.tar.gz'),'Manual workflow archives v0.6.81');
+check(workflow.includes('0.6.82-linux-x64.tar.gz'),'Manual workflow archives v0.6.82');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -606,3 +606,6 @@ check(pkg.scripts['test:source'].includes('tests/workshop-presence.cjs'),'Minute
 check(index.includes('horse-care.js?v=')&&index.indexOf('horse-care.js?v=')<index.indexOf('app.js?v='),'Horse care loads before day-close settlements');
 check(appSource.includes('window.FE_HORSE_CARE?.settleDay?.(S)'),'Player day close settles daily owned horse liabilities');
 check(pkg.scripts['test:source'].includes('tests/horse-care.cjs'),'Horse upkeep test is mandatory');
+
+check(pkg.scripts['test:source'].includes('tests/workshop-deadlines.cjs'),'Late railway settlement and blocked renewal have mandatory source QA');
+check(read('component-works.js').includes('latePenaltyCents'),'Orders expose actual late deductions rather than fictional payment');
