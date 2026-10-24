@@ -14,7 +14,11 @@
   organization:'Federal districts organized around collective national purposes',
   government:'Federal republic, alternate constitutional arrangements not yet specified',
   campaignDesignStart:'1878-01-02',
-  currentPrototypeStart:'1890-01-02'
+  currentPrototypeStart:'1890-01-02',
+  presidentialTermYears:10,
+  presidentialMaxTerms:null,
+  presidentialNextElectionYear:1886,
+  presidentialElectionMethod:'nationwide popular vote'
  });
  // Only Columbia's capital role is fixed canon. Other NAMES and all noncapital
  // geographic borders are placeholders until the owner selects them.

@@ -8,18 +8,18 @@
   const year=Number(iso.slice(0,4));
   const common=[
    'This is a fictional post-Civil-War United States organized into purpose-based districts instead of states.',
-   'After the 1861–1865 Civil War the Electoral College was abolished. Presidents are elected only by nationwide popular vote.',
+   'After the 1861–1865 Civil War the Electoral College was abolished. Presidents are elected only by nationwide popular vote for TEN-YEAR terms, with NO LIMIT on reelection.',
    'Washington, District of Columbia, is the federal capital; exact national district borders are still unsettled.',
    'No character knows events from later than the provided in-game date.'
   ];
-  const context=year===1878?[
+  const context=year>=1878&&iso<'1887-03-04'?[
    'Working alternate-history canon for 1878: Samuel J. Tilden won the 1876 nationwide popular vote and is president. This is deliberately different from actual history.',
-   'The present date is in 1878. No resident can cite a later election result as something that already happened.'
+   'Tilden was inaugurated on March 4, 1877 for a ten-year term scheduled through March 4, 1887. The next regular election is 1886; later election winners and any intervening succession depend on the simulation.'
   ]:year<1878?[
    'The president for this earlier fictional date has not been established. Do not invent one.'
   ]:[
    'The presidency for this date after 1878 has NOT been established in game canon. Do not give a specific incumbent unless the game supplies a later curated fact.',
-   'The outcome of the 1880 election and all later fictional presidential elections is currently undecided.'
+   'There is NO presidential election in 1880 in this timeline. After 1876, regular presidential elections occur every TEN years: 1886, 1896, and so on; outcomes remain undecided.'
   ];
   return {date:iso,year,lines:[...common,...context]};
  }
