@@ -23,6 +23,8 @@
   const grant=id+':'+room.id;
   if(has(actor?.roomPermits,grant))return {ok:true,locationId:id,roomId:room.id};
   const role=actor?.route,person=actor?.id;
+  if(id==='home'&&room.id==='private-stable'&&actor?.route==='industrialist')
+   return {ok:true,locationId:id,roomId:room.id};
   if(id==='factory'){
    if(room.id==='executive-office'&&role==='industrialist')return {ok:true,locationId:id,roomId:room.id};
    if((room.id==='rear-stable'||room.id==='workers-lodging')&&(role==='industrialist'||person==='foremanSullivan'))
