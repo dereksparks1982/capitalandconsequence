@@ -41,17 +41,26 @@ function recover(){
  for(const f of S.boxing.roster){f.condition=clamp((f.condition||80)+rand(2,6),50,100);f.confidence=clamp(f.confidence||50,20,95);if(f.injury&&f.condition>90&&Math.random()<.4)f.injury=null}
 }
 function buildCard(){
+ S.sportsChampionships=window.FE_CHAMPIONSHIPS.init(S.sportsChampionships);
+ const championship=window.FE_BOXING_CHAMPIONSHIP.next(S.sportsChampionships,S.gameDate,S.boxing.roster,window.FE_CHAMPIONSHIPS);
  const byWeight={};
  for(const f of S.boxing.roster){(byWeight[f.weightClass] ||= []).push(f)}
- const used=new Set(),bouts={};
+ const used=new Set(championship?.fighters||[]),bouts={};
  for(let i=0;i<CARD.length;i++){
-   const d=CARD[i],weight=WEIGHTS[i%WEIGHTS.length],pool=(byWeight[weight]||S.boxing.roster).filter(f=>!used.has(f.id));
+   const d=CARD[i];
+   if(championship&&d.id==='B4'){
+    const a=S.boxing.roster.find(f=>f.id===championship.fighters[0]);
+    const b=S.boxing.roster.find(f=>f.id===championship.fighters[1]);
+    bouts[d.id]={fighters:[a.id,b.id],odds:decimalOdds(a,b),result:null};
+    continue;
+   }
+   const weight=WEIGHTS[i%WEIGHTS.length],pool=(byWeight[weight]||S.boxing.roster).filter(f=>!used.has(f.id));
    pool.sort(()=>Math.random()-.5);
    const a=pool[0],b=pool[1]||S.boxing.roster.find(f=>!used.has(f.id)&&f.id!==a.id);
    used.add(a.id);used.add(b.id);
    bouts[d.id]={fighters:[a.id,b.id],odds:decimalOdds(a,b),result:null};
  }
- return {date:S.gameDate,bouts,bets:{},created:true};
+ return {date:S.gameDate,bouts,bets:{},created:true,championship};
 }
 function ensureState(){
  let changed=false;
@@ -104,6 +113,18 @@ function simulateBout(id){
    if(Math.random()<.025){l.injury='Medical suspension';l.condition=Math.min(l.condition,70)}
  }else{a.draws++;b.draws++;a.form.push('D');b.form.push('D')}
  settleBet(id,bout.result);
+ if(id==='B4'&&card.championship&&winnerId){
+  const c=card.championship;
+  const advance=window.FE_CHAMPIONSHIPS.round(S.sportsChampionships,{
+   tournamentId:c.tournamentId,roundId:c.roundId,
+   order:[String(winnerId),String(loserId)],date:S.gameDate
+  });
+  if(advance.payout.credit)S.personalCash+=advance.payout.credit;
+  if(c.roundId==='final'){
+   S.notes.push({date:displayDate(),text:fighter(winnerId).name+' won the D.C. Boxing Championship.',source:'licensed boxing championship'});
+  }
+ }
+ // A draw requires a rematch on a future Saturday, not automatic advancement.
  const attending=document.getElementById('racing')?.classList.contains('active');
  if(attending&&!S.contacts.promoter?.met&&Math.random()<.18){
    S.contacts.promoter.met=true;S.contacts.promoter.trust=1;
@@ -173,7 +194,7 @@ function renderLedger(){
 }
 function render(){
  const box=$b('boxingModule');if(!box)return;ensureState();
- $b('boxingMeta').textContent=S.phase==='night'?'Washington Arena · Tonight\'s licensed card · Opening bout at 45:00 remaining · Main event at 05:00':S.phase==='report'?'Washington Arena · Tonight\'s card is complete.':'Washington Arena · Licensed boxing opens during Washington Night.';
+ $b('boxingMeta').textContent=(S.boxing.card?.championship?'D.C. BOXING CHAMPIONSHIP · '+S.boxing.card.championship.roundId.toUpperCase()+' · ':'')+(S.phase==='night'?'Washington Arena · Tonight\'s licensed card · Opening bout at 45:00 remaining · Main event at 05:00':S.phase==='report'?'Washington Arena · Tonight\'s card is complete.':'Washington Arena · Licensed boxing opens during Washington Night.');
  $b('boxingBankroll').textContent=cash(S.personalCash);
  if(S.phase==='day')$b('boxingCard').innerHTML='<p class="muted">The arena opens during Washington Night. The announced card will be available for wagering after the Business Day closes.</p>';
  else{$b('boxingCard').innerHTML=CARD.map(boutCard).join('');$b('boxingCard').querySelectorAll('.boxing-bet-btn').forEach(btn=>btn.addEventListener('click',()=>placeBet(btn.dataset.bout)))}
