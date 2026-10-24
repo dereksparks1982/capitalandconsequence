@@ -1,5 +1,32 @@
 # Capital & Consequence · CONTINUE HERE
 
+# ACTIVE HANDOFF · Washington Map / October 24, 2026
+
+**Authoritative repo:** `dereksparks1982/capitalconsequence` (**not** the retired `federalelectric` repo); **branch:** `main`; **candidate state:** committed source, **not yet desktop-accepted**. This section supersedes stale figures in older handoff snapshots below.
+
+**Owner directives, do not reinterpret:**
+- The game uses the **same owner's uploaded 2048 × 1159 Washington In and Out Guide map** at `assets/artwork/maps/title-map-1938.jpg` for **1878, 1938 and all eras**. Its A–R / 1–30 printed grid and right-hand index are the source for real locations. **Do not replace the map, invent another map, or use arbitrary guessed pin placements.**
+- Historical/real pins are **red** and explicitly say **Non-Fiction** on both map popup and visited room page; invented venues are **blue** and say **Fiction**, even inside an existing historical building. Colored marker fills are **68% opaque** so the original cartography remains visible, while the numbers remain fully legible.
+- Non-Fiction locations have a collapsible **Real History · Further Reading** section with a concise factual introductory note, a Wikipedia URL and a Library of Congress archive-search link. These open externally in the user's browser, not replacing the game, and the notes flag divergence from alternate history. Fiction entries receive **no** such historical attribution.
+- Clicking the **Your pin name** input must **not close the popup**. The pointerdown handler on the card isolates clicks from map capture; original map pan/zoom controls are untouched.
+- The owner does **not** want a manually dragged pin position auto-saved. In Edit Pins, pointer release now **asks for confirmation** for a position inside the printed map, **rejects** drops over the index/outside the map, and **reverts** canceled placements. Confirmation is **not automated verification** of a historically correct street address. Profile-local names and legitimately moved placements stay saved.
+- Search by name/number/grid, filter by origin and category, browse location directory, export per-profile coordinates. Do not erase saved profile labels or hand-adjusted markers.
+
+**Current numbered destinations: 38, 16 historical / 22 fictional.** Additions:
+- **35** Franciscan Monastery of the Holy Land in America · Brookland, real, red, Religious Sites. Actual church complex was completed in **1899**, noted as a chronology divergence in a campaign beginning 1878.
+- **36** Cobbler & Shoe Repair · fictional blue storefront near Eastern Market, Markets & Repairs.
+- **37** Eastern Market · real red historic Capitol Hill market.
+- **38** Georgetown Market House · real red historic Georgetown market.
+
+New cobbler/market locations have navigable **room shells only**. Do **not** claim actual cobbler repair transactions, market inventory, prices or merchants exist yet. Pin audit `MAP-LOCATION-GRID-AUDIT.md`: **5 depicted features, 19 documented streets/areas (not necessarily building entrances), 14 locations without an established exact address**. Those 14 are visible in the directory and Edit Pins; do not silently guess fictional businesses or assign fake historical addresses. Additional essential businesses (apothecary, tailor, barber, coal/hardware, etc.) remain proposals only.
+
+**Implementation pointers:** `city.js` (register, history notes, printed-map anchors and red/blue identity), `app.js` (map filters, map pin editing/confirmation, profile-local pins and popup/room historical panels), `index.html` (cards and destination page), `styles.css` (semi-transparent markers/education UI). `MAP-CANON.md` holds non-negotiable art rules.
+
+**Testing honestly described:** The focused source/DOM tests `tests/map-guide-grid.cjs`, `tests/map-history-card.cjs`, `tests/map-history-reference.cjs`, and `tests/map-fishing-locations.cjs` passed against current fetched source in a simulated JS/DOM environment. The full **native Node `npm run test:source`**, **Electron mouse/keyboard playthrough**, physical packaged map-art test, and a **new executable** have **not** been completed in this map/historical-reading slice. Before delivery, run the full suite on Ubuntu and actually click the editable name input, open a historical popup and reading link, visit a market and cobbler, test red/blue opacity, drag-confirm/cancel pins and reload separate profiles. No accepted desktop binary or SHA-256 has been produced from this slice.
+
+**Next thread:** Begin by reading this handoff, `MAP-CANON.md`, `MAP-LOCATION-GRID-AUDIT.md` and current source. Start with **verification and bug fixes**, not replacing existing map or re-designing pin movement. Never claim all 38 map sites are precisely verified while 14 remain without decided addresses. Respect the owner’s single-branch/approval/release flow.
+
+
 > **MAP HISTORY HANDOFF · October 24:** The immutable A–R / 1–30 map has 38 pins. Card and interior page say **Fiction** (blue/invented) or **Non-Fiction** (red/real). All 16 historical entries contain expandable factual reading, Wikipedia and Library of Congress links, with the alternate timeline clearly distinguished. Pin fills are semi-transparent (68% opaque), numerals stay legible. The historical reading DOM-contract suite `tests/map-history-reference.cjs` is in `npm run test:source` and passes the focused checks. Do not mistake these for completed Electron UI testing or a new executable.
 
 
