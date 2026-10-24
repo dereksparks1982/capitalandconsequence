@@ -18,8 +18,16 @@
   if(care.entries[date])return {...care.entries[date],repeated:true};
   const totals={feed:0,westLivery:0,eastLivery:0};
   for(const a of assets||[]){
-   if(a?.owner!=='personal'||(a.kind!=='horse'&&a.kind!=='carriage')||
+   if(!a||(a.kind!=='horse'&&a.kind!=='carriage')||
       a.status==='missing'||a.status==='stolen'||(a.purchasedDate&&a.purchasedDate>date))continue;
+   // First rental day was paid at hire. Additional days follow the rented
+   // animal wherever it is and credit the issuing brother's stable.
+   if(a.owner==='rental'){
+    if(a.hiredDate<date&&LIVERIES.includes(a.hiredAt)&&Number.isSafeInteger(a.dailyRateCents))
+     totals[a.hiredAt]+=a.dailyRateCents;
+    continue;
+   }
+   if(a.owner!=='personal')continue;
    const stable=LIVERIES.includes(a.locationId)?a.locationId:null;
    if(a.kind==='horse')totals.feed+=FEED_CENTS;
    if(stable)totals[stable]+=a.kind==='horse'?BOARD_CENTS:VEHICLE_STORAGE_CENTS;
