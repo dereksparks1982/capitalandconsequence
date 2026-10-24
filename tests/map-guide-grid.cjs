@@ -57,6 +57,11 @@ assert.ok(app.includes('viewport.setPointerCapture(e.pointerId)'),'existing map 
 assert.ok(app.includes('const TITLE_MAP_OLD_DEFAULTS=Object.freeze({'),'old map defaults identified without clearing V2 storage');
 assert.ok(app.includes('wasUntouchedOldDefault'),'untouched old pins receive reviewed defaults');
 assert.ok(app.includes('location.userPlaced=true'),'manually moved pins are displayed and stored');
+assert.ok(app.includes("confirm('Save pin '+location.n"),'pin drops must receive explicit owner confirmation');
+assert.ok(app.includes("if(!approved){"),'rejected map drops restore the previous saved position');
+assert.ok(app.includes("if(moved&&!onPrintedMap)"),'drops outside A–R / 1–30 grid are rejected');
+assert.ok(app.includes("location.x=before.x;location.y=before.y"),'rejected drops do not persist provisional placements');
+assert.ok(app.includes("commerce:'Markets & Repairs'"),'market and repair venues have distinct category filter');
 assert.ok(app.includes("(location.placement==='unverified'&&!location.userPlaced)"),
  'unsurveyed coordinates do not appear as confirmed markers');
 assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
