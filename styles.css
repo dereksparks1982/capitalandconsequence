@@ -1298,8 +1298,8 @@ body.elephant-easter-egg-open{overflow:hidden}
 .city-room-directory button.active{background:#142b4a;color:#fffaf0;border-color:#142b4a}
 .city-room-actions{gap:8px;flex-wrap:wrap}
 .city-room-actions button:disabled{opacity:.5;cursor:not-allowed}
-@media(max-width:1220px) and (min-width:701px){
- .daybar{gap:5px;padding-left:7px;padding-right:7px;font-size:12px;letter-spacing:.02em}
+@media(max-width:1400px) and (min-width:701px){
+ .daybar{flex-wrap:wrap;gap:5px;padding-left:7px;padding-right:7px;font-size:12px;letter-spacing:.02em}
  .daybar span{padding:3px 5px}
  #headerCompanyCash,#headerPersonalCash{min-width:80px}
  .primary-nav{gap:3px}
