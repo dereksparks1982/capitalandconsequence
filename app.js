@@ -2663,7 +2663,7 @@ let titleMapOpenedFromGame=false;
 let titleMapShowNames=false,titleMapCategory='all';
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
- sport:'Sports & Recreation',fair:'Fairgrounds',transport:'Transportation',
+ sport:'Recreation & Competition',leisure:'Leisure & Outdoors',fair:'Fairgrounds',transport:'Transportation',
  finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gaming',underground:'Underground'
 });
 function syncTitleMapFilters(){
@@ -2700,28 +2700,49 @@ function loadTitleMapLocationLayout(){
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
+  location.pinLabel='';
  });
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(titleMapStorageKey())||'null')}catch(e){}
  if(!saved||typeof saved!=='object')return;
  for(const location of TITLE_MAP_LOCATIONS){
   const p=saved[location.id];
-  if(!p||!Number.isFinite(+p.x)||!Number.isFinite(+p.y))continue;
-  location.x=Math.max(0,Math.min(1,+p.x));
-  location.y=Math.max(0,Math.min(1,+p.y));
+  if(!p||typeof p!=='object')continue;
+  if(Number.isFinite(+p.x)&&Number.isFinite(+p.y)){
+   location.x=Math.max(0,Math.min(1,+p.x));
+   location.y=Math.max(0,Math.min(1,+p.y));
+  }
+  if(typeof p.label==='string'&&p.label.trim()&&p.label.trim().length<=64)
+   location.pinLabel=p.label.trim();
+ }
+ updateTitleMapPinLabels();
+}
+function pinDisplayName(location){return location.pinLabel||location.name}
+function updateTitleMapPinLabels(){
+ for(const location of TITLE_MAP_LOCATIONS){
+  const marker=[...document.querySelectorAll('[data-map-location]')].find(e=>e.dataset.mapLocation===location.id);
+  if(!marker)continue;
+  const label=marker.querySelector('.title-map-marker-label');
+  if(label)label.textContent=pinDisplayName(location);
+  marker.setAttribute('aria-label',pinDisplayName(location)+' — '+location.area);
+ }
+ if(titleMapSelectedLocationId){
+  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===titleMapSelectedLocationId);
+  if(location){const title=$('#titleMapLocationName');if(title)title.textContent=pinDisplayName(location)}
  }
 }
 function saveTitleMapLocationLayout(){
  const saved={};
- for(const location of TITLE_MAP_LOCATIONS)saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6)};
+ for(const location of TITLE_MAP_LOCATIONS)saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6),...(location.pinLabel?{label:location.pinLabel}:{})};
  localStorage.setItem(titleMapStorageKey(),JSON.stringify(saved));
 }
 function resetTitleMapLocationLayout(){
- localStorage.removeItem(titleMapStorageKey());
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
  });
+ // Resetting pin positions must not erase the player's saved names.
+ saveTitleMapLocationLayout();
  closeTitleMapLocation();
  titleMapPositionMarkers();
  updateTitleMapPinEditor();
@@ -2772,6 +2793,7 @@ function mapTravelRestriction(location){
  if(titleDevUnlockAllRooms)return '';
  if(entry.plannedOnly)return 'This location is planned but not yet open.';
  if(entry.availableFrom&&S.gameDate<entry.availableFrom)return 'Not open until '+entry.availableFrom+'.';
+ if(entry.availableUntil&&S.gameDate>entry.availableUntil)return 'This historic location no longer exists after '+entry.availableUntil+'.';
  const dutyRestriction=window.FE_PATROL?.travel?.(S,entry.id);
  if(dutyRestriction&&!dutyRestriction.ok)return dutyRestriction.reason;
  if(window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(entry.id))return 'This location is not yet accessible. Discover an invitation or satisfy its entry conditions.';
@@ -2781,7 +2803,10 @@ function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
  titleMapSelectedLocationId=id;
  syncTitleMapFilters();
- $('#titleMapLocationName').textContent=location.name;
+ $('#titleMapLocationName').textContent=pinDisplayName(location);
+ const nameField=$('#titleMapPinName');
+ if(nameField)nameField.value=pinDisplayName(location);
+ const nameNotice=$('#titleMapPinNameNotice');if(nameNotice)nameNotice.textContent='Original place: '+location.name;
  $('#titleMapLocationArea').textContent=location.area;
  $('#titleMapLocationDescription').textContent=location.description;
  const reason=mapTravelRestriction(location);
@@ -2797,6 +2822,20 @@ function openTitleMapLocation(id){
   travel.dataset.locationId=id;
  }
  card.hidden=false;
+}
+function renameSelectedTitleMapPin(reset=false){
+ const location=TITLE_MAP_LOCATIONS.find(v=>v.id===titleMapSelectedLocationId),field=$('#titleMapPinName');
+ if(!location||!field)return false;
+ const label=reset?'':field.value.trim();
+ if(label.length>64||(!reset&&!label)){
+  const notice=$('#titleMapPinNameNotice');if(notice)notice.textContent='Use 1 to 64 characters, or choose Reset Name.';
+  return false;
+ }
+ location.pinLabel=label&&label!==location.name?label:'';
+ field.value=pinDisplayName(location);
+ saveTitleMapLocationLayout();updateTitleMapPinLabels();
+ const notice=$('#titleMapPinNameNotice');if(notice)notice.textContent='Saved for this profile.';
+ return true;
 }
 function travelFromTitleMap(){
  const id=titleMapSelectedLocationId||$('#titleMapLocationTravel')?.dataset.locationId;
@@ -2818,8 +2857,9 @@ function buildTitleMapMarkers(){
   marker.type='button';
   marker.className='title-map-marker';
   marker.dataset.mapLocation=location.id;
-  marker.setAttribute('aria-label',location.name+' — '+location.area);
-  marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label">'+location.name+'</span>';
+  marker.setAttribute('aria-label',pinDisplayName(location)+' — '+location.area);
+  marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label"></span>';
+ marker.querySelector('.title-map-marker-label').textContent=pinDisplayName(location);
   marker.addEventListener('pointerdown',e=>{
    e.stopPropagation();
    if(!titleMapPinEdit||e.button!==0)return;
@@ -3034,6 +3074,10 @@ function initTitleMapViewer(){
  $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
  $('#titleMapLocationTravel').onclick=travelFromTitleMap;
+ const rename=$('#titleMapPinRename'),resetName=$('#titleMapPinResetName'),name=$('#titleMapPinName');
+ if(rename)rename.onclick=()=>renameSelectedTitleMapPin();
+ if(resetName)resetName.onclick=()=>renameSelectedTitleMapPin(true);
+ if(name)name.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();renameSelectedTitleMapPin()}});
  $('#titleMapEditPins').onclick=toggleTitleMapPinEditor;
  $('#titleMapResetPins').onclick=()=>{if(confirm('Reset all '+TITLE_MAP_LOCATIONS.length+' map pins to their agreed default locations for this profile?'))resetTitleMapLocationLayout()};
  $('#titleMapReset').onclick=()=>{closeTitleMapLocation();titleMapReset()};
