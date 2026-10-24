@@ -41,6 +41,13 @@ assert.ok(app.includes("format:'capital-consequence-map-pins'"));
 assert.ok(app.includes("$('#titleMapLocationCard').addEventListener('pointerdown',e=>e.stopPropagation())"),
  'rename field stops pointerdown before map captures it');
 assert.ok(app.includes('viewport.setPointerCapture(e.pointerId)'),'existing map pan remains intact');
+assert.ok(app.includes('const TITLE_MAP_OLD_DEFAULTS=Object.freeze({'),'old map defaults identified without clearing V2 storage');
+assert.ok(app.includes('wasUntouchedOldDefault'),'untouched old pins receive reviewed defaults');
+assert.ok(app.includes('location.userPlaced=true'),'manually moved pins are displayed and stored');
+assert.ok(app.includes("(location.placement==='unverified'&&!location.userPlaced)"),
+ 'unsurveyed coordinates do not appear as confirmed markers');
+assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
+ 'outside-index locations are not rendered over the printed map');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
 console.log('PASS Washington guide: 34 numbered pins, 12 historical/22 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
