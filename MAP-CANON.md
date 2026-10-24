@@ -26,3 +26,10 @@
 - Non-Fiction cards contain a collapsible **Real History · Further Reading** section with a factual introduction, a location-specific Wikipedia link, and a Library of Congress search. They open in the external browser. Internet access is needed for linked articles, not to play the game.
 - A real site's history is distinguished from the game's invented timeline. Especially **the Brookland monastery was built in the 1890s**, and the Washington airport and earliest Chinatown also have real-world dates that do not match all alternate-history starting years.
 - Fiction cards must never claim invented venues, staff, or private stories are documented history. New sources must be reviewed and kept separate from game lore. See `tests/map-history-card.cjs`.
+
+## Fictional venue story canon · October 24, 2026
+
+- **Every blue FICTION pin has an alternate-history venue biography**. Both its map popup and visited-location page expose an open **Our Alternate History · Fiction** panel. These paragraphs expand the game's established Washington setting and may intentionally diverge from real-world chronology. They are **not historical claims** or source citations; do not add real-history Wikipedia/LOC links to fictional venues.
+- The **16 red NON-FICTION** locations retain separate factual reading summaries and reference links. Their game-world occupants or scenes may still be fictional. This distinction is about the **place**, not about every NPC conversation.
+- On-screen identity is explicit text as well as color. Background pin fills are translucent; numbered glyphs stay opaque. The approved map artwork and navigation remain unchanged.
+- Four focused map/history regression checks passed in connector-side test emulation. Native Electron GUI QA and the complete Ubuntu test suite remain unverified.
