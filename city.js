@@ -41,7 +41,7 @@
    area:'Surviving Hay-Adams houses · 16th and H Streets NW',
    category:'social',
    radioContext:'star',
-   description:'Eleanor Victoria Ashcroft, called Madam Star, runs an elegant, expensive club with fine food, quiet period-appropriate musicians and strict discretion. No cards or gambling are permitted.',
+   description:'Eleanor Victoria Ashcroft, called Madam Star, runs an elegant, expensive club with fine food, quiet period-appropriate musicians and strict discretion. Gambling is not permitted at the Star Club; card games are forbidden.',
    map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
