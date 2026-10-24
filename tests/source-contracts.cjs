@@ -617,7 +617,7 @@ check(index.includes('horse-stable-ui.js?v=')&&index.indexOf('horse-stable-ui.js
 check(pkg.scripts['test:source'].includes('tests/home-stable.cjs')&&pkg.scripts['test:source'].includes('tests/livery-hire.cjs'),'Home transport and rental tests are mandatory');
 
 check(city.getLocation('potomacFishingBank')?.map?.n===29&&city.getRoom('potomacFishingBank','riverbank')?.id==='riverbank','Potomac fishing location is an addressable public room on marker 29');
-check(city.getLocation('potomacFishingBank')?.category==='sport','Fishing spot appears in Sports & Recreation map filter');
+check(city.getLocation('potomacFishingBank')?.category==='leisure','Existing Potomac fishing spot now uses Leisure rather than racing');
 
 check(['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'].every(id=>city.getLocation(id)?.category==='leisure'),'All six fishing sites belong to Leisure, not sport or gaming');
 check(city.getLocation('babcockLake').availableUntil==='1888-12-31','Babcock Lake closes after historic filling rather than surviving indefinitely');
