@@ -2880,7 +2880,7 @@ function updateTitleMapPinEditor(){
   button.style.color=titleMapPinEdit?'#fff0bd':'';
  }
  if(viewer)viewer.classList.toggle('is-editing-pins',titleMapPinEdit);
- if(help)help.textContent=titleMapPinEdit?'Drag any pin to its correct location · positions save automatically':'Mouse wheel to zoom · click and drag to move';
+ if(help)help.textContent=titleMapPinEdit?'Drag pin to correct A–R / 1–30 grid position · confirm before saving; cancel restores it':'Mouse wheel to zoom · click and drag to move';
 }
 function toggleTitleMapPinEditor(){
  titleMapPinEdit=!titleMapPinEdit;
@@ -2996,7 +2996,8 @@ function buildTitleMapMarkers(){
   marker.addEventListener('pointerdown',e=>{
    e.stopPropagation();
    if(!titleMapPinEdit||e.button!==0)return;
-   titleMapPinDrag={id:location.id,pointerId:e.pointerId};
+   titleMapPinDrag={id:location.id,pointerId:e.pointerId,
+    before:{x:location.x,y:location.y,userPlaced:!!location.userPlaced}};
    marker.setPointerCapture(e.pointerId);
    marker.style.zIndex='9';
    marker.style.cursor='grabbing';
@@ -3015,11 +3016,27 @@ function buildTitleMapMarkers(){
   });
   const finish=e=>{
    if(!titleMapPinDrag||titleMapPinDrag.id!==location.id||titleMapPinDrag.pointerId!==e.pointerId)return;
+   const {before}=titleMapPinDrag;
    try{marker.releasePointerCapture(e.pointerId)}catch(err){}
    marker.style.zIndex='';
    marker.style.cursor='';
    titleMapPinDrag=null;
-   saveTitleMapLocationLayout();
+   const moved=Math.abs(location.x-before.x)>0.0000005||Math.abs(location.y-before.y)>0.0000005;
+   const onPrintedMap=titleMapGridAt(location.x,location.y)!=='Outside map';
+   // Never persist a drop automatically. The user must check the actual
+   // numbered / lettered printed map and explicitly confirm the new place.
+   // There is no fictitious "auto-geographic verifier" for invented addresses.
+   const approved=e.type==='pointerup'&&moved&&onPrintedMap&&
+    confirm('Save pin '+location.n+' · '+pinDisplayName(location)+' at map grid '+
+     titleMapGridAt(location.x,location.y)+'? Confirm ONLY if this is the correct location on the printed map and its index.');
+   if(!approved){
+    location.x=before.x;location.y=before.y;location.userPlaced=before.userPlaced;
+    if(moved&&!onPrintedMap)alert('This pin is outside the printed map. Its position was not saved.');
+   }else{
+    location.userPlaced=true;
+    saveTitleMapLocationLayout();
+   }
+   titleMapPositionMarkers();
    syncTitleMapFilters();
    e.stopPropagation();
   };
