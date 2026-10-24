@@ -50,15 +50,15 @@ function act(save,choice){
  let message='';
  if(choice==='reel'){
   s.range=Math.max(0,s.range-2);s.stamina=Math.max(0,s.stamina-2);
-  s.tension+=14+fish.strength*7+(wave%7);message='You reel against the fish.';
+  s.tension+=9+fish.strength*3+(wave%5);message='You reel against the fish.';
  }else if(choice==='hold'){
-  s.stamina=Math.max(0,s.stamina-1);s.tension=Math.max(0,s.tension-13);
+  s.stamina=Math.max(0,s.stamina-1);s.tension=Math.max(0,s.tension-29);
   message='You hold steady while the fish tires.';
  }else if(choice==='steer'){
-  s.stamina=Math.max(0,s.stamina-1);s.tension=Math.max(0,s.tension-(s.direction>0?17:12));
+  s.stamina=Math.max(0,s.stamina-1);s.tension=Math.max(0,s.tension-(s.direction>0?29:23));
   message='You angle the rod against its run.';
  }else{
-  s.range+=2;s.tension=Math.max(0,s.tension-29);message='You give the fish a little line.';
+  s.range+=2;s.tension=Math.max(0,s.tension-39);message='You give the fish a little line.';
  }
  s.tension=Math.max(0,s.tension+wave%6+fish.strength*4);
  if(choice!=='reel')s.range+=s.stamina>1?1:0;
@@ -66,7 +66,7 @@ function act(save,choice){
  if(s.range>=17){w.session=null;w.history.push({kind:'escape',site:s.site,date:s.date,fish:s.fishId});return {ok:true,finished:true,caught:false,message:'The fish runs free. '+message};}
  if(s.stamina===0&&s.range<=1){
   const fishRecord={id:'fish-'+w.attempts,kind:'fish',name:fish.name,species:s.fishId,site:s.site,date:s.date};
-  w.catches.push(fishRecord);w.session=null;w.history.push({kind:'catch',...fishRecord});
+  w.catches.push(fishRecord);w.session=null;w.history.push({...fishRecord,kind:'catch'});
   return {ok:true,finished:true,caught:true,catch:fishRecord,message:'You land a '+fish.name+'. It goes into your creel.'};
  }
  if(w.history.length>64)w.history.splice(0,w.history.length-64);
