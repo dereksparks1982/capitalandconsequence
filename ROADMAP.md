@@ -1,5 +1,19 @@
 # Capital & Consequence Development Roadmap
 
+## CURRENT SOURCE · v0.6.83-dev · verified October 23, 2026
+
+**GitHub Source QA verified successful:** full `npm run test:source`, run **40057661933**, source commit **`df99f238d7fce15d86a761e96e92bde56da2f3b6`**. Four incremental, tested Washington-first source slices advance v0.6.79 to **v0.6.83**. Source only: **NO Electron playthrough, executable package, accepted snapshot, tag or release**. The active repository stays **`dereksparks1982/capitalconsequence` on single branch `main`**. Older verification and "current" version statements below are historical, not instructions to roll back.
+
+### Newly completed roadmap slices
+
+- [x] **v0.6.80, Sullivan's real whereabouts**: A *read-only* minute-aware projection of the existing NPC calendar hides the workshop assistant before his actual arrival, while absent, at closing time and on closed days. City-room visitors, ordinary conversation and free-form conversations all consult the same physical presence. It does not spawn staff, expose private NPC schedules or advance time; the source QA includes `tests/workshop-presence.cjs`. Independent NPC minute-by-minute movements and full autonomous production remain future work.
+- [x] **v0.6.81, paid horse care**: Personal ownership now accrues **$0.20/day horse feed**, **$0.25/day commercial livery boarding** for horses actually held there, and **$0.10/day commercial wagon/carriage storage**. No external boarding at Charlie's own factory stable. Actual Saturday settlements debit *personal*, **never company**, money, credit feed suppliers or specific brother-owned livery accounts, and persist arrears if cash runs short. No bills for nonexistent or missing/stolen horses. Provisional game-balance numbers, not verified 1878 invoices. Uses the authoritative daily closing bell without NPC clock jumps; `tests/horse-care.cjs` passes.
+- [x] **v0.6.82, late railway invoice**: Capital Railway Telegraph pays only for physically shipped stock. Late shipped quantities receive a **10% customer payment discount**, debited once from the real receipt; on-time quantities retain the full agreed price. The component register shows deductions and undelivered railway orders block renewal. `tests/workshop-deadlines.cjs` passes. No fabricated customer prepaid money or automatic make-up shipment.
+- [x] **v0.6.83, bring a horse home**: At the livery, an owner may mark **one personally purchased horse** to accompany the next trip to Federal Electric. The horse remains at its seller until the player **actually completes the existing paid/clock-charged provisional one-hour livery-to-factory journey**. Both factory map-entry and return-to-desk paths resolve custody after recorded travel, placing the horse in the private rear stable and changing future boarding costs. Invalid/unrecorded trips cannot move it; replay and reload cannot duplicate the transfer. `tests/horse-custody.cjs` passes. This does not grant a free horse, invent route mileage or implement a full horse-riding speed model.
+
+**Next honest roadmap tasks:** make Sullivan's production assistance truly continuous but imperfect (9 AM late arrivals, breakdown triage, owner decisions and no perfect automation), complete physical wagon/carriage movement and practical freight replacement, build finite merchant stock and restocking rather than unbounded shopping goods, tie railway customer finances to actual accounts, implement owner household expenses independently of business profits, and complete a full multi-day Electron acceptance playthrough. Keep all other career paths and the alternate Washington world intact. **Do not prioritize backward compatibility with old 1890 saves; that constraint was never approved.** No national-map expansion or guessed historical prices.
+
+
 ## CURRENT · v0.6.79-dev · October 23, 2026
 
 **Verified source QA:** Complete GitHub Actions "Capital & Consequence Source QA" run **40043515075** succeeded on commit `a10c3df7d4e52ebae15c238e9ef5398ab81b4fa4`. All existing suites and new workshop incidents, local commerce and livery transaction tests passed. **Source-only. No new Linux executable, Electron playthrough, accepted release or tag.** The previous packaged v0.6.34 draft remains unaccepted.
@@ -32,7 +46,7 @@
 
 > **NEW THREADS START HERE:** [CONTINUE-HERE.md](CONTINUE-HERE.md) is the authoritative, GitHub-persisted continuation handoff: exact verified source commit and QA, approved clock rules, current 1878 workshop, open milestones, and next build order. Read it **before** older handoffs, this README or roadmap.
 
-> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.79-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
+> **Archived context:** [October 23 v0.6.65 historical handoff](HANDOFF-2026-10-23-SOURCE-CONTINUATION.md) describes an earlier source snapshot. The current source candidate is **v0.6.83-dev**, and the current continuation instructions are in [CONTINUE-HERE.md](CONTINUE-HERE.md). Do not copy old clock assumptions from historical sections.
 
 ## Current policy: remove invented old-save preservation constraint
 
