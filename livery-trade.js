@@ -56,7 +56,86 @@
   book.receipts[token]=receipt;
   return {...receipt,repeated:false};
  }
- const api=Object.freeze({STABLES,NAMES,quote,buy});
+
+ // Hires are actual rented assets at the issuing stable, not free teleportation.
+ // These provisional one-day prices include the first day's feed and service.
+ const HIRES=Object.freeze({
+  horse:Object.freeze({label:'Hire a riding horse',priceCents:100,items:[['horse','Rented riding horse',100]]}),
+  'horse-and-buggy':Object.freeze({label:'Hire horse and buggy',priceCents:250,
+   items:[['horse','Rented harness horse',100],['carriage','Rented buggy',150]]}),
+  'horse-and-wagon':Object.freeze({label:'Hire horse and wagon',priceCents:220,
+   items:[['horse','Rented workhorse',90],['carriage','Rented wagon',130]]})
+ });
+ function hire(save,stableId,service,token,spend){
+  if(!save||!STABLES[stableId]||!HIRES[service]||!safeToken(token))
+   return {ok:false,reason:'Unknown livery hire'};
+  const book=save.liveryTrade||(save.liveryTrade={version:1,receipts:{},tills:{westLivery:0,eastLivery:0}});
+  if(!book.receipts||!book.tills)throw Error('Invalid livery register');
+  if(book.receipts[token])return {...book.receipts[token],repeated:true};
+  if(save.paused||save.phase!=='day'||save.currentLocation?.locationId!==stableId||
+     save.currentLocation?.roomId!=='service-desk')
+   return {ok:false,reason:'Hire at the actual livery counter'};
+  const moment=root.FE_WASHINGTON_TIME?.now?.(save),seconds=900;
+  if(!moment||weekday(moment.date)===0||moment.minuteOfDay<540||
+    (1020-moment.minuteOfDay)*60-(save.worldCalendarRemainder||0)<=seconds)
+   return {ok:false,reason:'The livery hires horses Monday-Saturday, 9 AM-5 PM'};
+  const offer=HIRES[service],money=Math.round(save.personalCash*100);
+  if(!Number.isSafeInteger(money)||money<offer.priceCents)
+   return {ok:false,reason:'Not enough personal cash for hire'};
+  if(typeof spend!=='function'||spend(seconds,true)!==seconds)
+   return {ok:false,reason:'Horse hire time could not advance'};
+  const transport=save.transport||(save.transport={version:2,assets:[],events:[],journeys:[]});
+  if(!Array.isArray(transport.assets)||!Array.isArray(transport.events))throw Error('Invalid vehicle registry');
+  const ids=[];
+  for(let i=0;i<offer.items.length;i++){
+   const [kind,name,dailyRateCents]=offer.items[i];
+   const id='hire:'+token+':'+i;
+   if(transport.assets.some(a=>a.id===id))throw Error('Duplicate hire asset');
+   const item={id,kind,name,model:service,owner:'rental',locationId:stableId,status:'stabled',
+    hiredAt:stableId,hiredDate:moment.date,purchasedDate:moment.date,dailyRateCents};
+   transport.assets.push(item);ids.push(id);
+   transport.events.push({id:'hire:'+token+':'+i,assetId:id,type:'hire',date:moment.date,
+    from:stableId,to:stableId,priceCents:i===0?offer.priceCents:0});
+  }
+  save.personalCash=(money-offer.priceCents)/100;
+  book.tills[stableId]=(book.tills[stableId]||0)+offer.priceCents;
+  const result={ok:true,kind:'hire',token,stableId,service,ids,priceCents:offer.priceCents,
+   elapsedSeconds:seconds,date:moment.date};
+  book.receipts[token]=result;
+  return {...result,repeated:false};
+ }
+ function returnHire(save,assetId,token,spend){
+  if(!save||!safeToken(token)||!assetId)return {ok:false,reason:'Unknown return'};
+  const book=save.liveryTrade;
+  if(book?.receipts?.[token])return {...book.receipts[token],repeated:true};
+  const asset=save.transport?.assets?.find(a=>a.id===assetId&&a.owner==='rental');
+  if(!asset)return {ok:false,reason:'No hired animal or vehicle to return'};
+  const site=asset.hiredAt;
+  if(save.paused||save.phase!=='day'||save.currentLocation?.locationId!==site||
+    save.currentLocation.roomId!=='service-desk')
+   return {ok:false,reason:'Return hired equipment to the issuing livery desk'};
+  // The rented horse must arrive with the buggy or wagon rented with it.
+  const group=save.transport.assets.filter(a=>a.owner==='rental'&&a.id.split(':').slice(0,-1).join(':')===
+    asset.id.split(':').slice(0,-1).join(':'));
+  if(group.some(a=>a.locationId!==site||!['stabled','tethered'].includes(a.status)))
+   return {ok:false,reason:'The entire hired team must be returned together'};
+  const moment=root.FE_WASHINGTON_TIME?.now?.(save),seconds=600;
+  if(!moment||weekday(moment.date)===0||moment.minuteOfDay<540||
+    (1020-moment.minuteOfDay)*60-(save.worldCalendarRemainder||0)<=seconds)
+   return {ok:false,reason:'Returns are accepted Monday-Saturday before 5 PM'};
+  if(typeof spend!=='function'||spend(seconds,true)!==seconds)
+   return {ok:false,reason:'Return could not complete'};
+  const ids=group.map(a=>a.id);
+  save.transport.assets=save.transport.assets.filter(a=>!ids.includes(a.id));
+  for(const id of ids)save.transport.events.push({id:'return:'+token+':'+id,assetId:id,
+   type:'return',date:moment.date,from:site,to:site});
+  if(ids.includes(save.horseCustody?.assetId)||ids.includes(save.horseCustody?.vehicleId))
+   delete save.horseCustody;
+  const result={ok:true,kind:'return',token,stableId:site,assetIds:ids,elapsedSeconds:seconds};
+  book.receipts[token]=result;
+  return {...result,repeated:false};
+ }
+ const api=Object.freeze({STABLES,NAMES,HIRES,quote,buy,hire,returnHire});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_LIVERY_TRADE=api;
 })(typeof window!=='undefined'?window:globalThis);
