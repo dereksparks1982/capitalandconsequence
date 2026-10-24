@@ -18,3 +18,11 @@
 - Every invented **blue** destination displays an explicit **Fiction** badge without falsely attributing made-up characters or businesses to historical archives. Even a fictional room inside a real building remains Fiction.
 - Both red and blue pin **backgrounds are partially transparent**, while the marker numbers remain fully legible. This does not modify the map image, pan/zoom, user-renamed labels or saved pin placement.
 - Pin drags no longer auto-save. Drops outside the printed A–R / 1–30 area are rejected; in-map moves require explicit confirmation or return to the previous position.
+
+## Fiction / Non-Fiction & Historical Reading (October 24, 2026)
+
+- Every numbered location card and visited destination page labels the place **Fiction** (invented) or **Non-Fiction** (real historical place or institution); colors alone cannot be the only distinction.
+- Red and blue pin *backgrounds* have 68% opacity, leaving the original printed map partly visible while preserving opaque numbers/text and their clickable areas.
+- Non-Fiction cards contain a collapsible **Real History · Further Reading** section with a factual introduction, a location-specific Wikipedia link, and a Library of Congress search. They open in the external browser. Internet access is needed for linked articles, not to play the game.
+- A real site's history is distinguished from the game's invented timeline. Especially **the Brookland monastery was built in the 1890s**, and the Washington airport and earliest Chinatown also have real-world dates that do not match all alternate-history starting years.
+- Fiction cards must never claim invented venues, staff, or private stories are documented history. New sources must be reviewed and kept separate from game lore. See `tests/map-history-card.cjs`.
