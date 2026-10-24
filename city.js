@@ -41,7 +41,7 @@
    area:'Surviving Hay-Adams houses · 16th and H Streets NW',
    category:'social',
    radioContext:'star',
-   description:'A discreet establishment operated by Madam Star, where Washington visitors and well-connected figures may cross paths. Gambling is not permitted at the Star Club.',
+   description:'Eleanor Victoria Ashcroft, called Madam Star, runs an elegant, expensive club with fine food, quiet period-appropriate musicians and strict discretion. No cards or gambling are permitted.',
    map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
@@ -138,12 +138,12 @@
    rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
   },
   {
-   id:'secondNightclub',name:'Second Nightclub',
+   id:'secondNightclub',name:'Lui Delacroix’s Nightclub',
    area:'Washington, D.C.',category:'social',
-   description:'An operating social establishment. Its proprietor and final public name have not been approved. A low-ranking doorman works the entrance at night.',
+   description:'A French-style can-can and burlesque cabaret run by Lucien Étienne “Lui” Delacroix. Elias Crowe works the entrance; the club’s formal signboard name has not yet been chosen.',
    map:null,defaultRoom:'main-room',
    rooms:[
-    {id:'main-room',name:'Public Club Room',description:'Patrons gather in the main room; the proprietor’s identity and final artwork remain undecided.'},
+    {id:'main-room',name:'Public Cabaret Room',description:'Visitors watch French dancing and musical revue performances. The club’s private business and restricted rooms cannot be discovered merely by entering.'},
     {id:'doorman-post',name:'Doorman’s Station',restricted:true,description:'A modest employee post by the entrance, with an admission book and a working shift ledger.'},
     {id:'proprietor-office',name:'Proprietor’s Private Office',restricted:true,description:'Private business records. Eli is not trusted with access.'}
    ]

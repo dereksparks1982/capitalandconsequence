@@ -8,10 +8,16 @@
  'use strict';
  const SLOT_NAMES=Object.freeze(['early-business','late-business','early-night','late-night']);
  const DEFINITIONS=Object.freeze([
-  {id:'madamStar',name:'Madam Star',occupation:'Star Club proprietor',ambition:'protect-and-develop-the-star-club',
+  {id:'madamStar',name:'Madam Star',fullName:'Eleanor Victoria Ashcroft',nationality:'British',occupation:'Star Club proprietor',ambition:'protect-and-develop-the-star-club',
    publicRemark:"The evening crowd does not always agree with the morning newspapers. Ask people directly, and remember which ones actually saw an event.",traits:{sociability:82,caution:79,ambition:73},places:['star','star','star','star'],
    activities:['reviewing the day’s appointments','receiving callers','overseeing the evening','concluding private business'],
    goals:['maintain-the-club','cultivate-trusted-contacts','protect-staff']},
+  {id:'luiDelacroix',name:'Lucien “Lui” Delacroix',fullName:'Lucien Étienne Delacroix',
+   nationality:'French',occupation:'Nightclub proprietor',ambition:'maintain-an-influential-cabaret',
+   publicRemark:"The show is what I sell. What you imagine beyond the curtain is your own affair.",
+   traits:{sociability:88,caution:83,ambition:91},places:['secondNightclub','secondNightclub','secondNightclub','secondNightclub'],
+   activities:['reviewing the books','speaking with performers','hosting the evening','closing private accounts'],
+   goals:['maintain-the-cabaret','manage-the-staff','guard-private-business']},
   {id:'foremanSullivan',name:'Sullivan',occupation:'Federal Electric workshop assistant',ambition:'learn-the-electrical-trade',
    publicRemark:"I help Mr. Whitcomb with the shop's orders and apparatus. There's always another relay to check.",traits:{sociability:45,caution:81,ambition:59},places:['factory','factory',null,null],
    activities:['preparing tools and telegraph parts','assisting with orders and dispatches',null,null],
@@ -44,7 +50,7 @@
    goals:['develop-trade','expand-connections','protect-reputation']}
  ]);
  const BY_ID=new Map(DEFINITIONS.map(d=>[d.id,d]));
- const WORKPLACES={madamStar:'star',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
+ const WORKPLACES={madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
