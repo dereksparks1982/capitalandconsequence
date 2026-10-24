@@ -2664,30 +2664,99 @@ const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
-let titleMapShowNames=false,titleMapCategory='all';
+let titleMapShowNames=false,titleMapCategory='all',titleMapOrigin='all',titleMapSearchQuery='';
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
  sport:'Recreation & Competition',leisure:'Leisure & Outdoors',fair:'Fairgrounds',transport:'Transportation',
  finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gambling & Games',underground:'Underground'
 });
+// Printed Washington In and Out Guide raster: grid 1-30 / A-R.
+function titleMapGridAt(x,y){
+ const px=x*2048,py=y*1159;
+ if(px<286||px>1778||py<30||py>864)return 'Outside map';
+ const col=Math.max(1,Math.min(30,Math.round((px-323)/48.5)+1));
+ const row=Math.max(0,Math.min(17,Math.round((py-59)/45.55)));
+ return col+'-'+String.fromCharCode(65+row);
+}
+function titleMapMatchesSearch(location){
+ if(!titleMapSearchQuery)return true;
+ return [pinDisplayName(location),location.name,location.area,location.id,
+  titleMapGridAt(location.x,location.y),String(location.n)]
+  .some(v=>String(v||'').toLocaleLowerCase().includes(titleMapSearchQuery));
+}
+function titleMapMatchesFilters(location){
+ return !!location&&(titleMapCategory==='all'||location.category===titleMapCategory)&&
+  (titleMapOrigin==='all'||location.origin===titleMapOrigin)&&titleMapMatchesSearch(location);
+}
+function focusTitleMapDirectoryLocation(id){
+ const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);if(!location)return;
+ const viewport=$('#titleMapViewport'),img=$('#titleMapImage');
+ if(viewport&&img&&img.naturalWidth){
+  const desired=Math.min(titleMapState.maxScale,Math.max(titleMapState.scale,titleMapState.minScale*2));
+  titleMapState.scale=desired;
+  titleMapState.x=viewport.clientWidth/2-location.x*img.naturalWidth*desired;
+  titleMapState.y=viewport.clientHeight/2-location.y*img.naturalHeight*desired;
+  titleMapClamp();titleMapApply();
+ }
+ openTitleMapLocation(id);
+}
+function renderTitleMapDirectory(){
+ const out=$('#titleMapDirectory'),count=$('#titleMapDirectoryCount');if(!out)return;
+ out.replaceChildren();
+ const filtered=TITLE_MAP_LOCATIONS.filter(titleMapMatchesFilters).sort((a,b)=>a.n-b.n);
+ if(count)count.textContent='('+filtered.length+'/'+TITLE_MAP_LOCATIONS.length+')';
+ for(const location of filtered){
+  const b=document.createElement('button');b.type='button';
+  b.className='title-map-directory-item';
+  b.dataset.origin=location.origin;
+  const grid=titleMapGridAt(location.x,location.y);
+  const reviewed=location.placement==='map-anchored';
+  b.textContent=location.n+'. '+pinDisplayName(location)+' · '+grid+(reviewed?'':' · position unverified');
+  b.title=location.area+(location.evidence?' · '+location.evidence:' · position pending confirmation');
+  b.addEventListener('click',()=>focusTitleMapDirectoryLocation(location.id));
+  out.appendChild(b);
+ }
+ if(!filtered.length){const p=document.createElement('p');p.textContent='No locations match these filters.';out.appendChild(p)}
+}
+function exportTitleMapPins(){
+ const profile=String(activeProfileId()||'unassigned');
+ const data={
+  format:'capital-consequence-map-pins',version:1,profile,
+  map:'Washington In and Out Guide (fixed artwork, 2048 × 1159)',grid:'1-30 / A-R',
+  locations:TITLE_MAP_LOCATIONS.map(v=>({
+   id:v.id,n:v.n,name:pinDisplayName(v),originalName:v.name,origin:v.origin,
+   positionStatus:v.placement,grid:titleMapGridAt(v.x,v.y),
+   x:+v.x.toFixed(6),y:+v.y.toFixed(6),evidence:v.evidence||''
+  }))
+ };
+ const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');
+ link.href=url;link.download='capital-consequence-map-pins.json';
+ document.body.appendChild(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function syncTitleMapFilters(){
  const layer=document.getElementById('titleMapMarkers'),show=document.getElementById('titleMapShowNames');
- const select=document.getElementById('titleMapCategory');
+ const select=document.getElementById('titleMapCategory'),origin=document.getElementById('titleMapOrigin');
  if(show){show.checked=titleMapShowNames;show.setAttribute('aria-checked',String(titleMapShowNames))}
  if(select)select.value=titleMapCategory;
+ if(origin)origin.value=titleMapOrigin;
  if(!layer)return;
  layer.classList.toggle('show-all-names',titleMapShowNames);
  for(const marker of layer.querySelectorAll('[data-map-location]')){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory);
+  marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory)||
+   (titleMapOrigin!=='all'&&location.origin!==titleMapOrigin)||!titleMapMatchesSearch(location);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
  }
- if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&(titleMapCategory==='all'||v.category===titleMapCategory)))closeTitleMapLocation();
+ if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&titleMapMatchesFilters(v)))closeTitleMapLocation();
+ renderTitleMapDirectory();
 }
 function initTitleMapFilters(){
  const select=document.getElementById('titleMapCategory'),names=document.getElementById('titleMapShowNames');
- if(!select||!names)return;
+ const search=$('#titleMapSearch'),origin=$('#titleMapOrigin');
+ if(!select||!names||!search||!origin)return;
  // Filter only the known mapped locations. Empty government category will become
  // available when historically vetted government pins are placed on this map.
  const categories=[...new Set(TITLE_MAP_LOCATIONS.map(v=>v.category))].sort((a,b)=>
@@ -2696,6 +2765,13 @@ function initTitleMapFilters(){
  for(const category of categories)select.add(new Option(TITLE_MAP_CATEGORY_LABELS[category]||category,category));
  select.onchange=()=>{titleMapCategory=select.value;syncTitleMapFilters()};
  names.onchange=()=>{titleMapShowNames=names.checked;syncTitleMapFilters()};
+ origin.onchange=()=>{titleMapOrigin=origin.value;syncTitleMapFilters()};
+ search.addEventListener('input',()=>{
+  titleMapSearchQuery=search.value.trim().toLocaleLowerCase();
+  const directory=$('#titleMapDirectory')?.closest('details');
+  if(directory&&titleMapSearchQuery)directory.open=true;
+  syncTitleMapFilters();
+ });
  syncTitleMapFilters();
 }
 
@@ -2734,6 +2810,7 @@ function updateTitleMapPinLabels(){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===titleMapSelectedLocationId);
   if(location){const title=$('#titleMapLocationName');if(title)title.textContent=pinDisplayName(location)}
  }
+ renderTitleMapDirectory();
 }
 function saveTitleMapLocationLayout(){
  const saved={};
@@ -2812,6 +2889,10 @@ function openTitleMapLocation(id){
  if(nameField)nameField.value=pinDisplayName(location);
  const nameNotice=$('#titleMapPinNameNotice');if(nameNotice)nameNotice.textContent='Original place: '+location.name;
  $('#titleMapLocationArea').textContent=location.area;
+ const grid=$('#titleMapLocationGrid');
+ if(grid)grid.textContent='Map grid: '+titleMapGridAt(location.x,location.y)+' · '+
+  (location.origin==='historical'?'Historical (red)':'Fictional (blue)')+' · '+
+  (location.placement==='map-anchored'?'Map-anchored placement':'Placement not independently verified');
  $('#titleMapLocationDescription').textContent=location.description;
  const reason=mapTravelRestriction(location);
  const journeyNotice=document.getElementById('titleMapTravelNote');
@@ -2860,7 +2941,11 @@ function buildTitleMapMarkers(){
   const marker=document.createElement('button');
   marker.type='button';
   marker.className='title-map-marker';
+  marker.dataset.origin=location.origin;
+  marker.classList.toggle('is-unverified',location.placement!=='map-anchored');
   marker.dataset.mapLocation=location.id;
+  marker.title=(location.origin==='historical'?'Historical':'Fictional')+' · '+titleMapGridAt(location.x,location.y)+
+   (location.placement==='map-anchored'?' · map-anchored':' · location pending verification');
   marker.setAttribute('aria-label',pinDisplayName(location)+' — '+location.area);
   marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label"></span>';
  marker.querySelector('.title-map-marker-label').textContent=pinDisplayName(location);
@@ -3078,6 +3163,10 @@ function initTitleMapViewer(){
  $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
  $('#titleMapLocationTravel').onclick=travelFromTitleMap;
+ $('#titleMapExportPins').onclick=exportTitleMapPins;
+ // The location card contains a text field. Stop its pointerdown from reaching
+ // the viewport's existing pan capture; leave the map pan/zoom code unchanged.
+ $('#titleMapLocationCard').addEventListener('pointerdown',e=>e.stopPropagation());
  const rename=$('#titleMapPinRename'),resetName=$('#titleMapPinResetName'),name=$('#titleMapPinName');
  if(rename)rename.onclick=()=>renameSelectedTitleMapPin();
  if(resetName)resetName.onclick=()=>renameSelectedTitleMapPin(true);
