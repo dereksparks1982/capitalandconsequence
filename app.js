@@ -2107,7 +2107,10 @@ function openCityRoom(locationId,roomId,options={}){
    renderBrokerOffice();
   }
   else{const panel=document.getElementById('cityRoomBrokerage');if(panel)panel.hidden=true}
-  if(priorLocation.locationId!==location.id)window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
+  if(priorLocation.locationId!==location.id){
+   const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
+   window.FE_HORSE_CUSTODY?.onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid);
+  }
   window.FE_MAP_LEADS?.visit?.(S,location.id);
   save(true);
   window.FE_NPC_AI?.syncClock?.();
