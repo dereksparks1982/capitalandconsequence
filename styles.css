@@ -1432,3 +1432,11 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .city-room-fishing-actions button,#cityRoomFishingCatches button{font:700 12px Georgia,serif;padding:7px 10px}
 #cityRoomFishingStatus{font-weight:700}#cityRoomFishingLog{min-height:1.4em}
 #cityRoomFishingCatches>div{margin:7px 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+
+/* v0.6.88: physical local stock and purchased personal bag */
+.city-room-market{margin:16px 0;padding:14px;border:1px solid #8c7856;background:#e7dac0;color:#251b11}
+.city-room-market h4{font:700 19px Georgia,serif;margin:0 0 8px}
+.market-stall-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.market-stall-items>div,.market-stall-bag>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px;background:#f1e8d4;border:1px solid #b09d7b}
+.market-stall-items button,.market-stall-bag button{padding:5px 8px;min-width:60px}
+#cityRoomMarketNote{min-height:1.2em;font-weight:700}.market-stall-bag>div{margin:6px 0}

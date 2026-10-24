@@ -2082,6 +2082,7 @@ function openCityRoom(locationId,roomId,options={}){
   window.FE_VENUES?.renderRoomOpportunities?.(location.id);
   window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id);
   window.FE_FISHING_UI?.render?.();
+  window.FE_MARKET_UI?.render?.();
   window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id);
   renderCityRoomDirectory(location,room.id);
   window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
