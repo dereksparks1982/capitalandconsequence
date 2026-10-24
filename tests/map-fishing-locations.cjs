@@ -1,0 +1,31 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
+const ctx={window:{}};vm.runInNewContext(read('city.js'),ctx);
+const city=ctx.window.FederalElectricCity,access=require('../city-access.js');
+const ids=['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'];
+assert.equal(city.mapLocations().length,34);
+assert.deepEqual(ids.map(id=>city.getLocation(id).map.n),[29,30,31,32,33,34]);
+const numbers=city.mapLocations().map(x=>x.n);
+assert.equal(new Set(numbers).size,34);
+for(const id of ids){
+ const loc=city.getLocation(id);
+ assert.equal(loc.category,'leisure',id);
+ assert.ok(Number.isFinite(loc.map.x)&&loc.map.x>0&&loc.map.x<1);
+ assert.ok(Number.isFinite(loc.map.y)&&loc.map.y>0&&loc.map.y<1);
+ assert.equal(access.canRoom(city,{route:'industrialist'},id,loc.defaultRoom,'1878-01-02').ok,true,id);
+ assert.ok(!loc.name.includes('Aquarium'));
+}
+assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1889-01-02').ok,false);
+const app=read('app.js'),html=read('index.html');
+assert.ok(app.includes("sport:'Recreation & Competition',leisure:'Leisure & Outdoors'"));
+assert.ok(app.includes("titleMapCategory!=='all'&&location.category!==titleMapCategory"));
+assert.ok(html.includes('id="titleMapPinName"')&&html.includes('id="titleMapPinRename"')&&html.includes('id="titleMapPinResetName"'));
+assert.ok(app.includes("saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6),...(location.pinLabel?{label:location.pinLabel}:{})}"),'Position and name travel in profile-specific map save');
+assert.ok(app.includes("typeof p.label==='string'"),'Pin labels reload as inert text, not code');
+assert.ok(app.includes("label.length>64"),'Custom label length is bounded');
+assert.ok(app.includes("label.textContent=pinDisplayName(location)"),'Pin label uses safe text, not unsanitized HTML');
+assert.ok(app.includes("location.pinLabel=p.label.trim()"),'Names restore with the saved profile');
+assert.ok(app.includes("location.pinLabel=''"),'Switching profiles clears the previous custom pin name');
+assert.ok(app.includes("mapTravelRestriction(location)")&&app.includes("entry.availableUntil&&S.gameDate>entry.availableUntil"),'Historic lake is inaccessible after filling');
+console.log('PASS 34 map pins, six historical leisure fishing destinations, access limits, filters and safely persisted custom labels');
