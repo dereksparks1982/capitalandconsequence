@@ -13,11 +13,14 @@ assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
 for(const site of sites){
  if(site.origin==='historical'){
   assert.ok(site.history&&site.history.summary&&site.history.query,'Non-fiction reading required: '+site.id);
+  assert.equal(site.story,null,'Real destinations should not have fictional-location biographies: '+site.id);
   assert.match(site.history.summary, /\S/);
   assert.ok(!site.history.wikipedia || site.history.wikipedia.startsWith('https://en.wikipedia.org/wiki/'),
    'Historical Wikipedia link must be HTTPS and point to Wikipedia: '+site.id);
  }else{
   assert.equal(site.history,null,'Invented place cannot inherit a real historical reading: '+site.id);
+  assert.ok(typeof site.story==='string'&&site.story.length>=35,'Fictional place needs its own in-universe history: '+site.id);
+  assert.ok(!site.story.includes('Wikipedia article'),'Fictional lore must not masquerade as a historical source: '+site.id);
  }
 }
 
@@ -83,6 +86,12 @@ assert.ok(img.includes('id="titleMapLocationFact"')&&img.includes('id="cityRoomF
  'Fiction/Non-Fiction badges exist on both location cards');
 assert.ok(img.includes('id="titleMapHistoricalReading"')&&img.includes('id="cityRoomHistoricalReading"'),
  'Map card and visited city room have separately labeled real-history panels');
+assert.ok(app.includes("summary.textContent=isReal?'Real History · Further Reading':'Our Alternate History · Fiction'"),
+ 'Non-fiction links and in-universe fictional lore have separate headings');
+assert.ok(app.includes("const story=!isReal?String(location?.story||location?.description||'').trim():''"),
+ 'Fiction narrative is drawn from venue-specific game canon');
+assert.ok(app.includes('if(isReal){'), 'Only real places expose external historical reading links');
+assert.ok(css.includes('.historical-reading.is-fiction-story'), 'Fictional history is visibly distinguished in blue');
 assert.ok(app.includes("badge.textContent=isReal?'Non-Fiction':'Fiction'"),
  'Player sees literal Non-Fiction / Fiction, not just pin color');
 assert.ok(app.includes('renderPlaceReference(location,true)')&&app.includes('renderPlaceReference(location)'),
@@ -109,4 +118,4 @@ assert.ok(app.includes("link.rel='noopener noreferrer'"), 'educational links ope
 assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&css.includes('background:rgba(36,94,154,.68)!important'),
  'red and blue numbered pin backgrounds are translucent');
 
-console.log('PASS Washington guide: 38 numbered pins, 16 non-fiction/22 fiction, verified versus unverified grid placement, search, export, pin confirmation, translucent colors and real-history readings');
+console.log('PASS Washington guide: 38 numbered pins, 16 non-fiction / 22 fictional story cards, grid placement, export, pin confirmation and translucent colors');
