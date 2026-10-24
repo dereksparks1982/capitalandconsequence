@@ -2,7 +2,16 @@
 
 > **Owner-confirmed file policy:** Do not split `app.js` or divide any existing source file into smaller files because of size, style or suggestions from external reviewers. Keep the game implementation in its existing layout. This is a documentation-only clarification, not authorization for a refactor or build.
 
-## CURRENT SOURCE · v0.6.84-dev · Private home stable, riding and livery hire (October 23, 2026)
+## Current owner decisions · Fishing map and handoff (October 23, 2026)
+
+- **Approved and implemented v0.6.86:** Six fishing locations total (pins 29–34), under a separate **Leisure & Outdoors** category. **Recreation & Competition** retains racing and boxing; **Gambling & Games** is separate. The map can filter actual destinations by these types.
+- **Editable names:** Players may rename individual pins through the map while keeping canonical historical location names and stable IDs. Names/positions persist separately per player profile; resetting placement does not erase custom labels.
+- **Period-map requirement:** Replace the current 1938 placeholder **only after** choosing an owner-approved representation of **1878 Washington**. It need not be a physical 1878 antique: a later accurate historical reconstruction styled to look old **also qualifies**. It must fit the functional overview, zoom and pin-placement behavior already in use. Source survey: [MAP-1878-RESEARCH.md](MAP-1878-RESEARCH.md).
+- **Owner expressly requested a test executable** after the six fishing pins. This has **not yet been delivered**. Build must go through manual-only packaging and smoke/size/SHA-256 validation, remain a private **unaccepted candidate** until the owner tests it. Current source QA passed: run 40062272284. The owner has asked to hand this thread off; do not misstate packaging as complete.
+- **Still design-only:** Fish fight reacting to player choices through a live tension/direction display and menu/dialogue decisions. No aquarium, no mandatory selling or fish-slot-machine loop. Do not claim playable fishing is already implemented.
+- **Binding existing instruction retained:** No file splitting, especially `app.js`, and no reverting the original Washington clock and 1878 setting.
+
+## HISTORICAL MILESTONE · v0.6.84-dev · Private home stable, riding and livery hire (completed October 23, 2026)
 
 **Verified GitHub Source QA:** run **40058726255** passed the entire `npm run test:source` suite at source commit **`5d3c76f9865fa1f7c0f1c7c842d7be8cc5c0e414`**, including `tests/home-stable.cjs`, `tests/livery-hire.cjs`, the existing horse custody, care and all Washington career tests. Later commits to these documents do not change tested source. **Source build only**, not a packaged Linux executable, rendered playthrough, accepted release or tag. Active branch remains **main**.
 
