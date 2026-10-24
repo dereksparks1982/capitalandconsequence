@@ -964,6 +964,11 @@ function closeBusinessDay(manual=false){
   S.companyCash-=payroll;S.lastExpenses+=payroll;
   if(managerPayroll>0)S.notes.push({date:displayDate(),text:'General Manager salary paid: '+cash(managerPayroll)+'.',source:'company payroll'});
  }
+ const animalCare=window.FE_HORSE_CARE?.settleDay?.(S);
+ if(animalCare?.saturday&&(animalCare.paidCents||animalCare.arrearsCents))
+  S.notes.push({date:displayDate(),source:'horse and carriage upkeep',text:
+   'Owned horse/vehicle care: '+cash(animalCare.paidCents/100)+' paid'+
+   (animalCare.arrearsCents?' · '+cash(animalCare.arrearsCents/100)+' owed.':'.')});
  const reportDate=displayDate(),dayTrades=S.transactions.filter(t=>t.date===reportDate&&(t.action==='BUY'||t.action==='SELL')),stockRealized=dayTrades.filter(t=>t.action==='SELL').reduce((a,t)=>a+(t.realized||0),0),stockPositionMove=Object.entries(S.portfolio).reduce((a,[k,p])=>a+p.shares*((S.stocks[k]?.price||0)-(S.stocks[k]?.open||0)),0);
  S.ledger.push({date:reportDate,rev:S.lastRevenue,exp:S.lastExpenses});
  S.dailyReport={iso:S.gameDate,date:reportDate,openingCompanyCash:S.dayStartCompanyCash,openingPersonalCash:S.dayStartPersonalCash,revenue:S.lastRevenue,expenses:S.lastExpenses,companyClose:S.companyCash,personalAtClose:S.personalCash,stockTrades:dayTrades.length,stockRealized,stockPositionMove,marketCloseIndex:marketIndex(),portfolioAtMarketClose:portfolioValue()};
