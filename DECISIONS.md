@@ -1,5 +1,7 @@
 # Capital & Consequence · Recorded Design Decisions
 
+> **Owner-confirmed file policy:** Do not split `app.js` or divide any existing source file into smaller files because of size, style or suggestions from external reviewers. Keep the game implementation in its existing layout. This is a documentation-only clarification, not authorization for a refactor or build.
+
 ## CURRENT SOURCE · v0.6.84-dev · Private home stable, riding and livery hire (October 23, 2026)
 
 **Verified GitHub Source QA:** run **40058726255** passed the entire `npm run test:source` suite at source commit **`5d3c76f9865fa1f7c0f1c7c842d7be8cc5c0e414`**, including `tests/home-stable.cjs`, `tests/livery-hire.cjs`, the existing horse custody, care and all Washington career tests. Later commits to these documents do not change tested source. **Source build only**, not a packaged Linux executable, rendered playthrough, accepted release or tag. Active branch remains **main**.
@@ -11,7 +13,7 @@
 **Still open:** travel-mileage surveying and genuinely shorter long/short animal journeys; interior art, harness animations, equine fatigue/illness and hoof care; parking/guard fees at non-livery public venues; NPC-owned horse movement and stable employees; player choice of horse names; paying household expenses separately from factory overhead. The player uses explicit horse custody choices; real-world city movement remains grounded in one protagonist-controlled world clock. **Do not conflate Capital & Consequence with the Federal Electric company name or reinstate old-save compatibility mandates.**
 
 
-## CURRENT SOURCE · v0.6.83-dev · verified October 23, 2026
+## HISTORICAL MILESTONE · v0.6.83-dev · verified October 23, 2026 (superseded by v0.6.84)
 
 **GitHub Source QA verified successful:** full `npm run test:source`, run **40057661933**, source commit **`df99f238d7fce15d86a761e96e92bde56da2f3b6`**. Four incremental, tested Washington-first source slices advance v0.6.79 to **v0.6.83**. Source only: **NO Electron playthrough, executable package, accepted snapshot, tag or release**. The active repository stays **`dereksparks1982/capitalconsequence` on single branch `main`**. Older verification and "current" version statements below are historical, not instructions to roll back.
 
@@ -25,7 +27,7 @@
 **Next honest roadmap tasks:** make Sullivan's production assistance truly continuous but imperfect (9 AM late arrivals, breakdown triage, owner decisions and no perfect automation), complete physical wagon/carriage movement and practical freight replacement, build finite merchant stock and restocking rather than unbounded shopping goods, tie railway customer finances to actual accounts, implement owner household expenses independently of business profits, and complete a full multi-day Electron acceptance playthrough. Keep all other career paths and the alternate Washington world intact. **Do not prioritize backward compatibility with old 1890 saves; that constraint was never approved.** No national-map expansion or guessed historical prices.
 
 
-## CURRENT · v0.6.79-dev · October 23, 2026
+## HISTORICAL MILESTONE · v0.6.79-dev · October 23, 2026 (superseded by v0.6.84)
 
 **Verified source QA:** Complete GitHub Actions "Capital & Consequence Source QA" run **40043515075** succeeded on commit `a10c3df7d4e52ebae15c238e9ef5398ab81b4fa4`. All existing suites and new workshop incidents, local commerce and livery transaction tests passed. **Source-only. No new Linux executable, Electron playthrough, accepted release or tag.** The previous packaged v0.6.34 draft remains unaccepted.
 
@@ -199,9 +201,9 @@
 - Any investigation should arise through real NPC conduct, suspicious money or police records, personal conversations and earned information. Rumors are fallible. The case can remain unresolved, and the people involved continue their lives independently.
 - **Future design only.** No current police captain identity, smuggling system, secret campaign seed, corruption pay ledger or investigative privileges are created by this documentation update. See ROADMAP.md for the scenario and implementation requirements.
 
-## 2026-10-23 · Official thread close and continuation snapshot
+## 2026-10-23 · Historical thread close (v0.6.58 archival snapshot; no longer current)
 
-- The authoritative handoff for the next ChatGPT development thread is [`HANDOFF-2026-10-23-THREAD-END.md`](HANDOFF-2026-10-23-THREAD-END.md). It supersedes October 22's handoff for resume priorities; historic docs remain in GitHub.
+- **Historical note only:** `HANDOFF-2026-10-23-THREAD-END.md` was the handoff at v0.6.58; it is now [archived](HANDOFF-2026-10-23-THREAD-END.md). **The sole current continuation handoff is [CONTINUE-HERE.md](CONTINUE-HERE.md).** Earlier claims that the game is still in 1890 or that legacy saves must be preserved are revoked.
 - **Final checked code** is `v0.6.58-dev`; the last green source run is [39962299550](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39962299550) at `99ab704ed8978fd78bc5edbe879b0264d56db6af`, including **424 source-contract checks**. Latest pre-handoff docs-only main head was `d3b72c2d033f238964e1367b6abb492441544973`. A documentation pointer commit after that does not create a new tested executable.
 - Reconfirm Washington-only priority and alternate-America background. Character names and jobs are canonical. **Sam's currently assigned on-duty beat is Hillsdale only**; off-duty Chinatown exploration as a civilian and the *proposed* smuggling/corruption arc remain distinct. Retain explicit unknown captain truth and a non-stereotyped neighborhood.
 - **Immediate next major source priority:** implement *modest owned electrical-component production* for Charlie at the approved January 2, 1878 future opening, by tested incremental 1878-focused slices. Do not flip the current 1890 game date until products, production, customers, markets and save migration agree.
