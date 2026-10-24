@@ -65,7 +65,7 @@ function setup(iso,minute,withOrder=false){
  assert.equal(closed[0].before,2500+revenue/100,'Revenue comes in before payroll');
  assert.equal(closed[0].revenue,revenue/100);
  assert.equal(S.workshopPayroll.accruedCents,0);
- assert.equal(Math.round(S.companyCash*100),250000+revenue-600-240,'Exact cents avoid binary floating rounding');
+ assert.equal(Math.round(S.companyCash*100),250000+revenue-600-240+25,'Saturday receipts include the factory room rent');
  assert.equal(S.phase,'night');
 }
 {
