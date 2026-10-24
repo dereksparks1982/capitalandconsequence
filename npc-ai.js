@@ -222,17 +222,22 @@
   renderContactItineraries();
   return true;
  }
+ function observedPosition(id,a){
+  const clock=window.FE_WASHINGTON_TIME?.now?.(S);
+  return window.FE_WORKSHOP_PRESENCE?.position?.(S,a,id,clock)||a;
+ }
  function visibleAt(locationId){
   const w=ensure();if(!w||!locationId)return [];
-  return DEFINITIONS.filter(d=>w.agents[d.id]?.locationId===locationId)
-   .map(d=>({id:d.id,name:d.name,roomId:w.agents[d.id].roomId||null,activity:w.agents[d.id].activity||'present'}));
+  return DEFINITIONS.filter(d=>observedPosition(d.id,w.agents[d.id])?.locationId===locationId)
+   .map(d=>{const a=observedPosition(d.id,w.agents[d.id]);return {id:d.id,name:d.name,roomId:a.roomId||null,activity:a.activity||'present'}});
  }
  // Face-to-face contact only. This uses the NPC's public routine, not
  // hidden personal goals, confidential motives or unscheduled future events.
  function talkAtLocation(id,topic='greet'){
   if(!['greet','work','city','today'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
-  if(!def||!a||!position||a.locationId!==position.locationId||(position.roomId&&a.roomId&&position.roomId!==a.roomId)||a.status!=='present')
+  const shown=observedPosition(id,a);
+  if(!def||!a||!position||shown?.locationId!==position.locationId||(position.roomId&&shown.roomId&&position.roomId!==shown.roomId)||shown?.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
   const route=S.characterRoute||'industrialist',date=observedDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
@@ -273,8 +278,9 @@
   if(!profile()||!dev||!model?.chat)return {ok:false,reason:'Connect a local language model to converse freely.'};
   if(S.paused||S.phase==='report')return {ok:false,reason:'Conversation is unavailable while the game is paused.'};
   const def=BY_ID.get(id),w=ensure(),actor=w?.agents[id],position=window.FE_CITY?.currentLocation?.(),profileId=profile();
-  if(!def||!actor||actor.status!=='present'||!position||
-   actor.locationId!==position.locationId||actor.roomId!==position.roomId)
+  const shown=observedPosition(id,actor);
+  if(!def||!actor||shown?.status!=='present'||!position||
+   shown.locationId!==position.locationId||shown.roomId!==position.roomId)
    return {ok:false,reason:'That resident is not in this room.'};
   const date=observedDate(),route=S.characterRoute||'industrialist';
   let query;
@@ -288,7 +294,7 @@
   if(!query.ok)return query;
   const result=await model.chat({messages:query.messages});
   if(!result?.ok||typeof result.text!=='string'||!result.text.trim())return {ok:false,reason:result?.reason||'The resident did not respond.'};
-  const now=window.FE_CITY?.currentLocation?.(),latest=S.npcSimulation?.agents?.[id];
+  const now=window.FE_CITY?.currentLocation?.(),latest=observedPosition(id,S.npcSimulation?.agents?.[id]);
   if(profile()!==profileId||observedDate()!==date||!now||now.locationId!==position.locationId||
     now.roomId!==position.roomId||latest?.status!=='present'||
     latest.locationId!==position.locationId||latest.roomId!==position.roomId)
