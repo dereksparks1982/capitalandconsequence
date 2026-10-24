@@ -4,6 +4,7 @@
 (function(root){
  'use strict';
  const ASSISTANT_ID='foremanSullivan',DAILY_WAGE_CENTS=120,WEEKLY_WAGE_CENTS=600;
+ const commerce=typeof module==='object'&&module.exports?require('./washington-commerce.js'):root.FE_WASHINGTON_COMMERCE;
  const LIGHTS_TOOLS_CENTS=55,WINTER_COAL_CENTS=70,DELIVERY_CENTS=115;
  function settleDay(save){
   if(!save?.componentWorks)return {ok:false,reason:'No founding workshop'};
@@ -45,7 +46,8 @@
     save.lastExpenses=Math.round((save.lastExpenses||0)*100+paidTotal)/100;
    }
   }
-  const receipt={date,assistantId:ASSISTANT_ID,worked,earnedCents,paidCents,
+  const household=weekday===6?commerce?.settleSaturday(save):null;
+  const receipt={date,assistantId:ASSISTANT_ID,worked,earnedCents,paidCents,household,
    accruedCents:books.accruedCents,owedCents:books.owedCents,
    operatingCostsCents,paidCostsCents,shopOwedCents:books.shopOwedCents};
   books.entries[date]=receipt;return {...receipt,repeated:false};
