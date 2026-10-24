@@ -4,12 +4,6 @@ name: Linux Desktop Build
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
-  # One-time owner-requested v0.6.86 build: only the creation of MAP-CANON.md triggers a build.
-  # Restore manual-only after this owner-approved build is initiated.
-  push:
-    branches: [main]
-    paths:
-      - MAP-CANON.md
 
 jobs:
   build-linux:
