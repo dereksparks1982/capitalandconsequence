@@ -326,11 +326,23 @@
    description:"Shore fishing upstream near the stronger Potomac current. Rapids are hazardous; the bank position remains provisional.",map:null,defaultRoom:'shore',rooms:[
     {id:'shore',name:"Riverside Approach",description:'Washington shoreline location for future fishing; fishing requires tackle and is available here.'}
    ]
+  },
+  {
+   id:"franciscanMonastery",
+   name:"Franciscan Monastery of the Holy Land in America",
+   area:"Brookland · 1400 Quincy Street NE, Washington, D.C.",
+   category:"religious",
+   description:"The real Franciscan Monastery of the Holy Land in America in Brookland, with its church and gardens. The Washington guide's fixed illustrated city is used in every alternate-history year. The monastery pin is placed at its historical Brookland block; the exact front gate is not separately labeled on the artwork.",
+   map:{n:35,x:1272/2048,y:235/1159},
+   defaultRoom:"monastery-grounds",
+   rooms:[
+    {id:"monastery-grounds",name:"Monastery Grounds",description:"The monastery's public grounds and entrance. Interior monastery activities have not yet been implemented."}
+   ]
   }
  ];
 
- // All 34 registered locations have a map marker. New markers are deliberately
- // provisional display coordinates, never audited street addresses or travel times.
+ // All 35 registered locations have stable numbered map destinations. Sites
+ // with no established address remain directory-only, not claimed as verified.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
   secondNightclub:[15,.425,.483],governmentHospital:[16,.733,.680],
@@ -350,7 +362,8 @@
  const HISTORICAL_DESTINATIONS=new Set([
   'hillsdale','oldChinatown','universityMaryland','governmentHospital',
   'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
-  'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'
+  'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing',
+  'metropolitanPolice','franciscanMonastery'
  ]);
  // Pin anchors read against the owner's actual, unchanged 2048 x 1159
  // Washington In and Out Guide image (A-R rows / 1-30 columns).
@@ -375,8 +388,16 @@
   commercePoker:[711,712,'Washington-Hoover Airport grounds; fictional Commerce Club hangar'],
   home:[1213,540,'Capitol Hill near Eastern Market; proposed fictional residence'],
   fletchersCove:[522,405,'North bank of upper Potomac; precise Fletcher cove entry not labelled'],
-  chainBridgeFishing:[501,412,'D.C. bank at mapped Chain Bridge; fishing access not labelled'],
-  potomacFishingBank:[921,625,'Southwest D.C. Potomac Park shore; precise fishing bank unsettled']
+  potomacFishingBank:[921,625,'Southwest D.C. Potomac Park shore; precise fishing bank unsettled'],
+  franciscanMonastery:[1272,235,'1400 Quincy Street NE, Brookland; mapped block by CUA, monastery entrance not individually labeled'],
+  hillsdale:[1498,765,'Barry Farm / Hillsdale southeast of the Anacostia, north of St. Elizabeths'],
+  factory:[1266,325,'Ivy City / New York Avenue NE near Fenwick Street; invented works'],
+  races:[1582,340,'Kenilworth Ave and Jay St NE, Benning vicinity; fictional Capital Race Grounds'],
+  capitolAirport:[1585,296,'East of the Anacostia north of Benning; fictional aviation site'],
+  universityMaryland:[1555,90,'University of Maryland campus, College Park; northeastern map area'],
+  embassyPoker:[505,132,'Chevy Chase Club vicinity, 6100 Connecticut Avenue; fictional room'],
+  washingtonFairgrounds:[750,538,'Potomac Park / Flats west of the Washington Monument; fictional exposition site'],
+  babcockLake:[857,527,'Former Washington Monument grounds lake; no water feature on permanent 1938 drawing']
  });
  const IMAGE_WIDTH=2048,IMAGE_HEIGHT=1159;
  // Coordinates describe the PRINTED map, not longitude/latitude.
