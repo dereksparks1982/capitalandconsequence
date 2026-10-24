@@ -1,0 +1,43 @@
+name: One-time Cleanup of Legacy Failed FE Workflows
+on:
+  push:
+    branches: [main]
+    paths: [CI-LEGACY-FAILURE-CLEANUP.md]
+permissions:
+  actions: write
+  contents: read
+jobs:
+  obsolete-run-records:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Remove only superseded failed source/build histories
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/40069611982" --jq '.conclusion')" = success
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/40069723081" --jq '.conclusion')" = failure
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs?status=failure&per_page=100" --jq '.workflow_runs[] | [.id, .name, .created_at] | @tsv' > /tmp/legacy-failed.tsv
+          removed=0
+          denied=0
+          while IFS=$'\t' read -r id name created; do
+            if [[ "$name" == 'Federal Electric Source QA' && "$created" < '2026-10-24T06:17:23Z' ]]; then
+              :
+            elif [[ "$name" == 'Linux Desktop Build' && "$id" != '40069723081' && "$created" < '2026-10-24T06:19:06Z' ]]; then
+              :
+            elif [[ "$name" == 'One-time Owner Build Invocation' && "$created" < '2026-10-24T06:19:06Z' ]]; then
+              :
+            else
+              continue
+            fi
+            if gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" >/dev/null; then
+              removed=$((removed+1))
+            else
+              denied=$((denied+1))
+            fi
+          done < /tmp/legacy-failed.tsv
+          echo "SUPERSEDED_LEGACY_FAILURES_REMOVED=$removed"
+          echo "SUPERSEDED_LEGACY_FAILURES_DENIED=$denied"
+          test "$denied" -eq 0
