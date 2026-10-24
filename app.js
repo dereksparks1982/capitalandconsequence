@@ -2937,36 +2937,47 @@ function renderPlaceReference(location,mapCard=false){
  badge.classList.toggle('is-fiction',!isReal);
  badge.title=isReal?'Real-world place or landmark':'Invented place or fictional business';
  panel.replaceChildren();
- const note=location?.history;
- panel.hidden=!isReal||!note;
+ panel.classList.toggle('is-fiction-story',!isReal);
+ panel.setAttribute('aria-label',isReal?'Real-world history and reading links':'Capital & Consequence fictional history');
+ const note=isReal?location?.history:null;
+ const story=!isReal?String(location?.story||location?.description||'').trim():'';
+ panel.hidden=isReal?!note:!story;
  if(panel.hidden)return;
  const details=document.createElement('details');
+ // Game-world lore should be immediately readable. Real history remains
+ // collapsible so it does not displace the location's gameplay controls.
+ if(!isReal)details.open=true;
  const summary=document.createElement('summary');
- summary.textContent='Real History · Further Reading';
+ summary.textContent=isReal?'Real History · Further Reading':'Our Alternate History · Fiction';
  details.appendChild(summary);
  const intro=document.createElement('p');
- intro.textContent=note.summary||'Read about the real-world place.';
+ intro.textContent=isReal?(note.summary||'Read about the real-world place.'):story;
  details.appendChild(intro);
  const warning=document.createElement('p');
  warning.className='historical-reading-disclaimer';
- warning.textContent='Non-fiction references describe actual history. This game follows an alternate timeline; its characters, rooms and events may be invented.';
+ warning.textContent=isReal?
+  'Non-fiction references describe actual history. This game follows an alternate timeline; its characters, rooms and events may be invented.':
+  'An invented account from Capital & Consequence, not a record of real Washington history.';
  details.appendChild(warning);
- const links=document.createElement('div');
- links.className='historical-reading-links';
- function readingLink(title,url){
-  if(!url||!/^https:\/\//i.test(url))return;
-  const link=document.createElement('a');
-  link.href=url;link.target='_blank';link.rel='noopener noreferrer';
-  link.textContent=title;
-  links.appendChild(link);
+ if(isReal){
+  const links=document.createElement('div');
+  links.className='historical-reading-links';
+  function readingLink(title,url){
+   if(!url||!/^https:\/\//i.test(url))return;
+   const link=document.createElement('a');
+   link.href=url;link.target='_blank';link.rel='noopener noreferrer';
+   link.textContent=title;
+   links.appendChild(link);
+  }
+  const query=note.query||location.name;
+  readingLink(note.wikipedia?'Wikipedia article ↗':'Find on Wikipedia ↗',
+   note.wikipedia||'https://en.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(query));
+  readingLink('Library of Congress archives ↗','https://www.loc.gov/search/?q='+encodeURIComponent(query));
+  details.appendChild(links);
  }
- const query=note.query||location.name;
- readingLink(note.wikipedia?'Wikipedia article ↗':'Find on Wikipedia ↗',
-  note.wikipedia||'https://en.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(query));
- readingLink('Library of Congress archives ↗','https://www.loc.gov/search/?q='+encodeURIComponent(query));
- details.appendChild(links);
  panel.appendChild(details);
 }
+
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
  titleMapSelectedLocationId=id;
