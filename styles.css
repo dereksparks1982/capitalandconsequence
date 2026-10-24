@@ -1440,3 +1440,60 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .market-stall-items>div,.market-stall-bag>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px;background:#f1e8d4;border:1px solid #b09d7b}
 .market-stall-items button,.market-stall-bag button{padding:5px 8px;min-width:60px}
 #cityRoomMarketNote{min-height:1.2em;font-weight:700}.market-stall-bag>div{margin:6px 0}
+
+
+/* Washington guide pin identity and location directory. The map bitmap and pan
+   mechanics are unchanged. A gold priority halo never changes a pin's identity. */
+#titleMapMarkers .title-map-marker[data-origin="historical"] .title-map-marker-pin{
+ background:#9b3030!important;color:#fff5df!important;
+}
+#titleMapMarkers .title-map-marker[data-origin="fictional"] .title-map-marker-pin{
+ background:#245e9a!important;color:#fff5df!important;
+}
+#titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin{
+ border-color:#f5d77e!important;box-shadow:0 0 0 2px #f2d48b,0 0 12px rgba(244,181,39,.75)!important;
+}
+#titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin b{color:#fff5df!important}
+#titleMapMarkers .title-map-marker.is-unverified .title-map-marker-pin{
+ border-style:dashed;
+}
+.title-map-head{flex-wrap:wrap}
+.title-map-tools{flex-wrap:wrap;justify-content:flex-end}
+.title-map-filter-label{display:inline-flex;align-items:center;gap:5px;color:#e8d5a9;font:700 12px Georgia,serif}
+.title-map-filter-label select,.title-map-filter-label input{
+ max-width:180px;min-height:32px;min-width:95px;padding:4px 6px;
+ border:1px solid #9f8150;border-radius:2px;background:#efe0c1;color:#261d14;
+ font:13px Georgia,serif;
+}
+#titleMapSearch{width:175px}
+.title-map-footer{min-height:0;max-height:min(28vh,230px);overflow-y:auto;background:#211c15}
+.title-map-legend{
+ display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+ gap:7px 15px;padding:5px 10px;color:#ead7b2;font:12px Georgia,serif;
+}
+.title-map-legend span{display:inline-flex;gap:6px;align-items:center}
+.title-map-legend small{color:#b9a883}
+.title-map-swatch{width:12px;height:12px;display:inline-block;border:1px solid #efdfbc;border-radius:4px}
+.title-map-swatch.historical{background:#9b3030}
+.title-map-swatch.fictional{background:#245e9a}
+.title-map-directory-panel{margin:0 10px 6px;border:1px solid #806842;background:#282118}
+.title-map-directory-panel summary{padding:5px 9px;cursor:pointer;color:#efdcad;font:700 12px Georgia,serif}
+.title-map-directory{
+ display:flex;flex-wrap:wrap;gap:5px;padding:6px;max-height:128px;overflow:auto;
+}
+.title-map-directory-item{
+ max-width:100%;padding:4px 6px;cursor:pointer;
+ background:#373026;border:1px solid #99764c;color:#f1dfbc;
+ font:12px/1.25 Georgia,serif;text-align:left;
+}
+.title-map-directory-item[data-origin="historical"]{border-left:4px solid #b64040}
+.title-map-directory-item[data-origin="fictional"]{border-left:4px solid #377fc0}
+.title-map-directory-item:hover,.title-map-directory-item:focus-visible{background:#58432b;outline:1px solid #e6c98e}
+.title-map-grid-ref{display:block;margin:3px 0 9px;color:#dec89a;font:11px/1.4 'Courier New',monospace}
+@media(max-width:700px){
+ .title-map-head{align-items:flex-start;gap:5px}
+ .title-map-tools{justify-content:flex-start}
+ #titleMapSearch{width:125px}
+ .title-map-filter-label select{max-width:120px}
+ .title-map-footer{max-height:27vh}
+}
