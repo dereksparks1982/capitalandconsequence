@@ -15,6 +15,7 @@
   const key=signature(c),n=slot(c.minuteOfDay);
   if(!d||!Array.isArray(d.places)||!Array.isArray(d.activities))throw Error('NPC definition required');
   let locationId=d.places[n]||null;
+  if((d.availableFrom&&c.date<d.availableFrom)||(d.availableUntil&&c.date>d.availableUntil))locationId=null;
   // Provisional workweek only. Absence does not disclose private whereabouts.
   if((c.weekday===0||c.weekday===6)&&n<2&&
    (d.id==='foremanSullivan'||d.id==='inspectorHayes'))locationId=null;

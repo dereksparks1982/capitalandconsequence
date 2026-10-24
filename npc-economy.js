@@ -7,6 +7,7 @@
 (function(root){
  'use strict';
  const SETTINGS=Object.freeze({
+  samuelTilden:{occupation:'president',workplace:'whiteHouse',opening:9000,pay:0,betting:0},
   madamStar:{occupation:'club proprietor',workplace:'star',opening:8500,pay:185,betting:16},
   foremanSullivan:{occupation:'workshop assistant',workplace:'factory',opening:2100,pay:0,betting:9},
   eddieDoyle:{occupation:'bookmaker',workplace:'races',opening:3800,pay:120,betting:36},
@@ -64,7 +65,7 @@
   const canLeave=!!locationId&&context.slot===1;
   const weekend=context.weekday===6;
   const appetite=clamp(cfg.betting+Math.round((100-(+def.traits?.caution||70))/5),1,75);
-  const chase=trackOpen&&canLeave&&ec.balanceCents>=60&&
+  const chase=cfg.betting!==0&&trackOpen&&canLeave&&ec.balanceCents>=60&&
    hash(tag+'|visit')%100<(weekend?clamp(appetite+25,0,80):Math.floor(appetite/3));
   if(chase){
    locationId='races';

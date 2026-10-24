@@ -8,6 +8,15 @@
  'use strict';
  const SLOT_NAMES=Object.freeze(['early-business','late-business','early-night','late-night']);
  const DEFINITIONS=Object.freeze([
+  {id:'samuelTilden',name:'President Samuel J. Tilden',
+   occupation:'President of the United States (alternate election of 1876)',
+   historical:true,availableFrom:'1877-03-04',availableUntil:'1887-03-03',
+   ambition:'maintain-responsible-national-government',
+   publicRemark:"Government policy deserves examination rather than promises made in passing.",
+   traits:{sociability:49,caution:87,ambition:77},
+   places:['whiteHouse','whiteHouse',null,null],
+   activities:['reviewing executive correspondence','meeting with authorized visitors',null,null],
+   goals:['review-executive-papers','consult-advisers','respond-to-petitions']},
   {id:'madamStar',name:'Madam Star',fullName:'Eleanor Victoria Ashcroft',nationality:'British',occupation:'Star Club proprietor',ambition:'protect-and-develop-the-star-club',
    publicRemark:"The evening crowd does not always agree with the morning newspapers. Ask people directly, and remember which ones actually saw an event.",traits:{sociability:82,caution:79,ambition:73},places:['star','star','star','star'],
    activities:['reviewing the day’s appointments','receiving callers','overseeing the evening','concluding private business'],
@@ -50,7 +59,7 @@
    goals:['develop-trade','expand-connections','protect-reputation']}
  ]);
  const BY_ID=new Map(DEFINITIONS.map(d=>[d.id,d]));
- const WORKPLACES={madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
+ const WORKPLACES={samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
@@ -149,6 +158,10 @@
   const slot=absolute%4,turn=Math.floor(absolute/4)+1;
   for(const def of DEFINITIONS){
    const a=w.agents[def.id];
+   const dateForEra=observedDate();
+   if((def.availableFrom&&dateForEra<def.availableFrom)||(def.availableUntil&&dateForEra>def.availableUntil)){
+    a.locationId=null;a.roomId=null;a.activity=null;a.status='inactive';a.lastStep=absolute;continue;
+   }
    const decision=planDecision(w,def,a,SLOT_NAMES[slot],'legacy|'+absolute);
    const rest=decision.rest,date=observedDate(),natural=rest?null:def.places[slot];
    const weekday=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+'T12:00:00Z').getUTCDay():1;
@@ -181,7 +194,11 @@
   // Wholesale shipments only on actually reached Monday/Thursday morning slots.
   window.FE_WASHINGTON_COMMERCE?.deliveryForCalendar?.(S,c.date,window.FE_NPC_CALENDAR.slot(c.minuteOfDay));
   for(const def of DEFINITIONS){
-   const a=w.agents[def.id],period=window.FE_NPC_CALENDAR.at(c,def);
+   const a=w.agents[def.id];
+   if((def.availableFrom&&c.date<def.availableFrom)||(def.availableUntil&&c.date>def.availableUntil)){
+    a.locationId=null;a.roomId=null;a.activity=null;a.status='inactive';a.lastCalendarSlot=key;continue;
+   }
+   const period=window.FE_NPC_CALENDAR.at(c,def);
    const decision=planDecision(w,def,a,period.name,key);
    const rest=decision.rest,natural=rest?null:period.locationId;
    const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{

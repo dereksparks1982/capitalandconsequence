@@ -65,7 +65,7 @@ Edmund Wardman's older brother; the **two rival livery brothers**; owners and st
 
 ## Historical people (real biographies, **fictional** alternate-1878 jobs where stated)
 
-**Samuel J. Tilden**: president of the game's 1878 United States, having won its alternate 1876 nationwide popular vote.
+**Samuel J. Tilden**: president of the game's 1878 United States, having won its alternate 1876 nationwide popular vote. **Now a scheduled NPC** at the existing White House for the 1877–1887 first term; future reelections remain undecided.
 
 **Thomas A. Hendricks**: Tilden's actual running mate, **proposed** game vice president.
 

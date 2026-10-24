@@ -316,7 +316,8 @@ const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===9,'Nine named NPCs including Lucien Delacroix and Russian-only Alexi Rurik are registered');
+check(npc.list().length===10,'Ten named NPCs including President Tilden, Lucien Delacroix, and Alexi Rurik');
+check(npc.list().some(v=>v.id==='samuelTilden'),'President Tilden is a historically based resident');
 check(npc.list().some(v=>v.id==='luiDelacroix'),'Lui is a distinct scheduled proprietor of the second nightclub');
 check(npc.syncClock()===true,'Initial clock slot schedules residents');
 check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Founding workshop assistant works at the factory');

@@ -2,7 +2,7 @@
  * is not automatically physically present at any hotel or poker table. */
 (function(root){'use strict';
 const PEOPLE=Object.freeze([
- {id:'samuelTilden',name:'Samuel J. Tilden',history:'1876 Democratic presidential candidate',fiction:'President in alternate timeline; 1877–1887 first term',status:'ready-for-NPC',source:'https://www.loc.gov/'},
+ {id:'samuelTilden',name:'Samuel J. Tilden',history:'1876 Democratic presidential candidate',fiction:'President in alternate timeline; 1877–1887 first term',status:'implemented-NPC',source:'https://www.loc.gov/'},
  {id:'thomasHendricks',name:'Thomas A. Hendricks',history:'Tilden’s 1876 vice-presidential running mate',fiction:'Proposed alternate vice president; not yet appointed',status:'proposed',source:'https://www.senate.gov/'},
  {id:'abramHewitt',name:'Abram S. Hewitt',history:'Politician and Tilden campaign associate',fiction:'Proposed adviser; not yet appointed',status:'proposed',source:'https://bioguide.congress.gov/'},
  {id:'johnBigelow',name:'John Bigelow',history:'Former diplomat and Tilden correspondent',fiction:'Proposed diplomatic adviser',status:'proposed',source:'https://old-digitalcollections.nypl.org/collections/samuel-j-tilden-papers'},
