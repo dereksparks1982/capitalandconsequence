@@ -345,11 +345,50 @@
   georgetownCanal:[32,.271,.475],easternBranchFishing:[33,.758,.642],
   chainBridgeFishing:[34,.139,.326]
  });
+ // Historical means the destination is real, not merely a fictional business
+ // inside a historic building. Star Club and Embassy Room are therefore fictional.
+ const HISTORICAL_DESTINATIONS=new Set([
+  'hillsdale','oldChinatown','universityMaryland','governmentHospital',
+  'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
+  'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'
+ ]);
+ // Pin anchors read against the owner's actual, unchanged 2048 x 1159
+ // Washington In and Out Guide image (A-R rows / 1-30 columns).
+ // Only visibly identified buildings/grounds are marked verified.
+ // Other sites retain their previous default coordinates, explicitly unverified,
+ // so no invented site is presented as a historical certainty.
+ const MAP_ARTWORK_ANCHORS=Object.freeze({
+  whiteHouse:[854,454,'The White House, printed on map, 12-I/J'],
+  washingtonAirport:[718,730,'Washington Airport, named on map, Arlington'],
+  governmentHospital:[1483,834,'St. Elizabeths hospital complex, printed near south edge'],
+  georgetownCanal:[638,415,'C&O Canal along Georgetown north bank (route, not surveyed entrance)'],
+  easternBranchFishing:[1425,622,'Anacostia shore beside the Navy Yard (bank, not surveyed entrance)']
+ });
+ const IMAGE_WIDTH=2048,IMAGE_HEIGHT=1159;
+ // Coordinates describe the PRINTED map, not longitude/latitude.
+ const GRID_LEFT=323,GRID_TOP=59,GRID_COL_PITCH=48.5,GRID_ROW_PITCH=45.55;
+ function mapGridReference(x,y){
+  const px=x*IMAGE_WIDTH,py=y*IMAGE_HEIGHT;
+  if(px<286||px>1778||py<30||py>864)return 'Outside map';
+  const col=Math.max(1,Math.min(30,Math.round((px-GRID_LEFT)/GRID_COL_PITCH)+1));
+  const row=Math.max(0,Math.min(17,Math.round((py-GRID_TOP)/GRID_ROW_PITCH)));
+  return col+'-'+String.fromCharCode(65+row);
+ }
  for(const location of LOCATIONS){
   const position=PROVISIONAL_MAP_PINS[location.id];
   if(!location.map&&position){
    location.map={n:position[0],x:position[1],y:position[2]};
-   location.provisionalMapPosition=true;
+  }
+  location.mapOrigin=HISTORICAL_DESTINATIONS.has(location.id)?'historical':'fictional';
+  const anchor=MAP_ARTWORK_ANCHORS[location.id];
+  if(anchor&&location.map){
+   location.map.x=anchor[0]/IMAGE_WIDTH;
+   location.map.y=anchor[1]/IMAGE_HEIGHT;
+   location.mapEvidence=anchor[2];
+  }
+  if(location.map){
+   location.mapPlacement=anchor?'map-anchored':'unverified';
+   location.provisionalMapPosition=!anchor;
   }
  }
  function copyRoom(room){return Object.assign({},room)}
@@ -381,7 +420,11 @@
    x:v.map.x,
    y:v.map.y,
    description:v.description,
-   provisional:!!v.provisionalMapPosition
+   provisional:!!v.provisionalMapPosition,
+   origin:v.mapOrigin,
+   placement:v.mapPlacement,
+   grid:mapGridReference(v.map.x,v.map.y),
+   evidence:v.mapEvidence||''
   }));
  }
 
