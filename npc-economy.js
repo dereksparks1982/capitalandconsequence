@@ -97,11 +97,13 @@
     'handling business orders and receipts';
    description='Completed a scheduled '+cfg.occupation+' work period'+(repaid?' and repaid a portion of an earlier loan.':'.');
   }else if(context.slot===3){
-   // A small household cost once per actually observed late-night period.
-   amount=-Math.min(ec.balanceCents,35);
+   // For live saves, purchases already moved cash/stock at the observed market.
+   // Legacy isolated action tests without a market keep the old bounded allowance.
+   const recordedMarket=!!context.save&&!!root.FE_WASHINGTON_COMMERCE;
+   amount=recordedMarket?0:-Math.min(ec.balanceCents,35);
    ec.balanceCents+=amount;
    kind='household';
-   description='Settled ordinary household expenses.';
+   description=recordedMarket?'Reviewed household bills already paid from recorded market purchases.':'Settled ordinary household expenses.';
    // Credit is explicit and bounded, not an unexplained negative balance.
    if(ec.balanceCents<80&&ec.debtCents<650&&(+def.traits?.caution||60)>=50){
     const advance=Math.min(240,650-ec.debtCents);
@@ -114,10 +116,29 @@
    kind='personal';
    description='Visited '+locationId+' on personal business.';
   }
+  // Independent household shopping at the observed daytime market period.
+  // Real goods, finite stocks and merchant tills are shared with player orders
+  // and Sullivan's Saturday groceries. Never advance world time for NPC actions.
+  let purchased=null;
+  const market=context.save&&root.FE_WASHINGTON_COMMERCE;
+  if(market&&context.slot===1&&!context.rest&&ec.balanceCents>=4){
+   const shopping=['bread','soap','onions','milk','potatoes','eggs','produce','bacon'];
+   const start=hash(tag+'|shop')%shopping.length;
+   for(let i=0;i<shopping.length;i++){
+    const goodId=shopping[(start+i)%shopping.length];
+    const result=market.purchase(context.save,def.id,goodId,
+     {date:context.date,token:'npc|'+context.key+'|'+def.id+'|'+goodId});
+    if(!result.ok)continue;
+    purchased=result.receipt;
+    amount-=purchased.cents;
+    description+=' Bought '+purchased.label+' from a local merchant.';
+    break;
+   }
+  }
   ec.balanceCents=clamp(ec.balanceCents,0,10000000);
   ec.lastKey=context.key;
   const action={key:context.key,date:context.date,slot:context.slot,kind,
-   locationId,activity,amountCents:amount,
+   locationId,activity,amountCents:amount,marketReceiptId:purchased?.id||null,
    // Public statement is said only in-person; amount and private balances stay private.
    publicLine:kind==='wager-win'?'I had a fortunate afternoon at the races.':
     kind==='wager-loss'?'The horses were not kind to me today.':

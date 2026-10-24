@@ -172,13 +172,15 @@
   // Resolve the reached period once, never manufacture missed encounters
   // or private gossip for periods not actually observed by the player.
   const turn=Math.max(1,Math.floor(+S.turnSerial||1));
+  // Wholesale shipments only on actually reached Monday/Thursday morning slots.
+  window.FE_WASHINGTON_COMMERCE?.deliveryForCalendar?.(S,c.date,window.FE_NPC_CALENDAR.slot(c.minuteOfDay));
   for(const def of DEFINITIONS){
    const a=w.agents[def.id],period=window.FE_NPC_CALENDAR.at(c,def);
    const decision=planDecision(w,def,a,period.name,key);
    const rest=decision.rest,natural=rest?null:period.locationId;
    const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
     key,date:c.date,slot:period.slot,weekday:c.weekday,seed:w.seed,
-    rest,defaultLocation:natural,defaultActivity:rest?null:period.activity});
+    rest,save:S,defaultLocation:natural,defaultActivity:rest?null:period.activity});
    a.goal=decision.goal;
    const action=completed.action,moved=pickRoom(def,a,action,w),destination=moved.locationId;
    a.locationId=destination;
@@ -219,6 +221,7 @@
     renderRoomVisitors(location.locationId);
    }
   }
+  window.FE_MARKET_UI?.render?.();
   renderContactItineraries();
   return true;
  }
