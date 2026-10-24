@@ -92,7 +92,10 @@
         <div><h2 id="titleMapHeading">Washington In and Out Guide</h2><p>Washington, D.C. · 1878</p></div>
         <div class="title-map-tools">
           <label class="title-map-label-switch"><input id="titleMapShowNames" type="checkbox"> Show Names</label>
+          <label class="title-map-filter-label">Find <input id="titleMapSearch" type="search" placeholder="Search places or grid" aria-label="Search Washington locations"></label>
           <label class="title-map-filter-label">Locations <select id="titleMapCategory"><option value="all">All categories</option></select></label>
+          <label class="title-map-filter-label">Pins <select id="titleMapOrigin"><option value="all">All pins</option><option value="historical">Historical · red</option><option value="fictional">Fictional · blue</option></select></label>
+          <button id="titleMapExportPins" type="button" title="Export this profile's pin coordinates and names">Export Pins</button>
           <button id="titleMapEditPins" type="button" aria-pressed="false">Edit Pins</button>
           <button id="titleMapResetPins" type="button">Reset Pins</button>
           <button id="titleMapZoomOut" type="button" aria-label="Zoom out">−</button>
@@ -102,20 +105,26 @@
         </div>
       </div>
       <div id="titleMapViewport" class="title-map-viewport" tabindex="0" aria-label="Washington, D.C. reference map. Use the mouse wheel to zoom and drag to move around the map.">
-        <img id="titleMapImage" src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="Washington reference map, later-era placeholder artwork; player positions are preserved" draggable="false">
+        <img id="titleMapImage" src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="Washington In and Out Guide, permanent alternate-history city map with A–R and 1–30 grid and index" draggable="false">
         <div id="titleMapMarkers" class="title-map-markers" aria-label="Federal Electric Washington locations"></div>
         <aside id="titleMapLocationCard" class="title-map-location-card" hidden>
           <button id="titleMapLocationClose" type="button" aria-label="Close location details">×</button>
           <strong id="titleMapLocationName"></strong>
           <div class="title-map-pin-rename"><label for="titleMapPinName">Your pin name</label><input id="titleMapPinName" type="text" maxlength="64" autocomplete="off" spellcheck="true" placeholder="Name this place"><button id="titleMapPinRename" type="button">Save Name</button><button id="titleMapPinResetName" type="button">Reset Name</button><small id="titleMapPinNameNotice" role="status" aria-live="polite"></small></div>
           <span id="titleMapLocationArea"></span>
+          <small id="titleMapLocationGrid" class="title-map-grid-ref"></small>
           <p id="titleMapLocationDescription"></p><p id="titleMapTravelNote" class="fine">Travel time research pending. Map movement is provisional.</p>
           <div class="title-map-location-actions">
             <button id="titleMapLocationTravel" type="button">Go There</button>
           </div>
         </aside>
       </div>
-      <div id="titleMapHelp" class="title-map-help">Mouse wheel to zoom · click and drag to move</div><p class="fine">Temporary later-era map artwork. The planned 1878 setting needs accurate artwork; twelve new markers have provisional positions. Pin defaults follow the restored Washington site decisions; use Edit Pins to adjust them for your profile.</p><div id="titleMapUnpinnedDirectory" class="title-map-unpinned-directory"></div>
+      <div class="title-map-footer">
+        <div id="titleMapHelp" class="title-map-help">Mouse wheel to zoom · click and drag to move</div>
+        <div class="title-map-legend" aria-label="Map pin color legend"><span><i class="title-map-swatch historical"></i> Red: real historical location</span><span><i class="title-map-swatch fictional"></i> Blue: invented destination</span><small>Unverified positions are identified in the directory. The printed map never changes with the year.</small></div>
+        <details class="title-map-directory-panel"><summary>Washington Location Directory <span id="titleMapDirectoryCount"></span></summary><div id="titleMapDirectory" class="title-map-directory" aria-live="polite"></div></details>
+        <div id="titleMapUnpinnedDirectory" class="title-map-unpinned-directory"></div>
+      </div>
     </section>
   </div>
 </div>
