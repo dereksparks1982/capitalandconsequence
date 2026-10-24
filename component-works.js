@@ -141,14 +141,20 @@
    return {ok:false,reason:'invalid shipment'};
   if(!Number.isSafeInteger(state.warehouse[job.productId])||state.warehouse[job.productId]<units)
    return {ok:false,reason:'insufficient finished warehouse stock'};
-  const revenueCents=units*job.priceCents;
-  if(!Number.isSafeInteger(revenueCents)||state.cashCents+revenueCents>Number.MAX_SAFE_INTEGER)
+  const grossCents=units*job.priceCents;
+  const late=state.date>job.deadline;
+  // A railway customer's late-delivery discount is taken from the actual
+  // invoice. Work is never paid before warehouse goods physically ship.
+  const latePenaltyCents=late?Math.round(grossCents*.10):0;
+  const revenueCents=grossCents-latePenaltyCents;
+  if(!Number.isSafeInteger(grossCents)||!Number.isSafeInteger(revenueCents)||state.cashCents+revenueCents>Number.MAX_SAFE_INTEGER)
    return {ok:false,reason:'unsafe payment amount'};
   state.warehouse[job.productId]-=units;
   job.delivered+=units;job.status=job.delivered===job.quantity?'delivered':'partial';
+  job.latePenaltyCents=(job.latePenaltyCents||0)+latePenaltyCents;
   state.cashCents+=revenueCents;
   return record(state,token,'shipment',{ok:true,orderId,units,productId:job.productId,
-   revenueCents,complete:job.status==='delivered',late:state.date>job.deadline});
+   grossCents,latePenaltyCents,revenueCents,complete:job.status==='delivered',late});
  }
 
  const RAILWAY_CUSTOMER='Capital Railway Telegraph';
