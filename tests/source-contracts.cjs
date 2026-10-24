@@ -55,7 +55,7 @@ check(city.getLocation('cobblerShop').map.n===36&&city.mapLocations().find(v=>v.
 check(city.getLocation('easternMarket').map.n===37&&city.getLocation('georgetownMarketHouse').map.n===38,'Historical markets use pins 37 and 38');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
-check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
+check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale / Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
 check(city.getLocation('home').rooms.length===5,'Home has private stable as fifth room');
 check(!city.getLocation('races').description.includes('horse-racing and dog-racing'),'Separate racing locations are reflected in venue description');
@@ -563,7 +563,7 @@ check(read('career-shell.js').includes('FE_ORDERLY_UI?.refresh?.()'),'Shared car
 check(city.getRoom('metropolitanPolice','station-duty-room')?.restricted===true,'Police station has a restricted patrol duty room');
 check(city.getRoom('metropolitanPolice','sergeant-office')?.restricted===true,'Rookie does not inherit supervisor access');
 check(routes.get('investigator').startingRoomId==='station-duty-room','Samuel begins at the station duty desk');
-check(city.getLocation('hillsdale').name==='Hillsdale'&&city.getRoom('hillsdale','neighborhood-street').name==='Hillsdale Street','Hillsdale is the neighborhood display name');
+check(city.getLocation('hillsdale').name==='Hillsdale / Barry Farm'&&city.getRoom('hillsdale','neighborhood-street').name==='Hillsdale Street','Hillsdale is the neighborhood display name');
 check(require('../patrol-duty.js').STREETS.length===1&&require('../patrol-duty.js').STREETS[0].id==='hillsdale','Sam has only one assigned police beat');
 check(read('app.js').includes('FE_PATROL?.travel?.(S,entry.id)')&&read('app.js').includes('FE_PATROL?.travel?.(S,location.id)'), 'Map and direct travel enforce active patrol limits');
 check(require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','station-duty-room','1890-01-02').ok,'Officer may use his own duty room');

@@ -24,7 +24,7 @@
   },
   {
    id:'hillsdale',
-   name:'Hillsdale',
+   name:'Hillsdale / Barry Farm',
    area:'Hillsdale · Southeast Washington, east of the Anacostia River',
    category:'neighborhood',
    description:'Hillsdale is a historically African American landowning neighborhood established after the Civil War, also known on older maps as Barry Farm. Houses, churches, schools, shops and community life make up the area.',
@@ -434,14 +434,14 @@
  // editorial work and does not itself implement NPCs, transactions or events.
  const FICTIONAL_STORY=Object.freeze({
     factory: "In our Washington, Federal Electric is a small but ambitious electrical works in Ivy City. Charlie's contracts, shortages and decisions may shape the company's rise or failure.",
-    star: "Madam Star's discreet club occupies the surviving Hay-Adams houses in this alternate Washington. Influential visitors come to talk and socialize, not to gamble.",
+    star: "Eleanor Victoria Ashcroft, called Madam Star, runs this fictional presidential-founded club. Its fine dining, discreet companionship and background musicians operate under strict rules. No cards or gambling.",
     races: "Our capital maintains the fictional Capital Race Grounds in the Benning area. Racing fortunes, patrons and rivalries belong to this game's divergent history.",
     workingPoker: "A modest neighborhood card game offers working Washingtonians a seat at the table. Its exact venue remains undecided in our fictional city.",
     commercePoker: "Our fictional Commerce Club gathers pilots and businessmen for a weekly poker game in a Washington-Hoover airport hangar. The airport is real; the club and game are invented.",
     embassyPoker: "In our Washington, the Embassy Room is an invitation-only private poker venue associated with the Chevy Chase Club. That room is a game invention, not a historical claim about the real club.",
     russianTradeHall: "Merchants, engineers and diplomats of Imperial Russia have an informal Washington meeting hall in this alternate timeline. Its business and conversations are written for the game.",
     washingtonFairgrounds: "The game's alternative national history brings the 1893 World's Columbian Exposition to Washington's Potomac Flats rather than its real-world venue.",
-    secondNightclub: "This is another Washington nightlife establishment in our imagined city. Its proprietor, public name and exact address have yet to become part of the approved story.",
+    secondNightclub: "Frenchman Lucien Étienne Delacroix, known as Lui, operates this fictional cabaret and nightclub. Elias Crowe works its entrance. The final signboard name and exact address remain undecided.",
     capitolAirport: "Our fictional Capitol Airport operates near Benning, separate from the historical Washington-Hoover airfield. Its precise property is still undecided.",
     brokerOffice: "A Washington stockbroker receives Charlie's personal securities orders in our game world. The fictional office's actual building has not been chosen.",
     home: "Charlie's prospective Capitol Hill home is a private family address within our Washington story. Its rooms and furnishings evolve through the player's choices.",
