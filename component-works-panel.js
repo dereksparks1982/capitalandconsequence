@@ -72,7 +72,7 @@
        return root.finishWorkshopClosingBell();
       });
      panel.querySelector('#cwMessage').textContent=result.ok?
-      'Recorded '+kind+(kind==='assemble'&&result.requestedUnits>result.units?' · '+result.units+' unit(s) finished, remainder still ordered':'')+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
+      'Recorded '+kind+(kind==='assemble'&&result.requestedUnits>result.units?' · '+result.units+' unit(s) finished, remainder still ordered':'')+(kind==='ship'&&result.latePenaltyCents?' · late delivery reduced payment by $'+(result.latePenaltyCents/100).toFixed(2):'')+'. '+result.elapsedSeconds/60+' game minutes elapsed.':result.reason||'Transaction refused';
      if(result.ok&&!result.repeated){S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence);save(true)}
      render();
     }catch(err){panel.querySelector('#cwMessage').textContent='Workshop action failed: '+String(err.message||err).slice(0,150)}
@@ -112,7 +112,7 @@
   for(const o of state.orders){
    const p=document.createElement('p');
    p.textContent=o.id+' · '+engine.PRODUCTS[o.productId].name+' · '+o.customer+
-    ' · '+o.made+' assembled · '+o.delivered+'/'+o.quantity+' shipped · deadline '+o.deadline;
+    ' · '+o.made+' assembled · '+o.delivered+'/'+o.quantity+' shipped · deadline '+o.deadline+(o.latePenaltyCents?' · late deductions $'+(o.latePenaltyCents/100).toFixed(2):'');
    out.appendChild(p);
   }
   for(const [id,filter] of [['cwAssemble',o=>o.made<o.quantity],['cwShip',o=>o.delivered<o.quantity]]){
