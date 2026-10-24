@@ -1,0 +1,17 @@
+name: One-time v0.6.88 Owner Build Request
+on:
+  push:
+    branches: [main]
+    paths:
+      - BUILD-REQUEST-v0.6.88.md
+permissions:
+  actions: write
+  contents: read
+jobs:
+  owner-requested-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch the existing manual-only Linux Desktop Build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run linux-build.yml --repo "$GITHUB_REPOSITORY" --ref main
