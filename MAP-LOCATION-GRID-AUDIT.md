@@ -79,9 +79,13 @@ a pin, that profile's placement takes precedence and remains visible.
   **not** assigned. The coordinate must be confirmed
   from the right-hand index / grid or an owner-approved fictional address.
 - Profile-specific positions and renamed labels use the existing V2 key,
-  `federalElectricTitleMapLocationsV2:<profile>`. Saved positions override new
-  defaults without an automatic reset. Export Pins produces an exact per-profile
-  JSON listing that can be used in future alignment reviews.
+  `federalElectricTitleMapLocationsV2:<profile>`. The earlier implementation
+  saved all 34 defaults whenever even one name changed. The loader recognizes
+  the prior default coordinates for the 13 relocated sites: only unchanged old
+  defaults receive new map-aligned coordinates. **Actual player-moved positions
+  are preserved**, as are all custom names. No automatic reset is performed.
+  Export Pins produces exact per-profile JSON (including user-placed flags)
+  for future alignment reviews.
 - The location card remains editable; its own pointerdown is stopped before the
   viewport captures a map drag. No viewport pan/zoom behavior was redesigned.
 - Category filters, historical/fictional filters, and text/grid search operate
