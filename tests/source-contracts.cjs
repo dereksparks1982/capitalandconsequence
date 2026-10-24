@@ -50,9 +50,9 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===29,'All 29 city destinations have distinct map pins');
-check(new Set(ids).size===29,'No duplicate map location identifiers');
-check(new Set(nums).size===29&&Math.max(...nums)===29,'Map marker numbers 1-29');
+check(pins.length===34,'All 34 city destinations have distinct map pins');
+check(new Set(ids).size===34,'No duplicate map location identifiers');
+check(new Set(nums).size===34&&Math.max(...nums)===34,'Map marker numbers 1-34');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
@@ -577,7 +577,7 @@ check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').inc
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
 check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
-check(city.mapLocations().length===29,'Existing 28 pins retained with new provisional Potomac fishing pin');
+check(city.mapLocations().length===34,'Six fishing pins are mapped without losing the original 29 locations');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
@@ -618,3 +618,9 @@ check(pkg.scripts['test:source'].includes('tests/home-stable.cjs')&&pkg.scripts[
 
 check(city.getLocation('potomacFishingBank')?.map?.n===29&&city.getRoom('potomacFishingBank','riverbank')?.id==='riverbank','Potomac fishing location is an addressable public room on marker 29');
 check(city.getLocation('potomacFishingBank')?.category==='sport','Fishing spot appears in Sports & Recreation map filter');
+
+check(['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'].every(id=>city.getLocation(id)?.category==='leisure'),'All six fishing sites belong to Leisure, not sport or gaming');
+check(city.getLocation('babcockLake').availableUntil==='1888-12-31','Babcock Lake closes after historic filling rather than surviving indefinitely');
+check(appSource.includes("leisure:'Leisure & Outdoors'")&&appSource.includes("sport:'Recreation & Competition'"),'Fishing and competitive racing have separate map filters');
+check(index.includes('id="titleMapPinRename"')&&index.includes('id="titleMapPinResetName"'),'Player can set or reset names from map UI');
+check(pkg.scripts['test:source'].includes('tests/map-fishing-locations.cjs'),'Fishing map filters and pin names have real regression tests');
