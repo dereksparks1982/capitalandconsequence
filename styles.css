@@ -1581,3 +1581,10 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 #titleMapMarkers .title-map-marker[data-purpose="housing"] .title-map-marker-pin{background:rgba(103,108,112,.78)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-housing{background:#676c70}
 .title-map-directory-item[data-purpose="housing"]{border-left:4px solid #676c70}
+
+/* Read-only Washington sports championship register */
+.dc-title-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px}
+.dc-title-card{padding:9px 12px;border:1px solid #8f7856;background:#30291f;color:#eadab6}
+.dc-title-card strong{font:700 15px Georgia,serif}
+.dc-title-card p{margin:7px 0;font:13px Georgia,serif}
+.dc-title-card small{color:#c4b18a;font:12px Georgia,serif}
