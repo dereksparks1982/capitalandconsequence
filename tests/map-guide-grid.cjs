@@ -6,10 +6,10 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const source=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const ctx={window:{}};vm.runInNewContext(source('city.js'),ctx);
 const sites=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(sites.length,34,'retain every original numbered destination');
-assert.equal(new Set(sites.map(s=>s.n)).size,34,'no duplicate numbered pins');
-assert.equal(sites.filter(s=>s.origin==='historical').length,12);
-assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
+assert.equal(sites.length,35,'retain every original destination and add the monastery');
+assert.equal(new Set(sites.map(s=>s.n)).size,35,'no duplicate numbered pins');
+assert.equal(sites.filter(s=>s.origin==='historical').length,14);
+assert.equal(sites.filter(s=>s.origin==='fictional').length,21);
 const byId=id=>sites.find(s=>s.id===id);
 for(const site of sites){
  assert.ok(Number.isFinite(site.x)&&Number.isFinite(site.y),'finite position: '+site.id);
@@ -25,6 +25,13 @@ for(const id of ['whiteHouse','washingtonAirport','governmentHospital']){
  assert.equal(site.provisional,false);
  assert.notEqual(site.grid,'Outside map');
 }
+assert.equal(byId('franciscanMonastery').n,35,'Franciscan Monastery is pin 35');
+assert.equal(byId('franciscanMonastery').origin,'historical','Monastery pin is red');
+assert.equal(byId('franciscanMonastery').placement,'area-located','Monastery is grounded by address, not falsely labelled printed');
+assert.equal(byId('franciscanMonastery').grid,'21-E','Brookland monastery sits in grid 21-E');
+assert.equal(byId('metropolitanPolice').origin,'historical','Real DC police institution is historical');
+assert.equal(byId('chainBridgeFishing').grid,'Outside map','Chain Bridge bank is not falsely mapped to Georgetown');
+assert.equal(byId('hillsdale').placement,'area-located','Barry Farm neighbourhood is placed southeast of river');
 assert.equal(byId('star').origin,'fictional','Star Club is invented inside Hay-Adams houses');
 assert.equal(byId('embassyPoker').origin,'fictional','Embassy Room is an invented poker venue');
 assert.equal(byId('factory').origin,'fictional','Federal Electric is an invented company');
@@ -50,4 +57,4 @@ assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
  'outside-index locations are not rendered over the printed map');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
-console.log('PASS Washington guide: 34 numbered pins, 12 historical/22 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
+console.log('PASS Washington guide: 35 numbered pins, 14 historical/21 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
