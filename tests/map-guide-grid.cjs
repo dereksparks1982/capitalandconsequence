@@ -6,10 +6,10 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const source=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const ctx={window:{}};vm.runInNewContext(source('city.js'),ctx);
 const sites=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(sites.length,35,'retain every original destination and add the monastery');
-assert.equal(new Set(sites.map(s=>s.n)).size,35,'no duplicate numbered pins');
-assert.equal(sites.filter(s=>s.origin==='historical').length,14);
-assert.equal(sites.filter(s=>s.origin==='fictional').length,21);
+assert.equal(sites.length,38,'retain original destinations plus monastery cobbler and two historical markets');
+assert.equal(new Set(sites.map(s=>s.n)).size,38,'no duplicate numbered pins');
+assert.equal(sites.filter(s=>s.origin==='historical').length,16);
+assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
 const byId=id=>sites.find(s=>s.id===id);
 for(const site of sites){
  assert.ok(Number.isFinite(site.x)&&Number.isFinite(site.y),'finite position: '+site.id);
@@ -26,6 +26,12 @@ for(const id of ['whiteHouse','washingtonAirport','governmentHospital']){
  assert.notEqual(site.grid,'Outside map');
 }
 assert.equal(byId('franciscanMonastery').n,35,'Franciscan Monastery is pin 35');
+assert.equal(byId('cobblerShop').n,36,'Cobbler is pin 36');
+assert.equal(byId('cobblerShop').origin,'fictional','Cobbler storefront is blue');
+assert.equal(byId('easternMarket').n,37,'Eastern Market is pin 37');
+assert.equal(byId('georgetownMarketHouse').n,38,'Georgetown Market House is pin 38');
+assert.equal(byId('easternMarket').origin,'historical','Eastern Market is red');
+assert.equal(byId('georgetownMarketHouse').origin,'historical','Georgetown Market House is red');
 assert.equal(byId('franciscanMonastery').origin,'historical','Monastery pin is red');
 assert.equal(byId('franciscanMonastery').placement,'area-located','Monastery is grounded by address, not falsely labelled printed');
 assert.equal(byId('franciscanMonastery').grid,'21-E','Brookland monastery sits in grid 21-E');
@@ -57,4 +63,4 @@ assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
  'outside-index locations are not rendered over the printed map');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
-console.log('PASS Washington guide: 35 numbered pins, 14 historical/21 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
+console.log('PASS Washington guide: 38 numbered pins, 16 historical/22 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
