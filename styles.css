@@ -1497,3 +1497,38 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
  .title-map-filter-label select{max-width:120px}
  .title-map-footer{max-height:27vh}
 }
+
+/* Map pin identity remains legible while the actual guide map shows through.
+   Alpha applies to the pin background only, NOT its number, text or click area. */
+#titleMapMarkers .title-map-marker[data-origin="historical"] .title-map-marker-pin{
+ background:rgba(155,48,48,.68)!important;
+}
+#titleMapMarkers .title-map-marker[data-origin="fictional"] .title-map-marker-pin{
+ background:rgba(36,94,154,.68)!important;
+}
+.title-map-location-card{max-height:calc(100% - 24px);overflow-y:auto}
+.place-fact-label{
+ display:inline-block!important;width:max-content;max-width:100%;
+ margin:5px 0 9px;padding:3px 9px;
+ border:1px solid currentColor;border-radius:3px;
+ font:700 12px/1.2 Georgia,serif;letter-spacing:.025em;
+}
+.place-fact-label.is-nonfiction{
+ color:#f7d7d5!important;background:rgba(141,39,41,.45);
+}
+.place-fact-label.is-fiction{
+ color:#d3e9ff!important;background:rgba(32,76,129,.5);
+}
+.historical-reading{
+ margin:10px 0;padding:8px 10px;max-width:100%;
+ border:1px solid #8d784f;background:rgba(53,45,34,.64);color:#f0dfb7;
+ font:13px/1.42 Georgia,serif;
+}
+.historical-reading[hidden]{display:none!important}
+.historical-reading summary{cursor:pointer;font-weight:700;color:#f9e9ba}
+.historical-reading p{margin:9px 0!important;color:inherit}
+.historical-reading-disclaimer{font-style:italic;font-size:11px;opacity:.9}
+.historical-reading-links{display:flex;flex-wrap:wrap;gap:6px 12px}
+.historical-reading a{color:#b8daff;text-decoration:underline;overflow-wrap:anywhere}
+.historical-reading a:hover,.historical-reading a:focus-visible{color:#fff0bf}
+#cityRoomHistoricalReading{background:rgba(64,54,38,.85)}
