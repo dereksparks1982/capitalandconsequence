@@ -1,5 +1,8 @@
 # Capital & Consequence · CONTINUE HERE
 
+> **MAP HISTORY HANDOFF · October 24:** The immutable A–R / 1–30 map has 38 pins. Card and interior page say **Fiction** (blue/invented) or **Non-Fiction** (red/real). All 16 historical entries contain expandable factual reading, Wikipedia and Library of Congress links, with the alternate timeline clearly distinguished. Pin fills are semi-transparent (68% opaque), numerals stay legible. The historical reading DOM-contract suite `tests/map-history-reference.cjs` is in `npm run test:source` and passes the focused checks. Do not mistake these for completed Electron UI testing or a new executable.
+
+
 > **HISTORICAL READING FOLLOW-UP · October 24, 2026:** Map popups and visited room pages show **Fiction / Non-Fiction** text; 16 real sites have expandable factual histories, verified links to their Wikipedia article (or labeled search) and Library of Congress searches. Fictional rooms have no real-history panels. Colored pin backgrounds use 68% opacity while numbers remain solid. DOM/source checks passed for both panels and all 38 entries; new `tests/map-history-card.cjs` included in the source QA script. Do not claim a full Ubuntu/Electron playthrough or downloadable binary without separate validation.
 
 
