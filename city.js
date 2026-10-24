@@ -407,6 +407,27 @@
  // Only visibly identified buildings/grounds are marked verified.
  // Other sites retain their previous default coordinates, explicitly unverified,
  // so no invented site is presented as a historical certainty.
+ // Non-fiction reference notes belong to the real world and must never be
+ // conflated with the game's divergent Washington history or invented rooms.
+ // Wikipedia and LOC are reading links, not runtime gameplay dependencies.
+ const HISTORICAL_READING=Object.freeze({
+  hillsdale:{"summary":"Barry Farm (Hillsdale) grew as a community of Black landowners and families after emancipation and the Civil War.","wikipedia":"https://en.wikipedia.org/wiki/Barry_Farm","query":"Barry Farm Hillsdale Washington DC"},
+  oldChinatown:{"summary":"Chinese-American merchants and residents established a Washington community near Pennsylvania Avenue NW before Chinatown later shifted to a different downtown area.","wikipedia":"https://en.wikipedia.org/wiki/Chinatown_(Washington,_D.C.)","query":"early Chinatown Pennsylvania Avenue Washington DC"},
+  universityMaryland:{"summary":"The institution began as the Maryland Agricultural College in the nineteenth century. Its history is distinct from this game's fictional academic encounters.","wikipedia":"https://en.wikipedia.org/wiki/University_of_Maryland,_College_Park","query":"Maryland Agricultural College founding history"},
+  governmentHospital:{"summary":"The Government Hospital for the Insane opened in 1855 and later became known as St. Elizabeths Hospital. Fictional patient stories in this game are not archival records.","wikipedia":"https://en.wikipedia.org/wiki/St._Elizabeths_Hospital","query":"Government Hospital for the Insane Washington"},
+  whiteHouse:{"summary":"The White House became the official residence of United States presidents in 1800. The game's alternate political events should not be mistaken for real presidencies.","wikipedia":"https://en.wikipedia.org/wiki/White_House","query":"White House history 1600 Pennsylvania Avenue"},
+  washingtonAirport:{"summary":"Washington's early airfields and Washington–Hoover Airport were part of aviation in the capital region. Exact names and years in this alternate-history map may diverge from real airport chronology.","wikipedia":"https://en.wikipedia.org/wiki/Washington%E2%80%93Hoover_Airport","query":"Washington Hoover Airport history"},
+  potomacFishingBank:{"summary":"The Potomac River is a real watershed and historic transport corridor. The specific game fishing-bank entrance is a fictional gameplay choice.","wikipedia":"https://en.wikipedia.org/wiki/Potomac_River","query":"Potomac River Washington historical fishing"},
+  babcockLake:{"summary":"The Babcock Lakes were former fish-culture ponds near the Washington Monument. They are not a surviving open lake on the game's fixed later-drawn map.","wikipedia":"https://en.wikipedia.org/wiki/Babcock_Lakes","query":"Babcock Lakes United States Fish Commission Washington"},
+  fletchersCove:{"summary":"Fletcher's Cove is a real stretch of the upper Potomac associated with river recreation and the Chesapeake and Ohio Canal. The exact gameplay shore access is not documented here.","wikipedia":"","query":"Fletcher's Cove Potomac Washington history"},
+  georgetownCanal:{"summary":"The Chesapeake and Ohio Canal begins in Georgetown and was an important nineteenth-century transport waterway beside the Potomac.","wikipedia":"https://en.wikipedia.org/wiki/Chesapeake_and_Ohio_Canal","query":"C&O Canal Georgetown Washington historic"},
+  easternBranchFishing:{"summary":"The Anacostia River was historically called the Eastern Branch of the Potomac. The game's fishing-bank entrance is not a documented individual historic business.","wikipedia":"https://en.wikipedia.org/wiki/Anacostia_River","query":"Eastern Branch Anacostia River Washington"},
+  chainBridgeFishing:{"summary":"Chain Bridge connects Washington with Virginia across the Potomac and takes its name from an earlier bridge design. The exact game fishing bank remains unspecified.","wikipedia":"https://en.wikipedia.org/wiki/Chain_Bridge_(Potomac_River)","query":"Chain Bridge Potomac Washington history"},
+  metropolitanPolice:{"summary":"The Metropolitan Police Department of the District of Columbia was established in 1861. The game has not selected a particular historical station for its generic police destination.","wikipedia":"https://en.wikipedia.org/wiki/Metropolitan_Police_Department_of_the_District_of_Columbia","query":"Metropolitan Police Washington DC founding history"},
+  franciscanMonastery:{"summary":"The Franciscan Monastery complex in Brookland was established in the late 1890s, with the memorial church completed in 1899. Its appearance in the game's earlier alternate timeline is fictional.","wikipedia":"https://en.wikipedia.org/wiki/Franciscan_Monastery_of_the_Holy_Land_in_America","query":"Franciscan Monastery Holy Land Brookland Washington"},
+  easternMarket:{"summary":"Eastern Market is a historic public market in Capitol Hill. Its nineteenth-century market building dates to the 1870s, and the game invents its individual merchants until researched.","wikipedia":"https://en.wikipedia.org/wiki/Eastern_Market%2C_Washington%2C_D.C.","query":"Eastern Market Washington 1873"},
+  georgetownMarketHouse:{"summary":"The historic Georgetown Market building on M Street was built in 1865 on a site used for market trade since the late eighteenth century.","wikipedia":"https://en.wikipedia.org/wiki/Georgetown_Market","query":"Georgetown Market House 3276 M Street history"}
+ });
  const MAP_ARTWORK_ANCHORS=Object.freeze({
   whiteHouse:[841,428,'White House building at 1600 Pennsylvania Avenue NW, printed immediately north of the south lawn; 12-I'],
   washingtonAirport:[718,730,'Washington Airport, named on map, Arlington'],
@@ -455,6 +476,7 @@
    location.map={n:position[0],x:position[1],y:position[2]};
   }
   location.mapOrigin=HISTORICAL_DESTINATIONS.has(location.id)?'historical':'fictional';
+  location.history=location.mapOrigin==='historical'?(HISTORICAL_READING[location.id]||null):null;
   const anchor=MAP_ARTWORK_ANCHORS[location.id];
   const area=MAP_AREA_REFERENCES[location.id];
   const point=anchor||area;
@@ -501,7 +523,8 @@
    origin:v.mapOrigin,
    placement:v.mapPlacement,
    grid:mapGridReference(v.map.x,v.map.y),
-   evidence:v.mapEvidence||''
+   evidence:v.mapEvidence||'',
+   history:v.history?Object.assign({},v.history):null
   }));
  }
 
