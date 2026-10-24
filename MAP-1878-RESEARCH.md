@@ -1,3 +1,5 @@
+> **ARCHIVED / WITHDRAWN OCTOBER 24, 2026:** This document is no longer a current task, request or source of build instructions. The owner explicitly requires the EXISTING map to remain identical throughout the alternate-history years, including 1878 and 1938. No map replacement, modern historic survey, or new map artwork. See [MAP-CANON.md](MAP-CANON.md). The material below survives only as an abandoned research record.
+
 # Washington, D.C. Map Research · 1878 Setting
 **Status: Research and replacement candidates only. No new map asset installed or approved.**  
 **Game:** Capital & Consequence · Opening January 2, 1878 · Washington-first  

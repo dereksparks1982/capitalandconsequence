@@ -1,6 +1,9 @@
 # Capital & Consequence
 
-**Current source: `v0.6.86-dev`.** Six fishing locations, numbered map pins 29–34, a separate **Leisure & Outdoors** category, existing category filters, and profile-local editable pin names. Verified [complete Source QA run 40062272284](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40062272284). **No 0.6.86 Linux executable packaged yet**, and fishing actions are not implemented. The visible city map still uses a **1938 placeholder**, not an approved 1878 map. [Period map research](MAP-1878-RESEARCH.md). Current instructions: [CONTINUE-HERE.md](CONTINUE-HERE.md).
+> **CURRENT OWNER DECISION · OCTOBER 24, 2026 · PERMANENT MAP CANON:** The bundled Washington map is the single authoritative alternate-history map for **1878, 1938 and every playable year**. It never changes with the calendar. No historical replacement, reconstruction, map survey or map-image swap is authorized or planned. The asset filename `title-map-1938.jpg` is a legacy name, **not** the map's in-world date. Preserve all 34 numbered markers, working editable per-profile pin names, Save/Reset Name, map pin dragging/zoom and Locations category filters. Map pin labels are user-editable display names; location identity and access logic are separate. **This overrides all earlier 1878-map replacement requests, research, checklists, and draft roadmap items.** See [MAP-CANON.md](MAP-CANON.md).
+
+
+**Current source: `v0.6.86-dev`.** Six fishing locations, numbered map pins 29–34, a separate **Leisure & Outdoors** category, existing category filters, and profile-local editable pin names. Verified [complete Source QA run 40062272284](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40062272284). **No 0.6.86 Linux executable packaged yet**, and fishing actions are not implemented. The existing map is canon for the entire alternate-history timeline, not a temporary 1938 placeholder. [Permanent map canon](MAP-CANON.md). Current instructions: [CONTINUE-HERE.md](CONTINUE-HERE.md).
 
 ## HISTORICAL MILESTONE · v0.6.84-dev · Private home stable, riding and livery hire (completed October 23, 2026)
 
