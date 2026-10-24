@@ -16,7 +16,7 @@ for(const site of sites){
  let finished=false;
  for(let i=0;i<50;i++){
   const s=state.fishing.session;if(!s){finished=true;break;}
-  const move=s.tension>65?'give':s.stamina>0?'hold':'reel';
+  const move=s.tension>59?'hold':'reel';
   const result=fish.act(state,move);assert.equal(result.ok,true);
  }
  assert.ok(finished||!state.fishing.session,'All fishing fights terminate');
