@@ -1,3 +1,5 @@
+> **Member trial integration (October 24):** Commerce and Embassy invitees play a **first trial session**, with table-etiquette choices, actual poker winnings, and optional paid hospitality affecting whether they receive a personal membership card or must return after a short cooldown. Member cards live in per-profile belongings and bypass re-invitation. Unrestricted Boiler Room unchanged. The trading clubs remain unauthorized gambling; this is not the D.C. Poker Challenge.
+
 > **New owner-directed slices, October 24:** Implement **Commerce Club / Embassy Room trial sessions**, social/financial etiquette, short reentry cooldowns, and actual **Commerce Club and Embassy Club Membership Cards** in personal effects. Boiler Room no restrictions. Properly distinguish *licensed boxing long-form championship* from **unscheduled underground fights with no ranking or champion**. No underground tournament system.
 
 # Capital & Consequence Development Roadmap
