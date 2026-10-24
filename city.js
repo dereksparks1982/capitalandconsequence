@@ -371,7 +371,7 @@
  // Other sites retain their previous default coordinates, explicitly unverified,
  // so no invented site is presented as a historical certainty.
  const MAP_ARTWORK_ANCHORS=Object.freeze({
-  whiteHouse:[854,454,'The White House, printed on map, 12-I/J'],
+  whiteHouse:[841,428,'White House building at 1600 Pennsylvania Avenue NW, printed immediately north of the south lawn; 12-I'],
   washingtonAirport:[718,730,'Washington Airport, named on map, Arlington'],
   governmentHospital:[1483,834,'St. Elizabeths hospital complex, printed near south edge'],
   georgetownCanal:[638,415,'C&O Canal along Georgetown north bank (route, not surveyed entrance)'],
@@ -382,18 +382,18 @@
  // Coordinates indicate the stated real-world block or riverbank, not a
  // guessed historical claim for the fictional business located there.
  const MAP_AREA_REFERENCES=Object.freeze({
-  star:[848,403,'Hay-Adams site at 16th and H NW; fictional Star Club'],
-  oldChinatown:[1055,480,'Pennsylvania Avenue NW, 4th-7th Streets; historical neighborhood'],
+  star:[826,405,'16th and H Streets NW, just north of the White House; fictional Star Club'],
+  oldChinatown:[1035,401,'Pennsylvania Avenue NW, 4th–7th Streets; northern city blocks, not the Mall'],
   russianTradeHall:[755,362,'Dupont Circle / Massachusetts Avenue NW; fictional hall'],
   commercePoker:[711,712,'Washington-Hoover Airport grounds; fictional Commerce Club hangar'],
-  home:[1213,540,'Capitol Hill near Eastern Market; proposed fictional residence'],
-  fletchersCove:[522,405,'North bank of upper Potomac; precise Fletcher cove entry not labelled'],
+  home:[1200,480,'Capitol Hill, 7th and C Streets SE near Eastern Market; proposed fictional home'],
+  fletchersCove:[395,370,'Upper Potomac north bank upstream of Georgetown; Fletcher cove entrance not labeled'],
   potomacFishingBank:[921,625,'Southwest D.C. Potomac Park shore; precise fishing bank unsettled'],
   franciscanMonastery:[1272,235,'1400 Quincy Street NE, Brookland; mapped block by CUA, monastery entrance not individually labeled'],
   hillsdale:[1498,765,'Barry Farm / Hillsdale southeast of the Anacostia, north of St. Elizabeths'],
   factory:[1266,325,'Ivy City / New York Avenue NE near Fenwick Street; invented works'],
-  races:[1582,340,'Kenilworth Ave and Jay St NE, Benning vicinity; fictional Capital Race Grounds'],
-  capitolAirport:[1585,296,'East of the Anacostia north of Benning; fictional aviation site'],
+  races:[1640,355,'East side of Anacostia near Kenilworth Ave and Jay St NE; fictional Capital Race Grounds, not river'],
+  capitolAirport:[1660,280,'East of Anacostia on land north of Benning race area; fictional aviation site, no exact lot approved'],
   universityMaryland:[1555,90,'University of Maryland campus, College Park; northeastern map area'],
   embassyPoker:[505,132,'Chevy Chase Club vicinity, 6100 Connecticut Avenue; fictional room'],
   washingtonFairgrounds:[750,538,'Potomac Park / Flats west of the Washington Monument; fictional exposition site'],
