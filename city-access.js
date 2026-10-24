@@ -25,6 +25,8 @@
   const role=actor?.route,person=actor?.id;
   if(id==='factory'){
    if(room.id==='executive-office'&&role==='industrialist')return {ok:true,locationId:id,roomId:room.id};
+   if((room.id==='rear-stable'||room.id==='workers-lodging')&&(role==='industrialist'||person==='foremanSullivan'))
+    return {ok:true,locationId:id,roomId:room.id};
    if(room.id==='production-floor'&&(role==='industrialist'||(person==='foremanSullivan'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};
   }
