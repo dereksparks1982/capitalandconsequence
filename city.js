@@ -494,6 +494,7 @@
  function copyLocation(location){
   const copy=Object.assign({},location);
   copy.map=location.map?Object.assign({},location.map):null;
+  if(location.history)copy.history=Object.assign({},location.history);
   copy.rooms=location.rooms.map(copyRoom);
   if(location.people)copy.people=location.people.map(p=>({...p,dialogue:[...(p.dialogue||[])]}));
   return copy;
