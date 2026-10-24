@@ -1,6 +1,6 @@
 # Political Washington · 1878
 
-**Purpose:** Historical and alternate-history NPC roster and Washington-first political career plan. **Planning**, not an implemented political game.
+**Purpose:** Historical and alternate-history NPC roster and Washington-first political career plan. **Research roster in source:** historical people are listed with separately marked fictional appointments in `historical-people.js`. Live encounters and political careers remain in development.
 
 ## What changed in this United States
 
