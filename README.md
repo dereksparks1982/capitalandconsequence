@@ -1,5 +1,7 @@
 # Capital & Consequence
 
+**Current map-only source candidate:** `v0.6.85-dev` adds **Potomac River Fishing Bank**, public map pin **29**, with no fishing mechanics yet. Full Source QA passed: [run 40061471151](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40061471151). No executable released. Continue from [CONTINUE-HERE.md](CONTINUE-HERE.md).
+
 ## CURRENT SOURCE · v0.6.84-dev · Private home stable, riding and livery hire (October 23, 2026)
 
 **Verified GitHub Source QA:** run **40058726255** passed the entire `npm run test:source` suite at source commit **`5d3c76f9865fa1f7c0f1c7c842d7be8cc5c0e414`**, including `tests/home-stable.cjs`, `tests/livery-hire.cjs`, the existing horse custody, care and all Washington career tests. Later commits to these documents do not change tested source. **Source build only**, not a packaged Linux executable, rendered playthrough, accepted release or tag. Active branch remains **main**.
