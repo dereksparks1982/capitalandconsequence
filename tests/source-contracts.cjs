@@ -570,7 +570,7 @@ check(require('../city-access.js').canRoom(city,{route:'investigator'},'metropol
 check(!require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','sergeant-office','1890-01-02').ok,'Officer cannot enter his superior’s private office');
 check(pkg.scripts['test:source'].includes('tests/patrol-duty.cjs'),'Source QA includes actual patrol loop');
 check(city.getLocation('governmentHospital')?.name==='Government Hospital for the Insane','Government Hospital is registered under its 1890 historical name');
-check(city.getLocation('governmentHospital').provisionalMapPosition===true,'Hospital pin is explicitly labeled provisional');
+check(city.getLocation('governmentHospital').mapPlacement==='map-anchored'&&city.getLocation('governmentHospital').mapEvidence.includes('St. Elizabeths'),'Hospital uses the printed source-map artwork anchor, not an invented coordinate');
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
 check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city.getRoom('governmentHospital','superintendent-office')?.restricted===true,'Wards and superintendent office are access restricted');
 check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
