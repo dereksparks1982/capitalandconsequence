@@ -1,6 +1,6 @@
 name: Linux Desktop Build
 
-# Developer workflow is manual-only while multiple 0.6.86 source slices are underway.
+# Developer workflow is manual-only while multiple 0.6.88 source slices are underway.
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Check out private source
@@ -90,46 +90,23 @@ jobs:
       - name: Package standalone alpha
         run: |
           mv dist/linux-unpacked "dist/Capital & Consequence Standalone"
-          tar -C dist -czf "dist/Capital-and-Consequence-0.6.86-linux-x64.tar.gz" "Capital & Consequence Standalone"
-          (cd dist && sha256sum Capital-and-Consequence-0.6.86-linux-x64.tar.gz > Capital-and-Consequence-0.6.86-linux-x64.tar.gz.sha256)
+          tar -C dist -czf "dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz" "Capital & Consequence Standalone"
+          (cd dist && sha256sum Capital-and-Consequence-0.6.88-linux-x64.tar.gz > Capital-and-Consequence-0.6.88-linux-x64.tar.gz.sha256)
 
-      # GitHub Actions artifact storage is full. Draft release assets use GitHub
-      # Releases storage instead, while preserving existing artifacts and backups.
-      # A draft is NOT an accepted release. GitHub does not create a tag until
-      # the draft is published, which requires explicit owner acceptance.
-      - name: Upload private unaccepted Linux candidate (draft release)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
+      - name: Verify Linux archive checksum
         run: |
           set -euo pipefail
-          tag="candidate-v0.6.86-unaccepted"
-          archive="dist/Capital-and-Consequence-0.6.86-linux-x64.tar.gz"
-          checksum="${archive}.sha256"
-          title="Capital & Consequence v0.6.86 | UNACCEPTED LINUX CANDIDATE"
-          notes="Private Linux test candidate built from commit ${GITHUB_SHA}. NOT ACCEPTED, NOT PUBLISHED. This draft does not represent an approved game release. Validate the executable before release acceptance or tagging."
-          test -s "$archive"
-          test -s "$checksum"
-          (cd dist && sha256sum --check "Capital-and-Consequence-0.6.86-linux-x64.tar.gz.sha256")
-          if gh release view "$tag" --json isDraft >/dev/null 2>&1; then
-            test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true" || {
-              echo "Refusing to overwrite a published release." >&2
-              exit 1
-            }
-            gh release edit "$tag" --title "$title" --notes "$notes" --target "$GITHUB_SHA"
-            gh release upload "$tag" "$archive" "$checksum" --clobber
-          else
-            gh release create "$tag" "$archive" "$checksum" \
-              --draft --title "$title" --notes "$notes" --target "$GITHUB_SHA"
-          fi
-          test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = "true"
-          for asset in "$archive" "$checksum"; do
-            name="$(basename "$asset")"
-            local_size="$(stat -c '%s' "$asset")"
-            uploaded_size="$(gh release view "$tag" --json assets --jq ".assets[] | select(.name == \"$name\") | .size")"
-            test "$local_size" = "$uploaded_size" || {
-              echo "Uploaded asset missing or has incorrect size: $name" >&2
-              exit 1
-            }
-          done
-          echo "CANDIDATE_DRAFT_ASSETS_VERIFIED: package + SHA-256, still unaccepted"
+          test -s "dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz"
+          test -s "dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz.sha256"
+          (cd dist && sha256sum --check Capital-and-Consequence-0.6.88-linux-x64.tar.gz.sha256)
+
+      - name: Upload private unaccepted Linux test build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Capital-and-Consequence-v0.6.88-Linux-UNACCEPTED
+          path: |
+            dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz
+            dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
