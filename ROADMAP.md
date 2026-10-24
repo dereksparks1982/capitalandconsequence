@@ -1,5 +1,29 @@
 # Capital & Consequence Development Roadmap
 
+**Current design priorities (October 24, 2026)**
+
+The **[README](README.md) is player-facing**; technical details, previous source milestones and log entries are in Git history, this roadmap and [CONTINUE-HERE](CONTINUE-HERE.md). Source is currently **v0.6.88-dev**, last previously verified QA run [40069611982](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982). This planning/documentation checkpoint **does not imply the following features are implemented**.
+
+### Approved next-build slices
+
+- [x] **D1 · Story canon and player-facing introduction**: rewrite README, establish [named character roster](CHARACTER-ROSTER.md), [living-city plans](WASHINGTON-LIVING-CITY.md), [politics](POLITICAL-WASHINGTON.md) and [sports/gambling](SPORTS-CHAMPIONSHIPS.md); connect decisions and handoff.
+- [ ] **G1 · Government gambling authorization**: separate legal event permits from unsanctioned Boiler Room, Commerce Club and Embassy Room; Star Club remains no-card. Tests for authorized versus illicit cases, dates and game variants.
+- [ ] **G2 · Persistent tournament and betting kernel**: stateful monthly standings/champions, legal-permit validation, event identity, no duplicate bets or payouts.
+- [ ] **G3 · Individual sporting integrations**: horse/dog/boxing and later car qualification and championship events; proper 1878 technology gates. Existing daily meeting generator should not fabricate daily titles.
+- [ ] **G4 · D.C. Poker Challenge**: a **separate** government-sanctioned **five-card** poker tournament venue; choose variant and integrate real card simulation. The three social poker clubs continue regular sessions.
+- [ ] **N1 · Social venues**: British **Eleanor Victoria “Madam Star” Ashcroft** runs refined dining, drinks and music **without poker**; French **Lucien Étienne “Lui” Delacroix** runs a cabaret and Eli Crowe's job.
+- [ ] **P1 · Historical Washington**: Tilden inner-circle characters and plausible named historical figures with persistent independent city routines; researched biographies, fiction separation, earned acquaintances.
+- [ ] **P2 · Political career**: grounded opportunities for district appointment/office, congressional access and later national popular-vote political ambitions, no invented district rules.
+- [ ] **C1 · Neighborhood retail**: *Capital Meats* east, *District Meats* west, separate Black-owned Hillsdale butcher + market, Chinatown meat, neighborhood essentials; actual shared stock, costs, access and remembered discrimination. **Medford Meats rejected.**
+- [ ] **M1 · Category-colored pins**: gold for government **only**, red commerce, blue social, brown Hillsdale, green parks/education, purple religion, charcoal industry, teal recreation/water, white private healthcare, gray housing. **No blue=fake/red=real.** Explicit Fiction/Non-Fiction cards remain. Keep the **same map**.
+- [ ] **QA · Integrated suites and desktop validation**: all economy/time/career/map/venue/sport regression checks, then owner acceptance before any release.
+
+**Current invariant:** No map replacement or year swaps. No splitting `app.js`. NPCs never make the clock advance. All gameplay, cash and choices persist per profile. No fabricated playable features or unapproved alternate-president appointments. Only `main` branch. No user-approved executable yet.
+
+---
+
+# Capital & Consequence Development Roadmap
+
 > **LATEST STORY CARD UPDATE · October 24:** All **22 fictional/blue** map locations now present their own openly readable **Our Alternate History · Fiction** narratives on map and room cards, explicitly separated from real history. The **16 non-fiction/red** places continue to offer collapsible factual summaries and Wikipedia + LOC further reading. Four focused map/history source+simulated-DOM checks passed. Map artwork unchanged; full Ubuntu/Electron acceptance remains pending. See `CONTINUE-HERE.md` for exact handoff.
 
 
