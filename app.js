@@ -2671,7 +2671,11 @@ const TITLE_MAP_OLD_DEFAULTS=Object.freeze({
  oldChinatown:[.508,.489],russianTradeHall:[.372,.358],
  commercePoker:[.300,.646],home:[.619,.580],
  fletchersCove:[.184,.402],chainBridgeFishing:[.139,.326],
- potomacFishingBank:[.340,.690]
+ potomacFishingBank:[.340,.690],
+ hillsdale:[.735,.762],factory:[.615,.383],races:[.811,.492],
+ capitolAirport:[.814,.395],universityMaryland:[.762,.080],
+ embassyPoker:[.243,.160],washingtonFairgrounds:[.470,.566],
+ babcockLake:[.495,.559]
 });
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
@@ -2680,7 +2684,7 @@ let titleMapShowNames=false,titleMapCategory='all',titleMapOrigin='all',titleMap
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
  sport:'Recreation & Competition',leisure:'Leisure & Outdoors',fair:'Fairgrounds',transport:'Transportation',
- finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gambling & Games',underground:'Underground'
+ finance:'Financial Offices',education:'Education',residence:'Residences',government:'Government',institution:'Hospitals & Institutions',gaming:'Gambling & Games',underground:'Underground',religious:'Religious Sites'
 });
 // Printed Washington In and Out Guide raster: grid 1-30 / A-R.
 function titleMapGridAt(x,y){
