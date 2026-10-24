@@ -3230,6 +3230,8 @@ function initTitleMapViewer(){
  // The location card contains a text field. Stop its pointerdown from reaching
  // the viewport's existing pan capture; leave the map pan/zoom code unchanged.
  $('#titleMapLocationCard').addEventListener('pointerdown',e=>e.stopPropagation());
+ // Do not activate map keyboard shortcuts while editing a pin name.
+ $('#titleMapLocationCard').addEventListener('keydown',e=>e.stopPropagation());
  const rename=$('#titleMapPinRename'),resetName=$('#titleMapPinResetName'),name=$('#titleMapPinName');
  if(rename)rename.onclick=()=>renameSelectedTitleMapPin();
  if(resetName)resetName.onclick=()=>renameSelectedTitleMapPin(true);
