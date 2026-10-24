@@ -12,12 +12,12 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','horse-stable-ui.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.83','Current package version is v0.6.83');
-check(appSource.includes("APP_VERSION='v0.6.83-dev'"),'Game masthead uses v0.6.83');
+check(pkg.version==='0.6.84','Current package version is v0.6.84');
+check(appSource.includes("APP_VERSION='v0.6.84-dev'"),'Game masthead uses v0.6.84');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,11 +32,11 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.83'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('0.6.84'),'Local packaging uses the same number');
 const workflow=read('.github/workflows/linux-build.yml');
 check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
 check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.83-linux-x64.tar.gz'),'Manual workflow archives v0.6.83');
+check(workflow.includes('0.6.84-linux-x64.tar.gz'),'Manual workflow archives v0.6.84');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -57,7 +57,7 @@ check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
-check(city.getLocation('home').rooms.length===4,'Home has four internal rooms');
+check(city.getLocation('home').rooms.length===5,'Home has private stable as fifth room');
 check(!city.getLocation('races').description.includes('horse-racing and dog-racing'),'Separate racing locations are reflected in venue description');
 check(city.getRoom('home','bedroom').id==='bedroom','Home bedroom address is stable');
 check(city.getRoom('home','storage').id==='storage','Home storage address is stable');
@@ -612,3 +612,6 @@ check(read('component-works.js').includes('latePenaltyCents'),'Orders expose act
 
 check(index.includes('horse-custody.js?v=')&&index.indexOf('horse-custody.js?v=')<index.indexOf('app.js?v='),'Paid horse custody module loads before world travel');
 check(pkg.scripts['test:source'].includes('tests/horse-custody.cjs'),'Owned animal relocation cannot bypass paid travel');
+
+check(index.includes('horse-stable-ui.js?v=')&&index.indexOf('horse-stable-ui.js?v=')<index.indexOf('app.js?v='),'Home stable controls load before game');
+check(pkg.scripts['test:source'].includes('tests/home-stable.cjs')&&pkg.scripts['test:source'].includes('tests/livery-hire.cjs'),'Home transport and rental tests are mandatory');
