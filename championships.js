@@ -31,7 +31,7 @@ function init(value){
  if(!Array.isArray(s.wagers))s.wagers=[];
  s.version=1;return s;
 }
-function key(sport,date){return sport+'-'+checkDate(date)}
+function key(sport,date){return (sport==='poker'?'dc-poker-challenge':sport)+'-'+checkDate(date)}
 function open(state,{sport,date,entrants}){
  init(state);const config=validSport(sport,date),id=key(sport,date);
  if(state.tournaments[id])return clone(state.tournaments[id]);

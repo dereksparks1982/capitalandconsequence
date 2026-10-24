@@ -1,5 +1,7 @@
 # Capital & Consequence Development Roadmap
 
+> **G2 source slice:** Profile-serializable `championships.js` supports distinct-entrant monthly brackets, qualifying rounds, an actual final and a persistent D.C. titleholder ledger. Fixed-odds wagers are government-classified at placement; stake debits and payout credits are returned for the caller to apply exactly once. **Poker tournament ID matches government permit (`dc-poker-challenge-YYYY-MM`)**; private room play does not. Motor racing is blocked before 1933 and organized kennel racing before 1919. This is engine groundwork **not yet a playable D.C. Poker Challenge, betting UI, or integrated event calendar**; source test is now included in Source QA.
+
 > **G1 source slice:** `gambling-law.js` establishes a narrow government permit for **only five-card D.C. Poker Challenge tournaments at their own venue**. Private Boiler Room, Commerce Club, Embassy Room poker and other unlicensed wagering stay illegal; Star Club forbids cards. Current poker and sporting UI now discloses the distinction. `tests/gambling-law.cjs` added to Source QA. The five-card tournament **game**, full enforcement and actual championships remain pending.
 
 **Current design priorities (October 24, 2026)**
@@ -10,7 +12,7 @@ The **[README](README.md) is player-facing**; technical details, previous source
 
 - [x] **D1 · Story canon and player-facing introduction**: rewrite README, establish [named character roster](CHARACTER-ROSTER.md), [living-city plans](WASHINGTON-LIVING-CITY.md), [politics](POLITICAL-WASHINGTON.md) and [sports/gambling](SPORTS-CHAMPIONSHIPS.md); connect decisions and handoff.
 - [x] **G1 · Government gambling authorization**: separate legal event permits from unsanctioned Boiler Room, Commerce Club and Embassy Room; Star Club remains no-card. Tests for authorized versus illicit cases, dates and game variants.
-- [ ] **G2 · Persistent tournament and betting kernel**: stateful monthly standings/champions, legal-permit validation, event identity, no duplicate bets or payouts.
+- [x] **G2 · Persistent tournament and betting kernel**: stateful monthly standings/champions, legal-permit validation, event identity, no duplicate bets or payouts.
 - [ ] **G3 · Individual sporting integrations**: horse/dog/boxing and later car qualification and championship events; proper 1878 technology gates. Existing daily meeting generator should not fabricate daily titles.
 - [ ] **G4 · D.C. Poker Challenge**: a **separate** government-sanctioned **five-card** poker tournament venue; choose variant and integrate real card simulation. The three social poker clubs continue regular sessions.
 - [ ] **N1 · Social venues**: British **Eleanor Victoria “Madam Star” Ashcroft** runs refined dining, drinks and music **without poker**; French **Lucien Étienne “Lui” Delacroix** runs a cabaret and Eli Crowe's job.
