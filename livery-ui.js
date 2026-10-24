@@ -16,6 +16,18 @@
   const note=document.createElement('p');note.textContent='The proprietors are competing brothers. Prices are 1878 game estimates. Purchases require personal money, not Federal Electric company funds. Bought animals and vehicles remain at this stable until physically moved. Personal feed, livery boarding and wagon storage bills accrue daily and settle on Saturday.';panel.appendChild(note);
   const cash=document.createElement('p');cash.textContent='Personal cash: $'+Number(save.personalCash||0).toFixed(2);panel.appendChild(cash);
   const status=document.createElement('p');status.setAttribute('role','status');panel.appendChild(status);
+  const owned=save.transport?.assets?.filter(a=>a.kind==='horse'&&a.owner==='personal'&&a.locationId===locationId&&['stabled','tethered'].includes(a.status))||[];
+  for(const horse of owned){
+   const button=document.createElement('button');button.type='button';
+   button.textContent='Prepare '+horse.name+' to accompany your next trip to the factory';
+   button.disabled=!live||save.paused;
+   button.onclick=()=>{
+    const result=root.FE_HORSE_CUSTODY?.prepare?.(save,horse.id,locationId);
+    status.textContent=result?.ok?'Ready. Travel to Federal Electric on the city map. The horse moves only if the trip is completed.':result?.reason||'Cannot prepare horse';
+    if(result?.ok&&!result.repeated)changed?.();
+   };
+   panel.appendChild(button);
+  }
   for(const item of Object.keys(stable.prices)){
    const offer=trade.quote(locationId,item);
    const button=document.createElement('button');button.type='button';
