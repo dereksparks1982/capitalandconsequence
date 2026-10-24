@@ -50,7 +50,7 @@ assert.ok(npc.visibleAt('factory').some(n=>n.id==='foremanSullivan'));
 const copied=JSON.parse(JSON.stringify(S)),reloaded=attach(copied,'calendar-profile');
 assert.equal(reloaded.syncClock(),false);assert.equal(JSON.stringify(copied.npcSimulation),JSON.stringify(S.npcSimulation));
 bridge.spend(copied,10*86400);assert.equal(reloaded.syncClock(),true);
-assert.ok(copied.npcSimulation.events.length-S.npcSimulation.events.length<=8);
+assert.ok(copied.npcSimulation.events.length-S.npcSimulation.events.length<=reloaded.list().length,'One reached calendar period cannot generate more than one routine per registered NPC');
 const legacy={turnSerial:2,phase:'day',dayRemaining:3600,paused:false,gameDate:'1890-01-03',
  worldCalendarStatus:'legacy-unmapped',npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]}};
 const oldNPC=attach(legacy,'legacy-profile');
