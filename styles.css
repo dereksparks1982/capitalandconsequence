@@ -1532,3 +1532,19 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .historical-reading a{color:#b8daff;text-decoration:underline;overflow-wrap:anywhere}
 .historical-reading a:hover,.historical-reading a:focus-visible{color:#fff0bf}
 #cityRoomHistoricalReading{background:rgba(64,54,38,.85)}
+
+
+/* A place may be real even when its game-world events are not. The wording
+   in the card is explicit; red/blue is a second visual cue, never the only cue. */
+.place-fact-label{text-transform:uppercase}
+.historical-reading.is-fiction-story{
+ background:rgba(24,48,75,.88);
+ border-color:#4f83b9;
+ color:#e3efff;
+}
+.historical-reading.is-fiction-story summary{
+ color:#b9ddff;
+}
+.historical-reading.is-fiction-story .historical-reading-disclaimer{
+ color:#cedbf0;
+}
