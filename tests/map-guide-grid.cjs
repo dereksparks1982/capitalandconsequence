@@ -68,4 +68,21 @@ assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
  'outside-index locations are not rendered over the printed map');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
-console.log('PASS Washington guide: 38 numbered pins, 16 historical/22 invented, verified versus unverified placements, grid/search, export and rename-card isolation');
+assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,16,
+ 'every historical place has a separate non-fiction reading note');
+assert.equal(sites.filter(s=>s.origin==='fictional'&&!!s.history).length,0,
+ 'invented businesses cannot claim non-fiction reading metadata');
+assert.ok(byId('franciscanMonastery').history.summary.includes('1899'),
+ 'the monastery note does not falsely place its real construction in the 1878 timeline');
+for(const id of ['titleMapLocationFact','titleMapHistoricalReading','cityRoomFact','cityRoomHistoricalReading']){
+ assert.ok(img.includes('id="'+id+'"'),id+' real/fiction education slot exists');
+}
+assert.ok(app.includes('renderPlaceReference(location,true)'), 'map card displays badge and reading');
+assert.ok(app.includes('renderPlaceReference(location);'), 'city room displays badge and reading');
+assert.ok(app.includes("badge.textContent=isReal?'Non-Fiction':'Fiction'"),
+ 'real versus invented displayed as explicit words on the card');
+assert.ok(app.includes("link.rel='noopener noreferrer'"), 'educational links open safely');
+assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&css.includes('background:rgba(36,94,154,.68)!important'),
+ 'red and blue numbered pin backgrounds are translucent');
+
+console.log('PASS Washington guide: 38 numbered pins, 16 non-fiction/22 fiction, verified versus unverified grid placement, search, export, pin confirmation, translucent colors and real-history readings');
