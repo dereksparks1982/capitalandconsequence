@@ -110,10 +110,11 @@
         <aside id="titleMapLocationCard" class="title-map-location-card" hidden>
           <button id="titleMapLocationClose" type="button" aria-label="Close location details">×</button>
           <strong id="titleMapLocationName"></strong>
+          <span id="titleMapLocationFact" class="place-fact-label" aria-label="Real versus invented location"></span>
           <div class="title-map-pin-rename"><label for="titleMapPinName">Your pin name</label><input id="titleMapPinName" type="text" maxlength="64" autocomplete="off" spellcheck="true" placeholder="Name this place"><button id="titleMapPinRename" type="button">Save Name</button><button id="titleMapPinResetName" type="button">Reset Name</button><small id="titleMapPinNameNotice" role="status" aria-live="polite"></small></div>
           <span id="titleMapLocationArea"></span>
           <small id="titleMapLocationGrid" class="title-map-grid-ref"></small>
-          <p id="titleMapLocationDescription"></p><p id="titleMapTravelNote" class="fine">Travel time research pending. Map movement is provisional.</p>
+          <p id="titleMapLocationDescription"></p><section id="titleMapHistoricalReading" class="historical-reading" hidden aria-label="Real-world history"></section><p id="titleMapTravelNote" class="fine">Travel time research pending. Map movement is provisional.</p>
           <div class="title-map-location-actions">
             <button id="titleMapLocationTravel" type="button">Go There</button>
           </div>
@@ -134,6 +135,7 @@
       <div>
         <small>WASHINGTON, D.C. · CITY LOCATION</small>
         <h2 id="cityRoomLocationName">Location</h2>
+        <span id="cityRoomFact" class="place-fact-label"></span>
         <p id="cityRoomArea"></p>
       </div>
       <button id="cityRoomClose" type="button" aria-label="Close room">×</button>
@@ -142,7 +144,7 @@
     <div class="city-room-placeholder">
       <span class="city-room-placeholder-tag">WASHINGTON CITY REGISTER · PERIOD ROOM PLACEHOLDER</span>
       <h3 id="cityRoomName">Room</h3>
-      <p id="cityRoomDescription"></p><section id="cityRoomActivityHost" class="city-room-activity-host" hidden aria-label="Activity at this location"></section><section id="cityRoomOpportunities" class="city-room-opportunities" hidden><h4>Opportunities Here</h4><div id="cityRoomOpportunityList"></div></section><section id="cityRoomHouseholdRecord" class="city-room-household-record" hidden aria-label="Household register"><h4>Household Register</h4><dl><dt>Residence</dt><dd id="cityRoomHousingName"></dd><dt>Tenure</dt><dd id="cityRoomHousingTenure"></dd><dt>Staff & Improvements</dt><dd id="cityRoomHousingFeatures"></dd></dl><p>Property purchases and household expenses will be available after period-specific costs are researched.</p></section><section id="cityRoomPersonalStorage" class="city-room-personal-storage" hidden aria-label="Household storage"><h4>Household Storage</h4><div id="cityRoomPersonalStorageContents">No personal belongings stored here.</div></section><section id="cityRoomBrokerage" class="city-room-opportunities" hidden aria-label="Stockbroker office">
+      <p id="cityRoomDescription"></p><section id="cityRoomHistoricalReading" class="historical-reading" hidden aria-label="Real-world history"></section><section id="cityRoomActivityHost" class="city-room-activity-host" hidden aria-label="Activity at this location"></section><section id="cityRoomOpportunities" class="city-room-opportunities" hidden><h4>Opportunities Here</h4><div id="cityRoomOpportunityList"></div></section><section id="cityRoomHouseholdRecord" class="city-room-household-record" hidden aria-label="Household register"><h4>Household Register</h4><dl><dt>Residence</dt><dd id="cityRoomHousingName"></dd><dt>Tenure</dt><dd id="cityRoomHousingTenure"></dd><dt>Staff & Improvements</dt><dd id="cityRoomHousingFeatures"></dd></dl><p>Property purchases and household expenses will be available after period-specific costs are researched.</p></section><section id="cityRoomPersonalStorage" class="city-room-personal-storage" hidden aria-label="Household storage"><h4>Household Storage</h4><div id="cityRoomPersonalStorageContents">No personal belongings stored here.</div></section><section id="cityRoomBrokerage" class="city-room-opportunities" hidden aria-label="Stockbroker office">
         <h4>Stockbroker · Personal Share Account</h4>
         <p id="brokerRelationStatus"></p><p id="brokerAdvisory" class="fine"></p><p class="fine">Securities orders are placed in person until you build a correspondence relationship.</p>
         <label>Security <select id="brokerStockTicker"></select></label>
