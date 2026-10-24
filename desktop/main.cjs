@@ -479,7 +479,10 @@ async function runSmokeTest(win) {
       const title=document.getElementById('titleScreen'); if(title) title.hidden=true;
       const day=document.querySelector('.daybar')?.getBoundingClientRect();
       const nav=document.querySelector('.primary-nav')?.getBoundingClientRect();
-      return {viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,dayLeft:day?.left??0,dayRight:day?.right??0,navLeft:nav?.left??0,navRight:nav?.right??0};
+      const overflowers=[...document.querySelectorAll('body *')].map(el=>({el,r:el.getBoundingClientRect()}))
+        .filter(({el,r})=>r.width>0&&r.right>innerWidth+4&&getComputedStyle(el).display!=='none')
+        .sort((a,b)=>b.r.right-a.r.right).slice(0,16).map(({el,r})=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,90),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),position:getComputedStyle(el).position}));
+      return {viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,dayLeft:day?.left??0,dayRight:day?.right??0,navLeft:nav?.left??0,navRight:nav?.right??0,overflowers};
     })()`);
     if(layout.scrollWidth>layout.viewport+4||layout.dayLeft<-2||layout.dayRight>layout.viewport+2||layout.navLeft<-2||layout.navRight>layout.viewport+2){
       throw new Error('Standalone layout overflow: '+JSON.stringify(layout));
