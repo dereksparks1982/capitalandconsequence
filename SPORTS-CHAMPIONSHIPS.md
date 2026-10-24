@@ -1,5 +1,15 @@
 # Washington Sports, Championships and Government Gambling
 
+## October 24, 2026 · Club membership and underground-fight correction (supersedes earlier design)
+
+**Being invited to the Commerce Club or Embassy Room is only the right to play a trial game, not automatic membership.** The first match is observed. Good conversation, restraint when winning, polite manners, spreading money around and tasteful hospitality matter; a crude or greedy player may be told not to return for a **short cooling-off period** and then permitted another trial. Gaining acceptance should be fairly easy if the player is respectful. Membership is **gifted as a physical personal item**, notably the **Embassy Club Membership Card**, recognized as a powerful social credential. Commerce Club has its own membership card; the open, mixed-class and mixed-race **Boiler Room requires no invitation or membership**. This is distinct from the **unrelated government-authorized D.C. Poker Challenge**.
+
+**Licensed boxing** is a championship **tournament** that runs through the needed weeks, potentially across calendar months. Do not award a champion arbitrarily merely because the month ends. **Underground fights are absolutely NOT tournaments:** there are no brackets, rankings, champions or title defense in the fight-club brotherhood. The volunteer fighters on a given night are whoever decides to fight, with no promised rematch, and yesterday's victor may lose today. Friendships, mutual respect and social trust from the brotherhood can continue, but fight results do not create rankings. **No underground sport gets a tournament system**, including private fighting.
+
+All other approved competitions are distinct from unlawful spontaneous underground activity. Government permission remains the only source of *legal gambling*.
+
+
+
 **Planned integration, October 24, 2026.** These rules supersede proposals that every poker room should host a tournament, or that unsanctioned cards are legal. Existing racing, poker and fighting prototypes are not yet the full championship engine.
 
 ## Government permits determine gambling legality
@@ -26,7 +36,7 @@ A shared competition layer should track tournament ID, sport, month, event sched
 - **Dog racing:** ordinary heats and full championship season, not a single identical daily card.
 - **Midget car racing:** registered **12 named drivers** and their cars; motorsport tournament **not present in 1878**. Proper future era gate needed.
 - **Poker:** three normal social clubs. **One separate** formal D.C. Poker Challenge venue for approved five-card tournament brackets/final table; no automatic transformation of all rooms.
-- **Private fights / underground competition:** may have an **unofficial** underground champion, but a title does not magically legalize gambling or acts of violence.
+- **Private fights / underground competition:** **no tournaments or champions**, spontaneous volunteers on any given night. Relationships can persist; fight scores never create a title.
 
 Individual races/fights/cards occur outside monthly championships and can contribute toward qualification. The player can **follow standings and predict champions before the final**, without every day repeating identical random events.
 

@@ -1,3 +1,5 @@
+> **New owner-directed slices, October 24:** Implement **Commerce Club / Embassy Room trial sessions**, social/financial etiquette, short reentry cooldowns, and actual **Commerce Club and Embassy Club Membership Cards** in personal effects. Boiler Room no restrictions. Properly distinguish *licensed boxing long-form championship* from **unscheduled underground fights with no ranking or champion**. No underground tournament system.
+
 # Capital & Consequence Development Roadmap
 
 > **G3a source integration:** The **last Sunday of each month** at Capital Race Grounds hosts the **D.C. Horse Racing Championship** using its already existing four heats, two semifinals, and Main Event. Source results feed `championships.js`, which stores the winner and past titleholders in the active profile; other daily meetings remain regular. No different map or race minigame. **Other sports and advance outright-betting UI remain future slices.**

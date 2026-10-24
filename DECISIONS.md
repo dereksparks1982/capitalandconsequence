@@ -1,3 +1,5 @@
+> **October 24 owner clarification, overriding contrary historical notes:** Club invitations are **trial games**. The Commerce and Embassy clubs award **physical membership cards** after suitable sportsmanship and speech; arrogant or overly acquisitive guests may face a short cooling-off period. The **Boiler Room is open to everyone**. **Licensed boxing has tournament championships over weeks or months; underground fights and other underground sports have no tournament, bracket or champion.** They are voluntary spontaneous activity with persistent social bonds, not standings. See [sports canon](SPORTS-CHAMPIONSHIPS.md).
+
 ## October 24, 2026 · Names, clubs, sports, politics and map-design decisions
 
 **Owner-approved story decisions (documentation; gameplay implementation tracked separately):**
