@@ -10,6 +10,17 @@ assert.equal(sites.length,38,'retain original destinations plus monastery cobble
 assert.equal(new Set(sites.map(s=>s.n)).size,38,'no duplicate numbered pins');
 assert.equal(sites.filter(s=>s.origin==='historical').length,16);
 assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
+for(const site of sites){
+ if(site.origin==='historical'){
+  assert.ok(site.history&&site.history.summary&&site.history.query,'Non-fiction reading required: '+site.id);
+  assert.match(site.history.summary, /\\S/);
+  assert.ok(!site.history.wikipedia || site.history.wikipedia.startsWith('https://en.wikipedia.org/wiki/'),
+   'Historical Wikipedia link must be HTTPS and point to Wikipedia: '+site.id);
+ }else{
+  assert.equal(site.history,null,'Invented place cannot inherit a real historical reading: '+site.id);
+ }
+}
+
 const byId=id=>sites.find(s=>s.id===id);
 for(const site of sites){
  assert.ok(Number.isFinite(site.x)&&Number.isFinite(site.y),'finite position: '+site.id);
@@ -68,6 +79,19 @@ assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
  'outside-index locations are not rendered over the printed map');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
+assert.ok(img.includes('id="titleMapLocationFact"')&&img.includes('id="cityRoomFact"'),
+ 'Fiction/Non-Fiction badges exist on both location cards');
+assert.ok(img.includes('id="titleMapHistoricalReading"')&&img.includes('id="cityRoomHistoricalReading"'),
+ 'Map card and visited city room have separately labeled real-history panels');
+assert.ok(app.includes("badge.textContent=isReal?'Non-Fiction':'Fiction'"),
+ 'Player sees literal Non-Fiction / Fiction, not just pin color');
+assert.ok(app.includes('renderPlaceReference(location,true)')&&app.includes('renderPlaceReference(location)'),
+ 'Real-world reading appears on both map card and destination page');
+assert.ok(app.includes("readingLink('Library of Congress archives"),'Each real place offers additional archive research');
+assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&
+ css.includes('background:rgba(36,94,154,.68)!important'),
+ 'Only colored pin background is semitransparent; pin labels stay legible');
+
 assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,16,
  'every historical place has a separate non-fiction reading note');
 assert.equal(sites.filter(s=>s.origin==='fictional'&&!!s.history).length,0,
