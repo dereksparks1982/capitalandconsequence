@@ -291,15 +291,45 @@
    id:'potomacFishingBank',
    name:'Potomac River Fishing Bank',
    area:'Potomac shoreline · southwest Washington, D.C. (provisional access point)',
-   category:'sport',
+   category:'leisure',
    description:'A public riverbank fishing spot in 1878 Washington. The location is accessible from the city map; fishing equipment, casting and fish-fighting gameplay are not implemented here yet.',
    map:null,defaultRoom:'riverbank',rooms:[
     {id:'riverbank',name:'Riverbank',description:'A quiet stretch of the Potomac suitable for shore fishing. No fishing activity has been activated yet.'}
    ]
+  },
+  {
+   id:"babcockLake",name:"Babcock Lake",area:"Washington Monument grounds · historic lake",category:'leisure',
+   availableUntil:"1888-12-31",description:"A former canal basin where Washingtonians fished in warm months. Filled by December 1888; no modern lake or aquarium is implied.",map:null,defaultRoom:'shore',rooms:[
+    {id:'shore',name:"Lakeside Fishing Bank",description:'Washington shoreline location for future fishing; fishing gameplay is not implemented yet.'}
+   ]
+  },
+  {
+   id:"fletchersCove",name:"Fletcher’s Cove",area:"Upper Potomac · C&O Canal Georgetown approach",category:'leisure',
+   description:"A longstanding river cove and fishing reach. The later boathouse is not assumed to exist on opening day in 1878.",map:null,defaultRoom:'shore',rooms:[
+    {id:'shore',name:"Cove Shore",description:'Washington shoreline location for future fishing; fishing gameplay is not implemented yet.'}
+   ]
+  },
+  {
+   id:"georgetownCanal",name:"Georgetown Canal Towpath",area:"C&O Canal · Georgetown",category:'leisure',
+   description:"An 1878 canalside outing on the completed C&O Canal. Fishing access beside the working canal is a provisional gameplay location.",map:null,defaultRoom:'shore',rooms:[
+    {id:'shore',name:"Canal Towpath",description:'Washington shoreline location for future fishing; fishing gameplay is not implemented yet.'}
+   ]
+  },
+  {
+   id:"easternBranchFishing",name:"Eastern Branch Fishing Shore",area:"Anacostia River · near the Navy Yard",category:'leisure',
+   description:"Shore fishing along the Eastern Branch, the historic Anacostia name. The exact public bank is provisional.",map:null,defaultRoom:'shore',rooms:[
+    {id:'shore',name:"Eastern Branch Bank",description:'Washington shoreline location for future fishing; fishing gameplay is not implemented yet.'}
+   ]
+  },
+  {
+   id:"chainBridgeFishing",name:"Chain Bridge Riverbank",area:"Potomac near Chain Bridge and Little Falls",category:'leisure',
+   description:"Shore fishing upstream near the stronger Potomac current. Rapids are hazardous; the bank position remains provisional.",map:null,defaultRoom:'shore',rooms:[
+    {id:'shore',name:"Riverside Approach",description:'Washington shoreline location for future fishing; fishing gameplay is not implemented yet.'}
+   ]
   }
  ];
 
- // All 29 registered locations have a map marker. New markers are deliberately
+ // All 34 registered locations have a map marker. New markers are deliberately
  // provisional display coordinates, never audited street addresses or travel times.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -310,7 +340,10 @@
   whiteHouse:[23,.434,.454],washingtonArena:[24,.580,.425],
   washingtonAirport:[25,.305,.664],metropolitanPolice:[26,.571,.510],
   westLivery:[27,.190,.515],eastLivery:[28,.885,.488],
-  potomacFishingBank:[29,.340,.690]
+  potomacFishingBank:[29,.340,.690],
+  babcockLake:[30,.495,.559],fletchersCove:[31,.184,.402],
+  georgetownCanal:[32,.271,.475],easternBranchFishing:[33,.758,.642],
+  chainBridgeFishing:[34,.139,.326]
  });
  for(const location of LOCATIONS){
   const position=PROVISIONAL_MAP_PINS[location.id];
