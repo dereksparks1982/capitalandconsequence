@@ -11,3 +11,10 @@
 - Before accepting the pending v0.6.86 Linux candidate, test pin edits, filter changes, save/reload, profile separation and representative pin navigation in the actual Electron desktop game. Source checks passed earlier, but are not a substitute for a desktop playthrough.
 
 **The existing map artwork remains unchanged.** Pins 35–38 add the explicitly requested real monastery, fictional cobbler, and two historic markets in documented neighborhoods. Dragged placements require affirmative confirmation before save; off-map drops are refused. The app does not invent an automatic proof that an arbitrary new address is historically correct. Cobbler's fictional storefront was designated in the Eastern Market shopping area; exact ownership/lot is not claimed historical. Two real markets were added as red historical pins. Other fictional addresses remain unverified unless the owner establishes their location. See [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md).
+
+## Historical education and pin visibility · October 24, 2026
+
+- Every historical **red** destination displays an explicit **Non-Fiction** badge on both the map card and the interior destination page, plus collapsible **Real History · Further Reading** with a factual introductory note and links to Wikipedia and the Library of Congress. External links open in the system browser from Electron; the reference pages are not required for offline gameplay.
+- Every invented **blue** destination displays an explicit **Fiction** badge without falsely attributing made-up characters or businesses to historical archives. Even a fictional room inside a real building remains Fiction.
+- Both red and blue pin **backgrounds are partially transparent**, while the marker numbers remain fully legible. This does not modify the map image, pan/zoom, user-renamed labels or saved pin placement.
+- Pin drags no longer auto-save. Drops outside the printed A–R / 1–30 area are rejected; in-map moves require explicit confirmation or return to the previous position.
