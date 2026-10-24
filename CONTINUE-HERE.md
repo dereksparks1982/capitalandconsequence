@@ -2,6 +2,8 @@
 
 # ACTIVE HANDOFF · Washington Map / October 24, 2026
 
+**Final card-story update · October 24, 2026:** Every one of the **22 blue FICTION** locations now has its own authored `story` biography in `city.js`, drawn from established game-world concepts. The map card and visited-city room display an **expanded "Our Alternate History · Fiction"** panel with that in-universe text and an explicit statement that it is not a real-world historical record. No Wikipedia/LOC links appear on invented venue cards. The **16 red NON-FICTION** destinations retain collapsible "Real History · Further Reading" with Wikipedia and LOC links, distinguishing actual chronology from our invented game events. Numbered marker backgrounds stay at 68% opacity and the A–R/1–30 art, travel logic, maps and actual player pin placements are unchanged. Focused source+simulated-DOM checks passed for `tests/map-guide-grid.cjs`, `tests/map-fishing-locations.cjs`, `tests/map-history-card.cjs`, `tests/map-history-reference.cjs`; app.js/city.js parse. **Full native Ubuntu source-suite QA and Electron pointer/visual testing still outstanding; not a released executable.**
+
 **Authoritative repo:** `dereksparks1982/capitalconsequence` (**not** the retired `federalelectric` repo); **branch:** `main`; **candidate state:** committed source, **not yet desktop-accepted**. This section supersedes stale figures in older handoff snapshots below.
 
 **Owner directives, do not reinterpret:**
