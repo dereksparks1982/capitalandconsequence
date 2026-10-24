@@ -2,7 +2,13 @@
 
 > **Current planning constraint:** No file-splitting or `app.js` modularization tasks. The owner explicitly rejected them. Current build priorities remain gameplay and verified 1878 behavior; documentation changes alone do not authorize code changes.
 
-## CURRENT SOURCE · v0.6.84-dev · Private home stable, riding and livery hire (October 23, 2026)
+## CURRENT SOURCE · v0.6.85-dev · Potomac fishing map pin only (October 23, 2026)
+
+**[x] Requested single-location slice:** Added **Potomac River Fishing Bank** (`potomacFishingBank`), public `riverbank` room, map marker **29**, in the existing **Sports & Recreation** category. Coordinates are an explicitly **provisional** Potomac-shore map placement, not an asserted historic street address. Ordinary existing Washington travel/room access applies. **No fishing minigame, fish catches, aquarium, fish economy, artwork, gear system, or fishing time mechanic has been built.** Fishing gameplay has been discussed (reactive fish direction, tension and menu choices) but remains **design-only until separately approved**.
+
+**Verification:** Full GitHub Source QA succeeded on source commit `b136d4016a14d5af50c7e2eb401c1e4218fd144b`, run **40061471151**. The source candidate is `v0.6.85-dev`, main branch, **not a packaged or user-accepted executable**. Existing `app.js` stays intact, no file splitting or structural refactor. This paragraph supersedes the older "CURRENT SOURCE" v0.6.84 checkpoint immediately below.
+
+## HISTORICAL MILESTONE · v0.6.84-dev · Private home stable, riding and livery hire (completed October 23, 2026)
 
 **Verified GitHub Source QA:** run **40058726255** passed the entire `npm run test:source` suite at source commit **`5d3c76f9865fa1f7c0f1c7c842d7be8cc5c0e414`**, including `tests/home-stable.cjs`, `tests/livery-hire.cjs`, the existing horse custody, care and all Washington career tests. Later commits to these documents do not change tested source. **Source build only**, not a packaged Linux executable, rendered playthrough, accepted release or tag. Active branch remains **main**.
 
