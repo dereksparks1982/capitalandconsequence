@@ -561,3 +561,10 @@ This is a **first playable detective-case simulation**, not yet a crime organica
 ## Legal and third-party notices
 
 See [LEGAL.md](LEGAL.md) for maintainer contact information, license status of the murder-mystery repositories reviewed, and existing dependency notices. The new JavaScript engine is independently written using designs studied from MIT-licensed Cold Truth and Mysterious Murder; no third-party executable code was imported in this slice.
+
+
+### Washington pictorial-map working slice (October 24, 2026; unaccepted source)
+
+The permanent *Washington In and Out Guide* map remains the only Washington artwork for all alternate-history years. This source slice adds 34-pin origin metadata (**red real historical destinations / blue invented destinations**), evidence-aware printed-grid references (1–30 / A–R), map search, combined category-and-origin filters, an indexed location directory, and profile-local pin-coordinate JSON export. It isolates pointer presses inside the rename card, so selecting the editable name field does not start the viewport's existing map pan capture; map zoom and movement logic are not changed. Several pictured landmarks have been re-anchored to the supplied image, while established street/block locations are separately marked as approximate. Unknown fictional addresses are **not** represented as verified; out-of-artwork pins appear in the directory until placed. All original 34 location IDs, access gates, per-profile labels, and manually saved pin overrides remain intact.
+
+Read [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md) before further map work. **Only five positions are tied to printed landmarks/features, eight to previously established areas, and the remaining 21 still require individual validation.** The 34-pin source build must not be called a completely verified geographic survey. The new `tests/map-guide-grid.cjs` is in local `npm run test:source`; no automated Actions build or executable release was requested or produced by this commit.
