@@ -19,7 +19,8 @@
   }
   if(books.entries[date])return {...books.entries[date],repeated:true};
   const account=save.npcSimulation?.agents?.[ASSISTANT_ID]?.economy;
-  const worked=weekday>=1&&weekday<=5&&Array.isArray(account?.history)&&
+  const absent=root.FE_WORKSHOP_OPERATIONS?.arrival?.(save,date)?.absent||false;
+  const worked=!absent&&weekday>=1&&weekday<=5&&Array.isArray(account?.history)&&
    account.history.some(a=>a?.date===date&&a.kind==='work');
   const earnedCents=worked?DAILY_WAGE_CENTS:0;
   books.accruedCents+=earnedCents;
