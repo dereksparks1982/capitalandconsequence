@@ -1,5 +1,8 @@
 # Capital & Consequence · CONTINUE HERE
 
+> **HISTORICAL READING FOLLOW-UP · October 24, 2026:** Map popups and visited room pages show **Fiction / Non-Fiction** text; 16 real sites have expandable factual histories, verified links to their Wikipedia article (or labeled search) and Library of Congress searches. Fictional rooms have no real-history panels. Colored pin backgrounds use 68% opacity while numbers remain solid. DOM/source checks passed for both panels and all 38 entries; new `tests/map-history-card.cjs` included in the source QA script. Do not claim a full Ubuntu/Electron playthrough or downloadable binary without separate validation.
+
+
 > **LATEST MAP CONTINUATION · October 24, 2026:** Repository contains **38** numbered pins, including Franciscan Monastery #35 (red), Cobbler #36 (blue), Eastern Market #37 (red), Georgetown Market House #38 (red). The *same 2048×1159 Washington guide* remains the canonical map for every year. Map additions: searchable directory, color/category filters, original A–R/1–30 grid, JSON export, rename popup isolation, explicit confirmation for moved pins, and save migration preserving actual player placements. Location evidence: **5 illustrated features, 19 documented geographic areas, 14 unresolved addresses**. These new commerce venues have room shells, not purchase/repair systems yet. Source contracts were adjusted for 38; do not claim full Ubuntu/Electron QA or a downloadable binary without running them. See [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md).
 
 
