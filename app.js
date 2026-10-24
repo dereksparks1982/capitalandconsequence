@@ -2031,6 +2031,7 @@ function renderCityRoomDirectory(location,activeRoomId){
  }
 }
 // Map travel enters the destination's default room; never commit a bad destination to the autosave.
+function recordLiveryPurchase(){save(true);window.FE_TRANSPORT?.renderRegister?.()}
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
@@ -2075,7 +2076,7 @@ function openCityRoom(locationId,roomId,options={}){
   window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id);
   window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id);
   renderCityRoomDirectory(location,room.id);
-  window.FE_LIVERY_UI?.render?.(location.id,room.id,S,()=>{save(true);window.FE_TRANSPORT?.renderRegister?.()},!dev);
+  window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
   const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
