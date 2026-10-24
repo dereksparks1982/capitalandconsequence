@@ -1,5 +1,8 @@
 # Capital & Consequence Development Roadmap
 
+> **LATEST STORY CARD UPDATE · October 24:** All **22 fictional/blue** map locations now present their own openly readable **Our Alternate History · Fiction** narratives on map and room cards, explicitly separated from real history. The **16 non-fiction/red** places continue to offer collapsible factual summaries and Wikipedia + LOC further reading. Four focused map/history source+simulated-DOM checks passed. Map artwork unchanged; full Ubuntu/Electron acceptance remains pending. See `CONTINUE-HERE.md` for exact handoff.
+
+
 > **MAP EDUCATION / VISUALS · October 24:** All 38 map destinations show Fiction or Non-Fiction explicitly on map cards and destination rooms. The 16 real places have collapsible historical reading with Wikipedia and Library of Congress references, external browser opening and clear separation from alternate-history events. Historical red and invented blue pin fills are 68% opaque. Source and simulated-DOM tests pass; Electron mouse interactions and the complete Ubuntu source test suite still require native verification. No map replacement or accepted executable.
 
 
