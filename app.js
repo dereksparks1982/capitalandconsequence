@@ -2677,6 +2677,15 @@ const TITLE_MAP_OLD_DEFAULTS=Object.freeze({
  embassyPoker:[.243,.160],washingtonFairgrounds:[.470,.566],
  babcockLake:[.495,.559]
 });
+// Intermediate, unreleased defaults from this same guide-map alignment pass.
+// Profiles are allowed to restore their actual moves, but never re-adopt one
+// of these intermediate wrong-source coordinates as if the player dragged it.
+const TITLE_MAP_INTERMEDIATE_DEFAULTS=Object.freeze({
+ whiteHouse:[854/2048,454/1159],star:[848/2048,403/1159],
+ oldChinatown:[1055/2048,480/1159],home:[1213/2048,540/1159],
+ fletchersCove:[522/2048,405/1159],races:[1582/2048,340/1159],
+ capitolAirport:[1585/2048,296/1159]
+});
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
@@ -2814,8 +2823,10 @@ function loadTitleMapLocationLayout(){
   if(!p||typeof p!=='object')continue;
   if(Number.isFinite(+p.x)&&Number.isFinite(+p.y)){
    const legacy=TITLE_MAP_OLD_DEFAULTS[location.id];
-   const wasUntouchedOldDefault=!!legacy&&
-    Math.abs(+p.x-legacy[0])<0.000002&&Math.abs(+p.y-legacy[1])<0.000002;
+   const intermediate=TITLE_MAP_INTERMEDIATE_DEFAULTS[location.id];
+   const isSamePosition=pair=>!!pair&&
+    Math.abs(+p.x-pair[0])<0.000002&&Math.abs(+p.y-pair[1])<0.000002;
+   const wasUntouchedOldDefault=isSamePosition(legacy)||isSamePosition(intermediate);
    if(!wasUntouchedOldDefault){
     location.x=Math.max(0,Math.min(1,+p.x));
     location.y=Math.max(0,Math.min(1,+p.y));
