@@ -1,0 +1,13 @@
+name: One-time Owner Build Invocation
+on:
+  push:
+    branches: [main]
+    paths:
+      - BUILD-REQUEST-v0.6.86-OWNER.md
+permissions:
+  contents: write
+jobs:
+  owner-requested-candidate:
+    permissions:
+      contents: write
+    uses: ./.github/workflows/linux-build.yml

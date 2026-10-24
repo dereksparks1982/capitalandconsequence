@@ -4,6 +4,8 @@ name: Linux Desktop Build
 # Do not build/publish an executable just because source was pushed to main.
 on:
   workflow_dispatch:
+  # Temporary reusable entry for ONE owner-authorized push-triggered candidate.
+  workflow_call:
 
 jobs:
   build-linux:
