@@ -1424,3 +1424,11 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .title-map-pin-rename button{font:700 12px Georgia,serif;border:1px solid #997b50;background:#3d2b1d;color:#f9eacb;padding:7px;cursor:pointer}
 .title-map-pin-rename button:hover,.title-map-pin-rename button:focus-visible{background:#634628}
 .title-map-pin-rename small{width:100%;font:11px Georgia,serif;color:#cfb98c}
+
+/* v0.6.87: keyboard accessible shore fishing controls */
+.city-room-fishing{margin:16px 0;padding:13px;border:1px solid #8c7856;background:#e7dac0;color:#251b11}
+.city-room-fishing h4{margin:0 0 8px;font:700 19px Georgia,serif}
+.city-room-fishing-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.city-room-fishing-actions button,#cityRoomFishingCatches button{font:700 12px Georgia,serif;padding:7px 10px}
+#cityRoomFishingStatus{font-weight:700}#cityRoomFishingLog{min-height:1.4em}
+#cityRoomFishingCatches>div{margin:7px 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
