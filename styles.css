@@ -1415,3 +1415,12 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .component-workshop select,.component-workshop input{min-height:38px;max-width:100%;font:inherit}
 .component-workshop button{min-height:38px;padding:6px 12px}
 .component-workshop #cwOrders p{border-bottom:1px solid currentColor;padding:6px 0}
+
+
+/* Per-profile pin labels; names never change canonical Washington place IDs. */
+.title-map-pin-rename{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:9px 0 6px}
+.title-map-pin-rename label{width:100%;font:700 12px Georgia,serif;color:#e7d0a0}
+.title-map-pin-rename input{flex:1 1 160px;min-width:90px;max-width:100%;padding:7px;background:#f2e8d4;color:#211b13;border:1px solid #a88750;border-radius:2px;font:15px Georgia,serif}
+.title-map-pin-rename button{font:700 12px Georgia,serif;border:1px solid #997b50;background:#3d2b1d;color:#f9eacb;padding:7px;cursor:pointer}
+.title-map-pin-rename button:hover,.title-map-pin-rename button:focus-visible{background:#634628}
+.title-map-pin-rename small{width:100%;font:11px Georgia,serif;color:#cfb98c}
