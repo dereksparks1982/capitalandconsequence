@@ -2704,7 +2704,7 @@ function loadTitleMapLocationLayout(){
  });
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(titleMapStorageKey())||'null')}catch(e){}
- if(!saved||typeof saved!=='object')return;
+ if(!saved||typeof saved!=='object'){updateTitleMapPinLabels();return}
  for(const location of TITLE_MAP_LOCATIONS){
   const p=saved[location.id];
   if(!p||typeof p!=='object')continue;
