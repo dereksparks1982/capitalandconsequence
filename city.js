@@ -364,6 +364,20 @@
   georgetownCanal:[638,415,'C&O Canal along Georgetown north bank (route, not surveyed entrance)'],
   easternBranchFishing:[1425,622,'Anacostia shore beside the Navy Yard (bank, not surveyed entrance)']
  });
+ // These sites have an agreed street/area on the printed map but no
+ // individually labelled building/entrance. They are explicitly NOT verified.
+ // Coordinates indicate the stated real-world block or riverbank, not a
+ // guessed historical claim for the fictional business located there.
+ const MAP_AREA_REFERENCES=Object.freeze({
+  star:[848,403,'Hay-Adams site at 16th and H NW; fictional Star Club'],
+  oldChinatown:[1055,480,'Pennsylvania Avenue NW, 4th-7th Streets; historical neighborhood'],
+  russianTradeHall:[755,362,'Dupont Circle / Massachusetts Avenue NW; fictional hall'],
+  commercePoker:[711,712,'Washington-Hoover Airport grounds; fictional Commerce Club hangar'],
+  home:[1213,540,'Capitol Hill near Eastern Market; proposed fictional residence'],
+  fletchersCove:[522,405,'North bank of upper Potomac; precise Fletcher cove entry not labelled'],
+  chainBridgeFishing:[501,412,'D.C. bank at mapped Chain Bridge; fishing access not labelled'],
+  potomacFishingBank:[921,625,'Southwest D.C. Potomac Park shore; precise fishing bank unsettled']
+ });
  const IMAGE_WIDTH=2048,IMAGE_HEIGHT=1159;
  // Coordinates describe the PRINTED map, not longitude/latitude.
  const GRID_LEFT=323,GRID_TOP=59,GRID_COL_PITCH=48.5,GRID_ROW_PITCH=45.55;
@@ -381,13 +395,15 @@
   }
   location.mapOrigin=HISTORICAL_DESTINATIONS.has(location.id)?'historical':'fictional';
   const anchor=MAP_ARTWORK_ANCHORS[location.id];
-  if(anchor&&location.map){
-   location.map.x=anchor[0]/IMAGE_WIDTH;
-   location.map.y=anchor[1]/IMAGE_HEIGHT;
-   location.mapEvidence=anchor[2];
+  const area=MAP_AREA_REFERENCES[location.id];
+  const point=anchor||area;
+  if(point&&location.map){
+   location.map.x=point[0]/IMAGE_WIDTH;
+   location.map.y=point[1]/IMAGE_HEIGHT;
+   location.mapEvidence=point[2];
   }
   if(location.map){
-   location.mapPlacement=anchor?'map-anchored':'unverified';
+   location.mapPlacement=anchor?'map-anchored':area?'area-located':'unverified';
    location.provisionalMapPosition=!anchor;
   }
  }
