@@ -85,3 +85,12 @@ The 14 unresolved destinations do not have a precise established site or buildin
 ### Essential city services to consider next
 
 Aside from cobbler, Eastern Market and Georgetown Market House, the registry currently lacks a dedicated **apothecary/pharmacy, doctor's office, barber, tailor/laundry, hardware and coal dealer, post office/telegraph counter, rail depot, and ordinary boardinghouse**. Some business functions exist in other systems (e.g., merchants and horse liveries); do not create duplicate destination pins without checking their scope. These are recommendations, **not yet assigned addresses or game mechanics**.
+
+## Educational location-card contract
+
+- Both the map popup and destination/room page display **Non-Fiction** for all 16 real-world sites and **Fiction** for all 22 invented venues.
+- All 16 Non-Fiction locations have short factual introductions. Opening **Real History · Further Reading** gives Wikipedia and Library of Congress links for that site. A link to a search page is explicitly called a search, not misrepresented as an article.
+- Real geography is distinct from the alternate-history game's stories, date and characters. The monastery's real construction was in 1898–1899; the game's earlier accessibility is deliberate fiction, not a historical claim.
+- Fictional destinations have no non-fiction reading section. Even a fictional venue in a genuine historical building remains classified as **Fiction**.
+- Pin colors are semi-transparent **only in the fill (alpha 0.68)**, keeping numbers and clicking targets legible and showing map details beneath.
+- `tests/map-history-card.cjs` exercises rendered map and destination card DOM structures, including external links, hiding on fictional entries, and history toggling; `tests/map-guide-grid.cjs` checks opacity and source contracts.
