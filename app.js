@@ -2075,6 +2075,7 @@ function openCityRoom(locationId,roomId,options={}){
   document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
   document.getElementById('cityRoomName').textContent=room.name;
   document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
+  renderPlaceReference(location);
   setPastimeActivity('legal',null);setPastimeActivity('illicit',null);
   renderCityRoomPeople(location);
   window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id);
@@ -2924,6 +2925,48 @@ function mapTravelRestriction(location){
  if(window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(entry.id))return 'This location is not yet accessible. Discover an invitation or satisfy its entry conditions.';
  return '';
 }
+// Real history is deliberately separate from alternate-history venue stories.
+// Build readable text/link DOM without interpolating source data into HTML.
+function renderPlaceReference(location,mapCard=false){
+ const badge=document.getElementById(mapCard?'titleMapLocationFact':'cityRoomFact');
+ const panel=document.getElementById(mapCard?'titleMapHistoricalReading':'cityRoomHistoricalReading');
+ if(!badge||!panel)return;
+ const isReal=location?.mapOrigin==='historical'||location?.origin==='historical';
+ badge.textContent=isReal?'Non-Fiction':'Fiction';
+ badge.classList.toggle('is-nonfiction',isReal);
+ badge.classList.toggle('is-fiction',!isReal);
+ badge.title=isReal?'Real-world place or landmark':'Invented place or fictional business';
+ panel.replaceChildren();
+ const note=location?.history;
+ panel.hidden=!isReal||!note;
+ if(panel.hidden)return;
+ const details=document.createElement('details');
+ const summary=document.createElement('summary');
+ summary.textContent='Real History · Further Reading';
+ details.appendChild(summary);
+ const intro=document.createElement('p');
+ intro.textContent=note.summary||'Read about the real-world place.';
+ details.appendChild(intro);
+ const warning=document.createElement('p');
+ warning.className='historical-reading-disclaimer';
+ warning.textContent='Non-fiction references describe actual history. This game follows an alternate timeline; its characters, rooms and events may be invented.';
+ details.appendChild(warning);
+ const links=document.createElement('div');
+ links.className='historical-reading-links';
+ function readingLink(title,url){
+  if(!url||!/^https:\/\//i.test(url))return;
+  const link=document.createElement('a');
+  link.href=url;link.target='_blank';link.rel='noopener noreferrer';
+  link.textContent=title;
+  links.appendChild(link);
+ }
+ const query=note.query||location.name;
+ readingLink(note.wikipedia?'Wikipedia article ↗':'Find on Wikipedia ↗',
+  note.wikipedia||'https://en.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(query));
+ readingLink('Library of Congress archives ↗','https://www.loc.gov/search/?q='+encodeURIComponent(query));
+ details.appendChild(links);
+ panel.appendChild(details);
+}
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
  titleMapSelectedLocationId=id;
@@ -2938,6 +2981,7 @@ function openTitleMapLocation(id){
   (location.origin==='historical'?'Historical (red)':'Fictional (blue)')+' · '+
   (location.placement==='map-anchored'?'Map-anchored placement':'Placement not independently verified');
  $('#titleMapLocationDescription').textContent=location.description;
+ renderPlaceReference(location,true);
  const reason=mapTravelRestriction(location);
  const journeyNotice=document.getElementById('titleMapTravelNote');
  if(journeyNotice)journeyNotice.textContent=(location.provisional?'PROVISIONAL PIN · historical placement pending. ':'')+(reason||window.FE_TRAVEL?.notice?.(currentCityLocation().locationId,id)||'Travel times not yet surveyed; direct movement is provisional.');
