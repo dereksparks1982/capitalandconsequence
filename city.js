@@ -338,10 +338,47 @@
    rooms:[
     {id:"monastery-grounds",name:"Monastery Grounds",description:"The monastery's public grounds and entrance. Interior monastery activities have not yet been implemented."}
    ]
+  },
+  {
+   id:"cobblerShop",name:"Cobbler & Shoe Repair",
+   area:"7th Street SE · beside Eastern Market · fictional storefront",
+   category:"commerce",
+   description:"An independent Washington cobbler near the public market. Shoes and boots can be brought for resoling, heel repair and leather stitching. The storefront is a fictional business on a real shopping street; prices, owner and repair gameplay are not yet designed.",
+   map:{n:36,x:1274/2048,y:486/1159},
+   defaultRoom:"repair-counter",
+   rooms:[
+    {id:"repair-counter",name:"Shoe Repair Counter",description:"A counter for receiving worn shoes and discussing repair requests. Buying and repair transactions await their own approved gameplay slice."},
+    {id:"work-bench",name:"Cobbler's Workbench",restricted:true,description:"The shoemaker's leather, lasts, needles, thread and tools. Workers only."}
+   ]
+  },
+  {
+   id:"easternMarket",
+   name:"Eastern Market",
+   area:"225 7th Street SE · Capitol Hill, Washington, D.C.",
+   category:"commerce",
+   description:"Washington's real Eastern Market, operating on Capitol Hill since the nineteenth century. A public place to buy food and everyday household goods from independent merchants.",
+   map:{n:37,x:1258/2048,y:475/1159},
+   defaultRoom:"market-hall",
+   rooms:[
+    {id:"market-hall",name:"Market Hall",description:"Public indoor market with food and daily goods stalls. Individual merchants and finite inventory are not yet separately implemented here."},
+    {id:"market-outside",name:"Outside Stalls",description:"The public streets around Eastern Market where vendors and customers gather."}
+   ]
+  },
+  {
+   id:"georgetownMarketHouse",
+   name:"Georgetown Market House",
+   area:"3276 M Street NW · Georgetown, Washington, D.C.",
+   category:"commerce",
+   description:"The historic Georgetown Market House, a real neighborhood market on M Street. It offers local food vendors and day-to-day trade independently of the invented city businesses.",
+   map:{n:38,x:572/2048,y:385/1159},
+   defaultRoom:"market-hall",
+   rooms:[
+    {id:"market-hall",name:"Georgetown Market Hall",description:"Public Georgetown market hall. No fictional vendor prices or stocks have been invented."}
+   ]
   }
  ];
 
- // All 35 registered locations have stable numbered map destinations. Sites
+ // All 38 registered locations have stable numbered map destinations. Sites
  // with no established address remain directory-only, not claimed as verified.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -363,7 +400,7 @@
   'hillsdale','oldChinatown','universityMaryland','governmentHospital',
   'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
   'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing',
-  'metropolitanPolice','franciscanMonastery'
+  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse'
  ]);
  // Pin anchors read against the owner's actual, unchanged 2048 x 1159
  // Washington In and Out Guide image (A-R rows / 1-30 columns).
@@ -397,7 +434,10 @@
   universityMaryland:[1555,90,'University of Maryland campus, College Park; northeastern map area'],
   embassyPoker:[505,132,'Chevy Chase Club vicinity, 6100 Connecticut Avenue; fictional room'],
   washingtonFairgrounds:[750,538,'Potomac Park / Flats west of the Washington Monument; fictional exposition site'],
-  babcockLake:[857,527,'Former Washington Monument grounds lake; no water feature on permanent 1938 drawing']
+  babcockLake:[857,527,'Former Washington Monument grounds lake; no water feature on permanent 1938 drawing'],
+  easternMarket:[1258,475,'225 7th Street SE in Capitol Hill; historic market block, entrance not individually annotated'],
+  georgetownMarketHouse:[572,385,'3276 M Street NW in Georgetown; historic market building area, individually unlabelled'],
+  cobblerShop:[1274,486,'Fictional repair storefront beside Eastern Market; invented business lot on a real shopping street']
  });
  const IMAGE_WIDTH=2048,IMAGE_HEIGHT=1159;
  // Coordinates describe the PRINTED map, not longitude/latitude.
