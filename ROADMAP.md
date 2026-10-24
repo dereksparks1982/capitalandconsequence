@@ -1,5 +1,8 @@
 # Capital & Consequence Development Roadmap
 
+> **MAP EDUCATION / VISUALS · October 24:** All 38 map destinations show Fiction or Non-Fiction explicitly on map cards and destination rooms. The 16 real places have collapsible historical reading with Wikipedia and Library of Congress references, external browser opening and clear separation from alternate-history events. Historical red and invented blue pin fills are 68% opaque. Source and simulated-DOM tests pass; Electron mouse interactions and the complete Ubuntu source test suite still require native verification. No map replacement or accepted executable.
+
+
 > **HISTORICAL EDUCATION & PIN VISIBILITY · October 24, 2026:** Both map and room cards explicitly say **Fiction** or **Non-Fiction**. All 16 real-world destinations display collapsible historical summaries with targeted Wikipedia + Library of Congress links, independently of game lore; the 22 invented destinations do not. Red and blue pin fills are semi-transparent (alpha 0.68), leaving marker numbers readable. Focused map and history-card source behavior checks passed; full Ubuntu/Electron hands-on acceptance still pending. See `tests/map-history-card.cjs`, [MAP-CANON.md](MAP-CANON.md), and [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md).
 
 
