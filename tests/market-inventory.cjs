@@ -14,7 +14,7 @@ const nc=eco.purchase(save,'eddieDoyle','bread',{date:save.gameDate,token:'npc-1
 assert.equal(nc.ok,true);assert.equal(market.stock.bread,22);
 assert.equal(save.npcSimulation.agents.eddieDoyle.economy.balanceCents,495);
 assert.equal(market.accounts.bakery,10,'Both buyers credit one till');
-assert.equal(eco.deliveryForCalendar(save,'1878-01-14',0).ok,false,'Sunday does not deliver');
+assert.equal(eco.deliveryForCalendar(save,'1878-01-13',0).ok,false,'Sunday does not deliver');
 const del=eco.deliveryForCalendar(save,'1878-01-17',0);assert.equal(del.ok,true);assert.equal(del.repeated,false);
 assert.equal(market.stock.bread,32,'Receipt physically adds ten packs');
 assert.equal(market.deliveries['1878-01-17'].manifest.length,eco.GOODS.length);
