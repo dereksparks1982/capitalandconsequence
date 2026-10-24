@@ -1,98 +1,87 @@
-# Washington Pictorial Map · Pin-by-Pin Audit
-**Capital & Consequence · October 24, 2026 · 38 destinations**
+# Capital & Consequence · Washington Map Location Audit
 
-## Source of geographic truth
+**October 24, 2026 · 38 numbered destinations · 16 historical/red, 22 invented/blue.**
 
-The only Washington map in the game is the user-supplied original image `assets/artwork/maps/title-map-1938.jpg` (2048 × 1159), fixed throughout all alternate-history years. We did not generate, replace, download or change its artwork.
+## Geographic rules
 
-Read **column 1–30, row A–R** on the *drawn map*, whose bounds occupy roughly x=286–1778 and y=30–864. The printed street index to the right and visitor guide on the left are reference material, not geographic ground. Map coordinates are **normalized fractions of the full, unchanged image**, not latitudes or longitudes. A displayed grid cell is a coordinate lookup, **not independent proof** that the assigned site is correct. Whenever the map doesn't individually label a shop frontage, the closest documented street/block is recorded as **area-located**, not "confirmed printed landmark."
+Use ONLY the owner's supplied and approved `assets/artwork/maps/title-map-1938.jpg`, the **Washington In and Out Guide**. It is the identical artwork in 1878, 1938 and every playable year of the alternate-history city. Do not generate or substitute another map.
 
-## Current 38-pin registry
+The image is **2048 × 1159 pixels**. Its printed geographic area is approximately x=286–1778 and y=30–864. The printed **1–30 columns / A–R rows** and right-side index are the location references; areas outside this are *guide text*, not territory. Grid references below denote a marker's currently programmed pixel position, not automatic evidence of the correct actual building.
 
-There are **16 historical/red** and **22 invented/blue** destinations. **5 features** are directly identifiable on the pictorial map, **19 sites** are located in a documented street or general neighborhood without a marked doorway, and **14 sites** still have no established address.
+Use the original map's printed landmark or index when readable; for historic sites without an individually printed icon, use a documented street/area **without pretending that an exact door has been identified**. A fictional business cannot be given a real historical address unless that location has been agreed. Existing destination IDs and existing game access rules are preserved.
 
-| Pin | Destination | Type | Current grid | Precision | Evidence / limitations |
+## Full 38-pin register
+
+| # | Location | Pin color | Current image grid | Confidence | Evidence / limitation |
 |---:|---|---|---|---|---|
-| 1 | Federal Electric Factory | Blue: fictional | 20-G | Located by street / district | Ivy City / New York Avenue NE near Fenwick Street; invented works |
-| 2 | Star Club | Blue: fictional | 11-I | Located by street / district | 16th and H Streets NW, just north of the White House; fictional Star Club |
-| 3 | Capital Race Grounds | Blue: fictional | 28-G | Located by street / district | East side of Anacostia near Kenilworth Ave and Jay St NE; fictional Capital Race Grounds, not river |
-| 4 | Neighborhood Game | Blue: fictional | 11-B | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 5 | Commerce Club | Blue: fictional | 9-O | Located by street / district | Washington-Hoover Airport grounds; fictional Commerce Club hangar |
-| 6 | Embassy Room | Blue: fictional | 5-C | Located by street / district | Chevy Chase Club vicinity, 6100 Connecticut Avenue; fictional room |
-| 7 | Chinatown | Red: historical | 16-I | Located by street / district | Pennsylvania Avenue NW, 4th–7th Streets; northern city blocks, not the Mall |
-| 8 | Russian Trade Hall | Blue: fictional | 10-H | Located by street / district | Dupont Circle / Massachusetts Avenue NW; fictional hall |
-| 9 | D.C. World’s Fair | Blue: fictional | 10-L | Located by street / district | Potomac Park / Flats west of the Washington Monument; fictional exposition site |
-| 10 | Capitol Airport | Blue: fictional | 29-F | Located by street / district | East of Anacostia on land north of Benning race area; fictional aviation site, no exact lot approved |
-| 11 | University of Maryland | Red: historical | 26-B | Located by street / district | University of Maryland campus, College Park; northeastern map area |
-| 12 | Our Home | Blue: fictional | 19-J | Located by street / district | Capitol Hill, 7th and C Streets SE near Eastern Market; proposed fictional home |
-| 13 | Hillsdale | Red: historical | 25-P | Located by street / district | Barry Farm / Hillsdale southeast of the Anacostia, north of St. Elizabeths |
-| 14 | Stockbroker | Blue: fictional | 17-K | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 15 | Second Nightclub | Blue: fictional | 12-L | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 16 | Government Hospital for the Insane | Red: historical | 25-R | Artwork feature | St. Elizabeths hospital complex, printed near south edge |
-| 17 | Potomac Kennel Track | Blue: fictional | 30-N | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 18 | Capital Speedway | Blue: fictional | Outside map | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 19 | Licensed Gaming Hall | Blue: fictional | 16-K | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 20 | Private Prizefight Venue | Blue: fictional | 17-M | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 21 | Private Cockfighting Circle | Blue: fictional | 21-L | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 22 | District Asylum | Blue: fictional | 27-R | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 23 | White House | Red: historical | 12-I | Artwork feature | White House building at 1600 Pennsylvania Avenue NW, printed immediately north of the south lawn; 12-I |
-| 24 | Washington Arena | Blue: fictional | 19-K | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 25 | Washington Airport | Red: historical | 9-P | Artwork feature | Washington Airport, named on map, Arlington |
-| 26 | Metropolitan Police | Red: historical | 18-M | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 27 | Western Livery and Carriage Yard | Blue: fictional | 2-M | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 28 | Eastern Livery and Wagon Works | Blue: fictional | Outside map | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 29 | Potomac River Fishing Bank | Red: historical | 13-M | Located by street / district | Southwest D.C. Potomac Park shore; precise fishing bank unsettled |
-| 30 | Babcock Lake | Red: historical | 12-K | Located by street / district | Former Washington Monument grounds lake; no water feature on permanent 1938 drawing |
-| 31 | Fletcher’s Cove | Red: historical | 2-H | Located by street / district | Upper Potomac north bank upstream of Georgetown; Fletcher cove entrance not labeled |
-| 32 | Georgetown Canal Towpath | Red: historical | 7-I | Artwork feature | C&O Canal along Georgetown north bank (route, not surveyed entrance) |
-| 33 | Eastern Branch Fishing Shore | Red: historical | 24-M | Artwork feature | Anacostia shore beside the Navy Yard (bank, not surveyed entrance) |
-| 34 | Chain Bridge Riverbank | Red: historical | Outside map | Unresolved precise location | No established individual site. Draft default not shown as a verified pin. |
-| 35 | Franciscan Monastery of the Holy Land in America | Red: historical | 21-E | Located by street / district | 1400 Quincy Street NE, Brookland; mapped block by CUA, monastery entrance not individually labeled |
-| 36 | Cobbler & Shoe Repair | Blue: fictional | 21-J | Located by street / district | Fictional repair storefront beside Eastern Market; invented business lot on a real shopping street |
-| 37 | Eastern Market | Red: historical | 20-J | Located by street / district | 225 7th Street SE in Capitol Hill; historic market block, entrance not individually annotated |
-| 38 | Georgetown Market House | Red: historical | 6-H | Located by street / district | 3276 M Street NW in Georgetown; historic market building area, individually unlabelled |
+| 1 | Federal Electric Factory | Blue / invented | 20-G | Documented area only | Ivy City / New York Avenue NE near Fenwick Street; invented works |
+| 2 | Star Club | Blue / invented | 11-I | Documented area only | 16th and H Streets NW, just north of the White House; fictional Star Club |
+| 3 | Capital Race Grounds | Blue / invented | 28-G | Documented area only | East side of Anacostia near Kenilworth Ave and Jay St NE; fictional Capital Race Grounds, not river |
+| 4 | Neighborhood Game | Blue / invented | 11-B | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 5 | Commerce Club | Blue / invented | 9-O | Documented area only | Washington-Hoover Airport grounds; fictional Commerce Club hangar |
+| 6 | Embassy Room | Blue / invented | 5-C | Documented area only | Chevy Chase Club vicinity, 6100 Connecticut Avenue; fictional room |
+| 7 | Chinatown | Red / historical | 16-I | Documented area only | Pennsylvania Avenue NW, 4th–7th Streets; northern city blocks, not the Mall |
+| 8 | Russian Trade Hall | Blue / invented | 10-H | Documented area only | Dupont Circle / Massachusetts Avenue NW; fictional hall |
+| 9 | D.C. World’s Fair | Blue / invented | 10-L | Documented area only | Potomac Park / Flats west of the Washington Monument; fictional exposition site |
+| 10 | Capitol Airport | Blue / invented | 29-F | Documented area only | East of Anacostia on land north of Benning race area; fictional aviation site, no exact lot approved |
+| 11 | University of Maryland | Red / historical | 26-B | Documented area only | University of Maryland campus, College Park; northeastern map area |
+| 12 | Our Home | Blue / invented | 19-J | Documented area only | Capitol Hill, 7th and C Streets SE near Eastern Market; proposed fictional home |
+| 13 | Hillsdale | Red / historical | 25-P | Documented area only | Barry Farm / Hillsdale southeast of the Anacostia, north of St. Elizabeths |
+| 14 | Stockbroker | Blue / invented | 17-K | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 15 | Second Nightclub | Blue / invented | 12-L | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 16 | Government Hospital for the Insane | Red / historical | 25-R | Identifiable feature | St. Elizabeths hospital complex, printed near south edge |
+| 17 | Potomac Kennel Track | Blue / invented | 30-N | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 18 | Capital Speedway | Blue / invented | Outside map | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 19 | Licensed Gaming Hall | Blue / invented | 16-K | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 20 | Private Prizefight Venue | Blue / invented | 17-M | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 21 | Private Cockfighting Circle | Blue / invented | 21-L | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 22 | District Asylum | Blue / invented | 27-R | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 23 | White House | Red / historical | 12-I | Identifiable feature | White House building at 1600 Pennsylvania Avenue NW, printed immediately north of the south lawn; 12-I |
+| 24 | Washington Arena | Blue / invented | 19-K | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 25 | Washington Airport | Red / historical | 9-P | Identifiable feature | Washington Airport, named on map, Arlington |
+| 26 | Metropolitan Police | Red / historical | 18-M | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 27 | Western Livery and Carriage Yard | Blue / invented | 2-M | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 28 | Eastern Livery and Wagon Works | Blue / invented | Outside map | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 29 | Potomac River Fishing Bank | Red / historical | 13-M | Documented area only | Southwest D.C. Potomac Park shore; precise fishing bank unsettled |
+| 30 | Babcock Lake | Red / historical | 12-K | Documented area only | Former Washington Monument grounds lake; no water feature on permanent 1938 drawing |
+| 31 | Fletcher’s Cove | Red / historical | 2-H | Documented area only | Upper Potomac north bank upstream of Georgetown; Fletcher cove entrance not labeled |
+| 32 | Georgetown Canal Towpath | Red / historical | 7-I | Identifiable feature | C&O Canal along Georgetown north bank (route, not surveyed entrance) |
+| 33 | Eastern Branch Fishing Shore | Red / historical | 24-M | Identifiable feature | Anacostia shore beside the Navy Yard (bank, not surveyed entrance) |
+| 34 | Chain Bridge Riverbank | Red / historical | Outside map | Address not established | No approved building or lot; previous default available in Edit Pins only. |
+| 35 | Franciscan Monastery of the Holy Land in America | Red / historical | 21-E | Documented area only | 1400 Quincy Street NE, Brookland; mapped block by CUA, monastery entrance not individually labeled |
+| 36 | Cobbler & Shoe Repair | Blue / invented | 21-J | Documented area only | Fictional repair storefront beside Eastern Market; invented business lot on a real shopping street |
+| 37 | Eastern Market | Red / historical | 20-J | Documented area only | 225 7th Street SE in Capitol Hill; historic market block, entrance not individually annotated |
+| 38 | Georgetown Market House | Red / historical | 6-H | Documented area only | 3276 M Street NW in Georgetown; historic market building area, individually unlabelled |
 
-## Specific decisions and behavior
+## Built in this map slice
 
-- **35 Franciscan Monastery:** real historical landmark; **Brookland, 1400 Quincy Street NE**, red, accessible public grounds. Its actual street block is located without claiming a tiny individually legible illustration.
-- **36 Cobbler & Shoe Repair:** fictional storefront in the **7th Street SE shopping area beside Eastern Market**, blue. Shop has public repair counter and private workbench; transactional shoe repair is **not implemented** or priced yet.
-- **37 Eastern Market:** historically real market at **225 7th Street SE**, red. Market hall and outside stalls reserved as public rooms.
-- **38 Georgetown Market House:** historically real public market at **3276 M Street NW**, red. Public market hall registered.
-- The two historical markets do not yet have independent merchant inventories. The existing Chinatown merchant simulation continues unchanged. Do not claim that the new room shells are an integrated trading economy.
-- **Red** describes the place being real, not necessarily its host building. **Star Club** and **Embassy Room** are fictional businesses in historical buildings and thus remain **blue**.
-- In EDIT PINS mode, all destinations can be shown. Drops onto the printed index/outside the 1–30/A–R map are **rejected**, and no drop saves automatically: the player must explicitly confirm the new grid reference after the drop. A canceled drop restores the previously saved position. Verification of a destination's *historical identity* cannot be inferred from a clicked pixel alone; owner approval of fictional addresses is definitive only for the fiction.
-- All displayed names remain editable by profile. Name-field pointer events do not initiate map dragging. The original pan/zoom behavior is otherwise unchanged. Search, category/origin filters, grid labels, map directory and Export Pins remain.
-- Legacy pin IDs and numbers 1–34 remain stable, and the monastery stays pin 35. Loading profiles recognizes untouched older defaults versus manually moved positions; real manual changes and custom names take precedence.
-- A date-gated Babcock Lake remains date-gated. The permanent pictorial map does not prove a filled historical basin is still present.
+- **5** locations tied to recognizable pictured buildings/features; **19** located by a documented street, neighborhood or shoreline, **not verified storefront coordinates**; **14** awaiting a selected actual site or fictional address. These categories are intentionally distinct.
+- **Pin 35:** Franciscan Monastery of the Holy Land in America, Brookland, 1400 Quincy Street NE. Historical/red, **21-E**, historic area located; entrance not individually shown on the tiny pictorial map.
+- **Pin 36:** Cobbler & Shoe Repair, fictional storefront in the Eastern Market shopping area, **blue**, **21-J**. A practical destination with repair-counter and staff-only workbench rooms. This does **not** invent shoemaker ownership, prices or completed repair mechanics.
+- **Pin 37:** Eastern Market, **red**, **20-J**. Real historic Capitol Hill market at 225 7th Street SE; area placement, rather than claimed exact doorway.
+- **Pin 38:** Georgetown Market House, **red**, **6-H**. Real historic Georgetown market at 3276 M Street NW; area placement, rather than claimed exact doorway.
+- Search by name, category, origin (historical / invented), number or grid; searchable numbered location directory, red/blue pin colors and profile-specific **Export Pins** JSON.
+- **Editable name field:** Clicking or typing inside the popup does not initiate viewport pointer drag or map keyboard shortcuts. Existing zoom and pan controls are preserved.
+- **Manual pin movements require confirmation to save.** If canceled, or dropped outside the printed A–R / 1–30 map area, the former position is restored without a write. The app cannot objectively know whether an invented building exists at a chosen grid square: the confirmation is a user decision, not an automatic historical validator.
+- Previously saved per-profile custom names and genuinely player-moved pins stay in the V2 layout. Recognized older **untouched defaults** may pick up the updated reference location without resetting manual adjustments. Reset Pins affects positions only, not names.
 
-## Not-yet-established physical addresses
+## Outstanding decisions, not fake matches
 
-- **4 Neighborhood Game**: Colonial Village · northern Washington (provisional site); no independently verified lot or owner-approved frontage.
-- **14 Stockbroker**: Downtown Washington financial offices · precise address to be researched; no independently verified lot or owner-approved frontage.
-- **15 Second Nightclub**: Washington, D.C.; no independently verified lot or owner-approved frontage.
-- **17 Potomac Kennel Track**: Washington region · exact site pending; no independently verified lot or owner-approved frontage.
-- **18 Capital Speedway**: Washington region · later period; no independently verified lot or owner-approved frontage.
-- **19 Licensed Gaming Hall**: Washington, D.C. · undecided address; no independently verified lot or owner-approved frontage.
-- **20 Private Prizefight Venue**: Location undisclosed; no independently verified lot or owner-approved frontage.
-- **21 Private Cockfighting Circle**: Location undisclosed; no independently verified lot or owner-approved frontage.
-- **22 District Asylum**: Washington region · fictional address pending; no independently verified lot or owner-approved frontage.
-- **24 Washington Arena**: Washington, D.C.; no independently verified lot or owner-approved frontage.
-- **26 Metropolitan Police**: Washington, D.C.; no independently verified lot or owner-approved frontage.
-- **27 Western Livery and Carriage Yard**: Western Washington · provisional site; no independently verified lot or owner-approved frontage.
-- **28 Eastern Livery and Wagon Works**: Eastern Washington · provisional site; no independently verified lot or owner-approved frontage.
-- **34 Chain Bridge Riverbank**: Potomac near Chain Bridge and Little Falls; no independently verified lot or owner-approved frontage.
+The 14 unresolved destinations do not have a precise established site or building in the project's accepted design. Most are fictional venues without an approved address, plus the unspecified Metropolitan Police station and an upstream Chain Bridge shore beyond the illustrated map. Their raw prior default coordinates are kept only for the pin editor and save compatibility. They remain selectable in the directory, and the owner can identify the correct map location to confirm it.
 
-These 14 defaults do **not** pretend to be specific verified real-world addresses. They stay in the indexed location directory; draft positions only appear during Edit Pins until confirmed. A historical map cannot supply an address for a venue invented by the game. Real police locations need a specific station selection; fictional facilities and hidden establishments need an owner-approved street or deliberate in-universe site.
+**Do not mark the location audit fully geographically complete or quietly allocate invented lots.** A grid cell alone is not evidence. Further work on unplaced sites requires identifying an actual printed landmark or deciding a fictional street/location.
 
-## Acceptance / tests
+## Testing and acceptance
 
-- [x] Keep original map art and historical-period canonical geometry unchanged.
-- [x] Register 38 stable numbered destinations, including monastery, cobbler and historic markets.
-- [x] Historical/fictional pin colors, search, category filters, grid reference, directory and JSON export.
-- [x] Name-edit card pointerdown isolation and confirmation-gated drop behavior.
-- [x] Source checks for registry identity, map contract and historical travel access.
-- [ ] Full native `npm run test:source` suite in the actual checked-out repository.
-- [ ] Manual Electron desktop testing for popup clicks, pin positioning, saved profile separation, map zoom and location travel.
-- [ ] Establish the 14 remaining exact premises before describing *all* pins as geographically confirmed.
+- [x] Same fixed map artwork and all pre-existing destination IDs.
+- [x] Thirty-eight uniquely numbered registry entries including monastery, cobbler, and two markets.
+- [x] Category and red/blue filtering; directory and grid references; pin export.
+- [x] Explicit validation prompt for manual position changes; outside-map drops refused.
+- [x] Retain custom names and player moves across profiles without rewriting viewport pan/zoom.
+- [ ] Complete a full Ubuntu Node `npm run test:source` and actual Electron GUI playthrough. Connector-side source checks alone are not a desktop validation.
+- [ ] Assign the remaining 14 unresolved exact locations only after they are established.
+- [ ] Owner acceptance of any separately packaged test executable.
 
-No source test result is proof of an Electron UI playthrough or a distributable executable.
+### Essential city services to consider next
+
+Aside from cobbler, Eastern Market and Georgetown Market House, the registry currently lacks a dedicated **apothecary/pharmacy, doctor's office, barber, tailor/laundry, hardware and coal dealer, post office/telegraph counter, rail depot, and ordinary boardinghouse**. Some business functions exist in other systems (e.g., merchants and horse liveries); do not create duplicate destination pins without checking their scope. These are recommendations, **not yet assigned addresses or game mechanics**.
