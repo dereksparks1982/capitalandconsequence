@@ -2144,7 +2144,10 @@ function returnCityRoomToOffice(){
  if(!cityRoomSession.dev&&S.characterRoute==='industrialist'){
   const previous=currentCityLocation();
   S.currentLocation={locationId:'factory',roomId:'executive-office'};
-  if(previous.locationId!=='factory')window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
+  if(previous.locationId!=='factory'){
+   const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
+   window.FE_HORSE_CUSTODY?.onArrival?.(S,previous.locationId,'factory',!!journeyPaid);
+  }
   window.FE_NPC_AI?.syncClock?.();
   save(true);
  }
