@@ -2,7 +2,21 @@
 
 > **Current planning constraint:** No file-splitting or `app.js` modularization tasks. The owner explicitly rejected them. Current build priorities remain gameplay and verified 1878 behavior; documentation changes alone do not authorize code changes.
 
-## CURRENT SOURCE · v0.6.85-dev · Potomac fishing map pin only (October 23, 2026)
+## CURRENT SOURCE · v0.6.86-dev · six fishing locations, editable map labels and category filters (October 23, 2026)
+
+**[x] Six fishing destinations (pins 29–34):** Potomac River Fishing Bank, Babcock Lake (date-gated after 1888), Fletcher's Cove, Georgetown Canal Towpath, Eastern Branch Fishing Shore and Chain Bridge Riverbank. All six are public room locations under **Leisure & Outdoors**, separate from **Recreation & Competition** (racing/boxing) and **Gambling & Games**. These map pins remain on the active provisional 1938 illustration and their coordinates are not historically surveyed.
+
+**[x] Existing map filters and editable pin labels:** The map category selector distinguishes leisure, competitive sport and gambling. Selected pins offer Save Name and Reset Name. Per-profile custom names and pin positions persist in the existing map-layout storage without changing immutable destination IDs, source names, travel permissions or geography; resetting pin *positions* does not discard names. Source QA includes tests for six registered fishing places, 34 pins, category labels, Babcock expiry and label persistence.
+
+**Verified source build:** `v0.6.86-dev` on `main`; all Source QA tests succeeded on source commit `6f858f0a582c6592fd0646e665d997795bb19cea`, [run 40062272284](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40062272284). No Electron/Linux executable has been completed or accepted for this version. Owner **explicitly requested an executable for testing after these six pins**; next permitted packaging step is to run the existing **manual-only** `Linux Desktop Build` workflow, verify smoke testing, SHA-256 and private draft candidate; do not create a public release/tag/acceptance snapshot without user validation.
+
+**[ ] Unfinished period-appropriate map replacement:** The owner wants a readable map visually comparable to the present game overview but showing **Washington's actual 1878 layout and waterways**; it can be a **later-created accurate historical reconstruction**, not necessarily an original map printed in 1878. The current map asset is `assets/artwork/maps/title-map-1938.jpg` and must **not** be presented as approved 1878 cartography. [Map candidates and replacement checklist](MAP-1878-RESEARCH.md) document the Library of Congress 1876 Entwistle, 1880 district and 1883 Engineer Commissioner sources. Study high-resolution coverage/rights and get owner approval **before installing replacement artwork**.
+
+**[ ] Fishing gameplay still conceptual:** Fish direction/line tension should be shown live, with menu/dialogue actions such as give line, hold steady, steer, or reel. Fish react to choices; no aquarium and no automatic sale. No fishing engine, fish inventory, fish-fighting, tackle or catch economy has been built. The source candidate is **map-only**.
+
+**Owner workflow:** Single branch `main`, do **not** split `app.js` or other source files, preserve 1:1 ticking game clock and player-only action-time jumps, and never assert old-save compatibility as a requirement. A successful source suite is not an Electron playtest.
+
+## HISTORICAL MILESTONE · v0.6.85-dev · original Potomac fishing pin (superseded by v0.6.86)
 
 **[x] Requested single-location slice:** Added **Potomac River Fishing Bank** (`potomacFishingBank`), public `riverbank` room, map marker **29**, in the existing **Sports & Recreation** category. Coordinates are an explicitly **provisional** Potomac-shore map placement, not an asserted historic street address. Ordinary existing Washington travel/room access applies. **No fishing minigame, fish catches, aquarium, fish economy, artwork, gear system, or fishing time mechanic has been built.** Fishing gameplay has been discussed (reactive fish direction, tension and menu choices) but remains **design-only until separately approved**.
 
