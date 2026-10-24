@@ -428,6 +428,34 @@
   easternMarket:{"summary":"Eastern Market is a historic public market in Capitol Hill. Its nineteenth-century market building dates to the 1870s, and the game invents its individual merchants until researched.","wikipedia":"https://en.wikipedia.org/wiki/Eastern_Market%2C_Washington%2C_D.C.","query":"Eastern Market Washington 1873"},
   georgetownMarketHouse:{"summary":"The historic Georgetown Market building on M Street was built in 1865 on a site used for market trade since the late eighteenth century.","wikipedia":"https://en.wikipedia.org/wiki/Georgetown_Market","query":"Georgetown Market House 3276 M Street history"}
  });
+ // Fictional history is canonical *game-world writing*, never historical
+ // evidence for a real street, named building or real-world organization.
+ // Entries draw on the existing location descriptions; future expansion is
+ // editorial work and does not itself implement NPCs, transactions or events.
+ const FICTIONAL_STORY=Object.freeze({
+    factory: "In our Washington, Federal Electric is a small but ambitious electrical works in Ivy City. Charlie's contracts, shortages and decisions may shape the company's rise or failure.",
+    star: "Madam Star's discreet club occupies the surviving Hay-Adams houses in this alternate Washington. Influential visitors come to talk and socialize, not to gamble.",
+    races: "Our capital maintains the fictional Capital Race Grounds in the Benning area. Racing fortunes, patrons and rivalries belong to this game's divergent history.",
+    workingPoker: "A modest neighborhood card game offers working Washingtonians a seat at the table. Its exact venue remains undecided in our fictional city.",
+    commercePoker: "Our fictional Commerce Club gathers pilots and businessmen for a weekly poker game in a Washington-Hoover airport hangar. The airport is real; the club and game are invented.",
+    embassyPoker: "In our Washington, the Embassy Room is an invitation-only private poker venue associated with the Chevy Chase Club. That room is a game invention, not a historical claim about the real club.",
+    russianTradeHall: "Merchants, engineers and diplomats of Imperial Russia have an informal Washington meeting hall in this alternate timeline. Its business and conversations are written for the game.",
+    washingtonFairgrounds: "The game's alternative national history brings the 1893 World's Columbian Exposition to Washington's Potomac Flats rather than its real-world venue.",
+    secondNightclub: "This is another Washington nightlife establishment in our imagined city. Its proprietor, public name and exact address have yet to become part of the approved story.",
+    capitolAirport: "Our fictional Capitol Airport operates near Benning, separate from the historical Washington-Hoover airfield. Its precise property is still undecided.",
+    brokerOffice: "A Washington stockbroker receives Charlie's personal securities orders in our game world. The fictional office's actual building has not been chosen.",
+    home: "Charlie's prospective Capitol Hill home is a private family address within our Washington story. Its rooms and furnishings evolve through the player's choices.",
+    potomacKennelTrack: "The Potomac Kennel Track is a proposed dog-racing destination in the game's Washington region. Its exact location has not been established.",
+    capitalSpeedway: "Capital Speedway belongs to a later chapter of the game's alternative Washington, when motor racing becomes part of the city. It is unavailable in the early campaign.",
+    licensedGamingHall: "Our Washington may permit a regulated gaming hall, but its rules, rooms and location remain undecided. It should not be mistaken for a documented historical establishment.",
+    privateFightHall: "This invitation-only boxing venue belongs to the game's private sporting world. Its location is deliberately undisclosed within the story.",
+    cockfightingDen: "An undisclosed private contest circle exists in the game's underworld. Its membership and premises are fictional, not a claim about a real community.",
+    blackwoodAsylum: "The fictional District Asylum is managed by Edmund Wardman's brother. Edmund begins his own uncertain career here as an orderly; it is separate from the real Government Hospital for the Insane.",
+    washingtonArena: "The Washington Arena is an invented venue serving this game's boxing scene. Its bouts and business records are alternate-history events.",
+    westLivery: "One of two estranged brothers runs a west-side Washington livery, competing for riders and carriage customers. What caused their feud remains an unwritten chapter.",
+    eastLivery: "The other brother keeps an east-side horse and wagon business. The quarrel between the stables is part of the fictional local economy.",
+    cobblerShop: "An independent cobbler serves our invented Capitol Hill neighborhood near Eastern Market, repairing worn shoes and boots. Its owner, prices and actual storefront have not yet been decided."
+});
  const MAP_ARTWORK_ANCHORS=Object.freeze({
   whiteHouse:[841,428,'White House building at 1600 Pennsylvania Avenue NW, printed immediately north of the south lawn; 12-I'],
   washingtonAirport:[718,730,'Washington Airport, named on map, Arlington'],
@@ -476,6 +504,7 @@
    location.map={n:position[0],x:position[1],y:position[2]};
   }
   location.mapOrigin=HISTORICAL_DESTINATIONS.has(location.id)?'historical':'fictional';
+  location.story=location.mapOrigin==='fictional'?(FICTIONAL_STORY[location.id]||location.description):null;
   location.history=location.mapOrigin==='historical'?(HISTORICAL_READING[location.id]||null):null;
   const anchor=MAP_ARTWORK_ANCHORS[location.id];
   const area=MAP_AREA_REFERENCES[location.id];
@@ -525,7 +554,8 @@
    placement:v.mapPlacement,
    grid:mapGridReference(v.map.x,v.map.y),
    evidence:v.mapEvidence||'',
-   history:v.history?Object.assign({},v.history):null
+   history:v.history?Object.assign({},v.history):null,
+   story:v.story||null
   }));
  }
 
