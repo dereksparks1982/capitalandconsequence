@@ -2694,7 +2694,8 @@ function focusTitleMapDirectoryLocation(id){
  if(viewport&&img&&img.naturalWidth){
   const desired=Math.min(titleMapState.maxScale,Math.max(titleMapState.scale,titleMapState.minScale*2));
   // Do not pan to the printed index if the pin has no in-map position.
-  if(titleMapGridAt(location.x,location.y)!=='Outside map'){
+  if(titleMapGridAt(location.x,location.y)!=='Outside map'&&
+   (location.placement!=='unverified'||location.userPlaced)){
    titleMapState.scale=desired;
    titleMapState.x=viewport.clientWidth/2-location.x*img.naturalWidth*desired;
    titleMapState.y=viewport.clientHeight/2-location.y*img.naturalHeight*desired;
@@ -2714,7 +2715,8 @@ function renderTitleMapDirectory(){
   b.dataset.origin=location.origin;
   const grid=titleMapGridAt(location.x,location.y);
   const reviewed=location.placement==='map-anchored';
-  b.textContent=location.n+'. '+pinDisplayName(location)+' · '+grid+(reviewed?'':' · position unverified');
+  b.textContent=location.n+'. '+pinDisplayName(location)+' · '+grid+
+   (reviewed?'':location.userPlaced?' · placed in your profile':location.placement==='area-located'?' · proposed address/area':' · site not established');
   b.title=location.area+(location.evidence?' · '+location.evidence:' · position pending confirmation');
   b.addEventListener('click',()=>focusTitleMapDirectoryLocation(location.id));
   out.appendChild(b);
@@ -2729,7 +2731,7 @@ function exportTitleMapPins(){
   locations:TITLE_MAP_LOCATIONS.map(v=>({
    id:v.id,n:v.n,name:pinDisplayName(v),originalName:v.name,origin:v.origin,
    positionStatus:v.placement,grid:titleMapGridAt(v.x,v.y),
-   x:+v.x.toFixed(6),y:+v.y.toFixed(6),evidence:v.evidence||''
+   x:+v.x.toFixed(6),y:+v.y.toFixed(6),userPlaced:!!v.userPlaced,evidence:v.evidence||''
   }))
  };
  const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
@@ -2750,7 +2752,8 @@ function syncTitleMapFilters(){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
   marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory)||
    (titleMapOrigin!=='all'&&location.origin!==titleMapOrigin)||!titleMapMatchesSearch(location)||
-   (titleMapGridAt(location.x,location.y)==='Outside map'&&!titleMapPinEdit);
+   ((titleMapGridAt(location.x,location.y)==='Outside map'||
+     (location.placement==='unverified'&&!location.userPlaced))&&!titleMapPinEdit);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
  }
@@ -2785,6 +2788,7 @@ function loadTitleMapLocationLayout(){
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
   location.pinLabel='';
+  location.userPlaced=false;
  });
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(titleMapStorageKey())||'null')}catch(e){}
@@ -2795,6 +2799,8 @@ function loadTitleMapLocationLayout(){
   if(Number.isFinite(+p.x)&&Number.isFinite(+p.y)){
    location.x=Math.max(0,Math.min(1,+p.x));
    location.y=Math.max(0,Math.min(1,+p.y));
+   const base=TITLE_MAP_LOCATION_DEFAULTS.find(v=>v.id===location.id);
+   location.userPlaced=!!base&&(Math.abs(location.x-base.x)>0.000001||Math.abs(location.y-base.y)>0.000001);
   }
   if(typeof p.label==='string'&&p.label.trim()&&p.label.trim().length<=64)
    location.pinLabel=p.label.trim();
@@ -2825,6 +2831,7 @@ function resetTitleMapLocationLayout(){
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
+  location.userPlaced=false;
  });
  // Resetting pin positions must not erase the player's saved names.
  saveTitleMapLocationLayout();
@@ -2970,6 +2977,7 @@ function buildTitleMapMarkers(){
    const localX=e.clientX-rect.left,localY=e.clientY-rect.top;
    location.x=Math.max(0,Math.min(1,(localX-titleMapState.x)/(img.naturalWidth*titleMapState.scale)));
    location.y=Math.max(0,Math.min(1,(localY-titleMapState.y)/(img.naturalHeight*titleMapState.scale)));
+   location.userPlaced=true;
    titleMapPositionMarkers();
    e.preventDefault();
   });
