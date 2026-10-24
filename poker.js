@@ -21,7 +21,7 @@ function start(roomKey){
  // No artificial remaining business-day timer; time at the table counts upward.
  clearInterval(clockTimer);clockTimer=setInterval(updateClock,250);updateClock();
  const R=rooms[roomKey];if(!R)return;
- G={roomKey,R,etiquette:'courteous',deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
+ G={roomKey,R,etiquette:'courteous',completedHands:0,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
   {name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true},
   ...R.npcs.map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true}))
  ]};
@@ -233,7 +233,7 @@ function showdown(){
   const pots=buildSidePots();
   pots.forEach((pot,i)=>awardPot(pot,i===0?'main pot':'side pot '+i));
  }
- G.pot=0;G.done=true;render(true);
+ G.pot=0;G.done=true;G.completedHands++;render(true);
 }
 function render(done=false){
  if(!G)return;
@@ -257,7 +257,7 @@ function settleSession(){
  clearInterval(clockTimer);
  const delta=G.players[0].chips-G.R.stake;
  const elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));
- if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.handNo,elapsed,G.etiquette);
+ if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.completedHands,elapsed,G.etiquette);
  return true;
 }
 function leave(){

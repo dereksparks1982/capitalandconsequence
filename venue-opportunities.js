@@ -14,8 +14,11 @@ function canEnterLocation(id){
 }
 function canUse(id){
  const o=get(id);if(!o||o.status!=='existing'||!activeProfileId()||!canEnterLocation(o.locationId)||currentCityLocation().locationId!==o.locationId)return false;
- if(o.id==='commerce-poker'&&!S.middlePokerUnlocked)return false;
- if(o.id==='embassy-poker'&&!S.elitePokerUnlocked)return false;
+ if(o.id==='commerce-poker'||o.id==='embassy-poker'){
+  const tier=o.id==='commerce-poker'?'middle':'elite';
+  const introduced=tier==='middle'?!!S.middlePokerUnlocked:!!S.elitePokerUnlocked;
+  return !!window.FE_CLUB_MEMBERSHIPS?.access(S,tier,S.gameDate,introduced)?.allowed;
+ }
  return true;
 }
 function renderRoomOpportunities(id){
