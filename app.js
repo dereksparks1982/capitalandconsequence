@@ -2082,6 +2082,7 @@ function openCityRoom(locationId,roomId,options={}){
   window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id);
   renderCityRoomDirectory(location,room.id);
   window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
+  window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
   const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
@@ -2110,6 +2111,7 @@ function openCityRoom(locationId,roomId,options={}){
   if(priorLocation.locationId!==location.id){
    const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
    window.FE_HORSE_CUSTODY?.onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid);
+   window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,true);
   }
   window.FE_MAP_LEADS?.visit?.(S,location.id);
   save(true);
