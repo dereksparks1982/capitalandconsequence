@@ -12,7 +12,7 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
@@ -50,9 +50,9 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===26,'All 26 city destinations have distinct map pins');
-check(new Set(ids).size===26,'No duplicate map location identifiers');
-check(new Set(nums).size===26&&Math.max(...nums)===26,'Map marker numbers 1-26');
+check(pins.length===28,'All 28 city destinations have distinct map pins');
+check(new Set(ids).size===28,'No duplicate map location identifiers');
+check(new Set(nums).size===28&&Math.max(...nums)===28,'Map marker numbers 1-28');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
@@ -577,7 +577,7 @@ check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').inc
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
 check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
-check(city.mapLocations().length===26,'Existing pins retained and provisional markers fill the remaining 12');
+check(city.mapLocations().length===28,'Existing 26 pins retained; two new east/west livery pins remain provisional');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
@@ -596,3 +596,6 @@ check(pkg.scripts['test:source'].includes('tests/workshop-operations.cjs'),'Shif
 
 check(index.includes('washington-commerce.js?v=')&&index.indexOf('washington-commerce.js?v=')<index.indexOf('workshop-staff.js?v='),'Local economy loads before paid assistant');
 check(pkg.scripts['test:source'].includes('tests/washington-commerce.cjs'),'Local economy purchases have executable source QA');
+
+check(index.includes('livery-trade.js?v=')&&index.includes('livery-ui.js?v='),'Player can shop at physical rival liveries');
+check(pkg.scripts['test:source'].includes('tests/livery-trade.cjs'),'Physical livery transactions have mandatory regression test');
