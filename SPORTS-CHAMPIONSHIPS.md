@@ -62,3 +62,7 @@ Current `poker.js` is **Texas Hold'em**, with named Boiler Room/Commerce/Embassy
 6. Integration testing and owner's desktop playthrough.
 
 The player may legally bet only where specifically permitted; **outlaw games may be available but remain risky**. An authorization should apply narrowly to that government-approved event, not retroactively exempt the entire venue.
+
+## Current sports integration: kennel and motor titles
+
+Dog races and later-era midget car races have **regular meetings**, and the **last Sunday** of a month additionally serves as their D.C. championship day. The existing two heats and feature final determine the title; outcomes are recorded in the same per-profile champions ledger as boxing and horse racing. The racing calendar does **not** produce matches in 1878 for either modern sport. The separate tournament-wide betting screen and legally permitted bookmaking are still not implemented; normal wagers do not become legal merely because a championship was staged.
