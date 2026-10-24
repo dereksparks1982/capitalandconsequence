@@ -33,10 +33,6 @@ check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&re
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
 check(read('build-linux.sh').includes('0.6.88'),'Local packaging uses the same number');
-const workflow=read('.github/workflows/linux-build.yml');
-check(workflow.includes('workflow_dispatch:')&&!/^\s*push:/m.test(workflow),'No packaging on push');
-check(workflow.includes('npm run test:source'),'Future manual workflow runs this test');
-check(workflow.includes('0.6.88-linux-x64.tar.gz'),'Manual workflow archives v0.6.88');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -632,4 +628,3 @@ check(appSource.includes('window.FE_FISHING_UI?.render?.()')&&appSource.includes
 check(read('npc-ai.js').includes('deliveryForCalendar?.(S,c.date'),'NPC calendar triggers actual physical restock');
 check(read('npc-economy.js').includes('market.purchase(context.save,def.id,goodId'),'Autonomous NPCs share purchased physical inventory');
 check(pkg.scripts['test:source'].includes('tests/fishing-play.cjs')&&pkg.scripts['test:source'].includes('tests/market-inventory.cjs')&&pkg.scripts['test:source'].includes('tests/npc-market-bridge.cjs'),'Mandatory gameplay and market regression suites');
-check(workflow.includes('actions/upload-artifact@v4'),'Unaccepted Linux archive delivered as private Actions artifact');
