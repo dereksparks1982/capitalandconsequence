@@ -17,7 +17,9 @@
    rooms:[
     {id:'receiving-office',name:'Receiving Office',description:'Customers and deliveries are received at this public factory office.'},
     {id:'production-floor',name:'Production Floor',restricted:true,description:'Employees and authorized visitors work with machinery and materials.'},
-    {id:'executive-office',name:'Executive Office',restricted:true,description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'}
+    {id:'executive-office',name:'Executive Office',restricted:true,description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'},
+    {id:'rear-stable',name:'Factory Rear Stable and Carriage Shed',restricted:true,description:'A modest private horse stall and carriage shelter behind the works, initially empty. Feed and repairs must be paid for if animals are eventually kept here.'},
+    {id:'workers-lodging',name:'Sullivan’s Rented Room',restricted:true,description:'One simple factory-grounds lodging room rented to the assistant for 25 cents each week. It is a residence, not another employee or a visitor attraction.'}
    ]
   },
   {
@@ -263,10 +265,30 @@
     {id:'station-duty-room',name:'Patrolmen’s Duty Room',restricted:true,description:'A working police desk for writing routine beat reports. Only authorized officers may enter.'},
     {id:'sergeant-office',name:'Sergeant’s Office',restricted:true,description:'Private supervisory records and assignments. A rookie patrolman has no unrestricted access.'}
    ]
+  },
+  {
+   id:'westLivery',name:'Western Livery and Carriage Yard',
+   area:'Western Washington · provisional site',category:'transport',
+   description:'Western branch of two competing liveries, each owned by one of two estranged brothers. Known for well-kept riding horses, buggies and carriage service. Why the brothers fell out is undecided.',
+   map:null,defaultRoom:'service-desk',rooms:[
+    {id:'service-desk',name:'Livery Service Desk',description:'Buy or enquire about horses and carriages at the western stable.'},
+    {id:'horse-yard',name:'Horse and Carriage Yard',description:'Stalls, feed, harnesses and wagons, maintained by local stable hands.'},
+    {id:'owner-office',name:'Stable Owner’s Office',restricted:true,description:'The western brother’s private accounts and business correspondence.'}
+   ]
+  },
+  {
+   id:'eastLivery',name:'Eastern Livery and Wagon Works',
+   area:'Eastern Washington · provisional site',category:'transport',
+   description:'Eastern branch of a rival livery owned by the western stablekeeper’s brother. Focuses on workhorses and freight wagons; rivalry affects quoted prices without changing the value of money.',
+   map:null,defaultRoom:'service-desk',rooms:[
+    {id:'service-desk',name:'Livery Service Desk',description:'Buy or enquire about working horses and wagons at the eastern stable.'},
+    {id:'horse-yard',name:'Horse and Wagon Yard',description:'Working horses, carts, water troughs and feed stores.'},
+    {id:'owner-office',name:'Stable Owner’s Office',restricted:true,description:'The eastern brother’s private account books.'}
+   ]
   }
  ];
 
- // All 26 registered locations have a map marker. New markers are deliberately
+ // All 28 registered locations have a map marker. New markers are deliberately
  // provisional display coordinates, never audited street addresses or travel times.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -275,7 +297,8 @@
   licensedGamingHall:[19,.517,.463],privateFightHall:[20,.535,.515],
   cockfightingDen:[21,.643,.502],blackwoodAsylum:[22,.772,.723],
   whiteHouse:[23,.434,.454],washingtonArena:[24,.580,.425],
-  washingtonAirport:[25,.305,.664],metropolitanPolice:[26,.571,.510]
+  washingtonAirport:[25,.305,.664],metropolitanPolice:[26,.571,.510],
+  westLivery:[27,.190,.515],eastLivery:[28,.885,.488]
  });
  for(const location of LOCATIONS){
   const position=PROVISIONAL_MAP_PINS[location.id];
