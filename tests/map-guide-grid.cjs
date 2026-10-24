@@ -13,7 +13,7 @@ assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
 for(const site of sites){
  if(site.origin==='historical'){
   assert.ok(site.history&&site.history.summary&&site.history.query,'Non-fiction reading required: '+site.id);
-  assert.match(site.history.summary, /\\S/);
+  assert.match(site.history.summary, /\S/);
   assert.ok(!site.history.wikipedia || site.history.wikipedia.startsWith('https://en.wikipedia.org/wiki/'),
    'Historical Wikipedia link must be HTTPS and point to Wikipedia: '+site.id);
  }else{
