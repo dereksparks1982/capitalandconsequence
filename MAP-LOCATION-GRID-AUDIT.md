@@ -94,3 +94,10 @@ Aside from cobbler, Eastern Market and Georgetown Market House, the registry cur
 - Fictional destinations have no non-fiction reading section. Even a fictional venue in a genuine historical building remains classified as **Fiction**.
 - Pin colors are semi-transparent **only in the fill (alpha 0.68)**, keeping numbers and clicking targets legible and showing map details beneath.
 - `tests/map-history-card.cjs` exercises rendered map and destination card DOM structures, including external links, hiding on fictional entries, and history toggling; `tests/map-guide-grid.cjs` checks opacity and source contracts.
+
+
+## Historical education and explicit map-card labels (October 24, 2026)
+
+Every red historical destination displays **Non-Fiction** on its map card and city-room page, while fictional blue destinations display **Fiction** even if their invented venue occupies a real building. All 16 real destinations have separate short factual summaries, Wikipedia articles or search references and Library of Congress archive search links. These open in the external browser, not in the game, and the game explicitly warns that its alternate timeline may differ from the real world. For example, the real Franciscan Monastery church was completed in 1899, not in the game's alternate 1878 setting. Invented destinations have no borrowed historical summary.
+
+Pin backgrounds use **68%-opacity** red/blue fill (32% transparent) without fading the marker numbers. The card's name field and collapsible reading section do not capture or redirect map pan. Tests: `tests/map-guide-grid.cjs` checks source and rendering contracts; `tests/map-history-reference.cjs` executes the real history card/room renderer against a DOM stand-in; `tests/map-fishing-locations.cjs` ensures the six fishing locations remain intact. Actual Electron pointer/click playtesting still needs to happen on a fully checked-out Ubuntu machine.
