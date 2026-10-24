@@ -8,7 +8,7 @@ const BIRD_NAMES=['Red Banner','Copper Spur','Black Jack','Whitecap','Old Domini
 const testClicks={private:[],cock:[]};
 let lastPhase=null,lastDate=null;
 
-function makePrivateFighter(name,id){return {id,name,power:rand(45,92),speed:rand(42,90),stamina:rand(45,92),toughness:rand(45,94),wins:0,losses:0,form:[]}}
+function makePrivateFighter(name,id){return {id,name,power:rand(45,92),speed:rand(42,90),stamina:rand(45,92),toughness:rand(45,94)}}
 function makeBird(name,id){return {id,name,speed:rand(45,92),strength:rand(45,92),stamina:rand(45,92),wins:0,losses:0}}
 function privateRating(f){return f.power*.31+f.speed*.24+f.stamina*.22+f.toughness*.23}
 function birdRating(b){return b.speed*.34+b.strength*.34+b.stamina*.32}
@@ -19,7 +19,7 @@ function oddsPair(a,b,fn){
 function frac(d){const f=Math.max(.2,d-1);return f<1?Math.max(1,Math.round(f*4))+':4':Math.max(1,Math.round(f))+':1'}
 function buildEvents(){
  const fighters=[...S.underworld.fighters].sort(()=>Math.random()-.5),birds=[...S.underworld.birds].sort(()=>Math.random()-.5);
- const pf=[fighters[0],fighters[1]],cb=[birds[0],birds[1]],privatePhase=Math.random()<.48?'day':'night';
+ const pf=[fighters[0],fighters[1]],cb=[birds[0],birds[1]],privatePhase='night';
  const privateThreshold=pick([3000,2400,1800,1200,600]),cockThreshold=pick([2400,1800,1200,600]);
  return {
   date:S.gameDate,
@@ -60,7 +60,7 @@ function resolvePrivate(){
  const e=ensureState().events.privateFight;if(e.result)return e.result;
  const a=pf(e.fighters[0]),b=pf(e.fighters[1]),as=privateRating(a)+rand(-10,10),bs=privateRating(b)+rand(-10,10),winner=as>=bs?a:b,loser=winner.id===a.id?b:a;
  const method=Math.abs(as-bs)>14&&Math.random()<.55?'Stoppage':'Decision';
- winner.wins++;loser.losses++;winner.form.push('W');loser.form.push('L');if(winner.form.length>8)winner.form.shift();if(loser.form.length>8)loser.form.shift();
+ // No cumulative wins/losses: this is not a ranked competition.
  e.result={winnerId:winner.id,method};settle(e,'private');save(true);return e.result;
 }
 function resolveCock(){
@@ -135,13 +135,32 @@ function placeCockBet(){
  S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};save(true);render();setNote('Cockfight wager accepted on '+bird(id).name+' · '+cash(wager)+'.');
 }
 function setNote(t){const el=$u('underworldNote');if(el)el.textContent=t}
+function volunteerFight(){
+ if(!window.FE_VENUES?.canUse('private-fight'))return setNote('You must be present at the concealed fight club.');
+ if(S.phase!=='night')return setNote('The brothers gather for fights at night.');
+ const u=ensureState(),brotherhood=window.FE_FIGHT_CLUB;
+ if(!u.privateFightsUnlocked||!brotherhood)return setNote('An introduction is required.');
+ if(brotherhood.ensure(u).lastFightDate===S.gameDate)return setNote('You have already fought tonight. Come back another night.');
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,1200))return setNote('Not enough game time left for a fight.');
+ const opponent=pick(u.fighters),result=brotherhood.volunteer(u,{date:S.gameDate,opponent:opponent.name,won:Math.random()<.5});
+ S.notes.push({date:displayDate(),text:'Fought '+opponent.name+' voluntarily. '+result.message,source:'personal fight club recollection'});
+ window.advanceWorldTime(1200,true);
+ save(true);render();setNote(result.message+' No titles, no rankings.');
+}
+function fightClubButton(){
+ const b=window.FE_FIGHT_CLUB?.ensure?.(S.underworld);
+ return '<p class="fine">Whoever volunteers tonight may fight. No tournament or title, but friendships remain.</p>'+
+ (S.phase!=='night'?'<p class="muted">Return after dark to fight.</p>':
+  b?.lastFightDate===S.gameDate?'<p class="muted">You have fought tonight.</p>':
+  '<button id="volunteerFightClub">Volunteer to Fight · 20 min</button>');
+}
 function privateMarkup(){
  const u=S.underworld,e=u.events.privateFight;
  if(!u.privateFightsUnlocked)return '<h4>Private Prizefights</h4><p class="muted">Invitation required.</p>';
  const a=pf(e.fighters[0]),b=pf(e.fighters[1]);
- if(e.result){const w=pf(e.result.winnerId);return '<h4>Private Prizefights</h4><p><b>Latest result:</b> '+escapeHtml(w.name)+' by '+e.result.method+'.</p>'+(e.bet?'<p class="underground-ticket">Wager '+cash(e.bet.wager)+' · Payout '+cash(e.bet.payout||0)+' · Net '+(e.bet.net>=0?'+':'')+cash(e.bet.net)+'</p>':'')}
+ if(e.result){const w=pf(e.result.winnerId);return '<h4>Informal Fight Club</h4><p><b>Tonight’s fight:</b> '+escapeHtml(w.name)+' by '+e.result.method+'. No ranked champion is recorded.</p>'+fightClubButton()+(e.bet?'<p class="underground-ticket">Wager '+cash(e.bet.wager)+' · Payout '+cash(e.bet.payout||0)+' · Net '+(e.bet.net>=0?'+':'')+cash(e.bet.net)+'</p>':'')}
  const ticket=e.bet?'<p class="underground-ticket">Ticket: '+escapeHtml(pf(e.bet.pickId).name)+' · Wager '+cash(e.bet.wager)+' · Potential payout '+cash(Math.round(e.bet.wager*(e.odds[e.bet.pickId]||2)))+'</p>':'<div class="underground-bet"><select id="privateFightPick"><option value="'+a.id+'">'+escapeHtml(a.name)+'</option><option value="'+b.id+'">'+escapeHtml(b.name)+'</option></select><input id="privateFightWager" type="number" min="1" step="1" value="25"><button id="privateFightBet">Place Bet</button></div>';
- return '<h4>Private Prizefights</h4>'+eventCountdownMarkup(e,'FIGHT IN')+'<p class="fine">'+eventTime(e)+'. The bout settles automatically whether this panel is open or closed.</p><div class="underground-match"><span>'+escapeHtml(a.name)+' <b>'+frac(e.odds[a.id])+'</b></span><span>vs.</span><span>'+escapeHtml(b.name)+' <b>'+frac(e.odds[b.id])+'</b></span></div>'+ticket;
+ return '<h4>Informal Fight Club</h4>'+fightClubButton()+eventCountdownMarkup(e,'FIGHT IN')+'<p class="fine">'+eventTime(e)+'. The bout settles automatically whether this panel is open or closed.</p><div class="underground-match"><span>'+escapeHtml(a.name)+' <b>'+frac(e.odds[a.id])+'</b></span><span>vs.</span><span>'+escapeHtml(b.name)+' <b>'+frac(e.odds[b.id])+'</b></span></div>'+ticket;
 }
 
 function cockMarkup(){
@@ -179,7 +198,7 @@ function render(){
  if(promoter){promoter.hidden=!S.contacts.promoter?.met;promoter.disabled=S.phase==='report'}
  if(madam){madam.hidden=!(S.contacts.madamStar?.met&&S.contacts.madamStar.trust>=2);madam.disabled=S.phase==='report'}
  const p=$u('privateFightCard'),c=$u('cockfightCard');if(p)p.innerHTML=privateMarkup();if(c)c.innerHTML=cockMarkup();
- $u('privateFightBet')?.addEventListener('click',placePrivateBet);$u('cockfightBet')?.addEventListener('click',placeCockBet);renderLedger();
+ $u('privateFightBet')?.addEventListener('click',placePrivateBet);$u('cockfightBet')?.addEventListener('click',placeCockBet);$u('volunteerFightClub')?.addEventListener('click',volunteerFight);renderLedger();
 }
 const bookieBtn=$u('askBookie');if(bookieBtn)bookieBtn.addEventListener('click',askBookie);
 const promoterBtn=$u('askPromoter');if(promoterBtn)promoterBtn.addEventListener('click',askPromoter);

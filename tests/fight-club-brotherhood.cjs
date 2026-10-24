@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict'),model=require('../fight-club-brotherhood.js');
+const s={};assert.equal(model.ensure(s).meetings,0);
+assert.equal(s.brotherhood.champion,undefined);assert.equal(s.brotherhood.rankings,undefined);
+assert.equal(model.volunteer(s,{date:'1878-01-03',opponent:'Jack Malloy',won:false}).won,false);
+assert.throws(()=>model.volunteer(s,{date:'1878-01-03',opponent:'Jack Malloy',won:true}),/Already/);
+assert.equal(model.volunteer(s,{date:'1878-01-04',opponent:'Jack Malloy',won:true}).won,true);
+assert.equal(s.brotherhood.peers['Jack Malloy'],2);
+assert.equal(s.brotherhood.champion,undefined);assert.equal(s.brotherhood.rankings,undefined);
+assert.equal(s.brotherhood.fights.length,2);
+console.log('PASS voluntary fight club, retained social bonds and no ranking/title');
