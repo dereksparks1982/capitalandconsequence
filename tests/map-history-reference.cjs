@@ -10,7 +10,8 @@ assert.ok(start!==-1&&end>start,'the real-history renderer is present');
 const rendererSource=app.slice(start,end);
 const elements={};
 function node(tag){
- return {tagName:tag,children:[],hidden:false,className:'',textContent:'',href:'',target:'',rel:'',
+ return {tagName:tag,children:[],hidden:false,className:'',textContent:'',href:'',target:'',rel:'',attributes:{},
+  setAttribute(name,value){this.attributes[name]=value},
   classList:{classes:new Set(),toggle(name,bool){if(bool)this.classes.add(name);else this.classes.delete(name)}},
   replaceChildren(){this.children=[]},appendChild(child){this.children.push(child);return child}};
 }
@@ -36,14 +37,20 @@ assert.equal(elements.cityRoomHistoricalReading.hidden,false);
 const cobbler=sites.getLocation('cobblerShop');
 render(cobbler,true);
 assert.equal(elements.titleMapLocationFact.textContent,'Fiction');
-assert.equal(elements.titleMapHistoricalReading.hidden,true);
-assert.equal(elements.titleMapHistoricalReading.children.length,0,'historical links cleared for invented business');
+assert.equal(elements.titleMapHistoricalReading.hidden,false);
+assert.equal(elements.titleMapHistoricalReading.children.length,1,'fictional biography is shown');
+const fictional=elements.titleMapHistoricalReading.children[0];
+assert.equal(fictional.open,true,'fictional history is expanded by default');
+assert.equal(fictional.children[0].textContent,'Our Alternate History · Fiction');
+assert.equal(fictional.children[1].textContent,cobbler.story);
+assert.equal(fictional.children.length,3,'fictional stories do not carry archive links');
 render(cobbler,false);
 assert.equal(elements.cityRoomFact.textContent,'Fiction');
-assert.equal(elements.cityRoomHistoricalReading.hidden,true);
+assert.equal(elements.cityRoomHistoricalReading.hidden,false);
+assert.equal(elements.cityRoomHistoricalReading.children[0].children[1].textContent,cobbler.story);
 for(const location of sites.mapLocations().filter(v=>v.origin==='historical')){
  assert.ok(location.history&&location.history.summary&&location.history.query,location.id+' educational metadata');
  render(sites.getLocation(location.id),true);
  assert.equal(elements.titleMapHistoricalReading.hidden,false,location.id+' can open reading');
 }
-console.log('PASS historical reading on map and room: Fiction/Non-Fiction badges, 16 real destinations, Wikipedia + LOC links, no fictitious history');
+console.log('PASS 16 real-world historical reading panels and 22 invention-only biographies remain separate on map and room cards');
