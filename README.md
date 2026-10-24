@@ -11,7 +11,7 @@
 **Still open:** travel-mileage surveying and genuinely shorter long/short animal journeys; interior art, harness animations, equine fatigue/illness and hoof care; parking/guard fees at non-livery public venues; NPC-owned horse movement and stable employees; player choice of horse names; paying household expenses separately from factory overhead. The player uses explicit horse custody choices; real-world city movement remains grounded in one protagonist-controlled world clock. **Do not conflate Capital & Consequence with the Federal Electric company name or reinstate old-save compatibility mandates.**
 
 
-## CURRENT SOURCE · v0.6.83-dev · verified October 23, 2026
+## HISTORICAL MILESTONE · v0.6.83-dev · verified October 23, 2026 (superseded by v0.6.84)
 
 **GitHub Source QA verified successful:** full `npm run test:source`, run **40057661933**, source commit **`df99f238d7fce15d86a761e96e92bde56da2f3b6`**. Four incremental, tested Washington-first source slices advance v0.6.79 to **v0.6.83**. Source only: **NO Electron playthrough, executable package, accepted snapshot, tag or release**. The active repository stays **`dereksparks1982/capitalconsequence` on single branch `main`**. Older verification and "current" version statements below are historical, not instructions to roll back.
 
@@ -25,7 +25,7 @@
 **Next honest roadmap tasks:** make Sullivan's production assistance truly continuous but imperfect (9 AM late arrivals, breakdown triage, owner decisions and no perfect automation), complete physical wagon/carriage movement and practical freight replacement, build finite merchant stock and restocking rather than unbounded shopping goods, tie railway customer finances to actual accounts, implement owner household expenses independently of business profits, and complete a full multi-day Electron acceptance playthrough. Keep all other career paths and the alternate Washington world intact. **Do not prioritize backward compatibility with old 1890 saves; that constraint was never approved.** No national-map expansion or guessed historical prices.
 
 
-## CURRENT · v0.6.79-dev · October 23, 2026
+## HISTORICAL MILESTONE · v0.6.79-dev · October 23, 2026 (superseded by v0.6.84)
 
 **Verified source QA:** Complete GitHub Actions "Capital & Consequence Source QA" run **40043515075** succeeded on commit `a10c3df7d4e52ebae15c238e9ef5398ab81b4fa4`. All existing suites and new workshop incidents, local commerce and livery transaction tests passed. **Source-only. No new Linux executable, Electron playthrough, accepted release or tag.** The previous packaged v0.6.34 draft remains unaccepted.
 
@@ -252,9 +252,9 @@ Every protagonist retains a personal desk and a separate autosave. **Alexi Rurik
 
 **Implemented in this source slice:** all **26** map destinations have visual pins, including **12 explicitly provisional placements** that still need historically appropriate coordinates; per-type location filtering; staff and restricted-room entry checks; saved independent NPC shift wages/household charges, occasional gambling and room-level visits; a Russian-only named resident with simple authored Russian conversation. **Not implemented:** the 1878 component conversion, minute-resolution NPC travel, fully autonomous crime, complete four-career duties, the fair's contract chain, political career, and a synchronized city across saves. No executable produced or personally play-tested.
 
-## Current build status (verified at October 23 thread close)
+## Historical build status (v0.6.58 checkpoint, superseded)
 
-**Current source:** `v0.6.58-dev` on the single `main` branch. The last code version was tested at commit `99ab704ed8978fd78bc5edbe879b0264d56db6af` by [successful GitHub source QA run 39962299550](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39962299550): **424 source-contract checks** and the other configured behavior suites. The subsequent latest docs-only commit at handoff was `d3b72c2d033f238964e1367b6abb492441544973`. See the [current handoff](HANDOFF-2026-10-23-THREAD-END.md) for successor documentation commits.
+**Source at this historical checkpoint:** `v0.6.58-dev` on the single `main` branch. The last code version was tested at commit `99ab704ed8978fd78bc5edbe879b0264d56db6af` by [successful GitHub source QA run 39962299550](https://github.com/dereksparks1982/capitalconsequence/actions/runs/39962299550): **424 source-contract checks** and the other configured behavior suites. The subsequent latest docs-only commit at handoff was `d3b72c2d033f238964e1367b6abb492441544973`. See the [archived v0.6.58 handoff](HANDOFF-2026-10-23-THREAD-END.md) for history only; the current instructions live in [CONTINUE-HERE.md](CONTINUE-HERE.md).
 
 **Latest private Linux executable candidate:** `v0.6.34` (not accepted as a release). **No v0.6.58 Linux desktop executable has been built, manually tested, accepted, tagged, or published.** `.github/workflows/linux-build.yml` remains manual-only. The old Federal Electric browser/Pages distribution is not the live product.
 
@@ -302,7 +302,7 @@ Venue opportunity records and **location checks for existing wagering and club a
 
 ## Four lives in one Washington (historical implementation notes)
 
-**CURRENT OVERRIDE:** Read [October 23 handoff](HANDOFF-2026-10-23-THREAD-END.md) and [canonical four lives](#canonical-four-lives) for the accurate names/occupations. The following section describes earlier stages when Patrolman, "Layman" and Wardman were desk-only previews. Sam and Eli now have limited playable work loops.
+**CURRENT OVERRIDE:** Read [CONTINUE-HERE.md](CONTINUE-HERE.md) and [canonical four lives](#canonical-four-lives) for the accurate names/occupations. The following section describes earlier stages when Patrolman, "Layman" and Wardman were desk-only previews. Sam and Eli now have limited playable work loops.
 
 **Businessman, Patrolman, Layman and Wardman** are selectable starting profiles, with independent autosaves and access to the common Washington map, public locations, Journal and basic personal desk. **Only Businessman has a fully implemented profession-specific career**: the Federal Electric factory, contracts, payroll and treasury. Patrolman (police), Layman (ordinary civilian with optional criminal paths), and Wardman (institutional career) remain **early playable desk/city foundations**, not complete simulations of their professions.
 
