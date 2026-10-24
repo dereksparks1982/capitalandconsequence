@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','city-
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.84','Current package version is v0.6.84');
-check(appSource.includes("APP_VERSION='v0.6.84-dev'"),'Game masthead uses v0.6.84');
+check(pkg.version==='0.6.85','Current package version is v0.6.85');
+check(appSource.includes("APP_VERSION='v0.6.85-dev'"),'Game masthead uses v0.6.84');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -50,9 +50,9 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===28,'All 28 city destinations have distinct map pins');
-check(new Set(ids).size===28,'No duplicate map location identifiers');
-check(new Set(nums).size===28&&Math.max(...nums)===28,'Map marker numbers 1-28');
+check(pins.length===29,'All 29 city destinations have distinct map pins');
+check(new Set(ids).size===29,'No duplicate map location identifiers');
+check(new Set(nums).size===29&&Math.max(...nums)===29,'Map marker numbers 1-29');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale','Barry Farm is marker 13 under stable hillsdale identifier');
@@ -577,7 +577,7 @@ check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').inc
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
 check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
-check(city.mapLocations().length===28,'Existing 26 pins retained; two new east/west livery pins remain provisional');
+check(city.mapLocations().length===29,'Existing 28 pins retained with new provisional Potomac fishing pin');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
@@ -615,3 +615,6 @@ check(pkg.scripts['test:source'].includes('tests/horse-custody.cjs'),'Owned anim
 
 check(index.includes('horse-stable-ui.js?v=')&&index.indexOf('horse-stable-ui.js?v=')<index.indexOf('app.js?v='),'Home stable controls load before game');
 check(pkg.scripts['test:source'].includes('tests/home-stable.cjs')&&pkg.scripts['test:source'].includes('tests/livery-hire.cjs'),'Home transport and rental tests are mandatory');
+
+check(city.getLocation('potomacFishingBank')?.map?.n===29&&city.getRoom('potomacFishingBank','riverbank')?.id==='riverbank','Potomac fishing location is an addressable public room on marker 29');
+check(city.getLocation('potomacFishingBank')?.category==='sport','Fishing spot appears in Sports & Recreation map filter');
