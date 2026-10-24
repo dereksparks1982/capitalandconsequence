@@ -2693,10 +2693,13 @@ function focusTitleMapDirectoryLocation(id){
  const viewport=$('#titleMapViewport'),img=$('#titleMapImage');
  if(viewport&&img&&img.naturalWidth){
   const desired=Math.min(titleMapState.maxScale,Math.max(titleMapState.scale,titleMapState.minScale*2));
-  titleMapState.scale=desired;
-  titleMapState.x=viewport.clientWidth/2-location.x*img.naturalWidth*desired;
-  titleMapState.y=viewport.clientHeight/2-location.y*img.naturalHeight*desired;
-  titleMapClamp();titleMapApply();
+  // Do not pan to the printed index if the pin has no in-map position.
+  if(titleMapGridAt(location.x,location.y)!=='Outside map'){
+   titleMapState.scale=desired;
+   titleMapState.x=viewport.clientWidth/2-location.x*img.naturalWidth*desired;
+   titleMapState.y=viewport.clientHeight/2-location.y*img.naturalHeight*desired;
+   titleMapClamp();titleMapApply();
+  }
  }
  openTitleMapLocation(id);
 }
@@ -2746,7 +2749,8 @@ function syncTitleMapFilters(){
  for(const marker of layer.querySelectorAll('[data-map-location]')){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
   marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory)||
-   (titleMapOrigin!=='all'&&location.origin!==titleMapOrigin)||!titleMapMatchesSearch(location);
+   (titleMapOrigin!=='all'&&location.origin!==titleMapOrigin)||!titleMapMatchesSearch(location)||
+   (titleMapGridAt(location.x,location.y)==='Outside map'&&!titleMapPinEdit);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
  }
@@ -2844,6 +2848,7 @@ function toggleTitleMapPinEditor(){
  titleMapPinDrag=null;
  closeTitleMapLocation();
  updateTitleMapPinEditor();
+ syncTitleMapFilters();
 }
 
 function titleMapApply(){
@@ -2975,6 +2980,7 @@ function buildTitleMapMarkers(){
    marker.style.cursor='';
    titleMapPinDrag=null;
    saveTitleMapLocationLayout();
+   syncTitleMapFilters();
    e.stopPropagation();
   };
   marker.addEventListener('pointerup',finish);
