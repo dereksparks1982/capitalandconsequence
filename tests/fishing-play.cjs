@@ -1,6 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fish=require('../fishing-engine.js');
 const sites=Object.keys(fish.SITES);assert.equal(sites.length,6);
+let landed=0;
 const save={personalCash:0};assert.equal(fish.outfit(save).ok,false,'No free equipment');
 save.personalCash=6;assert.equal(fish.outfit(save).ok,true);assert.equal(save.personalCash,5.25);
 assert.equal(fish.outfit(save).ok,false,'Tackle cannot be bought twice');
@@ -20,8 +21,10 @@ for(const site of sites){
  }
  assert.ok(finished||!state.fishing.session,'All fishing fights terminate');
  assert.ok(state.fishing.history.some(x=>['catch','break','escape'].includes(x.kind)));
+ if(state.fishing.history.some(x=>x.kind==='catch'))landed++;
  assert.deepEqual(JSON.parse(JSON.stringify(state)).fishing,state.fishing,'Catch and session survive autosave');
 }
+assert.ok(landed>=1,'At least one of the six playable banks yields a landable fish');
 const p={personalCash:2};fish.outfit(p);assert.equal(fish.cast(p,sites[0],'1878-01-05').ok,true);
 assert.equal(fish.act(p,'unknown').ok,false);
 assert.equal(fish.abandon(p).ok,true);assert.equal(fish.act(p,'reel').ok,false);
