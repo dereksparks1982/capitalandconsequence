@@ -48,13 +48,26 @@ function horse(id){return S.racing.roster.find(h=>h.id===id)}
 function recoverRoster(){
  for(const h of S.racing.roster){h.fatigue=clamp(h.fatigue-rand(12,25),0,100);h.fitness=clamp(h.fitness+rand(1,5),40,100);h.health=clamp(h.health+rand(1,4),40,100);if(h.injury&&h.health>84&&Math.random()<.35)h.injury=null}
 }
+function isMonthlyHorseChampionship(date){
+ const d=new Date(date+'T12:00:00Z');
+ return !Number.isNaN(d.getTime())&&d.getUTCDay()===0&&
+  new Date(d.getTime()+7*86400000).getUTCMonth()!==d.getUTCMonth();
+}
+function registerHorseChampionship(meeting){
+ const engine=window.FE_CHAMPIONSHIPS;
+ if(!engine||!isMonthlyHorseChampionship(S.gameDate))return meeting;
+ S.sportsChampionships=engine.init(S.sportsChampionships);
+ const names=['H1','H2','H3','H4'].flatMap(id=>meeting.races[id].participants.map(String));
+ const tournament=engine.open(S.sportsChampionships,{sport:'horse',date:S.gameDate,entrants:names});
+ meeting.championshipId=tournament.id;return meeting;
+}
 function buildMeeting(){
  const eligible=[...S.racing.roster].sort((a,b)=>(rating(b,'Dry','mile')-b.fatigue*.08)-(rating(a,'Dry','mile')-a.fatigue*.08));
  const pool=eligible.slice(0,26).sort(()=>Math.random()-.5).slice(0,24),surface=pick(SURFACES);
  const races={};
  for(let i=0;i<4;i++)races['H'+(i+1)]={participants:pool.slice(i*6,i*6+6).map(h=>h.id),result:null,odds:null};
  races.SA={participants:[],result:null,odds:null};races.SB={participants:[],result:null,odds:null};races.ME={participants:[],result:null,odds:null};
- return {date:S.gameDate,surface,races,bets:{},created:true};
+ return registerHorseChampionship({date:S.gameDate,surface,races,bets:{},created:true});
 }
 function ensureState(){
  let changed=false;
@@ -102,13 +115,18 @@ function resolveRace(id,animate){
  r.result=scores.map(x=>x.id);
  r.result.forEach((pid,i)=>{const h=horse(pid);updateHorse(h,i+1,d.stage);if(i===0)h.earnings+=d.stage==='main'?1800:d.stage==='semi'?500:150});
  settleBet(id,r.result);updateQualifiers();
+ if(m.championshipId){
+  const roundName={H1:'heat-a',H2:'heat-b',H3:'heat-c',H4:'heat-d',SA:'semi-a',SB:'semi-b',ME:'final'}[id];
+  const outcome=window.FE_CHAMPIONSHIPS.round(S.sportsChampionships,{tournamentId:m.championshipId,roundId:roundName,order:r.result.map(String),date:S.gameDate});
+  if(outcome.payout.credit)S.personalCash+=outcome.payout.credit;
+ }
  const attending=document.getElementById('racing')?.classList.contains('active')&&S.phase==='day'&&(!window.isPastimeActivityOpen||window.isPastimeActivityOpen('legal','horse'));
  if(attending&&!S.contacts.bookie?.met&&Math.random()<.12){
    S.contacts.bookie.met=true;S.contacts.bookie.trust=1;S.bookieKnown=true;S.middlePokerUnlocked=true;
    window.FE_MAP_LEADS?.flag?.(S,'commercePoker','race-bookie-introduction');
    S.notes.push({date:displayDate(),text:'Met Eddie Doyle among the bettors at Capital Race Grounds. The bookmaker said to ask him if I ever wanted to know what else was running around Washington.',source:'race-track conversation'});
  }
- if(id==='ME'){const winner=horse(r.result[0]);S.lastRaceResult='At Capital Race Grounds, '+winner.name+' won the Main Event.';S.notes.push({date:displayDate(),text:'The Main Event at Capital Race Grounds was won by '+winner.name+'.',source:'personal recollection / racing results'})}
+ if(id==='ME'){const winner=horse(r.result[0]),title=m.championshipId?' and became the D.C. Horse Racing Champion':'';S.lastRaceResult='At Capital Race Grounds, '+winner.name+' won the Main Event'+title+'.';S.notes.push({date:displayDate(),text:'The Main Event at Capital Race Grounds was won by '+winner.name+title+'.',source:'personal recollection / racing results'})}
  save(true);
  if(animate&&document.getElementById('racing')?.classList.contains('active')&&(!window.isPastimeActivityOpen||window.isPastimeActivityOpen('legal','horse')))startAnimation(id);
 }
@@ -197,7 +215,7 @@ function renderHistory(){
 }
 function renderRacing(){
  if(!$r('horseRacingModule'))return;ensureState();renderBracket();renderNext();renderHistory();
- const m=S.racing.meeting;$r('raceMeetingMeta').textContent=(S.phase==='night'||S.phase==='report')?'Capital Race Grounds · CLOSED · Today\'s results are final.':'Capital Race Grounds · '+m.surface+' · Meeting begins at 30:00 remaining · Main Event at 05:00';
+ const m=S.racing.meeting;$r('raceMeetingMeta').textContent=(m.championshipId?'D.C. Horse Racing Championship · ':'')+((S.phase==='night'||S.phase==='report')?'Capital Race Grounds · CLOSED · Today\'s results are final.':'Capital Race Grounds · '+m.surface+' · Meeting begins at 30:00 remaining · Main Event at 05:00');
  $r('raceBankroll').textContent=cash(S.personalCash);
 }
 function startAnimation(id){

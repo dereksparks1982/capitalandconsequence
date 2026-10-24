@@ -25,6 +25,17 @@ assert.equal(s.wagers[0].settled,true);
 assert.equal(engine.view(s,'poker','1878-01-29').champion.name,'player-2');
 assert.throws(()=>engine.round(s,{tournamentId:tournament.id,roundId:'final',order:finishers,date:'1878-01-04'}),/already finalized/);
 assert.throws(()=>engine.placeBet(s,{...w,betId:'stake-003'}),/already known/);
-const horse=engine.open(s,{sport:'horse',date:'1878-02-01',entrants:Array.from({length:12},(_,i)=>'horse'+i)});
+const horses=Array.from({length:24},(_,i)=>'horse'+i);
+const horse=engine.open(s,{sport:'horse',date:'1878-02-01',entrants:horses});
 assert.equal(horse.rounds['heat-a'].ids.length,6);
+for(const k of ['heat-a','heat-b','heat-c','heat-d']){
+ const ids=horse.rounds[k].ids.slice();
+ engine.round(s,{tournamentId:horse.id,roundId:k,order:ids,date:'1878-02-01'});
+}
+for(const [k,order] of [
+ ['semi-a',['horse0','horse1','horse6','horse7']],
+ ['semi-b',['horse12','horse13','horse18','horse19']]
+])engine.round(s,{tournamentId:horse.id,roundId:k,order,date:'1878-02-01'});
+const horseFinal=engine.round(s,{tournamentId:horse.id,roundId:'final',order:['horse0','horse12','horse1','horse13'],date:'1878-02-01'});
+assert.equal(horseFinal.tournament.champion,'horse0');
 console.log('PASS championship lifecycle, historical gates, distinct entrants, authorized bets and exactly-once payout');

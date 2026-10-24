@@ -4,7 +4,7 @@
  */
 (function(root){'use strict';
 const SPORTS=Object.freeze({
- horse:Object.freeze({label:'D.C. Horse Racing Champion',earliest:1878,field:12,advance:3}),
+ horse:Object.freeze({label:'D.C. Horse Racing Champion',earliest:1878,field:24,advance:2}),
  boxing:Object.freeze({label:'D.C. Boxing Champion',earliest:1878,field:4,advance:1}),
  poker:Object.freeze({label:'D.C. Poker Champion',earliest:1878,field:8,advance:2}),
  dog:Object.freeze({label:'D.C. Kennel Champion',earliest:1919,field:12,advance:3}),
@@ -37,7 +37,15 @@ function open(state,{sport,date,entrants}){
  if(state.tournaments[id])return clone(state.tournaments[id]);
  if(!Array.isArray(entrants)||entrants.length!==config.field||new Set(entrants).size!==entrants.length||
  !entrants.every(x=>typeof x==='string'&&x.length>0&&x.length<=70))throw Error('Tournament requires distinct seeded entrants');
- const half=config.field/2,rounds={
+ const half=config.field/2,rounds=sport==='horse'?{
+  'heat-a':{ids:entrants.slice(0,6),result:null},
+  'heat-b':{ids:entrants.slice(6,12),result:null},
+  'heat-c':{ids:entrants.slice(12,18),result:null},
+  'heat-d':{ids:entrants.slice(18,24),result:null},
+  'semi-a':{ids:[],result:null},
+  'semi-b':{ids:[],result:null},
+  final:{ids:[],result:null}
+ }:{
   'heat-a':{ids:entrants.slice(0,half),result:null},
   'heat-b':{ids:entrants.slice(half),result:null},
   final:{ids:[],result:null}
@@ -50,13 +58,19 @@ function round(state,{tournamentId,roundId,order,date}){
  const t=state.tournaments[tournamentId];if(!t)throw Error('Tournament not found');
  if(t.month!==date.slice(0,7))throw Error('Wrong tournament month');
  validSport(t.sport,date);
- if(!['heat-a','heat-b','final'].includes(roundId))throw Error('Unrecognized round');
+ if(!Object.prototype.hasOwnProperty.call(t.rounds,roundId))throw Error('Unrecognized round');
  const r=t.rounds[roundId];if(r.result)throw Error('Results already finalized');
+ if(t.sport==='horse'&&(roundId==='semi-a'||roundId==='semi-b')){
+  const pair=roundId==='semi-a'?['heat-a','heat-b']:['heat-c','heat-d'];
+  if(pair.some(k=>!t.rounds[k].result))throw Error('Qualifying rounds must finish first');
+  if(!r.ids.length)r.ids=pair.flatMap(k=>t.rounds[k].result.slice(0,2));
+ }
  if(roundId==='final'){
-  if(!t.rounds['heat-a'].result||!t.rounds['heat-b'].result)throw Error('Qualifying rounds must finish first');
+  const pair=t.sport==='horse'?['semi-a','semi-b']:['heat-a','heat-b'];
+  if(pair.some(k=>!t.rounds[k].result))throw Error('Qualifying rounds must finish first');
   if(!r.ids.length){
    const count=SPORTS[t.sport].advance;
-   r.ids=[...t.rounds['heat-a'].result.slice(0,count),...t.rounds['heat-b'].result.slice(0,count)];
+   r.ids=pair.flatMap(k=>t.rounds[k].result.slice(0,count));
   }
  }
  if(!Array.isArray(order)||order.length!==r.ids.length||new Set(order).size!==order.length||order.some(x=>!r.ids.includes(x)))throw Error('Results must rank every actual round participant exactly once');
@@ -65,7 +79,7 @@ function round(state,{tournamentId,roundId,order,date}){
   const winner=order[0];t.champion=winner;t.status='complete';
   state.champions[t.sport]={name:winner,month:t.month,tournamentId:t.id};
   state.titleHistory.push({sport:t.sport,name:winner,month:t.month,tournamentId:t.id});
- }else if(t.rounds['heat-a'].result&&t.rounds['heat-b'].result)t.status='final-ready';
+ }else if((t.sport==='horse'?['semi-a','semi-b']:['heat-a','heat-b']).every(k=>t.rounds[k].result))t.status='final-ready';
  return {tournament:clone(t),payout:settleRound(state,tournamentId,roundId)};
 }
 function placeBet(state,{betId,tournamentId,roundId,market,selection,stake,decimalOdds,personalCash,date,law,venueId,game,explicitIllicit}){
@@ -74,7 +88,7 @@ function placeBet(state,{betId,tournamentId,roundId,market,selection,stake,decim
  if(t.month!==date.slice(0,7))throw Error('Tournament month mismatch');
  const stage=market==='champion'?'final':roundId;
  if(market!=='round-winner'&&market!=='champion')throw Error('Unsupported wager market');
- if(!['heat-a','heat-b','final'].includes(stage))throw Error('Unsupported betting stage');
+ if(!Object.prototype.hasOwnProperty.call(t.rounds,stage))throw Error('Unsupported betting stage');
  if(t.status==='complete'||t.rounds[stage].result)throw Error('Outcome is already known');
  const eligible=market==='champion'?t.entrants:t.rounds[stage].ids;
  if(market==='round-winner'&&stage==='final'&&!eligible.length)throw Error('Finalists not determined');
