@@ -8,6 +8,7 @@
   if(!loc)return {ok:false,reason:'unknown location'};
   if(loc.plannedOnly)return {ok:false,reason:'location is not yet open'};
   if(loc.availableFrom&&date<loc.availableFrom)return {ok:false,reason:'location opens in '+loc.availableFrom};
+  if(loc.availableUntil&&date>loc.availableUntil)return {ok:false,reason:'historic location closed after '+loc.availableUntil};
   if(actor?.kind==='npc'&&id==='home'&&!has(actor.invitations,id)&&!has(actor.residences,id))
    return {ok:false,reason:'private residence'};
   if(loc.hiddenFromDirectory&&!has(actor?.invitations,id)&&!has(actor?.permits,id))
