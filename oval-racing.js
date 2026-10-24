@@ -3,6 +3,8 @@ const CFG={
  dog:{key:'dogRacing',activity:'dog',venue:'Potomac Kennel Track',module:'dogRacingModule',meta:'dogRacingMeta',bank:'dogRacingBankroll',board:'dogRacingBoard',live:'dogRacingLive',ledger:'dogRacingLedger',note:'dogRacingNote',names:['Fleet Shadow','Potomac Flash','Blue Streak','Capitol Dash','Copper Rocket','Night Whistle','District Flyer','Liberty Lad','Silver Arrow','Red Signal','Chesapeake Joe','Federal Queen','River Bolt','Union Scout','White Comet','Market Prince'],schedule:[{id:'D1',label:'Heat 1',threshold:2400,distance:'440 yards',laps:2,stage:'heat'},{id:'D2',label:'Heat 2',threshold:1400,distance:'440 yards',laps:2,stage:'heat'},{id:'DF',label:'Final',threshold:420,distance:'550 yards',laps:3,stage:'final'}]},
  car:{key:'midgetCarRacing',activity:'car',venue:'Capital Speedway',module:'midgetCarRacingModule',meta:'midgetCarRacingMeta',bank:'midgetCarRacingBankroll',board:'midgetCarRacingBoard',live:'midgetCarRacingLive',ledger:'midgetCarRacingLedger',note:'midgetCarRacingNote',names:['Red Comet','Blue Bullet','Federal Special','Potomac Flyer','Copper Head','Capitol Ace','Silver Spark','District Special','Liberty No. 9','Washington Flyer','Tungsten Special','Union Rocket','Commerce Kid','Foundry Flash','Columbia Special','Electric Ace'],schedule:[{id:'C1',label:'Heat 1',threshold:2600,distance:'10 laps',laps:10,stage:'heat'},{id:'C2',label:'Heat 2',threshold:1600,distance:'10 laps',laps:10,stage:'heat'},{id:'CF',label:'Feature Race',threshold:500,distance:'20 laps',laps:20,stage:'final'}]}
 };
+const ERA_START=Object.freeze({dog:'1919-01-01',car:'1933-01-01'});
+function canRace(kind){return !!ERA_START[kind]&&typeof S.gameDate==='string'&&S.gameDate>=ERA_START[kind]}
 const DRIVERS=['Eddie Marsh','Tom Vale','Ray Collins','Frank Dwyer','Sam Burke','Johnny Hale','Mickey Dean','Arthur Cole','Bill Mercer','Lou Grant','Harry Webb','Joe Pike'];
 const $o=id=>document.getElementById(id),rand=(a,b)=>a+Math.random()*(b-a),avg=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
 const fmt=n=>{n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
@@ -20,7 +22,7 @@ function rating(kind,e){return kind==='dog'?e.speed*.34+e.start*.22+e.stamina*.2
 function odds(kind,ids){const rs=ids.map(id=>rating(kind,entry(kind,id))),mean=avg(rs),ws=rs.map(r=>Math.exp((r-mean)/12)),sum=ws.reduce((a,b)=>a+b,0),out={};ids.forEach((id,i)=>{const p=clamp(ws[i]/sum,.045,.62);out[id]=+clamp(.9/p,1.3,24).toFixed(2)});return out}
 function recover(kind){const st=state(kind);if(!st)return;for(const e of st.roster){if(kind==='dog')e.fitness=clamp((e.fitness||85)+rand(2,7),60,100);else e.condition=clamp((e.condition||88)+rand(1,5),55,100)}}
 function buildMeeting(kind){const cfg=CFG[kind],pool=[...state(kind).roster].sort(()=>Math.random()-.5).slice(0,12),races={};races[cfg.schedule[0].id]={participants:pool.slice(0,6).map(x=>x.id),result:null,odds:null,failures:[]};races[cfg.schedule[1].id]={participants:pool.slice(6,12).map(x=>x.id),result:null,odds:null,failures:[]};races[cfg.schedule[2].id]={participants:[],result:null,odds:null,failures:[]};return {date:S.gameDate,phase:kind==='car'?(Math.random()<.5?'day':'night'):'day',races,bets:{}}}
-function ensure(kind){const cfg=CFG[kind];let st=S[cfg.key],changed=false;if(!st){st=S[cfg.key]={roster:cfg.names.map((n,i)=>makeEntry(kind,n,i+1)),meeting:null,lastPreparedDate:null};changed=true}if(!Array.isArray(st.roster)||st.roster.length<12){st.roster=cfg.names.map((n,i)=>makeEntry(kind,n,i+1));changed=true}if(st.lastPreparedDate!==S.gameDate){recover(kind);st.meeting=buildMeeting(kind);st.lastPreparedDate=S.gameDate;changed=true}if(!st.meeting||st.meeting.date!==S.gameDate){st.meeting=buildMeeting(kind);changed=true}if(kind==='car'&&!['day','night'].includes(st.meeting.phase)){st.meeting.phase=Math.random()<.5?'day':'night';changed=true}if(kind==='dog')st.meeting.phase='day';if(changed)save(true);return st.meeting}
+function ensure(kind){if(!canRace(kind))return null;const cfg=CFG[kind];let st=S[cfg.key],changed=false;if(!st){st=S[cfg.key]={roster:cfg.names.map((n,i)=>makeEntry(kind,n,i+1)),meeting:null,lastPreparedDate:null};changed=true}if(!Array.isArray(st.roster)||st.roster.length<12){st.roster=cfg.names.map((n,i)=>makeEntry(kind,n,i+1));changed=true}if(st.lastPreparedDate!==S.gameDate){recover(kind);st.meeting=buildMeeting(kind);st.lastPreparedDate=S.gameDate;changed=true}if(!st.meeting||st.meeting.date!==S.gameDate){st.meeting=buildMeeting(kind);changed=true}if(kind==='car'&&!['day','night'].includes(st.meeting.phase)){st.meeting.phase=Math.random()<.5?'day':'night';changed=true}if(kind==='dog')st.meeting.phase='day';if(changed)save(true);return st.meeting}
 function def(kind,id){return CFG[kind].schedule.find(x=>x.id===id)}
 function ensureOdds(kind,id){const m=ensure(kind),r=m.races[id];if(r.participants.length&&!r.odds){r.odds=odds(kind,r.participants);save(true)}return r.odds||{}}
 function qualifiers(kind){const cfg=CFG[kind],m=ensure(kind),a=m.races[cfg.schedule[0].id],b=m.races[cfg.schedule[1].id],f=m.races[cfg.schedule[2].id];if(a.result&&b.result&&!f.participants.length){f.participants=[...a.result.slice(0,3),...b.result.slice(0,3)];ensureOdds(kind,cfg.schedule[2].id)}}
@@ -35,10 +37,11 @@ function resolve(kind,id,animate){
  if(d.stage==='final'){const w=entry(kind,r.result[0]),text=kind==='dog'?'At Potomac Kennel Track, '+w.name+' won the final.':'At Capital Speedway, '+w.name+' driven by '+w.driver+' won the Midget Car feature.';S.lastRaceResult=(S.lastRaceResult?S.lastRaceResult+' ':'')+text;S.notes.push({date:displayDate(),text,source:kind==='dog'?'dog-racing results':'midget-car racing results'})}
  save(true);const watching=S.phase===m.phase&&document.getElementById('racing')?.classList.contains('active')&&window.isPastimeActivityOpen?.('legal',cfg.activity);if(animate&&watching)startAnimation(kind,id);
 }
-function process(kind){const cfg=CFG[kind],m=ensure(kind);if(S.phase!==m.phase)return false;let changed=false;for(const d of cfg.schedule){qualifiers(kind);const r=m.races[d.id];if(!r.result&&S.dayRemaining<=d.threshold&&r.participants.length){resolve(kind,d.id,true);changed=true}}return changed}
-function finish(kind,phase){const cfg=CFG[kind],m=ensure(kind);if(phase&&m.phase!==phase)return;for(const d of cfg.schedule){qualifiers(kind);const r=m.races[d.id];if(!r.result&&r.participants.length)resolve(kind,d.id,false)}}
+function process(kind){if(!canRace(kind))return false;const cfg=CFG[kind],m=ensure(kind);if(S.phase!==m.phase)return false;let changed=false;for(const d of cfg.schedule){qualifiers(kind);const r=m.races[d.id];if(!r.result&&S.dayRemaining<=d.threshold&&r.participants.length){resolve(kind,d.id,true);changed=true}}return changed}
+function finish(kind,phase){if(!canRace(kind))return;const cfg=CFG[kind],m=ensure(kind);if(phase&&m.phase!==phase)return;for(const d of cfg.schedule){qualifiers(kind);const r=m.races[d.id];if(!r.result&&r.participants.length)resolve(kind,d.id,false)}}
 function note(kind,t){const el=$o(CFG[kind].note);if(el)el.textContent=t}
 function bet(kind,id){
+ if(!canRace(kind))return note(kind,'This sport is not available in this year.');
  const venue=kind==='dog'?'dog-racing':'midget-racing';
  if(!window.FE_VENUES?.canUse(venue))return note(kind,'You must be at the correct racing venue to wager.');
  const m=ensure(kind);if(S.phase!==m.phase)return note(kind,'Betting opens during '+(m.phase==='day'?'the Business Day':'Washington Night')+' for this meeting.');const r=m.races[id],d=def(kind,id);if(!r.participants.length)return note(kind,'That field has not been established yet.');if(r.result||S.dayRemaining<=d.threshold)return note(kind,'Betting is closed for '+d.label+'.');if(m.bets[id])return note(kind,'You already have a wager on '+d.label+'.');
@@ -87,8 +90,19 @@ function renderPersistentTrack(kind){
  el.innerHTML='<h3>Oval Track</h3><p class="fine">The track is open. The next field will appear here when qualifying is complete.</p>'+trackMarkup(kind,kind+'OvalTrack',[]);
 }
 
-function render(kind){const cfg=CFG[kind];if(!$o(cfg.module))return;const m=ensure(kind);qualifiers(kind);const phaseLabel=m.phase==='day'?'Business Day':'Washington Night';$o(cfg.meta).textContent=cfg.venue+' · '+phaseLabel+' meeting · scheduled races continue whether this panel is open or closed';$o(cfg.bank).textContent=cash(S.personalCash);$o(cfg.board).innerHTML=cfg.schedule.map(d=>card(kind,d)).join('');$o(cfg.board).querySelectorAll('.oval-bet-btn').forEach(btn=>btn.addEventListener('click',()=>bet(btn.dataset.kind,btn.dataset.race)));ledger(kind);if(!anim[kind])renderPersistentTrack(kind)}
+function render(kind){
+ const cfg=CFG[kind];if(!$o(cfg.module))return;
+ if(!canRace(kind)){
+  $o(cfg.meta).textContent=cfg.venue+' is unavailable until '+ERA_START[kind].slice(0,4)+'.';
+  $o(cfg.bank).textContent=cash(S.personalCash);
+  $o(cfg.board).textContent='No events or wagers in this year.';
+  $o(cfg.live).textContent='This competition has not begun.';
+  $o(cfg.ledger).textContent='No race results.';
+  return;
+ }
+ const m=ensure(kind);qualifiers(kind);const phaseLabel=m.phase==='day'?'Business Day':'Washington Night';$o(cfg.meta).textContent=cfg.venue+' · '+phaseLabel+' meeting · scheduled races continue whether this panel is open or closed';$o(cfg.bank).textContent=cash(S.personalCash);$o(cfg.board).innerHTML=cfg.schedule.map(d=>card(kind,d)).join('');$o(cfg.board).querySelectorAll('.oval-bet-btn').forEach(btn=>btn.addEventListener('click',()=>bet(btn.dataset.kind,btn.dataset.race)));ledger(kind);if(!anim[kind])renderPersistentTrack(kind)}
 function updateCountdowns(kind){
+ if(!canRace(kind))return;
  const cfg=CFG[kind],module=$o(cfg.module);if(!module)return;
  const m=ensure(kind);module.querySelectorAll('.race-countdown[data-race]').forEach(el=>{const d=def(kind,el.dataset.race),clock=el.querySelector('b'),label=el.querySelector('small');if(d&&clock){const active=S.phase===m.phase;clock.textContent=active?fmt(Math.max(0,S.dayRemaining-d.threshold)):fmt(d.threshold);if(label)label.textContent=active?'POST TIME IN':(m.phase==='day'?'BUSINESS DAY POST':'WASHINGTON NIGHT POST')}});
 }
