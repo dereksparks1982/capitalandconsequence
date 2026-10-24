@@ -1,5 +1,7 @@
 # Capital & Consequence Development Roadmap
 
+> **G1 source slice:** `gambling-law.js` establishes a narrow government permit for **only five-card D.C. Poker Challenge tournaments at their own venue**. Private Boiler Room, Commerce Club, Embassy Room poker and other unlicensed wagering stay illegal; Star Club forbids cards. Current poker and sporting UI now discloses the distinction. `tests/gambling-law.cjs` added to Source QA. The five-card tournament **game**, full enforcement and actual championships remain pending.
+
 **Current design priorities (October 24, 2026)**
 
 The **[README](README.md) is player-facing**; technical details, previous source milestones and log entries are in Git history, this roadmap and [CONTINUE-HERE](CONTINUE-HERE.md). Source is currently **v0.6.88-dev**, last previously verified QA run [40069611982](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982). This planning/documentation checkpoint **does not imply the following features are implemented**.
@@ -7,7 +9,7 @@ The **[README](README.md) is player-facing**; technical details, previous source
 ### Approved next-build slices
 
 - [x] **D1 · Story canon and player-facing introduction**: rewrite README, establish [named character roster](CHARACTER-ROSTER.md), [living-city plans](WASHINGTON-LIVING-CITY.md), [politics](POLITICAL-WASHINGTON.md) and [sports/gambling](SPORTS-CHAMPIONSHIPS.md); connect decisions and handoff.
-- [ ] **G1 · Government gambling authorization**: separate legal event permits from unsanctioned Boiler Room, Commerce Club and Embassy Room; Star Club remains no-card. Tests for authorized versus illicit cases, dates and game variants.
+- [x] **G1 · Government gambling authorization**: separate legal event permits from unsanctioned Boiler Room, Commerce Club and Embassy Room; Star Club remains no-card. Tests for authorized versus illicit cases, dates and game variants.
 - [ ] **G2 · Persistent tournament and betting kernel**: stateful monthly standings/champions, legal-permit validation, event identity, no duplicate bets or payouts.
 - [ ] **G3 · Individual sporting integrations**: horse/dog/boxing and later car qualification and championship events; proper 1878 technology gates. Existing daily meeting generator should not fabricate daily titles.
 - [ ] **G4 · D.C. Poker Challenge**: a **separate** government-sanctioned **five-card** poker tournament venue; choose variant and integrate real card simulation. The three social poker clubs continue regular sessions.
