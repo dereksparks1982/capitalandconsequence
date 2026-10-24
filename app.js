@@ -2773,6 +2773,7 @@ function renderTitleMapDirectory(){
   const b=document.createElement('button');b.type='button';
   b.className='title-map-directory-item';
   b.dataset.origin=location.origin;
+   b.dataset.purpose=window.FE_MAP_PIN_PALETTE?.purpose(location)||'housing';
   const grid=titleMapGridAt(location.x,location.y);
   const reviewed=location.placement==='map-anchored';
   b.textContent=location.n+'. '+pinDisplayName(location)+' · '+grid+
@@ -2789,7 +2790,7 @@ function exportTitleMapPins(){
   format:'capital-consequence-map-pins',version:1,profile,
   map:'Washington In and Out Guide (fixed artwork, 2048 × 1159)',grid:'1-30 / A-R',
   locations:TITLE_MAP_LOCATIONS.map(v=>({
-   id:v.id,n:v.n,name:pinDisplayName(v),originalName:v.name,origin:v.origin,
+   id:v.id,n:v.n,name:pinDisplayName(v),originalName:v.name,origin:v.origin,purpose:window.FE_MAP_PIN_PALETTE?.purpose(v)||'housing',
    positionStatus:v.placement,grid:titleMapGridAt(v.x,v.y),
    x:+v.x.toFixed(6),y:+v.y.toFixed(6),userPlaced:!!v.userPlaced,evidence:v.evidence||''
   }))
@@ -3075,9 +3076,10 @@ function buildTitleMapMarkers(){
   marker.type='button';
   marker.className='title-map-marker';
   marker.dataset.origin=location.origin;
+   marker.dataset.purpose=window.FE_MAP_PIN_PALETTE?.purpose(location)||'housing';
   marker.classList.toggle('is-unverified',location.placement!=='map-anchored');
   marker.dataset.mapLocation=location.id;
-  marker.title=(location.origin==='historical'?'Historical':'Fictional')+' · '+titleMapGridAt(location.x,location.y)+
+  marker.title=(window.FE_MAP_PIN_PALETTE?.info(location).name||'Washington place')+' · '+(location.origin==='historical'?'Non-Fiction':'Fiction')+' · '+titleMapGridAt(location.x,location.y)+
    (location.placement==='map-anchored'?' · map-anchored':' · location pending verification');
   marker.setAttribute('aria-label',pinDisplayName(location)+' — '+location.area);
   marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label"></span>';

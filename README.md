@@ -54,3 +54,7 @@ The game has an existing Washington map, shop/finance systems, timed factory wor
 [Development roadmap](ROADMAP.md) · [Decisions and guardrails](DECISIONS.md) · [Technical handoff](CONTINUE-HERE.md) · [Permanent map rules](MAP-CANON.md) · [LEGAL.md](LEGAL.md).
 
 **Elderred Softworks LLC · DKLab**. Single `main` branch. Changes, acceptance, and release follow explicit owner approval.
+
+### Local quality checks
+
+The repository has **no GitHub Actions**. A developer with Node.js already installed can run `bash scripts/local-source-qa.sh` to check JavaScript syntax and source regressions **without downloading packages, building installers, running cloud workflows or uploading artifacts**. This is not a substitute for real desktop playtesting.
