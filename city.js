@@ -286,10 +286,20 @@
     {id:'horse-yard',name:'Horse and Wagon Yard',description:'Working horses, carts, water troughs and feed stores.'},
     {id:'owner-office',name:'Stable Owner’s Office',restricted:true,description:'The eastern brother’s private account books.'}
    ]
+  },
+  {
+   id:'potomacFishingBank',
+   name:'Potomac River Fishing Bank',
+   area:'Potomac shoreline · southwest Washington, D.C. (provisional access point)',
+   category:'sport',
+   description:'A public riverbank fishing spot in 1878 Washington. The location is accessible from the city map; fishing equipment, casting and fish-fighting gameplay are not implemented here yet.',
+   map:null,defaultRoom:'riverbank',rooms:[
+    {id:'riverbank',name:'Riverbank',description:'A quiet stretch of the Potomac suitable for shore fishing. No fishing activity has been activated yet.'}
+   ]
   }
  ];
 
- // All 28 registered locations have a map marker. New markers are deliberately
+ // All 29 registered locations have a map marker. New markers are deliberately
  // provisional display coordinates, never audited street addresses or travel times.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -299,7 +309,8 @@
   cockfightingDen:[21,.643,.502],blackwoodAsylum:[22,.772,.723],
   whiteHouse:[23,.434,.454],washingtonArena:[24,.580,.425],
   washingtonAirport:[25,.305,.664],metropolitanPolice:[26,.571,.510],
-  westLivery:[27,.190,.515],eastLivery:[28,.885,.488]
+  westLivery:[27,.190,.515],eastLivery:[28,.885,.488],
+  potomacFishingBank:[29,.340,.690]
  });
  for(const location of LOCATIONS){
   const position=PROVISIONAL_MAP_PINS[location.id];
