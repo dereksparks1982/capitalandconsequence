@@ -13,7 +13,7 @@
   panel.hidden=!atDesk;panel.replaceChildren();
   if(!atDesk)return;
   const title=document.createElement('h3');title.textContent=stable.name+' · horses and carriages';panel.appendChild(title);
-  const note=document.createElement('p');note.textContent='The proprietors are competing brothers. Prices are 1878 game estimates. Purchases require personal money, not Federal Electric company funds. Bought animals and vehicles remain at this stable until physically moved.';panel.appendChild(note);
+  const note=document.createElement('p');note.textContent='The proprietors are competing brothers. Prices are 1878 game estimates. Purchases require personal money, not Federal Electric company funds. Bought animals and vehicles remain at this stable until physically moved. Personal feed, livery boarding and wagon storage bills accrue daily and settle on Saturday.';panel.appendChild(note);
   const cash=document.createElement('p');cash.textContent='Personal cash: $'+Number(save.personalCash||0).toFixed(2);panel.appendChild(cash);
   const status=document.createElement('p');status.setAttribute('role','status');panel.appendChild(status);
   for(const item of Object.keys(stable.prices)){
