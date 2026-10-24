@@ -1,5 +1,8 @@
 # Capital & Consequence Development Roadmap
 
+> **HISTORICAL EDUCATION & PIN VISIBILITY · October 24, 2026:** Both map and room cards explicitly say **Fiction** or **Non-Fiction**. All 16 real-world destinations display collapsible historical summaries with targeted Wikipedia + Library of Congress links, independently of game lore; the 22 invented destinations do not. Red and blue pin fills are semi-transparent (alpha 0.68), leaving marker numbers readable. Focused map and history-card source behavior checks passed; full Ubuntu/Electron hands-on acceptance still pending. See `tests/map-history-card.cjs`, [MAP-CANON.md](MAP-CANON.md), and [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md).
+
+
 > **LATEST MAP & COMMERCE UPDATE · October 24, 2026:** The fixed map now carries **38** numbered city destinations, with red historic / blue invented identities, including Franciscan Monastery #35, Cobbler #36, Eastern Market #37 and Georgetown Market House #38. The newest 3 are registered public locations with placeholder service rooms, not yet functioning trade/repair gameplay. Map grid audit: 5 depicted features, 19 documented area placements, 14 precise sites undecided. Map drag changes require confirmation and reject off-image positions; they never auto-save. Search/category/origin filters, directory, export and pin renames remain. See [MAP-LOCATION-GRID-AUDIT.md](MAP-LOCATION-GRID-AUDIT.md). Full Ubuntu Node/Electron playthrough is **not yet verified** for this code. No new executable distributed.
 
 
