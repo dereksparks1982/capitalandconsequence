@@ -2079,7 +2079,7 @@ function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
  const dev=!!options.dev,source=options.source||'dev';
- if(!dev&&!titleDevUnlockAllRooms&&!window.FE_PATROL?.travel?.(S,location.id)?.ok)return false;
+ if(!dev&&!titleDevUnlockAllRooms&&window.FE_PATROL?.travel?.(S,location.id)?.ok===false)return false;
  if(!dev&&!titleDevUnlockAllRooms&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
