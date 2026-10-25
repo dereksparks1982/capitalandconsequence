@@ -2098,6 +2098,7 @@ function openCityRoom(locationId,roomId,options={}){
  const priorLocation=currentCityLocation();
  const priorSession=cityRoomSession;
  const priorOverlayHidden=overlay.hidden;
+ const priorRoomId=overlay.dataset.locationId;
  const priorRoomOpen=document.body.classList.contains('city-room-open');
  // The location is provisional until room widgets successfully render. On failure
  // restore prior state rather than saving a phantom visit that blocks Go There.
@@ -2125,6 +2126,7 @@ function openCityRoom(locationId,roomId,options={}){
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
   const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
+  overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
   window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
@@ -2134,6 +2136,8 @@ function openCityRoom(locationId,roomId,options={}){
   if(!dev)S.currentLocation=priorLocation;
   cityRoomSession=priorSession;
   overlay.hidden=priorOverlayHidden;
+  if(priorRoomId)overlay.dataset.locationId=priorRoomId;
+  else delete overlay.dataset.locationId;
   document.body.classList.toggle('city-room-open',priorRoomOpen);
   console.error('Federal Electric: could not enter '+location.name,err);
   return false;
@@ -2165,7 +2169,7 @@ function openCityRoom(locationId,roomId,options={}){
 }
 function closeCityRoom(){
  restoreLocalVenueActivity();
- const overlay=document.getElementById('cityRoomOverlay');if(overlay)overlay.hidden=true;
+ const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}
  document.body.classList.remove('city-room-open');
  cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
  window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
@@ -3056,17 +3060,31 @@ function renameSelectedTitleMapPin(reset=false){
  const notice=$('#titleMapPinNameNotice');if(notice)notice.textContent='Saved for this profile.';
  return true;
 }
-function travelFromTitleMap(){
+function travelFromTitleMap(event){
+ // Go There must enter an actual room, not just dismiss the map or pin card.
+ event?.preventDefault?.();
+ event?.stopPropagation?.();
  const id=titleMapSelectedLocationId||$('#titleMapLocationTravel')?.dataset.locationId;
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
- const reason=mapTravelRestriction(location);
  const message=document.getElementById('titleMapTravelNote');
+ const reason=mapTravelRestriction(location);
  if(reason){if(message)message.textContent=reason;return false;}
- if(!id||currentCityLocation().locationId===id)return false;
- const reached=openCityRoom(id,null,{dev:false,source:'map'});
- if(reached)window.FE_CAREER_SHELL?.refreshDesk?.();
- else if(message)message.textContent='Travel failed. You remain at your previous location. Try another destination.';
- return reached;
+ if(!id)return false;
+ // Reopen the destination room even if the saved position says we are there.
+ let reached=false;
+ try{reached=!!openCityRoom(id,null,{dev:false,source:'map'});}
+ catch(error){console.error('Capital & Consequence: city-room travel failed',id,error);}
+ const room=document.getElementById('cityRoomOverlay');
+ const arrived=reached&&!!room&&!room.hidden&&currentCityLocation().locationId===id;
+ if(!arrived){
+  if(message)message.textContent='Could not enter '+(location?.name||'this location')+'. The map remains open.';
+  return false;
+ }
+ // Successful arrivals must show the destination instead of the desk.
+ if(!$('#titleMapViewer')?.hidden)closeTitleMap();
+ room.focus?.();
+ window.FE_CAREER_SHELL?.refreshDesk?.();
+ return true;
 }
 function buildTitleMapMarkers(){
  const layer=$('#titleMapMarkers');if(!layer)return;
@@ -3316,7 +3334,7 @@ function initTitleMapViewer(){
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
- $('#titleMapLocationTravel').onclick=travelFromTitleMap;
+ $('#titleMapLocationTravel').onclick=event=>travelFromTitleMap(event);
  $('#titleMapExportPins').onclick=exportTitleMapPins;
  // The location card contains a text field. Stop its pointerdown from reaching
  // the viewport's existing pan capture; leave the map pan/zoom code unchanged.

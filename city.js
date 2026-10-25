@@ -45,7 +45,7 @@
    map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
-    {id:'star-room',name:'Star Room',description:'Placeholder room shell for the Star Club. Final artwork and the club’s internal room layout have not been assigned yet.'}
+    {id:'star-room',name:'Star Club Salon',description:'You have entered Madam Star’s salon, where fine dining, accomplished musicians and Washington society meet under rules of discretion. The Star Club does not allow card games or gambling. Finished interior artwork and additional rooms are future development.'}
    ]
   },
   {
