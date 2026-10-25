@@ -466,40 +466,40 @@
  // Named sites below are identified on the scan; invented street addresses
  // reference a *district/block*, not an invented historically verified doorway.
  const MAP_ARTWORK_ANCHORS=Object.freeze({
-  whiteHouse:[852,426,'White House / Executive Mansion grounds, printed on the map around 16-K'],
-  washingtonAirport:[592,590,'WASHINGTON AIRPORT lettering on the Virginia field, printed around 10-P'],
-  governmentHospital:[1260,641,'Government Hospital (St. Elizabeths hillside), southeastern edge near 27-Q'],
-  georgetownCanal:[564,328,'Georgetown C&O Canal, north bank of Potomac, around 9-I'],
-  easternBranchFishing:[1180,522,'Eastern Branch / Anacostia riverside, north bank near Navy Yard, around 25-N']
+  whiteHouse:[841,428,'White House / Executive Mansion grounds, printed on the map around 16-K'],
+  washingtonAirport:[718,730,'WASHINGTON AIRPORT lettering on the Virginia field, printed around 10-P'],
+  governmentHospital:[1483,834,'Government Hospital (St. Elizabeths hillside), southeastern edge near 27-Q'],
+  georgetownCanal:[638,415,'Georgetown C&O Canal, north bank of Potomac, around 9-I'],
+  easternBranchFishing:[1425,622,'Eastern Branch / Anacostia riverside, north bank near Navy Yard, around 25-N']
  });
  const MAP_AREA_REFERENCES=Object.freeze({
-  star:[829,393,'16th and H Streets NW, Hay-Adams houses near the White House; fictional club'],
-  oldChinatown:[1000,353,'Pennsylvania Avenue NW near 4th–7th Streets; early Chinatown block, not a surveyed shop'],
-  russianTradeHall:[747,297,'Dupont Circle / Massachusetts Avenue NW; proposed fictional hall'],
-  commercePoker:[574,574,'Washington-Hoover Airport grounds, Arlington; fictional club in a hangar'],
-  home:[1124,433,'Capitol Hill by Eastern Market, 7th Street SE; fictional proposed home'],
-  fletchersCove:[382,316,'Upper Potomac north bank above Georgetown; cove access provisional'],
-  potomacFishingBank:[805,516,'Potomac Park / Southwest Washington shoreline; provisional shore entrance'],
-  franciscanMonastery:[1011,186,'Brookland, 1400 Quincy Street NE, monastery grounds; doorway not labeled'],
-  hillsdale:[1250,622,'Barry Farm / Hillsdale southeast of the Anacostia; general neighborhood, not one residence'],
-  blackwoodAsylum:[1184,595,'District Asylum: invented government premises southeast of central Washington; no historic lot claimed'],
-  factory:[1104,220,'Ivy City / New York Avenue NE near Fenwick Street; fictional industrial block'],
-  races:[1326,310,'Kenilworth / Benning east of the Anacostia; fictional race-track property'],
-  capitolAirport:[1337,278,'East of the Anacostia north of Benning; proposed fictional airfield'],
-  universityMaryland:[1270,62,'College Park / Maryland Agricultural College vicinity; northern map edge, not a surveyed campus entrance'],
-  embassyPoker:[476,115,'Chevy Chase Club vicinity / 6100 Connecticut Avenue; fictional room'],
-  washingtonFairgrounds:[746,473,'Potomac Park west of Washington Monument; fictional 1893 fair site'],
-  babcockLake:[854,476,'Washington Monument vicinity / earlier basin, absent from fixed later-era artwork'],
-  easternMarket:[1123,424,'225 7th Street SE, Eastern Market block; original building not individually labeled'],
-  georgetownMarketHouse:[575,320,'3276 M Street NW, Georgetown Market House area, not separately labeled'],
-  cobblerShop:[1143,431,'Fictional shoemaker by Eastern Market on 7th Street SE']
+  star:[826,405,'16th and H Streets NW, Hay-Adams houses near the White House; fictional club'],
+  oldChinatown:[1020,382,'Pennsylvania Avenue NW near 4th–7th Streets; early Chinatown block, not a surveyed shop'],
+  russianTradeHall:[755,362,'Dupont Circle / Massachusetts Avenue NW; proposed fictional hall'],
+  commercePoker:[711,712,'Washington-Hoover Airport grounds, Arlington; fictional club in a hangar'],
+  home:[1200,480,'Capitol Hill by Eastern Market, 7th Street SE; fictional proposed home'],
+  fletchersCove:[395,370,'Upper Potomac north bank above Georgetown; cove access provisional'],
+  potomacFishingBank:[921,625,'Potomac Park / Southwest Washington shoreline; provisional shore entrance'],
+  franciscanMonastery:[1272,235,'Brookland, 1400 Quincy Street NE, monastery grounds; doorway not labeled'],
+  hillsdale:[1498,765,'Barry Farm / Hillsdale southeast of the Anacostia; general neighborhood, not one residence'],
+  blackwoodAsylum:[1540,795,'District Asylum: invented government premises southeast of central Washington; no historic lot claimed'],
+  factory:[1266,325,'Ivy City / New York Avenue NE near Fenwick Street; fictional industrial block'],
+  races:[1640,355,'Kenilworth / Benning east of the Anacostia; fictional race-track property'],
+  capitolAirport:[1660,280,'East of the Anacostia north of Benning; proposed fictional airfield'],
+  universityMaryland:[1555,90,'College Park / Maryland Agricultural College vicinity; northern map edge, not a surveyed campus entrance'],
+  embassyPoker:[505,132,'Chevy Chase Club vicinity / 6100 Connecticut Avenue; fictional room'],
+  washingtonFairgrounds:[750,538,'Potomac Park west of Washington Monument; fictional 1893 fair site'],
+  babcockLake:[857,527,'Washington Monument vicinity / earlier basin, absent from fixed later-era artwork'],
+  easternMarket:[1258,475,'225 7th Street SE, Eastern Market block; original building not individually labeled'],
+  georgetownMarketHouse:[572,385,'3276 M Street NW, Georgetown Market House area, not separately labeled'],
+  cobblerShop:[1274,486,'Fictional shoemaker by Eastern Market on 7th Street SE']
  });
  const IMAGE_WIDTH=2048,IMAGE_HEIGHT=1159;
  // Coordinates describe the PRINTED map, not longitude/latitude.
- const GRID_LEFT=258,GRID_TOP=51,GRID_COL_PITCH=38.76,GRID_ROW_PITCH=36.12;
+ const GRID_LEFT=323,GRID_TOP=59,GRID_COL_PITCH=48.5,GRID_ROW_PITCH=45.55;
  function mapGridReference(x,y){
   const px=x*IMAGE_WIDTH,py=y*IMAGE_HEIGHT;
-  if(px<239||px>1403||py<30||py>681)return 'Outside map';
+  if(px<286||px>1778||py<30||py>864)return 'Outside map';
   const col=Math.max(1,Math.min(30,Math.round((px-GRID_LEFT)/GRID_COL_PITCH)+1));
   const row=Math.max(0,Math.min(17,Math.round((py-GRID_TOP)/GRID_ROW_PITCH)));
   return col+'-'+String.fromCharCode(65+row);
