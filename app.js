@@ -2073,6 +2073,7 @@ function renderCityRoomDirectory(location,activeRoomId){
 }
 // Map travel enters the destination's default room; never commit a bad destination to the autosave.
 function recordLiveryPurchase(){save(true);window.FE_TRANSPORT?.renderRegister?.()}
+function guardedRoomPanel(name,action){try{action()}catch(error){console.warn('Capital & Consequence: optional room panel unavailable: '+name,error)}}
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
@@ -2081,7 +2082,7 @@ function openCityRoom(locationId,roomId,options={}){
  if(!dev&&!titleDevUnlockAllRooms&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;
  }
- if(location.id==='factory'&&!dev&&S.characterRoute==='industrialist'&&(!roomId||roomId==='executive-office')){
+ if(location.id==='factory'&&source!=='map'&&!dev&&S.characterRoute==='industrialist'&&(!roomId||roomId==='executive-office')){
   returnCityRoomToOffice();closeTitleMap();return true;
  }
  const room=cityRoom(location.id,roomId||location.defaultRoom);
@@ -2103,26 +2104,26 @@ function openCityRoom(locationId,roomId,options={}){
  // The location is provisional until room widgets successfully render. On failure
  // restore prior state rather than saving a phantom visit that blocks Go There.
  try{
-  restoreLocalVenueActivity();
+  guardedRoomPanel('previous activity',()=>restoreLocalVenueActivity());
   cityRoomSession={locationId:location.id,roomId:room.id,dev,source};
   if(!dev)S.currentLocation={locationId:location.id,roomId:room.id};
   document.getElementById('cityRoomLocationName').textContent=location.name;
   document.getElementById('cityRoomArea').textContent=location.area||'Washington, D.C.';
   document.getElementById('cityRoomName').textContent=room.name;
   document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
-  renderPlaceReference(location);
-  setPastimeActivity('legal',null);setPastimeActivity('illicit',null);
-  renderCityRoomPeople(location);
-  window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id);
-  window.FE_NPC_AI?.renderRoomVisitors?.(location.id);
-  window.FE_VENUES?.renderRoomOpportunities?.(location.id);
-  window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id);
-  window.FE_FISHING_UI?.render?.();
-  window.FE_MARKET_UI?.render?.();
-  window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id);
-  renderCityRoomDirectory(location,room.id);
-  window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
-  window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev);
+  guardedRoomPanel('place reference',()=>renderPlaceReference(location));
+  guardedRoomPanel('pastimes',()=>{setPastimeActivity('legal',null);setPastimeActivity('illicit',null)});
+  guardedRoomPanel('local people',()=>renderCityRoomPeople(location));
+  guardedRoomPanel('resident visitors',()=>window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id));
+  guardedRoomPanel('NPC visitors',()=>window.FE_NPC_AI?.renderRoomVisitors?.(location.id));
+  guardedRoomPanel('activities',()=>window.FE_VENUES?.renderRoomOpportunities?.(location.id));
+  guardedRoomPanel('personal storage',()=>window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id));
+  guardedRoomPanel('fishing',()=>window.FE_FISHING_UI?.render?.());
+  guardedRoomPanel('market',()=>window.FE_MARKET_UI?.render?.());
+  guardedRoomPanel('housing',()=>window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id));
+  guardedRoomPanel('room directory',()=>renderCityRoomDirectory(location,room.id));
+  guardedRoomPanel('livery',()=>window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
+  guardedRoomPanel('horse stable',()=>window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
   const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
@@ -2130,8 +2131,8 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
   window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
-  setRadioLocationContext(location.radioContext||'office');
-  updateTitleDevCityControls();
+  guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
+  guardedRoomPanel('developer controls',()=>updateTitleDevCityControls());
  }catch(err){
   if(!dev)S.currentLocation=priorLocation;
   cityRoomSession=priorSession;
