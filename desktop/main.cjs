@@ -320,7 +320,18 @@ async function runSmokeTest(win) {
         out.commerceEnabled=!go.disabled&&!go.hidden;
         go.click();
         out.commerceEntered=!room.hidden&&map.hidden&&S.currentLocation.locationId==='commercePoker';
-        out.singleRoomHidden=document.getElementById('cityRoomDirectory').hidden;
+        out.singleRoomVisible=!document.getElementById('cityRoomDirectory').hidden;
+        // A Go There click must reveal Star Club's actual room menu,
+        // hiding BOTH the map and the personal executive desk.
+        openTitleMap();openTitleMapLocation('star');
+        out.starGoEnabled=!go.disabled&&!go.hidden;
+        go.click();
+        const clubMenu=document.getElementById('cityRoomDirectory');
+        out.starEntered=!room.hidden&&map.hidden&&room.dataset.locationId==='star'
+         &&document.body.classList.contains('city-room-open');
+        out.starMenuVisible=!clubMenu.hidden
+         &&[...clubMenu.querySelectorAll('button')].some(b=>b.textContent==='Dining Room');
+        out.starNoDesk=getComputedStyle(document.getElementById('careerDesk')).visibility==='hidden';
         openTitleMap();openTitleMapLocation('oldChinatown');
         out.chinatownEnabled=!go.disabled;
         go.click();
