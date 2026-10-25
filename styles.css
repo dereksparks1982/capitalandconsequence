@@ -1602,3 +1602,21 @@ body.city-room-open .city-room-overlay{padding:0;align-items:stretch;justify-con
 body.city-room-open .city-room-shell{width:100%;min-height:100%;height:100%;overflow-y:auto;border:0;box-shadow:none}
 body.city-room-open .city-room-placeholder{flex:1}
 body.city-room-open .city-room-overlay[data-location-id="star"] .city-room-placeholder{background:linear-gradient(145deg,#e1d4b8,#b6a07c)}
+
+/* Destination is a scene, not a popup over the executive desk or map. */
+body.city-room-open > #cityRoomOverlay{display:flex!important;visibility:visible!important}
+body.city-room-open #cityRoomDirectory{flex-shrink:0;max-height:27vh;overflow-y:auto}
+body.city-room-open #cityRoomDirectory button.active{outline:3px solid #544026;outline-offset:2px;font-weight:800}
+body.city-room-open #cityRoomName{margin:.2em 0 .5em}
+body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-shell{
+ background:#d9c6a3;color:#342516;
+}
+body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-head{
+ border-bottom:5px solid #a5793e;background:linear-gradient(120deg,#352217,#604329);color:#f7edda;
+}
+body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-directory{
+ background:#cbb28b;border-bottom:2px solid #86663f;
+}
+body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeholder{
+ background:linear-gradient(145deg,#e7d8bb 0%,#d9c5a1 52%,#b89971 100%);
+}
