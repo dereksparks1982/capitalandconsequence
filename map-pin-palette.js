@@ -17,7 +17,7 @@ function purpose(location){
  if(!location||typeof location!=='object')return 'housing';
  const id=String(location.id||''),category=String(location.category||'');
  if(id==='hillsdale'||id.startsWith('hillsdale-'))return 'hillsdale';
- if(category==='government'||id==='governmentHospital')return 'government';
+ if(category==='government'||id==='governmentHospital'||id==='blackwoodAsylum')return 'government';
  if(category==='institution')return 'healthcare';
  if(id==='oldChinatown')return 'commerce';
  if(['commerce','finance','transport'].includes(category))return 'commerce';
