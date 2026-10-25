@@ -6,9 +6,9 @@ const match=app.match(/function travelFromTitleMap\(event\)\{[\s\S]*?\n\}\nfunct
 assert.ok(match,'Live Go There function found');
 const fn=match[0].slice(0,-'\nfunction buildTitleMapMarkers('.length);
 function travel({allowed=true,opens=true,visible=true,initialLocation='factory'}={}){
- const log={open:0,stop:0,prevent:0},map={hidden:false},room={hidden:!visible,dataset:{locationId:'factory'},focus(){}},
+ const log={open:0,stop:0,prevent:0},map={hidden:false},room={hidden:!visible,dataset:{locationId:'factory'},parentNode:null,focus(){}},
   message={textContent:''},state={locationId:initialLocation};
- const body={classList:{added:[],removed:[],add(v){this.added.push(v)},remove(v){this.removed.push(v)}}};
+ const body={appendChild(el){el.parentNode=this},classList:{added:[],removed:[],add(v){this.added.push(v)},remove(v){this.removed.push(v)}}};
  const ctx={
   titleMapSelectedLocationId:'star',TITLE_MAP_LOCATIONS:[{id:'star',name:'Star Club'}],
   mapTravelRestriction:()=>allowed?'':'Entry is restricted',
@@ -43,7 +43,7 @@ assert.match(careerSource,/if\(roomOverlay\)document\.body\.appendChild\(roomOve
 assert.match(styles,/body\.city-room-open > #cityRoomOverlay\{[^}]*z-index:3200000/,'Entered rooms cover the map and executive desk');
 assert.match(styles,/body\.city-room-open > :not\(#cityRoomOverlay\):not\(#saveFailureBanner\)\{visibility:hidden!important\}/,'Room view hides all old screens');
 assert.match(app,/directory\.hidden=false;/,'Room menu is visible for every building');
-assert.match(app,/federalElectricTitleMapLocationsV4/,'Old per-profile map locations are not migrated');
+assert.match(app,/federalElectricTitleMapLocationsV5/,'Old per-profile map locations are not migrated');
 assert.doesNotMatch(app,/TITLE_MAP_OLD_DEFAULTS|TITLE_MAP_INTERMEDIATE_DEFAULTS/,'No old-map save migration retained');
 const context={window:{}};vm.runInNewContext(citySource,context);
 const city=context.window.FederalElectricCity;
