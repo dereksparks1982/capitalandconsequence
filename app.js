@@ -2058,8 +2058,8 @@ function renderCityRoomDirectory(location,activeRoomId){
  const directory=document.getElementById('cityRoomDirectory');if(!directory)return;
  directory.innerHTML='';
  const rooms=Array.isArray(location?.rooms)?location.rooms:[];
- directory.hidden=rooms.length<=1;
- if(rooms.length<=1)return;
+ // Every entered building has an on-screen room menu, even if it has one room.
+ directory.hidden=false;
  for(const room of rooms){
   const button=document.createElement('button');
   button.type='button';
@@ -2695,7 +2695,7 @@ function toggleTitleFan(){
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
 // V2 intentionally restores the approved geographical defaults; stale V1 browser pin
 // overrides remain untouched for recovery but must not hide the corrected placements.
-const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV2';
+const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV3';
 function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()||'unassigned')}
 // The city registry is the single source of truth; missing city.js must not
 // silently fall back to six obsolete, geographically incorrect map pins.
@@ -2703,28 +2703,7 @@ const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(
 // Previous V2 defaults were serialized even if a player only renamed one pin.
 // A matching old default is not a hand-adjusted placement. Preserve different
 // stored coordinates exactly, but let untouched pins adopt the reviewed map.
-const TITLE_MAP_OLD_DEFAULTS=Object.freeze({
- whiteHouse:[.434,.454],washingtonAirport:[.305,.664],
- governmentHospital:[.733,.680],georgetownCanal:[.271,.475],
- easternBranchFishing:[.758,.642],star:[.400,.453],
- oldChinatown:[.508,.489],russianTradeHall:[.372,.358],
- commercePoker:[.300,.646],home:[.619,.580],
- fletchersCove:[.184,.402],chainBridgeFishing:[.139,.326],
- potomacFishingBank:[.340,.690],
- hillsdale:[.735,.762],factory:[.615,.383],races:[.811,.492],
- capitolAirport:[.814,.395],universityMaryland:[.762,.080],
- embassyPoker:[.243,.160],washingtonFairgrounds:[.470,.566],
- babcockLake:[.495,.559]
-});
-// Intermediate, unreleased defaults from this same guide-map alignment pass.
-// Profiles are allowed to restore their actual moves, but never re-adopt one
-// of these intermediate wrong-source coordinates as if the player dragged it.
-const TITLE_MAP_INTERMEDIATE_DEFAULTS=Object.freeze({
- whiteHouse:[854/2048,454/1159],star:[848/2048,403/1159],
- oldChinatown:[1055/2048,480/1159],home:[1213/2048,540/1159],
- fletchersCove:[522/2048,405/1159],races:[1582/2048,340/1159],
- capitolAirport:[1585/2048,296/1159]
-});
+// Old saved map layouts are not migrated. Old saves are disposable.
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
@@ -2862,17 +2841,10 @@ function loadTitleMapLocationLayout(){
   const p=saved[location.id];
   if(!p||typeof p!=='object')continue;
   if(Number.isFinite(+p.x)&&Number.isFinite(+p.y)){
-   const legacy=TITLE_MAP_OLD_DEFAULTS[location.id];
-   const intermediate=TITLE_MAP_INTERMEDIATE_DEFAULTS[location.id];
-   const isSamePosition=pair=>!!pair&&
-    Math.abs(+p.x-pair[0])<0.000002&&Math.abs(+p.y-pair[1])<0.000002;
-   const wasUntouchedOldDefault=isSamePosition(legacy)||isSamePosition(intermediate);
-   if(!wasUntouchedOldDefault){
-    location.x=Math.max(0,Math.min(1,+p.x));
-    location.y=Math.max(0,Math.min(1,+p.y));
-    const base=TITLE_MAP_LOCATION_DEFAULTS.find(v=>v.id===location.id);
-    location.userPlaced=!!base&&(Math.abs(location.x-base.x)>0.000002||Math.abs(location.y-base.y)>0.000002);
-   }
+   location.x=Math.max(0,Math.min(1,+p.x));
+   location.y=Math.max(0,Math.min(1,+p.y));
+   const base=TITLE_MAP_LOCATION_DEFAULTS.find(v=>v.id===location.id);
+   location.userPlaced=!!base&&(Math.abs(location.x-base.x)>0.000002||Math.abs(location.y-base.y)>0.000002);
   }
   if(typeof p.label==='string'&&p.label.trim()&&p.label.trim().length<=64)
    location.pinLabel=p.label.trim();
