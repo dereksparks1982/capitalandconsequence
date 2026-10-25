@@ -2092,6 +2092,9 @@ function openCityRoom(locationId,roomId,options={}){
   return false;
  }
  const overlay=document.getElementById('cityRoomOverlay');
+ // The room must be an actual full-screen destination, never a descendant
+ // of a hidden title or desk; enforce this even if shell setup was skipped.
+ if(overlay&&overlay.parentNode!==document.body)document.body.appendChild(overlay);
  if(!room||!overlay){console.error('Federal Electric: room or overlay missing',location.id,roomId);return false;}
  const required=['cityRoomLocationName','cityRoomArea','cityRoomName','cityRoomDescription'];
  if(required.some(id=>!document.getElementById(id))){
@@ -2706,7 +2709,7 @@ function toggleTitleFan(){
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
 // V2 intentionally restores the approved geographical defaults; stale V1 browser pin
 // overrides remain untouched for recovery but must not hide the corrected placements.
-const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV4';
+const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV5';
 function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()||'unassigned')}
 // The city registry is the single source of truth; missing city.js must not
 // silently fall back to six obsolete, geographically incorrect map pins.
@@ -2727,9 +2730,10 @@ const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
 // Printed Washington In and Out Guide raster: grid 1-30 / A-R.
 function titleMapGridAt(x,y){
  const px=x*2048,py=y*1159;
- if(px<286||px>1778||py<30||py>864)return 'Outside map';
- const col=Math.max(1,Math.min(30,Math.round((px-323)/48.5)+1));
- const row=Math.max(0,Math.min(17,Math.round((py-59)/45.55)));
+ // Coordinate origin/spacing from the owner's fixed 2048x1159 scan.
+ if(px<239||px>1403||py<30||py>681)return 'Outside map';
+ const col=Math.max(1,Math.min(30,Math.round((px-258)/38.76)+1));
+ const row=Math.max(0,Math.min(17,Math.round((py-51)/36.12)));
  return col+'-'+String.fromCharCode(65+row);
 }
 function titleMapMatchesSearch(location){
@@ -3049,26 +3053,28 @@ function travelFromTitleMap(event){
  event?.preventDefault?.();
  event?.stopPropagation?.();
  const id=titleMapSelectedLocationId||document.getElementById('titleMapLocationTravel')?.dataset.locationId;
- const destination=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
- const message=document.getElementById('titleMapTravelNote');
- const reason=mapTravelRestriction(destination);
- if(reason){if(message)message.textContent=reason;return false}
- if(!id)return false;
- let reached=false;
- try{reached=!!openCityRoom(id,null,{dev:false,source:'map'})}
- catch(error){console.error('Destination failed',id,error)}
+ const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+ const note=document.getElementById('titleMapTravelNote');
+ const restriction=mapTravelRestriction(location);
+ if(restriction){if(note)note.textContent=restriction;return false;}
+ if(!location)return false;
+ let entered=false;
+ try{entered=openCityRoom(id,null,{dev:false,source:'map'})===true;}
+ catch(error){console.error('Capital & Consequence: Go There failed',id,error);}
  const room=document.getElementById('cityRoomOverlay');
- if(!reached||!room||room.hidden||room.dataset.locationId!==id){
-  if(message)message.textContent='Could not enter '+(destination?.name||'this location')+'.';
+ if(!entered||!room||room.hidden||room.dataset.locationId!==id){
+  if(note)note.textContent='Could not enter '+location.name+'.';
   return false;
  }
- // The selected building, not the business desk or the map, owns this screen.
+ // The destination replaces the map and all desks. Only an actual registered
+ // location room qualifies as arrival; never dismiss the map on failed travel.
+ if(room.parentNode!==document.body)document.body.appendChild(room);
  room.hidden=false;
  document.body.classList.add('city-room-open');
  const map=document.getElementById('titleMapViewer');
  if(map)map.hidden=true;
  document.body.classList.remove('title-map-open');
- room.focus?.();
+ try{room.focus({preventScroll:true})}catch(_){}
  return true;
 }
 function buildTitleMapMarkers(){
