@@ -315,7 +315,7 @@
     location:window.FederalElectricCity?.getLocation?.(position.locationId)?.name||position.locationId,
     playerName:window.FE_CHARACTERS?.get?.(route)?.characterName||route,
     playerLanguages:Array.isArray(S.playerLanguages)?S.playerLanguages:['en'],
-    activity:actor.activity,relationship:Number(actor.relationships?.[route]||0)})}
+    activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId})}
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
   const result=await model.chat({messages:query.messages});
@@ -326,6 +326,9 @@
     latest.locationId!==position.locationId||latest.roomId!==position.roomId)
    return {ok:false,reason:'The meeting ended before the reply arrived. No conversation was saved.'};
   dev.record(S,id,{date,user:utterance.trim(),reply:result.text,place:position.locationId});
+  window.FE_NPC_MEMORY?.remember?.(S,id,{date,kind:'conversation',withId:route,place:position.locationId,source:'player-speech',verified:false,
+   text:'The visitor asked: '+utterance.trim().slice(0,205)});
+  window.FE_NPC_MEMORY?.reflect?.(S,id,date,route);
   recordInteraction(id,route,'freeform',0);
   // Spoken dialogue is a record, not a performed action or a verified clue.
   if(typeof save==='function')save(true);
@@ -417,6 +420,12 @@
    date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():null,
    locationId:window.FE_CITY?.currentLocation?.()?.locationId||null,relationshipDelta:delta});
   if(a.memories.length>32)a.memories.splice(0,a.memories.length-32);
+  const remembered=observedDate();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(remembered)){
+   window.FE_NPC_MEMORY?.remember?.(S,id,{date:remembered,kind,withId,place:window.FE_CITY?.currentLocation?.()?.locationId||null,
+    source:'direct-encounter',verified:true,text:'The visitor and I had a '+kind.replace(/-/g,' ')+' interaction.'});
+   window.FE_NPC_MEMORY?.reflect?.(S,id,remembered,withId);
+  }
   if(typeof save==='function')save(true);
   return true;
  }
