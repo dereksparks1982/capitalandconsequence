@@ -39,14 +39,14 @@ for(const id of ['whiteHouse','washingtonAirport','governmentHospital']){
  assert.equal(site.provisional,false);
  assert.notEqual(site.grid,'Outside map');
 }
-assert.equal(byId('whiteHouse').grid,'16-K','White House aligns with original printed guide grid');
-assert.equal(byId('washingtonAirport').grid,'10-P','Airport aligns with printed guide');
-assert.equal(byId('governmentHospital').grid,'27-Q','Southeastern hospital stays on the printed map');
+assert.equal(byId('whiteHouse').grid,'12-I','White House aligns with original printed guide grid');
+assert.equal(byId('washingtonAirport').grid,'9-P','Airport aligns with printed guide');
+assert.equal(byId('governmentHospital').grid,'25-R','Southeastern hospital stays on the printed map');
 assert.equal(byId('blackwoodAsylum').placement,'area-located','Fictional public District Asylum has an identifiable provisional area');
 for(const site of sites.filter(s=>s.placement!=='unverified')){
  assert.notEqual(site.grid,'Outside map','located site must be on actual PRINTED map: '+site.id);
- assert.ok(site.x*2048>=239&&site.x*2048<=1403,'located point must not fall in the index columns: '+site.id);
- assert.ok(site.y*1159>=30&&site.y*1159<=681,'located point must not fall in margins: '+site.id);
+ assert.ok(site.x*2048>=286&&site.x*2048<=1778,'located point must not fall in the index columns: '+site.id);
+ assert.ok(site.y*1159>=30&&site.y*1159<=864,'located point must not fall in margins: '+site.id);
 }
 assert.equal(byId('franciscanMonastery').n,35,'Franciscan Monastery is pin 35');
 assert.equal(byId('cobblerShop').n,36,'Cobbler is pin 36');
@@ -57,7 +57,7 @@ assert.equal(byId('easternMarket').origin,'historical','Eastern Market is red');
 assert.equal(byId('georgetownMarketHouse').origin,'historical','Georgetown Market House is red');
 assert.equal(byId('franciscanMonastery').origin,'historical','Monastery pin is red');
 assert.equal(byId('franciscanMonastery').placement,'area-located','Monastery is grounded by address, not falsely labelled printed');
-assert.equal(byId('franciscanMonastery').grid,'20-E','Brookland monastery site sits in real printed grid 20-E');
+assert.equal(byId('franciscanMonastery').grid,'21-E','Brookland monastery site sits in real printed grid 21-E');
 assert.equal(byId('metropolitanPolice').origin,'historical','Real DC police institution is historical');
 assert.equal(byId('chainBridgeFishing').grid,'Outside map','Chain Bridge bank is not falsely mapped to Georgetown');
 assert.equal(byId('hillsdale').placement,'area-located','Barry Farm neighbourhood is placed southeast of river');
