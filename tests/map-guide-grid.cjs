@@ -39,6 +39,15 @@ for(const id of ['whiteHouse','washingtonAirport','governmentHospital']){
  assert.equal(site.provisional,false);
  assert.notEqual(site.grid,'Outside map');
 }
+assert.equal(byId('whiteHouse').grid,'16-K','White House aligns with original printed guide grid');
+assert.equal(byId('washingtonAirport').grid,'10-P','Airport aligns with printed guide');
+assert.equal(byId('governmentHospital').grid,'27-Q','Southeastern hospital stays on the printed map');
+assert.equal(byId('blackwoodAsylum').placement,'area-located','Fictional public District Asylum has an identifiable provisional area');
+for(const site of sites.filter(s=>s.placement!=='unverified')){
+ assert.notEqual(site.grid,'Outside map','located site must be on actual PRINTED map: '+site.id);
+ assert.ok(site.x*2048>=239&&site.x*2048<=1403,'located point must not fall in the index columns: '+site.id);
+ assert.ok(site.y*1159>=30&&site.y*1159<=681,'located point must not fall in margins: '+site.id);
+}
 assert.equal(byId('franciscanMonastery').n,35,'Franciscan Monastery is pin 35');
 assert.equal(byId('cobblerShop').n,36,'Cobbler is pin 36');
 assert.equal(byId('cobblerShop').origin,'fictional','Cobbler storefront is blue');
@@ -48,7 +57,7 @@ assert.equal(byId('easternMarket').origin,'historical','Eastern Market is red');
 assert.equal(byId('georgetownMarketHouse').origin,'historical','Georgetown Market House is red');
 assert.equal(byId('franciscanMonastery').origin,'historical','Monastery pin is red');
 assert.equal(byId('franciscanMonastery').placement,'area-located','Monastery is grounded by address, not falsely labelled printed');
-assert.equal(byId('franciscanMonastery').grid,'21-E','Brookland monastery sits in grid 21-E');
+assert.equal(byId('franciscanMonastery').grid,'20-E','Brookland monastery site sits in real printed grid 20-E');
 assert.equal(byId('metropolitanPolice').origin,'historical','Real DC police institution is historical');
 assert.equal(byId('chainBridgeFishing').grid,'Outside map','Chain Bridge bank is not falsely mapped to Georgetown');
 assert.equal(byId('hillsdale').placement,'area-located','Barry Farm neighbourhood is placed southeast of river');
@@ -68,7 +77,7 @@ assert.ok(app.includes("format:'capital-consequence-map-pins'"));
 assert.ok(app.includes("$('#titleMapLocationCard').addEventListener('pointerdown',e=>e.stopPropagation())"),
  'rename field stops pointerdown before map captures it');
 assert.ok(app.includes('viewport.setPointerCapture(e.pointerId)'),'existing map pan remains intact');
-assert.ok(app.includes("federalElectricTitleMapLocationsV4"),'New game uses a fresh map-pin layout store');
+assert.ok(app.includes("federalElectricTitleMapLocationsV5"),'New game uses a fresh map-pin layout store');
 assert.ok(!app.includes('wasUntouchedOldDefault')&&!app.includes('TITLE_MAP_OLD_DEFAULTS'),'Old map-pin save migrations are not required');
 assert.ok(app.includes('location.userPlaced=true'),'manually moved pins are displayed and stored');
 assert.ok(app.includes("confirm('Save pin '+location.n"),'pin drops must receive explicit owner confirmation');
