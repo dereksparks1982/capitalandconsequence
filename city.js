@@ -397,7 +397,7 @@
   potomacFishingBank:[29,.340,.690],
   babcockLake:[30,.495,.559],fletchersCove:[31,.184,.402],
   georgetownCanal:[32,.271,.475],easternBranchFishing:[33,.758,.642],
-  chainBridgeFishing:[34,.139,.326]
+  chainBridgeFishing:[34,.11,.326]
  });
  // Historical means the destination is real, not merely a fictional business
  // inside a historic building. Star Club and Embassy Room are therefore fictional.
@@ -482,6 +482,7 @@
   potomacFishingBank:[805,516,'Potomac Park / Southwest Washington shoreline; provisional shore entrance'],
   franciscanMonastery:[1011,186,'Brookland, 1400 Quincy Street NE, monastery grounds; doorway not labeled'],
   hillsdale:[1250,622,'Barry Farm / Hillsdale southeast of the Anacostia; general neighborhood, not one residence'],
+  blackwoodAsylum:[1184,595,'District Asylum: invented government premises southeast of central Washington; no historic lot claimed'],
   factory:[1104,220,'Ivy City / New York Avenue NE near Fenwick Street; fictional industrial block'],
   races:[1326,310,'Kenilworth / Benning east of the Anacostia; fictional race-track property'],
   capitolAirport:[1337,278,'East of the Anacostia north of Benning; proposed fictional airfield'],
