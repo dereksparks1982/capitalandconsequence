@@ -336,7 +336,7 @@ check(npcSave.npcSimulation.events.every(e=>e.actorId&&e.turn===1),'NPC decision
 check(city.getLocation('oldChinatown').name==='Chinatown','Chinatown has the player-facing agreed name');
 check(city.getLocation('star').description.includes('Gambling is not permitted'),'Star Club no gambling policy reflected in registry');
 check(appSource.includes('function mapTravelRestriction(location)'), 'Map gives locked destination explanations');
-check(appSource.includes('const arrived=reached&&')&&appSource.includes('if(!arrived){')&&appSource.includes('window.FE_CAREER_SHELL?.refreshDesk?.();'), 'Map only updates after successful room entry');
+check(appSource.includes('room.dataset.locationId!==id')&&appSource.includes('if(!reached||!room')&&appSource.includes("document.body.classList.add('city-room-open')"), 'Map leaves only the confirmed destination room visible');
 check(appSource.indexOf('save(true);',appSource.indexOf('function openCityRoom('))>appSource.indexOf("overlay.hidden=false;",appSource.indexOf('function openCityRoom(')), 'Room visit is saved after renderer setup succeeds');
 check(appSource.includes('S.currentLocation=priorLocation;'), 'Failed travel restores saved character location');
 check(index.includes('id="saveFailureBanner"'),'Save failures have a visible warning');
