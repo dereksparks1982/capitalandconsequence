@@ -3038,9 +3038,11 @@ function openTitleMapLocation(id){
  const travel=$('#titleMapLocationTravel');
  if(travel){
   const alreadyHere=!!activeProfileId()&&currentCityLocation()?.locationId===id;
-  travel.hidden=alreadyHere;
-  travel.disabled=!!reason||alreadyHere;
-  travel.textContent=reason?'Unavailable':alreadyHere?'Already Here':'Go There';
+  // The map card must allow entry even if the save says we are already here.
+  // A saved address is not the same as a visible, entered room.
+  travel.hidden=false;
+  travel.disabled=!!reason;
+  travel.textContent=reason?'Unavailable':alreadyHere?'Enter Location':'Go There';
   travel.title=reason;
   travel.dataset.locationId=id;
  }
