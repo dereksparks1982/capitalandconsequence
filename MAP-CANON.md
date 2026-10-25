@@ -1,3 +1,5 @@
+> **Binding owner correction (October 24):** Original map art never changes. The **sole District Asylum is gold**, not cream; the separate District General Hospital is not an asylum. Location-function pin fills are 68% opaque, numbers stay legible. Old save games and obsolete map-layout saves are disposable between builds. No old-save migration; normal autosave remains. Unverified fictional addresses must never be guessed.
+
 # Permanent Washington Map Canon · Capital & Consequence
 
 **Owner decision: October 24, 2026. Binding for all future builds.**
