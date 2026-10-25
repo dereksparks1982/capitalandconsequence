@@ -45,7 +45,12 @@
    map:{n:2,x:.4000,y:.4530},
    defaultRoom:'star-room',
    rooms:[
-    {id:'star-room',name:'Star Club Salon',description:'You have entered Madam Star’s salon, where fine dining, accomplished musicians and Washington society meet under rules of discretion. The Star Club does not allow card games or gambling. Finished interior artwork and additional rooms are future development.'}
+    {id:'star-room',name:'Star Club Salon',description:'You are inside Madam Star’s refined Washington club. Guests are welcomed here before choosing a room. There are no cards or gambling.'},
+     {id:'main-parlor',name:'Main Parlor',description:'Gentle conversation, guests, introductions and discreet service gather in Madam Star’s main parlor.'},
+     {id:'dining-room',name:'Dining Room',description:'Guests may dine and take refreshments with quiet, period-appropriate salon music. Detailed menus and ordering remain in development.'},
+     {id:'brandy-room',name:'Brandy Room',description:'A quieter smoking and conversation room for established patrons.'},
+     {id:'madam-office',name:'Madam Star’s Private Office',restricted:true,description:'Madam Star grants entry by invitation. Her correspondence and affairs are not open to casual guests.'},
+     {id:'private-suites',name:'Private Rooms',restricted:true,description:'Private rooms are accessible only by permission. No gambling is permitted anywhere in the club.'}
    ]
   },
   {
@@ -197,10 +202,10 @@
   },
   {
    id:'governmentHospital',
-   name:'Government Hospital for the Insane',
+   name:'District General Hospital',
    area:'Anacostia hillside · southeast Washington, D.C.',
-   category:'institution',
-   description:'A federal psychiatric hospital operating since 1855, later officially named St. Elizabeths in 1916. Public inquiries are received at the entrance; treatment wards and administrative offices require permission.',
+   category:'government',
+   description:'In this alternate Washington, this government facility provides general medical care. It is a hospital, not a second asylum. The real-world site was the Government Hospital for the Insane, later called St. Elizabeths; that history is separately documented.',
    // Historical institution: the 1890 name and opening date are verified by NARA.
    // Deliberately unpinned until its exact placement is reconciled with our map artwork.
    map:null,defaultRoom:'reception',
@@ -215,7 +220,7 @@
   {"id":"licensedGamingHall","name":"Licensed Gaming Hall","area":"Washington, D.C. · undecided address","category":"gaming","plannedOnly":true,"description":"Proposed regulated game hall; the allowed games and site are not yet settled.","map":null,"defaultRoom":"gaming-floor","rooms":[{"id":"gaming-floor","name":"Gaming Floor","description":"Planning only."}]},
   {"id":"privateFightHall","name":"Private Prizefight Venue","area":"Location undisclosed","category":"underground","hiddenFromDirectory":true,"description":"Invitation-only private fight location.","map":null,"defaultRoom":"private-ring","rooms":[{"id":"private-ring","name":"Private Ring","description":"Placeholder private venue."}]},
   {"id":"cockfightingDen","name":"Private Cockfighting Circle","area":"Location undisclosed","category":"underground","hiddenFromDirectory":true,"description":"Hidden private contest venue.","map":null,"defaultRoom":"meeting-yard","rooms":[{"id":"meeting-yard","name":"Meeting Yard","description":"Placeholder private venue."}]},
-  {"id":"blackwoodAsylum","name":"District Asylum","area":"Washington region · fictional address pending","category":"institution","description":"Fictional District Asylum directed by Edmund Wardman’s unnamed brother. Edmund is the family black sheep and begins here as an orderly. Separate from the historical federal hospital.","map":null,"defaultRoom":"reception","rooms":[{"id":"reception","name":"Asylum Reception","description":"Public entrance and inquiries."},{"id":"orderly-station","name":"Orderly Station","restricted":true,"description":"Attendant duty desk, assignment book, and supply register."},{"id":"patient-ward","name":"Patient Ward","restricted":true,"description":"Care area accessible to authorized staff."},{"id":"superintendent-office","name":"Superintendent Office","restricted":true,"description":"Private management offices. Not accessible to family merely by surname."},{"id":"administration","name":"Administration","restricted":true,"description":"Restricted institutional finance records."}]},
+  {"id":"blackwoodAsylum","name":"District Asylum","area":"Washington region · fictional address pending","category":"government","description":"The one public District Asylum in the alternate Washington. Edmund Wardman works as an orderly here; his elder brother directs it. This is a government institution, not a private asylum.","map":null,"defaultRoom":"reception","rooms":[{"id":"reception","name":"Asylum Reception","description":"Public entrance and inquiries."},{"id":"orderly-station","name":"Orderly Station","restricted":true,"description":"Attendant duty desk, assignment book, and supply register."},{"id":"patient-ward","name":"Patient Ward","restricted":true,"description":"Care area accessible to authorized staff."},{"id":"superintendent-office","name":"Superintendent Office","restricted":true,"description":"Private management offices. Not accessible to family merely by surname."},{"id":"administration","name":"Administration","restricted":true,"description":"Restricted institutional finance records."}]},
   {
    id:'whiteHouse',
    name:'White House',
