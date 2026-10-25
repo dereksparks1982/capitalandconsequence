@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),m=require('../map-pin-palette.js');
 const table=[
  ['whiteHouse','government','government'],
  ['governmentHospital','institution','government'],
- ['blackwoodAsylum','institution','healthcare'],
+ ['blackwoodAsylum','government','government'],
  ['hillsdale','neighborhood','hillsdale'],
  ['hillsdale-bakery','commerce','hillsdale'],
  ['factory','company','industry'],
