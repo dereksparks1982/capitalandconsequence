@@ -68,8 +68,8 @@ assert.ok(app.includes("format:'capital-consequence-map-pins'"));
 assert.ok(app.includes("$('#titleMapLocationCard').addEventListener('pointerdown',e=>e.stopPropagation())"),
  'rename field stops pointerdown before map captures it');
 assert.ok(app.includes('viewport.setPointerCapture(e.pointerId)'),'existing map pan remains intact');
-assert.ok(app.includes('const TITLE_MAP_OLD_DEFAULTS=Object.freeze({'),'old map defaults identified without clearing V2 storage');
-assert.ok(app.includes('wasUntouchedOldDefault'),'untouched old pins receive reviewed defaults');
+assert.ok(app.includes("federalElectricTitleMapLocationsV3"),'New game uses a fresh map-pin layout store');
+assert.ok(!app.includes('wasUntouchedOldDefault')&&!app.includes('TITLE_MAP_OLD_DEFAULTS'),'Old map-pin save migrations are not required');
 assert.ok(app.includes('location.userPlaced=true'),'manually moved pins are displayed and stored');
 assert.ok(app.includes("confirm('Save pin '+location.n"),'pin drops must receive explicit owner confirmation');
 assert.ok(app.includes("if(!approved){"),'rejected map drops restore the previous saved position');
