@@ -2068,7 +2068,7 @@ function renderCityRoomDirectory(location,activeRoomId){
    button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true;
   if(button.disabled)button.title='Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
-  button.onclick=()=>openCityRoom(location.id,room.id,{dev:cityRoomSession.dev,source:cityRoomSession.source});
+  button.onclick=()=>cityRoomSession.dev?openCityRoom(location.id,room.id,{dev:true,source:'dev'}):enterMapDestination(location.id,null,room.id);
   directory.appendChild(button);
  }
 }
@@ -3051,33 +3051,64 @@ function renameSelectedTitleMapPin(reset=false){
  const notice=$('#titleMapPinNameNotice');if(notice)notice.textContent='Saved for this profile.';
  return true;
 }
-function travelFromTitleMap(event){
+// Route all map travel and normal room changes through the renderer that
+// already works in the developer panel. Apply regular player access rules
+// before rendering and commit the visit only after the room is visible.
+function enterMapDestination(id,event,requestedRoomId){
  event?.preventDefault?.();
  event?.stopPropagation?.();
- const id=titleMapSelectedLocationId||document.getElementById('titleMapLocationTravel')?.dataset.locationId;
- const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
- const note=document.getElementById('titleMapTravelNote');
- const restriction=mapTravelRestriction(location);
- if(restriction){if(note)note.textContent=restriction;return false;}
- if(!location)return false;
- let entered=false;
- try{entered=openCityRoom(id,null,{dev:false,source:'map'})===true;}
- catch(error){console.error('Capital & Consequence: Go There failed',id,error);}
- const room=document.getElementById('cityRoomOverlay');
- if(!entered||!room||room.hidden||room.dataset.locationId!==id){
-  if(note)note.textContent='Could not enter '+location.name+'.';
-  return false;
+ const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id)||cityLocation(id);
+ const notice=document.getElementById('titleMapTravelNote');
+ const fail=reason=>{if(notice)notice.textContent=reason;console.warn('Go There refused:',id,reason);return false};
+ const reason=mapTravelRestriction(location);
+ if(reason)return fail(reason);
+ const place=cityLocation(id);
+ const room=place&&cityRoom(id,requestedRoomId||place.defaultRoom);
+ if(!place||!room)return fail('This destination has no available room.');
+ if(room.restricted&&!titleDevUnlockAllRooms){
+  const permission=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},place.id,room.id,S.gameDate);
+  if(permission?.ok!==true)return fail(permission?.reason||'This room requires authorization.');
  }
- // The destination replaces the map and all desks. Only an actual registered
- // location room qualifies as arrival; never dismiss the map on failed travel.
- if(room.parentNode!==document.body)document.body.appendChild(room);
- room.hidden=false;
+ const prior=currentCityLocation();
+ let rendered=false;
+ try{rendered=!!openCityRoom(place.id,room.id,{dev:true,source:'map'})}
+ catch(error){console.error('Go There renderer failed:',id,error)}
+ const overlay=document.getElementById('cityRoomOverlay');
+ if(!rendered||!overlay||overlay.hidden||overlay.dataset.locationId!==place.id)
+  return fail('Could not open '+place.name+'.');
+ // Never leave developer privileges active on a regular player visit.
+ S.currentLocation={locationId:place.id,roomId:room.id};
+ cityRoomSession={locationId:place.id,roomId:room.id,dev:false,source:'map'};
+ if(overlay.parentNode!==document.body)document.body.appendChild(overlay);
+ overlay.hidden=false;
  document.body.classList.add('city-room-open');
+ guardedRoomPanel('room access menu',()=>renderCityRoomDirectory(place,room.id));
+ guardedRoomPanel('room opportunities',()=>window.FE_VENUES?.renderRoomOpportunities?.(place.id));
+ guardedRoomPanel('room storage',()=>window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(place.id,room.id));
+ guardedRoomPanel('room market',()=>window.FE_MARKET_UI?.render?.());
+ guardedRoomPanel('room housing',()=>window.FE_HOUSING?.renderHouseholdRecord?.(place.id,room.id));
+ guardedRoomPanel('room livery',()=>window.FE_LIVERY_UI?.render?.(place.id,room.id,S,recordLiveryPurchase,true));
+ guardedRoomPanel('room stable',()=>window.FE_HORSE_STABLE_UI?.render?.(place.id,room.id,S,recordLiveryPurchase,true));
+ guardedRoomPanel('control status',()=>updateTitleDevCityControls());
+ if(prior.locationId!==place.id){
+  guardedRoomPanel('fare and custody',()=>{
+   const paid=window.FE_TRAVEL?.recordProvisional?.(prior.locationId,place.id);
+   window.FE_HORSE_CUSTODY?.onArrival?.(S,prior.locationId,place.id,!!paid);
+  });
+ }
+ guardedRoomPanel('visit leads',()=>window.FE_MAP_LEADS?.visit?.(S,place.id));
+ guardedRoomPanel('autosave',()=>save(true));
+ guardedRoomPanel('NPC clock',()=>window.FE_NPC_AI?.syncClock?.());
+ guardedRoomPanel('close map',()=>{closeTitleDialog();closeTitleMap()});
  const map=document.getElementById('titleMapViewer');
  if(map)map.hidden=true;
  document.body.classList.remove('title-map-open');
- try{room.focus({preventScroll:true})}catch(_){}
+ overlay.focus?.();
  return true;
+}
+function travelFromTitleMap(event){
+ return enterMapDestination(titleMapSelectedLocationId||
+  document.getElementById('titleMapLocationTravel')?.dataset.locationId,event);
 }
 function buildTitleMapMarkers(){
  const layer=$('#titleMapMarkers');if(!layer)return;
@@ -3258,7 +3289,7 @@ function renderUnpinnedCityDirectory(){
  for(const loc of city.listLocations().filter(loc=>!loc.map&&(titleDevUnlockAllRooms||(!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id))&&(!loc.availableFrom||year>=loc.availableFrom))))){
   const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
   button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
-  button.onclick=()=>openCityRoom(loc.id,null,{dev:false,source:'map'});
+  button.onclick=()=>enterMapDestination(loc.id);
   out.appendChild(button);
  }
 }
@@ -3348,6 +3379,7 @@ function initTitleMapViewer(){
  viewport.addEventListener('wheel',e=>{e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
  viewport.addEventListener('pointerdown',e=>{
+  if(e.target?.closest?.('button,input,select,textarea,a,#titleMapLocationCard'))return;
   if(e.button!==0)return;
   titleMapState.pointerId=e.pointerId;titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
   viewport.setPointerCapture(e.pointerId);viewport.classList.add('is-dragging');e.preventDefault();
