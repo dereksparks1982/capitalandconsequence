@@ -44,6 +44,10 @@ assert.match(app,/travel\.disabled=!!reason;/,'Saved location alone does not dis
 const careerSource=read('career-shell.js');
 assert.match(careerSource,/if\(roomOverlay\)document\.body\.appendChild\(roomOverlay\)/,'Room overlay is detached from retired title');
 assert.match(styles,/body\.city-room-open > #cityRoomOverlay\{[^}]*z-index:3200000/,'Entered rooms cover the map and executive desk');
+assert.match(styles,/body\.city-room-open > :not\(#cityRoomOverlay\):not\(#saveFailureBanner\)\{visibility:hidden!important\}/,'Room view hides all old screens');
+assert.match(app,/directory\.hidden=false;/,'Room menu is visible for every building');
+assert.match(app,/federalElectricTitleMapLocationsV3/,'Old per-profile map locations are not migrated');
+assert.doesNotMatch(app,/TITLE_MAP_OLD_DEFAULTS|TITLE_MAP_INTERMEDIATE_DEFAULTS/,'No old-map save migration retained');
 const context={window:{}};vm.runInNewContext(citySource,context);
 const city=context.window.FederalElectricCity;
 assert.equal(city.getLocation('star').defaultRoom,'star-room');
