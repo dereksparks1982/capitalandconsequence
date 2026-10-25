@@ -33,7 +33,10 @@
  if(devPanel)document.body.appendChild(devPanel);
  const dialog=document.getElementById('titleDialog');
  const map=document.getElementById('titleMapViewer');
+ const roomOverlay=document.getElementById('cityRoomOverlay');
  if(map)document.body.appendChild(map);
+ // City destinations are active scenes, not children of the retired title UI.
+ if(roomOverlay)document.body.appendChild(roomOverlay);
  if(dialog){document.body.appendChild(dialog);dialog.classList.add('career-global-dialog');dialog.addEventListener('click',e=>{if(e.target===dialog)closeTitleDialog()});}
  if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true');legacy.inert=true;}
  const desk=document.createElement('section');
