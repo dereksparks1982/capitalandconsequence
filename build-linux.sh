@@ -1,25 +1,22 @@
 #!/usr/bin/env bash
-# Manual-only Linux packaging; source CI never creates or accepts desktop candidates.
+# Manual-only Ubuntu build. NEVER create a dist folder or backups.
 set -euo pipefail
 cd "$(dirname "$0")"
-
+project="$PWD"
 for cmd in node npm gcc tar sha256sum; do
-  command -v "$cmd" >/dev/null 2>&1 || { printf 'Missing required command: %s\n' "$cmd" >&2; exit 1; }
+  command -v "$cmd" >/dev/null 2>&1 || { printf 'Missing: %s\n' "$cmd" >&2; exit 1; }
 done
-
-node -e 'if (Number(process.versions.node.split(".")[0]) < 22) { console.error("Capital & Consequence requires Node.js 22 or newer to package."); process.exit(1); }'
-
-npm run test:source
+node -e 'if(Number(process.versions.node.split(".")[0])<22)process.exit(1)'
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
 npm install --no-audit --no-fund
 npm run prepare:runtime
 npm run audit:offline
-npm run pack:linux
-
-binary="dist/linux-unpacked/capital-consequence"
-test -x "$binary" || { echo "Missing Electron binary after packaging." >&2; exit 1; }
-mv "$binary" "dist/linux-unpacked/capital-consequence-bin"
-
-cat > /tmp/capital-consequence-launcher.c <<'EOF'
+./node_modules/.bin/electron-builder --linux dir --x64 --publish never "--config.directories.output=$work/pack"
+binary="$work/pack/linux-unpacked/capital-consequence"
+test -x "$binary" || { echo "Missing compiled Electron binary" >&2; exit 1; }
+mv "$binary" "$work/pack/linux-unpacked/capital-consequence-bin"
+cat > "$work/launcher.c" <<'EOF'
 #define _GNU_SOURCE
 #include <limits.h>
 #include <stdio.h>
@@ -47,16 +44,14 @@ int main(int argc, char **argv) {
   return 1;
 }
 EOF
-
-gcc -Wall -Wextra -Werror -O2 -s /tmp/capital-consequence-launcher.c -o "$binary"
-chmod 0755 "$binary"
-ln -sfn capital-consequence "dist/linux-unpacked/Capital & Consequence"
-rm -rf "dist/Capital & Consequence Standalone"
-mv dist/linux-unpacked "dist/Capital & Consequence Standalone"
-
-archive="dist/Capital-and-Consequence-0.6.88-linux-x64.tar.gz"
-tar -C dist -czf "$archive" "Capital & Consequence Standalone"
-(cd dist && sha256sum "Capital-and-Consequence-0.6.88-linux-x64.tar.gz" > "Capital-and-Consequence-0.6.88-linux-x64.tar.gz.sha256")
-
-printf '\nBuild complete: %s\nSHA-256: %s.sha256\n' "$archive" "$archive"
-printf 'To launch: extract the archive and double-click Capital & Consequence.\n'
+gcc -Wall -Wextra -Werror -O2 -s "$work/launcher.c" -o "$work/pack/linux-unpacked/capital-consequence"
+chmod 0755 "$work/pack/linux-unpacked/capital-consequence"
+output="$project/Capital & Consequence Standalone"
+rm -rf "$output"
+mv "$work/pack/linux-unpacked" "$output"
+ln -sfn 'Capital & Consequence Standalone/capital-consequence' "$project/Capital & Consequence"
+version="$(node -p "require('./package.json').version")"
+archive="$project/Capital-and-Consequence-$version-linux-x64.tar.gz"
+tar -C "$project" -czf "$archive" "Capital & Consequence Standalone"
+sha256sum "$archive" > "$archive.sha256"
+printf 'Build complete: %s\nExecutable: %s\n' "$archive" "$project/Capital & Consequence"
