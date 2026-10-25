@@ -1590,6 +1590,8 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 .dc-title-card small{color:#c4b18a;font:12px Georgia,serif}
 
 /* Active destination: do not leave the businessman desk visible beneath a modal. */
+/* A location occupies the foreground above the map and the personal desk. */
+body.city-room-open > #cityRoomOverlay{position:fixed;inset:0;z-index:3200000;visibility:visible;pointer-events:auto}
 body.city-room-open .city-room-overlay{padding:0;align-items:stretch;justify-content:stretch;background:#10151d;backdrop-filter:none}
 body.city-room-open .city-room-shell{width:100%;min-height:100%;height:100%;overflow-y:auto;border:0;box-shadow:none}
 body.city-room-open .city-room-placeholder{flex:1}
