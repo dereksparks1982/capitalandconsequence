@@ -3358,7 +3358,12 @@ function initTitleMapViewer(){
  open.onclick=openTitleMap;
  $('#titleMapClose').onclick=closeTitleMapOrReturnToLocation;
  $('#titleMapLocationClose').onclick=closeTitleMapLocation;
- $('#titleMapLocationTravel').onclick=event=>travelFromTitleMap(event);
+ const go=$('#titleMapLocationTravel');
+ if(go){
+  go.onclick=null;
+  go.addEventListener('pointerdown',e=>e.stopPropagation(),true);
+  go.addEventListener('click',e=>{e.stopImmediatePropagation();travelFromTitleMap(e)},true);
+ }
  $('#titleMapExportPins').onclick=exportTitleMapPins;
  // The location card contains a text field. Stop its pointerdown from reaching
  // the viewport's existing pan capture; leave the map pan/zoom code unchanged.
