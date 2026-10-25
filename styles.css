@@ -1551,34 +1551,34 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 
 /* Category-color pins. Purpose overrides the retired red=real / blue=fiction fills.
    Fill transparency does not make the marker numerals transparent. */
-#titleMapMarkers .title-map-marker[data-purpose="government"] .title-map-marker-pin{background:rgba(199,154,48,.78)!important;color:#24180e!important}
+#titleMapMarkers .title-map-marker[data-purpose="government"] .title-map-marker-pin{background:rgba(199,154,48,.68)!important;color:#24180e!important}
 .title-map-swatch.purpose-government{background:#c79a30}
 .title-map-directory-item[data-purpose="government"]{border-left:4px solid #c79a30}
-#titleMapMarkers .title-map-marker[data-purpose="commerce"] .title-map-marker-pin{background:rgba(165,54,54,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="commerce"] .title-map-marker-pin{background:rgba(165,54,54,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-commerce{background:#a53636}
 .title-map-directory-item[data-purpose="commerce"]{border-left:4px solid #a53636}
-#titleMapMarkers .title-map-marker[data-purpose="entertainment"] .title-map-marker-pin{background:rgba(37,100,160,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="entertainment"] .title-map-marker-pin{background:rgba(37,100,160,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-entertainment{background:#2564a0}
 .title-map-directory-item[data-purpose="entertainment"]{border-left:4px solid #2564a0}
-#titleMapMarkers .title-map-marker[data-purpose="hillsdale"] .title-map-marker-pin{background:rgba(116,76,48,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="hillsdale"] .title-map-marker-pin{background:rgba(116,76,48,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-hillsdale{background:#744c30}
 .title-map-directory-item[data-purpose="hillsdale"]{border-left:4px solid #744c30}
-#titleMapMarkers .title-map-marker[data-purpose="green"] .title-map-marker-pin{background:rgba(50,121,76,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="green"] .title-map-marker-pin{background:rgba(50,121,76,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-green{background:#32794c}
 .title-map-directory-item[data-purpose="green"]{border-left:4px solid #32794c}
-#titleMapMarkers .title-map-marker[data-purpose="religion"] .title-map-marker-pin{background:rgba(106,63,137,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="religion"] .title-map-marker-pin{background:rgba(106,63,137,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-religion{background:#6a3f89}
 .title-map-directory-item[data-purpose="religion"]{border-left:4px solid #6a3f89}
-#titleMapMarkers .title-map-marker[data-purpose="industry"] .title-map-marker-pin{background:rgba(55,57,63,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="industry"] .title-map-marker-pin{background:rgba(55,57,63,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-industry{background:#37393f}
 .title-map-directory-item[data-purpose="industry"]{border-left:4px solid #37393f}
-#titleMapMarkers .title-map-marker[data-purpose="water"] .title-map-marker-pin{background:rgba(33,127,136,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="water"] .title-map-marker-pin{background:rgba(33,127,136,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-water{background:#217f88}
 .title-map-directory-item[data-purpose="water"]{border-left:4px solid #217f88}
-#titleMapMarkers .title-map-marker[data-purpose="healthcare"] .title-map-marker-pin{background:rgba(223,217,199,.78)!important;color:#242017!important}
+#titleMapMarkers .title-map-marker[data-purpose="healthcare"] .title-map-marker-pin{background:rgba(223,217,199,.68)!important;color:#242017!important}
 .title-map-swatch.purpose-healthcare{background:#dfd9c7}
 .title-map-directory-item[data-purpose="healthcare"]{border-left:4px solid #dfd9c7}
-#titleMapMarkers .title-map-marker[data-purpose="housing"] .title-map-marker-pin{background:rgba(103,108,112,.78)!important;color:#fff7ec!important}
+#titleMapMarkers .title-map-marker[data-purpose="housing"] .title-map-marker-pin{background:rgba(103,108,112,.68)!important;color:#fff7ec!important}
 .title-map-swatch.purpose-housing{background:#676c70}
 .title-map-directory-item[data-purpose="housing"]{border-left:4px solid #676c70}
 
@@ -1592,6 +1592,12 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 /* Active destination: do not leave the businessman desk visible beneath a modal. */
 /* A location occupies the foreground above the map and the personal desk. */
 body.city-room-open > #cityRoomOverlay{position:fixed;inset:0;z-index:3200000;visibility:visible;pointer-events:auto}
+/* An entered room is the only view: no map, desk, navigation, or global radio. */
+body.city-room-open > :not(#cityRoomOverlay):not(#saveFailureBanner){visibility:hidden!important}
+body.city-room-open > #cityRoomOverlay{visibility:visible!important}
+body.city-room-open .city-room-directory{display:flex;flex-wrap:wrap;gap:8px;padding:18px 22px;background:#d6c5a3;border-bottom:2px solid #99896b}
+body.city-room-open .city-room-directory[hidden]{display:none}
+body.city-room-open .city-room-directory::before{content:'ROOMS IN THIS BUILDING';display:block;flex:0 0 100%;font:700 12px Georgia,serif;letter-spacing:.14em;color:#493d2b}
 body.city-room-open .city-room-overlay{padding:0;align-items:stretch;justify-content:stretch;background:#10151d;backdrop-filter:none}
 body.city-room-open .city-room-shell{width:100%;min-height:100%;height:100%;overflow-y:auto;border:0;box-shadow:none}
 body.city-room-open .city-room-placeholder{flex:1}
