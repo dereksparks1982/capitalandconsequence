@@ -2064,7 +2064,8 @@ function renderCityRoomDirectory(location,activeRoomId){
   const button=document.createElement('button');
   button.type='button';
   button.textContent=room.name;
-  button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok;
+  const access=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate);
+   button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true;
   if(button.disabled)button.title='Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
   button.onclick=()=>openCityRoom(location.id,room.id,{dev:cityRoomSession.dev,source:cityRoomSession.source});
@@ -2121,7 +2122,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('fishing',()=>window.FE_FISHING_UI?.render?.());
   guardedRoomPanel('market',()=>window.FE_MARKET_UI?.render?.());
   guardedRoomPanel('housing',()=>window.FE_HOUSING?.renderHouseholdRecord?.(location.id,room.id));
-  guardedRoomPanel('room directory',()=>renderCityRoomDirectory(location,room.id));
+  renderCityRoomDirectory(location,room.id);
   guardedRoomPanel('livery',()=>window.FE_LIVERY_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
   guardedRoomPanel('horse stable',()=>window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
   const mapButton=document.getElementById('cityRoomReturnMap');
@@ -2130,7 +2131,7 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
-  window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
+  guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
   guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
   guardedRoomPanel('developer controls',()=>updateTitleDevCityControls());
  }catch(err){
@@ -2143,29 +2144,38 @@ function openCityRoom(locationId,roomId,options={}){
   console.error('Federal Electric: could not enter '+location.name,err);
   return false;
  }
- // All room content is ready. Record movement only after success.
+ // Destination is visible now. Hide the map and desk BEFORE optional
+ // bookkeeping. A secondary ledger exception cannot undo scene navigation.
+ guardedRoomPanel('close map',()=>{closeTitleDialog();closeTitleMap()});
  if(!dev){
-  if(location.id==='brokerOffice'){
-   window.FE_BROKER?.visit?.(S,S.gameDate);
-   const advice=window.FE_BROKER?.recordObservation?.(S,S.gameDate,S.stocks,S.portfolio);
-   if(advice)S.notes.push({date:displayDate(),source:'stockbroker consultation',text:advice.text});
-   renderBrokerOffice();
-  }
-  else{const panel=document.getElementById('cityRoomBrokerage');if(panel)panel.hidden=true}
+  guardedRoomPanel('broker visit',()=>{
+   if(location.id==='brokerOffice'){
+    window.FE_BROKER?.visit?.(S,S.gameDate);
+    const advice=window.FE_BROKER?.recordObservation?.(S,S.gameDate,S.stocks,S.portfolio);
+    if(advice)S.notes.push({date:displayDate(),source:'stockbroker consultation',text:advice.text});
+    renderBrokerOffice();
+   }else{
+    const panel=document.getElementById('cityRoomBrokerage');if(panel)panel.hidden=true;
+   }
+  });
   if(priorLocation.locationId!==location.id){
-   const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
-   window.FE_HORSE_CUSTODY?.onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid);
-   window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,true);
+   guardedRoomPanel('journey and custody',()=>{
+    const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
+    window.FE_HORSE_CUSTODY?.onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid);
+    window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,true);
+   });
   }
-  window.FE_MAP_LEADS?.visit?.(S,location.id);
-  save(true);
-  window.FE_NPC_AI?.syncClock?.();
-  const encounter=document.getElementById('cityRoomEncounter');
-  if(encounter)encounter.textContent=checkCityOpportunity(location.id);
+  guardedRoomPanel('visit event',()=>window.FE_MAP_LEADS?.visit?.(S,location.id));
+  guardedRoomPanel('arrival autosave',()=>save(true));
+  guardedRoomPanel('NPC sync',()=>window.FE_NPC_AI?.syncClock?.());
+  guardedRoomPanel('encounter',()=>{
+   const encounter=document.getElementById('cityRoomEncounter');
+   if(encounter)encounter.textContent=checkCityOpportunity(location.id);
+  });
  }else{
-  const encounter=document.getElementById('cityRoomEncounter');if(encounter)encounter.textContent='';
+  const encounter=document.getElementById('cityRoomEncounter');
+  if(encounter)encounter.textContent='';
  }
- closeTitleDialog();closeTitleMap();
  return true;
 }
 function closeCityRoom(){
@@ -2696,7 +2706,7 @@ function toggleTitleFan(){
 const titleMapState={scale:1,minScale:1,maxScale:8,x:0,y:0,pointerId:null,lastX:0,lastY:0};
 // V2 intentionally restores the approved geographical defaults; stale V1 browser pin
 // overrides remain untouched for recovery but must not hide the corrected placements.
-const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV3';
+const TITLE_MAP_LAYOUT_KEY='federalElectricTitleMapLocationsV4';
 function titleMapStorageKey(){return TITLE_MAP_LAYOUT_KEY+':'+(activeProfileId()||'unassigned')}
 // The city registry is the single source of truth; missing city.js must not
 // silently fall back to six obsolete, geographically incorrect map pins.
@@ -3001,7 +3011,7 @@ function openTitleMapLocation(id){
  $('#titleMapLocationArea').textContent=location.area;
  const grid=$('#titleMapLocationGrid');
  if(grid)grid.textContent='Map grid: '+titleMapGridAt(location.x,location.y)+' · '+
-  (location.origin==='historical'?'Historical (red)':'Fictional (blue)')+' · '+
+  (location.origin==='historical'?'Non-Fiction':'Fiction')+' · '+
   (location.placement==='map-anchored'?'Map-anchored placement':'Placement not independently verified');
  $('#titleMapLocationDescription').textContent=location.description;
  renderPlaceReference(location,true);
@@ -3036,29 +3046,29 @@ function renameSelectedTitleMapPin(reset=false){
  return true;
 }
 function travelFromTitleMap(event){
- // Go There must enter an actual room, not just dismiss the map or pin card.
  event?.preventDefault?.();
  event?.stopPropagation?.();
- const id=titleMapSelectedLocationId||$('#titleMapLocationTravel')?.dataset.locationId;
- const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+ const id=titleMapSelectedLocationId||document.getElementById('titleMapLocationTravel')?.dataset.locationId;
+ const destination=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
  const message=document.getElementById('titleMapTravelNote');
- const reason=mapTravelRestriction(location);
- if(reason){if(message)message.textContent=reason;return false;}
+ const reason=mapTravelRestriction(destination);
+ if(reason){if(message)message.textContent=reason;return false}
  if(!id)return false;
- // Reopen the destination room even if the saved position says we are there.
  let reached=false;
- try{reached=!!openCityRoom(id,null,{dev:false,source:'map'});}
- catch(error){console.error('Capital & Consequence: city-room travel failed',id,error);}
+ try{reached=!!openCityRoom(id,null,{dev:false,source:'map'})}
+ catch(error){console.error('Destination failed',id,error)}
  const room=document.getElementById('cityRoomOverlay');
- const arrived=reached&&!!room&&!room.hidden&&currentCityLocation().locationId===id;
- if(!arrived){
-  if(message)message.textContent='Could not enter '+(location?.name||'this location')+'. The map remains open.';
+ if(!reached||!room||room.hidden||room.dataset.locationId!==id){
+  if(message)message.textContent='Could not enter '+(destination?.name||'this location')+'.';
   return false;
  }
- // Successful arrivals must show the destination instead of the desk.
- if(!$('#titleMapViewer')?.hidden)closeTitleMap();
+ // The selected building, not the business desk or the map, owns this screen.
+ room.hidden=false;
+ document.body.classList.add('city-room-open');
+ const map=document.getElementById('titleMapViewer');
+ if(map)map.hidden=true;
+ document.body.classList.remove('title-map-open');
  room.focus?.();
- window.FE_CAREER_SHELL?.refreshDesk?.();
  return true;
 }
 function buildTitleMapMarkers(){
