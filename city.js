@@ -150,7 +150,7 @@
    description:'Le Paon d’Or means “The Golden Peacock.” Lucien Étienne “Lui” Delacroix owns this extravagant French cabaret outright. French dancing, burlesque, orchestra, champagne and expensive entertainment attract patrons from Washington’s influential circles. Lui’s connections protect his standing despite scandalous, unverified gossip about his private affairs. Elias Crowe works its entrance.',
    map:null,defaultRoom:'main-room',
    rooms:[
-    {id:'main-room',name:'Public Cabaret Room',description:'Visitors watch French dancing and musical revue performances. The club’s private business and restricted rooms cannot be discovered merely by entering.'},
+    {id:'main-room',name:'Public Cabaret Room',description:'Le Paon d’Or means “The Golden Peacock.” Lui Delacroix owns this glittering French cabaret outright: can-can, burlesque, music, champagne and indulgent entertainments draw well-connected patrons. Lui trades on powerful friendships as well as spectacle. Rumours about his private appetites are gossip, not established facts; guests do not gain access to his private rooms merely by entering.'},
     {id:'doorman-post',name:'Doorman’s Station',restricted:true,description:'A modest employee post by the entrance, with an admission book and a working shift ledger.'},
     {id:'proprietor-office',name:'Proprietor’s Private Office',restricted:true,description:'Private business records. Eli is not trusted with access.'}
    ]
