@@ -1660,3 +1660,9 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .broker-quote-overflow th,.broker-quote-overflow td{padding:7px 8px;border-bottom:1px solid #baaa8c;text-align:left}
 .broker-quote-overflow button{min-height:34px}
 @media(max-width:700px){.city-room-cash-header{justify-content:flex-start;margin-left:0;order:3;width:100%}.city-room-cash-header span{flex:1;font-size:10px}}
+
+/* NPC cards retain convenient conversation shortcuts without replacing free text. */
+.npc-card-quick{display:flex;gap:7px;flex-wrap:wrap;padding:12px 17px;background:#e4d3b3;border-top:1px solid #bda57a}
+.npc-card-quick-action{padding:8px 10px;font:700 13px Georgia,serif;background:#f9efd9;color:#2b2218;border:1px solid #8a7048;min-height:36px;cursor:pointer}
+.npc-card-quick-action:hover{background:#fff8eb}
+.npc-card-quick-action:disabled{opacity:.5;cursor:wait}
