@@ -14,6 +14,7 @@
   inspectorHayes:{occupation:'police inspector',workplace:'metropolitanPolice',opening:4100,pay:125,betting:12},
   chenMei:{occupation:'merchant',workplace:'oldChinatown',opening:2900,pay:95,betting:8},
   liWen:{occupation:'merchant',workplace:'oldChinatown',opening:3000,pay:103,betting:19},
+  annaPetrovna:{occupation:'independent visitor',workplace:null,opening:2200,pay:0,betting:0},
   pavelOrlov:{occupation:'trade representative',workplace:'russianTradeHall',opening:7000,pay:150,betting:18},
   alexiRurik:{occupation:'courier',workplace:'russianTradeHall',opening:950,pay:89,betting:23}
  });
