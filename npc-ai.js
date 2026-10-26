@@ -269,6 +269,13 @@
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
   const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
   if(already)return {ok:false,reason:'You have already discussed that today.'};
+  const temperament=window.FE_NPC_PERSONALITY?.approach?.(def,a,{id:route},{date,topic,
+   occupied:/reviewing|working|preparing|serving|meeting/i.test(String(a.activity||''))});
+  if(temperament&&!temperament.allowed){
+   if(!a.memories.some(m=>m.key==='refused'&&m.withId===route&&m.date===date))
+    recordInteraction(id,route,'refused',0);
+   return {ok:false,reason:def.name+': '+temperament.reason};
+  }
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
   const reply=def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
@@ -309,13 +316,20 @@
    shown.locationId!==position.locationId||shown.roomId!==position.roomId)
    return {ok:false,reason:'That resident is not in this room.'};
   const date=observedDate(),route=S.characterRoute||'industrialist';
+  const temperament=window.FE_NPC_PERSONALITY?.approach?.(def,actor,{id:route},{date,topic:'conversation',
+   occupied:/reviewing|working|preparing|serving|meeting/i.test(String(actor.activity||''))});
+  if(temperament&&!temperament.allowed){
+   if(!actor.memories.some(m=>m.key==='refused'&&m.withId===route&&m.date===date))
+    recordInteraction(id,route,'refused',0);
+   return {ok:false,reason:def.name+': '+temperament.reason};
+  }
   let query;
   const environment=window.FE_WASHINGTON_TIME?.environment?.(S);
   try{query=dev.prepare({save:S,npc:def,utterance,date,weather:environment?.weather||S.turnConditions?.weather||'unavailable',sky:environment,
     location:window.FederalElectricCity?.getLocation?.(position.locationId)?.name||position.locationId,
     playerName:window.FE_CHARACTERS?.get?.(route)?.characterName||route,
     playerLanguages:Array.isArray(S.playerLanguages)?S.playerLanguages:['en'],
-    activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId})}
+    activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId,socialStyle:temperament?.style||'conversational'})}
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
   const result=await model.chat({messages:query.messages});
