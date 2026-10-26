@@ -57,8 +57,18 @@
   const button=document.getElementById('cityRoomCashConfirm'),status=document.getElementById('cityRoomCashStatus');
   if(button){button.disabled=!!save.paused||save.phase==='report'||(location==='districtBank'&&save.phase!=='day');button.onclick=()=>{
     const value=Number(document.getElementById('cityRoomCashAmount')?.value);
+    const proposal=book.quote(save,select.value,value,location,route);
+    if(!proposal.ok){if(status)status.textContent=proposal.reason;return}
+    // An actual owner or teller transaction costs two saved game minutes.
+    // Check available funds and clock BEFORE advancing time, not afterward.
+    if(!window.FE_WASHINGTON_TIME?.canSpend?.(save,120)){
+     if(status)status.textContent='There is not enough open business time for this transaction.';return;
+    }
+    if(window.advanceWorldTime?.(120,true)!==120){
+     if(status)status.textContent='The cash transaction was interrupted before funds moved.';return;
+    }
     const result=book.transfer(save,select.value,value,location,route);
-    if(status)status.textContent=result.ok?'Transaction recorded at '+(location==='factory'?'Federal Electric':'the bank')+': '+fmt(value)+'.':result.reason;
+    if(status)status.textContent=result.ok?'Transaction recorded in two game minutes at '+(location==='factory'?'Federal Electric':'the bank')+': '+fmt(value)+'.':result.reason;
     if(result.ok)changed?.(result.entry);
   }}
  }
