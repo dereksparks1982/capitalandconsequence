@@ -553,6 +553,7 @@
     window.FE_NPC_CARD?.open?.({id:visitor.id,name:visitor.name,occupation:def?.occupation||'Washington resident',
      sex:['madamStar','chenMei','annaPetrovna'].includes(visitor.id)?'woman':'man',
      history:window.FE_NPC_DIALOGUE?.history?.(S,visitor.id)||[],valid,
+     onQuick:topic=>talkAtLocation(visitor.id,topic),
      onSpeak:words=>converseAtLocation(visitor.id,words)});
    });
    row.appendChild(select);list.appendChild(row);
