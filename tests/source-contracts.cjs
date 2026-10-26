@@ -282,6 +282,15 @@ check(appSource.includes('componentWorks:window.FE_COMPONENT_WORKS?.createOpenin
 check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
 check(index.includes('npc-needs.js?v=')&&index.indexOf('npc-weekly-schedule.js?v=')<index.indexOf('npc-needs.js?v=')&&index.indexOf('npc-needs.js?v=')<index.indexOf('npc-ai.js?v='),'Personal needs load after weekly plans and before NPC agency');
+check(index.includes('npc-household-receipts.js?v=')&&
+ index.indexOf('washington-commerce.js?v=')<index.indexOf('npc-household-receipts.js?v=')&&
+ index.indexOf('npc-household-receipts.js?v=')<index.indexOf('npc-ai.js?v='),
+ 'Paid Washington market acquisitions load before resident simulation');
+check(pkg.scripts['test:source'].includes('tests/npc-household-receipts.cjs'),
+ 'Real purchases, retailer stocks, player money and no-fictional-meal rules have offline regression coverage');
+check(read('npc-ai.js').includes('FE_NPC_HOUSEHOLD_RECEIPTS?.sync?.(S,def.id)'),
+ 'Each resident gains only their own actually paid market receipt evidence');
+
 check(pkg.scripts['test:source'].includes('tests/npc-needs.cjs'),'Rest, hunger, mood and reload must have an offline regression suite');
 check(index.includes('npc-residences.js?v=')&&index.indexOf('city-access.js?v=')<index.indexOf('npc-residences.js?v=')&&
  index.indexOf('npc-residences.js?v=')<index.indexOf('npc-ai.js?v='),'Nightly NPC lodging checks normal restricted room authority');
