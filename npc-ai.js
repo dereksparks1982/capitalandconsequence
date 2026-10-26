@@ -229,6 +229,7 @@
     slot,weekday,seed:w.seed,rest,
     defaultLocation:natural,defaultActivity:rest?null:def.activities[slot]});
    a.goal=decision.goal;
+   window.FE_NPC_HOUSEHOLD_RECEIPTS?.sync?.(S,def.id);
    const action=completed.action,moved=pickRoom(def,a,action,w),destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
@@ -271,6 +272,9 @@
     key:period.economyKey,date:period.day,slot:period.slot,weekday:period.weekday,seed:w.seed,
     rest,save:S,defaultLocation:natural,defaultActivity:rest?null:period.activity});
    a.goal=decision.goal;
+   // Mirror actual paid stock transfers into the buyer's private history,
+   // without charging them again or claiming they already ate the food.
+   window.FE_NPC_HOUSEHOLD_RECEIPTS?.sync?.(S,def.id);
    const action=completed.action;
    const movementAction={...action,key,date:period.day,slot:period.slot,
     activity:action.locationId===period.locationId?period.activity:action.activity};
