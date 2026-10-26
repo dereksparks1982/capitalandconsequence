@@ -11,4 +11,14 @@ assert.equal(social.traits({id:'inspectorHayes'}).discretion,92);
 assert.equal(social.traits({id:'chenMei'}).honesty,84);
 assert.equal(social.traits({id:'someone',traits:{sociability:120}}).sociability,100);
 assert.equal(actor.energy,0,'approach cannot change agent state or time');
+const neighbor={id:'foremanSullivan',traits:{sociability:45,caution:81}};
+const ordinary={energy:80,needs:{hunger:25,mood:70},relationships:{}};
+const hungry={energy:25,needs:{hunger:95,mood:18},relationships:{}};
+const socialCtx={date:'1878-01-03',occupied:false,topic:'conversation'};
+const initial=social.approach(neighbor,ordinary,{id:'industrialist'},socialCtx);
+const worn=social.approach(neighbor,hungry,{id:'industrialist'},socialCtx);
+assert.ok(worn.score<initial.score,'The same person is less available when exhausted and hungry');
+assert.equal(ordinary.needs.mood,70,'Conversation checks do not rewrite resident mood');
+assert.equal(hungry.needs.hunger,95,'Conversation checks do not eat fictional food');
+
 console.log('PASS NPC individual traits, busy refusals, courteous greetings and stable decisions');
