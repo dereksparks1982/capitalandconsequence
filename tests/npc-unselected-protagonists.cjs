@@ -8,6 +8,7 @@ const agency=require('../npc-agency.js');
 const economy=require('../npc-economy.js');
 const mobility=require('../npc-mobility.js');
 const needs=require('../npc-needs.js'),weekly=require('../npc-weekly-schedule.js');
+const residences=require('../npc-residences.js');
 const source=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
 const citySource=fs.readFileSync(path.join(__dirname,'../city.js'),'utf8');
 const cityWindow={};
@@ -39,6 +40,7 @@ function scenario(route){
   FE_NPC_CALENDAR:calendar,FE_CALENDAR_BRIDGE:bridge,FE_NPC_KNOWLEDGE:knowledge,
   FE_NPC_ITINERARY:itinerary,FE_NPC_AGENCY:agency,FE_NPC_ECONOMY:economy,
   FE_NPC_MOBILITY:mobility,FE_NPC_NEEDS:needs,FE_NPC_WEEKLY:weekly,
+  FE_NPC_RESIDENCES:residences,
   FE_CITY:{currentLocation:()=>current},
   FE_NPC_CARD:{open:options=>cardCalls.push(options),sync(){}},
   FederalElectricCity:city
@@ -84,8 +86,23 @@ function scenario(route){
   assert.equal(ec.earnedCents,0,'Unknown wage is never fabricated');
   assert.equal(ec.debtCents,0,'No made-up household debt');
  }
+ // The assistant genuinely returns to his one established private bedroom
+ // at the end of the day, including when the player is elsewhere.
+ bridge.spend(S,4*3600); // 10 PM
+ assert.equal(npc.syncClock(),true);
+ let sleeping=npc.visibleAt('factory').find(person=>person.id==='foremanSullivan');
+ assert.equal(sleeping?.roomId,'workers-lodging',
+  'Sullivan must sleep in his own existing factory room');
+ bridge.spend(S,4*3600); // 2 AM
+ assert.equal(npc.syncClock(),false,'Same overnight schedule does not re-run');
+ sleeping=npc.visibleAt('factory').find(person=>person.id==='foremanSullivan');
+ assert.equal(sleeping?.roomId,'workers-lodging','Sullivan stays in his room through the night');
+ bridge.spend(S,6*3600); // 8 AM
+ assert.equal(npc.syncClock(),true);
+ assert.equal(npc.visibleAt('factory').some(person=>person.id==='foremanSullivan'&&
+  person.roomId==='workers-lodging'),false,'Sullivan has left the bedroom in the morning');
  assert.ok(saved>0,'Live profile autosave is still invoked');
  return {S,npc};
 }
 for(const route of Object.keys(main))scenario(route);
-console.log('PASS three independently simulated unselected leads, chosen player excluded, room card and neutral payroll');
+console.log('PASS unselected leads, card, no invented wages, Sullivan bedroom overnight and morning departure');
