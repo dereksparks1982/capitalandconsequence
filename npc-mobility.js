@@ -44,6 +44,9 @@
    if(loc.id==='nationalTheatre'){
     if(actor.id==='williamRapley'&&allowed.includes('manager-office'))room='manager-office';
     else if(actor.id==='charlesHanford'&&allowed.includes('backstage'))room='backstage';
+    else if(context.slot===2&&allowed.includes('auditorium'))room='auditorium';
+    else if(context.slot<2&&allowed.includes('backstage')&&
+     hash(prefix+'|rehearsal-room')%100<50)room='backstage';
     else if(allowed.includes('auditorium'))room='auditorium';
    }
    if(actor.job==='orderly'&&allowed.includes('orderly-station'))room='orderly-station';
