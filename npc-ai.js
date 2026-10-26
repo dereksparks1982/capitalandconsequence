@@ -250,6 +250,7 @@
     residences:def.id==='charlieWhitcomb'?['home']:[],
     workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
    {date:action.date,key:action.key,seed:w.seed,slot:action.slot,
+    sociability:def.traits?.sociability,
     defaultLocation:action.locationId,defaultActivity:action.activity,
     priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
     preferredDestination:window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
