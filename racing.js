@@ -106,11 +106,12 @@ function payoutFor(decimal,type,wager,place){
 function settleBet(id,result){
  const m=S.racing.meeting,bet=m.bets[id];if(!bet||bet.settled)return;
  const place=result.indexOf(bet.horseId)+1,decimal=m.races[id].odds?.[bet.horseId]||2,payout=payoutFor(decimal,bet.type,bet.wager,place);
- bet.settled=true;bet.place=place;bet.payout=payout;
- if(bet.custodyTicket){const paid=window.FE_CASH_CUSTODY?.settle?.(S,bet.custodyTicket,payout);if(!paid?.ok)console.warn('Wager custody settlement not accepted',paid?.reason);}
- else if(payout)S.personalCash+=payout;
+ if(bet.custodyTicket){
+  const paid=window.FE_CASH_CUSTODY?.settle?.(S,bet.custodyTicket,payout);
+  if(!paid?.ok)throw Error('Could not settle owned racing stake: '+(paid?.reason||'custody service unavailable'));
+ }else if(payout)S.personalCash+=payout;
+ bet.settled=true;bet.place=place;bet.payout=payout;bet.net=payout-bet.wager;
  window.updateCashHeader?.();
- bet.net=payout-bet.wager;
 }
 function resolveRace(id,animate){
  const m=ensureState(),r=m.races[id],d=raceDef(id);if(r.result||!r.participants.length)return;
