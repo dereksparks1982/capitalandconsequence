@@ -3298,40 +3298,12 @@ function renderUnpinnedCityDirectory(){
 }
 let conversationPage=0;
 function renderCityRoomPeople(location){
+ // Legacy location.people text was a permanently populated, in-room dialogue
+ // tree. Residents now appear only through their saved NPC location + room.
+ // Their sole conversation UI is the individual character card.
  const panel=document.getElementById('cityRoomPeople'),output=document.getElementById('cityRoomDialogue');
- if(!panel||!output)return;
- panel.innerHTML='';output.innerHTML='';
- for(const npc of location.people||[]){
-  const resident=window.FE_NPC_AI?.list?.().find(v=>v.name===npc.name)||null;
-  // The authored Chinatown and Russian Hall conversations are unavailable
-  // when their scheduled speaker is somewhere else or off duty.
-  const physicallyPresent=()=>!resident||!!window.FE_NPC_AI?.visibleAt?.(location.id)?.some(v=>v.id===resident.id);
-  if(!physicallyPresent())continue;
-  const button=document.createElement('button');button.type='button';button.textContent=npc.name;
-  button.onclick=()=>{
-   if(!physicallyPresent()){output.textContent=npc.name+' has left this location.';return}
-   if(resident){
-    const route=S.characterRoute||'industrialist';
-    const previous=window.FE_NPC_AI?.inspect?.(resident.id)?.memories||[];
-    const metToday=previous.some(m=>m.key==='authored-conversation'&&m.withId===route&&m.date===S.gameDate);
-    if(!metToday){
-     window.FE_NPC_AI?.recordInteraction?.(resident.id,route,'authored-conversation',0);
-     if(Array.isArray(S.notes))S.notes.push({date:displayDate(),text:'Spoke with '+npc.name+' at '+location.name+'.',source:'personal recollection'});
-     save(true);
-    }
-   }
-   conversationPage=0;output.innerHTML='';
-   const article=document.createElement('article');article.lang=npc.language||'en';
-   const paragraph=document.createElement('p');article.appendChild(paragraph);
-   const next=document.createElement('button');next.type='button';article.appendChild(next);
-   const lines=npc.dialogue||[];
-   const draw=()=>{paragraph.textContent=lines[conversationPage]||'';next.textContent=conversationPage+1>=lines.length?'End Conversation':'Continue'};
-   next.onclick=()=>{if(conversationPage+1>=lines.length){output.innerHTML='';return}conversationPage++;draw()};
-   output.appendChild(article);draw();
-   // Reading a paragraph never flags comprehension, records a hint or unlocks a lead.
-  };
-  panel.appendChild(button);
- }
+ if(panel)panel.replaceChildren();
+ if(output)output.replaceChildren();
 }
 function checkCityOpportunity(locationId){
  if(S.paused||S.phase!=='day'||S.campaignStartYear!==1890)return '';
