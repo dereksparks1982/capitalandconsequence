@@ -32,7 +32,9 @@
    map:{n:13,x:.7350,y:.7620},
    defaultRoom:'neighborhood-street',
    rooms:[
-    {id:'neighborhood-street',name:'Hillsdale Street',description:'Hillsdale’s settled community includes family homes, churches, schools, shops and neighborhood street life. Detailed businesses and residents will arrive in future slices.'}
+    {id:'neighborhood-street',name:'Hillsdale Street',description:'Hillsdale’s settled community includes family homes, churches, schools and neighborhood shops.'},
+    {id:'hillsdale-market',name:'Hillsdale Market',description:'A community provisions shop selling bread, produce, grains and daily necessities. Enter directly from Hillsdale; it is not another Washington map pin.'},
+    {id:'hillsdale-butcher',name:'Hillsdale Butcher',description:'A local butcher selling meat and other provisions to neighborhood households. Enter directly from the Hillsdale street; it is not a separate map destination.'}
    ]
   },
   {
