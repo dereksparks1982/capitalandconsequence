@@ -68,8 +68,8 @@
    publicRemark:"Merchants in the neighborhood know who keeps promises. Business relationships are built through repeat visits.",traits:{sociability:76,caution:72,ambition:62},places:['oldChinatown','oldChinatown',null,null],
    activities:['speaking with neighbors','attending to merchants’ concerns',null,null],
    goals:['maintain-business','help-neighbors','develop-contacts']},
-  {id:'liWen',name:'Li Wen',occupation:'Chinatown merchant contact',ambition:'develop-local-commercial-relationships',
-   publicRemark:"A good price is only part of a trade. Buyers also remember whether the shipment arrived.",traits:{sociability:56,caution:75,ambition:74},places:['oldChinatown','oldChinatown',null,null],
+  {id:'liWen',name:'Li Wen',language:'zh',occupation:'Chinatown merchant contact',ambition:'develop-local-commercial-relationships',
+   publicRemark:'好價錢只是生意的一部分。客人也記得貨物是否送到。',traits:{sociability:56,caution:75,ambition:74},places:['oldChinatown','oldChinatown',null,null],
    activities:['meeting with merchants','following new business opportunities',null,null],
    goals:['find-new-buyers','protect-local-trust','maintain-business']},
   {id:'alexiRurik',name:'Alexi Rurik',occupation:'Russian immigrant and courier',language:'ru',ambition:'build-a-life-on-his-own-terms',
@@ -88,7 +88,49 @@
   {id:'pavelOrlov',name:'Pavel Orlov',occupation:'Visiting Russian merchant',languages:['en','ru'],ambition:'establish-reliable-overseas-trade',
    publicRemark:"Washington has many doors for a trader, but an introduction is not the same as a contract.",traits:{sociability:70,caution:69,ambition:78},places:['russianTradeHall','russianTradeHall','star',null],
    activities:['meeting commercial visitors','discussing engineering and trade','attending an evening gathering',null],
-   goals:['develop-trade','expand-connections','protect-reputation']}
+   goals:['develop-trade','expand-connections','protect-reputation']},
+  {id:'edwinBooth',name:'Edwin Booth',historical:true,occupation:'Shakespearean stage actor',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:52,caution:75,ambition:85},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['rehearsing a new role','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'josephJefferson',name:'Joseph Jefferson',historical:true,occupation:'Dramatic and comic actor',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:76,caution:66,ambition:75},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['rehearsing the company programme','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'johnMcCullough',name:'John McCullough',historical:true,occupation:'Tragedian and stage actor',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:58,caution:69,ambition:83},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['practising a tragic scene','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'claraMorris',name:'Clara Morris',historical:true,occupation:'Stage actress',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:62,caution:79,ambition:92},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['studying a dramatic part','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'johnTRaymond',name:'John T. Raymond',historical:true,occupation:'Comic stage actor',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:87,caution:58,ambition:70},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['rehearsing a new comedy','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'charlesHanford',name:'Charles B. Hanford',historical:true,occupation:'Young theatre apprentice',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:65,caution:72,ambition:89},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['assisting with the stage','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']},
+  {id:'williamRapley',name:'William W. Rapley',historical:true,occupation:'National Theatre proprietor',
+   ambition:'develop-a-distinct-life-in-the-washington-theatre',publicRemark:'The company must prepare its work before we can speak of the next performance.',
+   traits:{sociability:74,caution:86,ambition:92},
+   places:['nationalTheatre','nationalTheatre','nationalTheatre',null],
+   activities:['reviewing theatre bookings','rehearsing with the company','attending the evening performance',null],
+   goals:['prepare-the-next-performance','maintain-stage-craft','build-theatre-relationships']}
  ]);
  const BY_ID=new Map(DEFINITIONS.map(d=>[d.id,d]));
  // The selected protagonist is controlled by the player, NEVER by this AI.
@@ -96,7 +138,7 @@
  function isPlayer(def){return !!def.route&&def.route===(S.characterRoute||'industrialist')}
  function autonomous(){return DEFINITIONS.filter(def=>!isPlayer(def))}
 
- const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
+ const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall',edwinBooth:'nationalTheatre',josephJefferson:'nationalTheatre',johnMcCullough:'nationalTheatre',claraMorris:'nationalTheatre',johnTRaymond:'nationalTheatre',charlesHanford:'nationalTheatre',williamRapley:'nationalTheatre'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
