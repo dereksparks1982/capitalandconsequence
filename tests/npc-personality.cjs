@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict'),social=require('../npc-personality.js');
+const quiet={id:'alexiRurik',traits:{sociability:10,caution:100}},actor={energy:0,relationships:{}};
+const ctx={date:'1878-01-02',occupied:true,topic:'work'};
+const a=social.approach(quiet,actor,{id:'industrialist'},ctx);
+assert.equal(a.allowed,false,'reserved occupied NPC may refuse');
+assert.equal(a.reason.length>0,true,'refusal is communicated');
+assert.deepEqual(social.approach(quiet,actor,{id:'industrialist'},ctx),a,'approach is deterministic during the slot');
+assert.equal(social.approach({id:'madamStar',traits:{sociability:82}},{energy:80,relationships:{}},{id:'industrialist'},{date:'1878-01-02',topic:'greet'}).allowed,true,'the host still acknowledges greetings');
+assert.equal(social.traits({id:'inspectorHayes'}).discretion,92);
+assert.equal(social.traits({id:'chenMei'}).honesty,84);
+assert.equal(social.traits({id:'someone',traits:{sociability:120}}).sociability,100);
+assert.equal(actor.energy,0,'approach cannot change agent state or time');
+console.log('PASS NPC individual traits, busy refusals, courteous greetings and stable decisions');
