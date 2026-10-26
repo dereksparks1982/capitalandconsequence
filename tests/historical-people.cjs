@@ -1,10 +1,11 @@
 'use strict';
 const assert=require('node:assert/strict'),people=require('../historical-people.js'),canon=require('../world-canon.js');
-assert.equal(people.list().length,8);
-assert.equal(new Set(people.list().map(p=>p.id)).size,8);
+assert.equal(people.list().length,15);
+assert.equal(new Set(people.list().map(p=>p.id)).size,15);
 assert.equal(people.get('jamesWormley').status,'proposed');
 assert.equal(people.get('frederickDouglass').fiction,'Alternate government appointment undecided');
 assert.equal(people.get('thomasHendricks').status,'proposed');
+assert.equal(['edwinBooth','josephJefferson','johnMcCullough','claraMorris','johnTRaymond','charlesHanford','williamRapley'].every(id=>people.get(id)?.status==='implemented-NPC'),true,'Seven actors are permanent residents by alternate 1878 canon');
 assert.match(canon.forDate('1877-03-04').lines.join(' '),/Samuel J\. Tilden/);
 assert.match(canon.forDate('1880-01-02').lines.join(' '),/next regular election is 1886/);
 assert.doesNotMatch(canon.forDate('1887-03-04').lines.join(' '),/is president during his first/);
