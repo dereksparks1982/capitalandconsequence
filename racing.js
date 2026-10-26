@@ -106,7 +106,10 @@ function payoutFor(decimal,type,wager,place){
 function settleBet(id,result){
  const m=S.racing.meeting,bet=m.bets[id];if(!bet||bet.settled)return;
  const place=result.indexOf(bet.horseId)+1,decimal=m.races[id].odds?.[bet.horseId]||2,payout=payoutFor(decimal,bet.type,bet.wager,place);
- bet.settled=true;bet.place=place;bet.payout=payout;if(payout)S.personalCash+=payout;
+ bet.settled=true;bet.place=place;bet.payout=payout;
+ if(bet.custodyTicket){const paid=window.FE_CASH_CUSTODY?.settle?.(S,bet.custodyTicket,payout);if(!paid?.ok)console.warn('Wager custody settlement not accepted',paid?.reason);}
+ else if(payout)S.personalCash+=payout;
+ window.updateCashHeader?.();
  bet.net=payout-bet.wager;
 }
 function resolveRace(id,animate){
@@ -155,8 +158,11 @@ function placeBet(raceId){
  if(m.bets[d.id])return setRaceNote('You already have a wager on '+d.label+'.');
  const horseId=Number($r('raceHorseSelect_'+d.id)?.value),type=$r('raceBetType_'+d.id)?.value||'win',wager=Math.max(1,Math.floor(Number($r('raceWager_'+d.id)?.value)||0));
  if(!r.participants.includes(horseId))return setRaceNote('Choose a horse in '+d.label+'.');
- if(S.personalCash<wager)return setRaceNote('Not enough personal cash for that wager.');
- S.personalCash-=wager;m.bets[d.id]={horseId,type,wager,settled:false};
+ const funding=$r('raceFunding_'+d.id)?.value==='company'?'company':'personal';
+ const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,wager,'races');
+ if(!paid?.ok)return setRaceNote(paid?.reason||'You lack the selected carried funds.');
+ m.bets[d.id]={horseId,type,wager,settled:false,funding,custodyTicket:paid.ticket};
+ window.updateCashHeader?.();
  save(true);renderRacing();setRaceNote('Wager accepted for '+d.label+': '+horse(horseId).name+' · '+type.toUpperCase()+' · '+cash(wager)+'.');
 }
 function setRaceNote(t){const el=$r('raceNote');if(el)el.textContent=t}
@@ -192,7 +198,7 @@ function raceBetCard(d){
  return '<article class="race-bet-card open"><div class="race-bet-card-head"><div><h4>'+d.label+'</h4><small>'+d.distance+' · Track '+m.surface+'</small></div><div class="race-countdown" data-race-id="'+d.id+'"><small>POST TIME IN</small><b>'+fmt(seconds)+'</b></div></div>'+
  '<div class="race-field compact">'+r.participants.map(pid=>{const h=horse(pid);return '<div class="race-field-row"><span>'+escapeHtml(h.name)+'</span><small>'+escapeHtml(h.jockey)+' · Form '+(h.form.slice(-5).join('-')||'—')+'</small><b>'+fractional(odds[pid])+'</b></div>'}).join('')+'</div>'+
  (bet?'<p class="race-bet-locked">Ticket: '+escapeHtml(horse(bet.horseId).name)+' · '+bet.type.toUpperCase()+' · '+cash(bet.wager)+'</p>':
- '<div class="race-bet-panel"><label>Horse<select id="raceHorseSelect_'+d.id+'">'+r.participants.map(pid=>'<option value="'+pid+'">'+escapeHtml(horse(pid).name)+' ('+fractional(odds[pid])+')</option>').join('')+'</select></label><label>Bet<select id="raceBetType_'+d.id+'"><option value="win">Win</option><option value="place">Place</option><option value="show">Show</option></select></label><label>Wager<input id="raceWager_'+d.id+'" type="number" min="1" step="1" value="'+(d.stage==='main'?100:25)+'"></label><button class="place-race-bet" data-race-id="'+d.id+'">Place Bet</button></div>')+'</article>';
+ '<div class="race-bet-panel"><label>Horse<select id="raceHorseSelect_'+d.id+'">'+r.participants.map(pid=>'<option value="'+pid+'">'+escapeHtml(horse(pid).name)+' ('+fractional(odds[pid])+')</option>').join('')+'</select></label><label>Bet<select id="raceBetType_'+d.id+'"><option value="win">Win</option><option value="place">Place</option><option value="show">Show</option></select></label><label>Funds<select id="raceFunding_'+d.id+'"><option value="personal">Personal cash</option>'+(S.characterRoute==='industrialist'?'<option value="company">Carried company cash</option>':'')+'</select></label><label>Wager<input id="raceWager_'+d.id+'" type="number" min="1" step="1" value="'+(d.stage==='main'?100:25)+'"></label><button class="place-race-bet" data-race-id="'+d.id+'">Place Bet</button></div>')+'</article>';
 }
 function renderNext(){
  const m=ensureState(),el=$r('raceNext');if(!el)return;
