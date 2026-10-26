@@ -371,7 +371,7 @@ let ipoScaffoldOpen=false;
 function companyValueEstimate(){
  const finished=Object.entries(S.inventoryByGrade||{}).reduce((sum,[q,qty])=>sum+(Math.max(0,+qty||0)*(contractGrade(q).price*.65)),0);
  const raw=Object.entries(MATERIAL_MARKET).reduce((sum,[k,m])=>sum+(Math.max(0,+S.materials?.[k]||0)*m.unitPrice),0);
- return S.companyCash+finished+raw-Math.max(0,+S.debt||0);
+ return S.companyCash+(+S.cashCustody?.companyCarried||0)+(+S.cashCustody?.businessBank||0)+finished+raw-Math.max(0,+S.debt||0);
 }
 function renderOwnership(){
  const panel=$('#ipoScaffold'),openBtn=$('#exploreIpo');if(!panel||!openBtn)return;
