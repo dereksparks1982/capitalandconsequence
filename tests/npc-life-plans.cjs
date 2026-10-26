@@ -61,11 +61,17 @@ assert.equal(plans.witness(def,saved,denied,'1878-01-03|0'),false);
 assert.equal(JSON.stringify(saved.lifePlan),beforeReload,'Save reload must not replay an encounter');
 const clock={worldMinute:1000};
 assert.equal(plans.record(def,actor,revised,{kind:'personal',locationId:'oldChinatown'},
- {locationId:'oldChinatown',roomId:'market-street'},'1878-01-03|1'),true);
+ {locationId:'oldChinatown',roomId:'market-street',reason:'routine'},'1878-01-03|1'),true);
+assert.equal(plans.record(def,actor,revised,{kind:'personal',locationId:'russianTradeHall'},
+ {locationId:'oldChinatown',roomId:'market-street',reason:'goal-directed'},'1878-01-03|2'),true,
+ 'Authorized intentional movement counts as observed effort');
+assert.equal(plans.record(def,actor,revised,{kind:'personal',locationId:'russianTradeHall'},
+ {locationId:'oldChinatown',roomId:'market-street',reason:'errand'},'1878-01-03|3'),false,
+ 'A random detour is not progress toward a stated goal');
 assert.equal(clock.worldMinute,1000,'Resident plan never advances the world clock');
 assert.equal(actor.lifePlan.status,'first-observed-effort','A revised goal needs its own attempts');
 for(let i=0;i<40;i++)plans.record(def,actor,revised,{kind:'personal',locationId:'oldChinatown'},
- {locationId:'oldChinatown',roomId:'market-street'},'later|'+i);
+ {locationId:'oldChinatown',roomId:'market-street',reason:'routine'},'later|'+i);
 assert.ok(actor.lifePlan.history.length<=12&&actor.lifePlan.evidenceKeys.length<=16,
  'Long-running private plan memory stays bounded');
 assert.equal(actor.lifePlan.status,'following-through');
