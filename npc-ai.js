@@ -392,15 +392,6 @@
    return {ok:false,reason:'That person is not here now.'};
   const route=S.characterRoute||'industrialist',date=observedDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
-  const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
-  if(already)return {ok:false,reason:'You have already discussed that today.'};
-  const temperament=window.FE_NPC_PERSONALITY?.approach?.(def,a,{id:route},{date,topic,
-   occupied:/reviewing|working|preparing|serving|meeting/i.test(String(a.activity||''))});
-  if(temperament&&!temperament.allowed){
-   if(!a.memories.some(m=>m.key==='refused'&&m.withId===route&&m.date===date))
-    recordInteraction(id,route,'refused',0);
-   return {ok:false,reason:def.name+': '+temperament.reason};
-  }
   // Quick questions obey precisely the same language barrier as free speech.
   // Hearing an untranslated response never counts as earning acquaintance.
   const languages=window.FE_NPC_LANGUAGE?.spoken?.(def)||[def.language||'en'];
@@ -411,9 +402,19 @@
    if(say)return {ok:true,name:def.name,reply:say[topic],comprehended:false,reason:'The language is not understood.'};
    return {ok:false,reason:'You do not share a language with '+def.name+'.'};
   }
+  const already=a.memories.some(m=>m.key===topic&&m.withId===route&&m.date===date);
+  if(already)return {ok:false,reason:'You have already discussed that today.'};
+  const temperament=window.FE_NPC_PERSONALITY?.approach?.(def,a,{id:route},{date,topic,
+   occupied:/reviewing|working|preparing|serving|meeting/i.test(String(a.activity||''))});
+  if(temperament&&!temperament.allowed){
+   if(!a.memories.some(m=>m.key==='refused'&&m.withId===route&&m.date===date))
+    recordInteraction(id,route,'refused',0);
+   return {ok:false,reason:def.name+': '+temperament.reason};
+  }
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
-  const reply=def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
+  const reply=def.language==='zh'?(topic==='greet'?'你好，我叫李文。':topic==='today'?'我今天忙著處理生意。':topic==='work'?'我正在照看商業訂單與來往貨物。':def.publicRemark):
+   def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
    ?(known?(affinity>=4?'Welcome back. It is good to have a familiar face here.':'Good to see you again.'):'Good day. I am '+def.name+'.')
    :topic==='city'?def.publicRemark:topic==='today'?
     (a.social?.last?.date===date?'I spent some time speaking with another resident today.':a.economy?.lastAction?.publicLine||'I have been attending to ordinary matters.'):
