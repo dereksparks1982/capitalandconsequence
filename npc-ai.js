@@ -170,9 +170,13 @@
  // A private social-goal milestone requires a real same-room encounter.
  // Do not manufacture a meeting merely because an NPC wanted to socialize.
  function reflectActualMeetings(w,records,key){
+  if(!records?.length)return;
   const plans=window.FE_NPC_LIFE_PLANS;
-  if(!plans||!records?.length)return;
   for(const record of records){
+   // This can only mutate after the social engine saved an actual meeting
+   // in this profile. No reward for speculative plans or shared geography.
+   window.FE_NPC_SOCIAL_CONSEQUENCES?.apply?.(S,w,record);
+   if(!plans)continue;
    for(const id of [record.actorId,record.partnerId]){
     const def=BY_ID.get(id),actor=w.agents[id];
     if(def&&!isPlayer(def)&&actor)plans.witness(def,actor,record,key);
