@@ -3101,6 +3101,7 @@ function enterMapDestination(id,event,requestedRoomId){
  guardedRoomPanel('visit leads',()=>window.FE_MAP_LEADS?.visit?.(S,place.id));
  guardedRoomPanel('autosave',()=>save(true));
  guardedRoomPanel('NPC clock',()=>window.FE_NPC_AI?.syncClock?.());
+ guardedRoomPanel('resident list after arrival',()=>window.FE_NPC_AI?.renderRoomVisitors?.(place.id));
  guardedRoomPanel('close map',()=>{closeTitleDialog();closeTitleMap()});
  const map=document.getElementById('titleMapViewer');
  if(map)map.hidden=true;
