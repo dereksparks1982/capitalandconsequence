@@ -5,6 +5,7 @@
 (function(root){
  'use strict';
  const clock=typeof module==='object'&&module.exports?require('./world-clock.js'):root.FE_WORLD_CLOCK;
+ const weekly=typeof module==='object'&&module.exports?require('./npc-weekly-schedule.js'):root.FE_NPC_WEEKLY;
  const periods=Object.freeze([
   Object.freeze({from:480,until:720,slot:0}),
   Object.freeze({from:720,until:1020,slot:1}),
@@ -14,9 +15,7 @@
  function publicPlace(def,weekday,slot){
   if(!def||!Array.isArray(def.places)||!Number.isSafeInteger(weekday)||weekday<0||weekday>6)
    throw Error('NPC public routine required');
-  if((weekday===0||weekday===6)&&slot<2&&
-    (def.id==='foremanSullivan'||def.id==='inspectorHayes'))return null;
-  return def.places[slot]||null;
+  return weekly.at(def,weekday,slot).locationId;
  }
  function windows(def,world,days=8){
   if(!Number.isInteger(days)||days<1||days>14)throw Error('Invalid public horizon');
@@ -29,7 +28,7 @@
     if(!locationId)continue;
     const start=at+p.from,end=at+p.until;
     if(end<=world.worldMinute)continue;
-    out.push({id:def.id,locationId,activity:def.activities?.[p.slot]||'visiting',
+    out.push({id:def.id,locationId,activity:weekly.at(def,weekday,p.slot).activity||'visiting',
      from:start,until:end,iso:clock.formatMinute(start),
      untilIso:clock.formatMinute(end),ongoing:world.worldMinute>=start});
    }
