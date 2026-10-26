@@ -143,9 +143,9 @@
    rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
   },
   {
-   id:'secondNightclub',name:'Lui Delacroix’s Nightclub',
+   id:'secondNightclub',name:'Le Paon d’Or',
    area:'Washington, D.C.',category:'social',
-   description:'A French-style can-can and burlesque cabaret run by Lucien Étienne “Lui” Delacroix. Elias Crowe works the entrance; the club’s formal signboard name has not yet been chosen.',
+   description:'Le Paon d’Or means “The Golden Peacock.” Lucien Étienne “Lui” Delacroix owns this extravagant French cabaret outright. French dancing, burlesque, orchestra, champagne and expensive entertainment attract patrons from Washington’s influential circles. Lui’s connections protect his standing despite scandalous, unverified gossip about his private affairs. Elias Crowe works its entrance.',
    map:null,defaultRoom:'main-room',
    rooms:[
     {id:'main-room',name:'Public Cabaret Room',description:'Visitors watch French dancing and musical revue performances. The club’s private business and restricted rooms cannot be discovered merely by entering.'},
@@ -370,6 +370,30 @@
    ]
   },
   {
+   id:'nationalTheatre',name:'National Theatre',
+   area:'1321 Pennsylvania Avenue NW · Washington, D.C.',category:'theatre',
+   description:'Washington’s National Theatre, under proprietor William W. Rapley. In this alternate history the city is home to actors Edwin Booth, Joseph Jefferson, John McCullough, Clara Morris, John T. Raymond and young Charles B. Hanford, all with independent local routines. Theatrical attendance and private rooms require actual visits or permission.',
+   // Added provisional PIN only. The Washington map artwork NEVER changes.
+   map:{n:39,x:.505,y:.465},defaultRoom:'theatre-lobby',
+   rooms:[
+    {id:'theatre-lobby',name:'National Theatre Lobby',description:'Public ticket counters, patrons, playbills and visitors.'},
+    {id:'auditorium',name:'Auditorium',description:'Public audience seating, orchestra pit and main stage.'},
+    {id:'stage-door',name:'Stage Door',description:'Performers and stagehands arrive and depart through the working stage entrance.'},
+    {id:'backstage',name:'Backstage and Dressing Rooms',restricted:true,description:'Company dressing rooms, costumes and theatre equipment. Staff and invited guests only.'},
+    {id:'manager-office',name:'Theatre Manager’s Office',restricted:true,description:'William W. Rapley’s theatre accounts, correspondence and booking records.'}
+   ]
+  },
+  {
+   id:'districtBank',name:'District Bank',
+   area:'Downtown Washington financial district · fictional bank and provisional map placement',category:'finance',
+   description:'A Washington bank where you may optionally maintain separate company, personal checking and general savings accounts. Deposits and withdrawals are physical transactions: bring the appropriate money to the teller.',
+   map:{n:40,x:.565,y:.455},defaultRoom:'banking-hall',
+   rooms:[
+    {id:'banking-hall',name:'Banking Hall',description:'Public tellers receive cash deposits and withdrawals into individually identified accounts.'},
+    {id:'vault',name:'Bank Vault',restricted:true,description:'Bank staff and authorized personnel only. Deposit accounts do not grant access to the vault.'}
+   ]
+  },
+  {
    id:"georgetownMarketHouse",
    name:"Georgetown Market House",
    area:"3276 M Street NW · Georgetown, Washington, D.C.",
@@ -383,7 +407,7 @@
   }
  ];
 
- // All 38 registered locations have stable numbered map destinations. Sites
+ // 40 city locations have numbered pins on the ORIGINAL unchanged artwork. Sites
  // with no established address remain directory-only, not claimed as verified.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -405,7 +429,7 @@
   'hillsdale','oldChinatown','universityMaryland','governmentHospital',
   'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
   'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing',
-  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse'
+  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse','nationalTheatre'
  ]);
  // Pin anchors read against the owner's actual, unchanged 2048 x 1159
  // Washington In and Out Guide image (A-R rows / 1-30 columns).
@@ -431,7 +455,8 @@
   metropolitanPolice:{"summary":"The Metropolitan Police Department of the District of Columbia was established in 1861. The game has not selected a particular historical station for its generic police destination.","wikipedia":"https://en.wikipedia.org/wiki/Metropolitan_Police_Department_of_the_District_of_Columbia","query":"Metropolitan Police Washington DC founding history"},
   franciscanMonastery:{"summary":"The Franciscan Monastery complex in Brookland was established in the late 1890s, with the memorial church completed in 1899. Its appearance in the game's earlier alternate timeline is fictional.","wikipedia":"https://en.wikipedia.org/wiki/Franciscan_Monastery_of_the_Holy_Land_in_America","query":"Franciscan Monastery Holy Land Brookland Washington"},
   easternMarket:{"summary":"Eastern Market is a historic public market in Capitol Hill. Its nineteenth-century market building dates to the 1870s, and the game invents its individual merchants until researched.","wikipedia":"https://en.wikipedia.org/wiki/Eastern_Market%2C_Washington%2C_D.C.","query":"Eastern Market Washington 1873"},
-  georgetownMarketHouse:{"summary":"The historic Georgetown Market building on M Street was built in 1865 on a site used for market trade since the late eighteenth century.","wikipedia":"https://en.wikipedia.org/wiki/Georgetown_Market","query":"Georgetown Market House 3276 M Street history"}
+  georgetownMarketHouse:{"summary":"The historic Georgetown Market building on M Street was built in 1865 on a site used for market trade since the late eighteenth century.","wikipedia":"https://en.wikipedia.org/wiki/Georgetown_Market","query":"Georgetown Market House 3276 M Street history"},
+  nationalTheatre:{"summary":"The National Theatre is an actual Washington institution. The actors’ permanent residence here from 1878 is a deliberate alternate-history invention, not a claim about their real biographies.","wikipedia":"https://en.wikipedia.org/wiki/National_Theatre_(Washington,_D.C.)","query":"National Theatre Washington 1878 William Rapley"}
  });
  // Fictional history is canonical *game-world writing*, never historical
  // evidence for a real street, named building or real-world organization.
@@ -446,7 +471,8 @@
     embassyPoker: "In our Washington, the Embassy Room is an invitation-only private poker venue associated with the Chevy Chase Club. That room is a game invention, not a historical claim about the real club.",
     russianTradeHall: "Merchants, engineers and diplomats of Imperial Russia have an informal Washington meeting hall in this alternate timeline. Its business and conversations are written for the game.",
     washingtonFairgrounds: "The game's alternative national history brings the 1893 World's Columbian Exposition to Washington's Potomac Flats rather than its real-world venue.",
-    secondNightclub: "Frenchman Lucien Étienne Delacroix, known as Lui, operates this fictional cabaret and nightclub. Elias Crowe works its entrance. The final signboard name and exact address remain undecided.",
+    secondNightclub: "Le Paon d’Or (The Golden Peacock) belongs outright to Lucien Étienne Delacroix, called Lui. His flamboyant French cabaret trades in music, dance, spectacle and extravagant hospitality. The proprietor’s powerful connections shelter his reputation. Rumors are rumors, not privileged truths; Eli Crowe works the entrance.",
+    districtBank: "District Bank is the fictional independent bank where Washington residents may optionally keep separate business, checking and untargeted savings balances. Cash must physically arrive or be collected.",
     capitolAirport: "Our fictional Capitol Airport operates near Benning, separate from the historical Washington-Hoover airfield. Its precise property is still undecided.",
     brokerOffice: "A Washington stockbroker receives Charlie's personal securities orders in our game world. The fictional office's actual building has not been chosen.",
     home: "Charlie's prospective Capitol Hill home is a private family address within our Washington story. Its rooms and furnishings evolve through the player's choices.",
