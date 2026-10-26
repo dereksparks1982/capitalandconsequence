@@ -22,6 +22,11 @@ const GOODS=Object.freeze([
  {id:'soap',label:'Soap',units:1,cents:10,vendor:'grocer'}
 ]);
 const BY_GOOD=Object.fromEntries(GOODS.map(g=>[g.id,g]));
+const SITES=Object.freeze({
+ 'hillsdale-market':new Set(['bread','milk','eggs','potatoes','onions','beans-grains','produce','tea-sugar','seasoning','lamp-fuel','soap']),
+ 'hillsdale-butcher':new Set(['bacon','stew-beef'])
+});
+function allowedAt(id,site){return !site||!!SITES[site]?.has(id)}
 const weekday=date=>new Date(date+'T12:00:00Z').getUTCDay();
 const whole=v=>Number.isSafeInteger(v)&&v>=0;
 function ensure(save){
@@ -38,6 +43,11 @@ function ensure(save){
  if(!m.deliveries||typeof m.deliveries!=='object')m.deliveries={};
  if(!m.supplierDebts||typeof m.supplierDebts!=='object')m.supplierDebts={};
  if(!Array.isArray(m.playerBag))m.playerBag=[];
+ if(!m.siteStocks||typeof m.siteStocks!=='object')m.siteStocks={};
+ for(const [site,goods] of Object.entries(SITES)){
+  if(!m.siteStocks[site]||typeof m.siteStocks[site]!=='object')m.siteStocks[site]={};
+  for(const id of goods)if(!whole(m.siteStocks[site][id]))m.siteStocks[site][id]=12;
+ }
  if(!whole(m.suppliersPaidCents))m.suppliersPaidCents=0;
  if(!whole(m.nextPurchase))m.nextPurchase=m.purchases.length;
  // Initial stocks are starting physical inventories, not an automatic purchase-time refill.
@@ -50,10 +60,13 @@ function purchase(save,buyer,goodId,opts={}){
  if(!good)return {ok:false,reason:'Unknown merchandise'};
  if(buyer!=='player'&&(typeof buyer!=='string'||!buyer))return {ok:false,reason:'Unknown customer'};
  const m=ensure(save),date=typeof opts.date==='string'?opts.date:save.gameDate;
+ const site=opts.siteId||null;
+ if(site&&!allowedAt(goodId,site))return {ok:false,reason:'Goods not sold at this stall'};
+ const stock=site?m.siteStocks[site]:m.stock;
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return {ok:false,reason:'Invalid saved calendar date'};
  if(typeof opts.token==='string'&&m.purchases.some(r=>r.token===opts.token))
   return {ok:false,repeated:true,reason:'Transaction already recorded'};
- if(m.stock[good.id]<1)return {ok:false,reason:'Sold out: '+good.label,stockRemaining:0};
+ if(stock[good.id]<1)return {ok:false,reason:'Sold out: '+good.label,stockRemaining:0};
  if(buyer==='player'&&m.playerBag.length>=24)return {ok:false,reason:'Your market bag is full'};
  const wallet=buyer==='player'?null:save.npcSimulation?.agents?.[buyer]?.economy;
  const cashCents=buyer==='player'?Math.round(Number(save.personalCash)*100):wallet?.balanceCents;
@@ -62,15 +75,17 @@ function purchase(save,buyer,goodId,opts={}){
  // A single, atomic physical sale: decrease buyer balance and stock, credit the merchant.
  if(buyer==='player')save.personalCash=(cashCents-good.cents)/100;
  else wallet.balanceCents=cashCents-good.cents;
- m.stock[good.id]--;
- m.accounts[good.vendor]=(m.accounts[good.vendor]||0)+good.cents;
+ stock[good.id]--;
+ const merchant=site?site+':'+good.vendor:good.vendor;
+ m.accounts[merchant]=(m.accounts[merchant]||0)+good.cents;
  const receipt={id:++m.nextPurchase,date,buyer,good:good.id,label:good.label,
   units:good.units,cents:good.cents,vendor:good.vendor,
+  ...(site?{siteId:site}:{}),
   ...(opts.token?{token:String(opts.token).slice(0,120)}:{})};
  m.purchases.push(receipt);
  if(m.purchases.length>1300)m.purchases.splice(0,m.purchases.length-1300);
  if(buyer==='player')m.playerBag.push({id:'purchase-'+receipt.id,good:good.id,label:good.label,units:good.units,date});
- return {ok:true,receipt,stockRemaining:m.stock[good.id]};
+ return {ok:true,receipt,stockRemaining:stock[good.id]};
 }
 function consume(save,id){
  const m=ensure(save),index=m.playerBag.findIndex(x=>x.id===id);
@@ -94,6 +109,18 @@ function deliveryForCalendar(save,date,slot){
   m.suppliersPaidCents+=pay;
   m.stock[g.id]+=qty;
   manifest.push({good:g.id,vendor:g.vendor,qty,wholesaleCents,paidCents:pay});
+ }
+ // Hillsdale shop stock is independent from Chinatown.
+ for(const [site,ids] of Object.entries(SITES))for(const id of ids){
+  const good=BY_GOOD[id],qty=4,account=site+':'+good.vendor;
+  const wholesale=Math.round(good.cents*qty*.6);
+  const previous=m.supplierDebts[account]||0,available=m.accounts[account]||0;
+  const paid=Math.min(available,previous+wholesale);
+  m.accounts[account]=available-paid;
+  m.supplierDebts[account]=previous+wholesale-paid;
+  m.suppliersPaidCents+=paid;
+  m.siteStocks[site][id]+=qty;
+  manifest.push({site,good:id,vendor:good.vendor,qty,wholesaleCents:wholesale,paidCents:paid});
  }
  const delivery={date,manifest,units:manifest.reduce((t,x)=>t+x.qty,0)};
  m.deliveries[date]=delivery;
@@ -133,7 +160,7 @@ function settleSaturday(save){
  m.settlements[date]=receipt;
  return {...receipt,repeated:false};
 }
-const api=Object.freeze({RENT_CENTS,GOODS,ensure,purchase,consume,deliveryForCalendar,settleSaturday});
+const api=Object.freeze({RENT_CENTS,GOODS,SITES,allowedAt,ensure,purchase,consume,deliveryForCalendar,settleSaturday});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_WASHINGTON_COMMERCE=api;
 })(typeof window!=='undefined'?window:globalThis);
