@@ -318,7 +318,9 @@ const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===10,'Ten named NPCs including President Tilden, Lucien Delacroix, and Alexi Rurik');
+check(npc.list().length===14,'Eleven named Washington residents and exactly three unselected playable protagonists have autonomous agents');
+ check(!npc.list().some(v=>v.id==='charlieWhitcomb'),'Selected industrialist is never also an NPC');
+ check(['samHarlan','eliCrowe','edmundWardman'].every(id=>npc.list().some(v=>v.id===id)),'The other three protagonists receive independent AI definitions');
 check(npc.list().some(v=>v.id==='samuelTilden'),'President Tilden is a historically based resident');
 check(npc.list().some(v=>v.id==='luiDelacroix'),'Lui is a distinct scheduled proprietor of the second nightclub');
 check(npc.syncClock()===true,'Initial clock slot schedules residents');
@@ -496,10 +498,10 @@ check(npc.inspect('madamStar').memories.some(m=>m.date==='1890-01-02'&&m.locatio
 npcCtx.window.FE_CITY.currentLocation=()=>({locationId:'factory'});
 check(npc.talkAtLocation('madamStar','work').ok===false,'NPC cannot be addressed from another building');
 check(npc.talkAtLocation('foremanSullivan','greet').ok===false,'Off-duty NPC cannot be talked to');
-check(read('npc-ai.js').includes('fe-npc-visitor-actions'),'NPCs have local contact buttons');
-check(appSource.includes('const physicallyPresent=()=>!resident')&&appSource.includes("if(!physicallyPresent())continue"),'Authored room speakers obey actual NPC presence');
-check(appSource.includes("if(!physicallyPresent()){output.textContent=npc.name+' has left"),'Conversations check for departed NPCs on click');
-check(appSource.includes("m.key==='authored-conversation'&&m.withId===route&&m.date===S.gameDate"),'Static NPC encounters are once per profile and date');
+check(read('npc-ai.js').includes('fe-npc-select')&&read('npc-ai.js').includes('window.FE_NPC_CARD?.open?.('),'Actual room visitors open their own character cards, not room dialogue menus');
+check(read('npc-ai.js').includes('visibleAt(locationId).filter(v=>current?.roomId&&v.roomId===current.roomId)'),'Only residents physically in the same room are selectable');
+check(read('npc-ai.js').includes('visibleAt(locationId).some(v=>v.id===visitor.id&&v.roomId===here.roomId)'),'Card interaction ends when a resident leaves their current room');
+check(read('npc-character-card.js').includes('npc-card-transcript')&&read('npc-character-card.js').includes('textarea'),'Character-card-only free-text conversations retain their own transcript and input');
 check(read('npc-ai.js').includes('window.FE_CITY?.refreshRoomPeople?.()'),'NPC schedule updates refresh authored room speakers');
 const knowledge=require('../npc-knowledge.js');
 const mindA={};
@@ -541,7 +543,7 @@ check(daybook.next(clock.create('1890-01-04T01:00'),weekly,'factory')===null,'Un
 check(daybook.at(JSON.parse(JSON.stringify(clock.create('1890-01-03T23:00'))),weekly).length===1,'Appointment availability derives from saved world minute, not wall clock');
 check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real calendar appointment tool loads before NPC runtime');
 check(index.indexOf('npc-economy.js?v=')>index.indexOf('npc-agency.js?v=')&&index.indexOf('npc-economy.js?v=')<index.indexOf('npc-ai.js?v='),'Economic NPC action planner is loaded between intelligence and runtime');
-check(read('npc-ai.js').includes("FE_NPC_ECONOMY.actionFor")&&read('npc-ai.js').includes("'Ask About Today'"),'Background NPC actions and earned in-person conversation wired');
+check(read('npc-ai.js').includes('FE_NPC_ECONOMY.actionFor')&&read('npc-ai.js').includes('converseAtLocation(visitor.id,words)'),'NPC economic lives and conversation-card replies share character identity');
 check(index.indexOf('city-access.js?v=')<index.indexOf('npc-mobility.js?v='),'Shared room permission rules load before autonomous travel');
 check(pkg.scripts['test:source'].includes('tests/city-access.cjs'),'Explicit room permission regression test required');
 check(index.indexOf('npc-mobility.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('npc-mobility.js?v='),'NPC room access loads before scheduling');
