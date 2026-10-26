@@ -28,8 +28,8 @@ assert.equal(lunch.activity,'taking a meal at the workshop');
 assert.equal(afternoon.activity,'finishing ordered parts for dispatch');
 assert.equal(lunch.economyKey,afternoon.economyKey,
  'No new wage or shopping period at 12:30');
-assert.equal(calendar.at(at('1890-01-04',6,720),worker).locationId,null,
- 'Sullivan is not summoned to work on Saturday');
+assert.equal(calendar.at(at('1890-01-04',6,720),worker).locationId,'oldChinatown',
+ 'Sullivan shops on Saturday rather than taking a factory shift');
 assert.equal(calendar.at(at('1890-01-05',0,720),worker).locationId,null,
  'Sunday is an actual day off');
 const actor={};
