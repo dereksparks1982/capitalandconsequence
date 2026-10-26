@@ -69,7 +69,8 @@ assert.equal(plans.record(def,actor,revised,{kind:'personal',locationId:'russian
  {locationId:'oldChinatown',roomId:'market-street',reason:'errand'},'1878-01-03|3'),false,
  'A random detour is not progress toward a stated goal');
 assert.equal(clock.worldMinute,1000,'Resident plan never advances the world clock');
-assert.equal(actor.lifePlan.status,'first-observed-effort','A revised goal needs its own attempts');
+assert.equal(actor.lifePlan.status,'following-through','Two actual visits now demonstrate follow-through on the revised goal');
+assert.equal(actor.lifePlan.attempts,2,'Only observed routine and intentional visits count');
 for(let i=0;i<40;i++)plans.record(def,actor,revised,{kind:'personal',locationId:'oldChinatown'},
  {locationId:'oldChinatown',roomId:'market-street',reason:'routine'},'later|'+i);
 assert.ok(actor.lifePlan.history.length<=12&&actor.lifePlan.evidenceKeys.length<=16,
