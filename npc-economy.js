@@ -111,6 +111,7 @@
     def.id==='inspectorHayes'?'reviewing District police duties':
     def.id==='eddieDoyle'?'taking bets and reviewing the racing books':
     def.id==='madamStar'?'overseeing the Star Club accounts':
+    cfg.workplace==='nationalTheatre'?(context.defaultActivity||'attending rehearsals and theatre duties'):
     'handling business orders and receipts';
    description='Completed a scheduled '+cfg.occupation+' work period'+(repaid?' and repaid a portion of an earlier loan.':'.');
   }else if(context.slot===3&&cfg.monetary!==false){
