@@ -2095,6 +2095,20 @@ function renderCityRoomDirectory(location,activeRoomId){
 }
 // Map travel enters the destination's default room; never commit a bad destination to the autosave.
 function recordLiveryPurchase(){save(true);window.FE_TRANSPORT?.renderRegister?.()}
+function reviewCashOnArrival(from,to){
+ if(from===to||S.paused||!window.FE_CASH_CUSTODY)return;
+ const minute=S.worldCalendar?.worldMinute;
+ if(!Number.isSafeInteger(minute))return;
+ const outcome=window.FE_CASH_CUSTODY.travelRisk(S,{from,to,minute,night:S.phase==='night'});
+ if(outcome?.occurred){
+  const text='Cash was lost on the journey to '+(cityLocation(to)?.name||to)+': '+cash(outcome.lost)+
+   (outcome.companyLoss?' including '+cash(outcome.companyLoss)+' in company funds.':'.');
+  S.notes.push({date:displayDate(),source:'personal journey',text});
+  const alert=document.getElementById('cityRoomCashStatus');
+  if(alert)alert.textContent=text;
+  updateCashHeader();save(true);
+ }
+}
 function guardedRoomPanel(name,action){try{action()}catch(error){console.warn('Capital & Consequence: optional room panel unavailable: '+name,error)}}
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
@@ -2190,6 +2204,7 @@ function openCityRoom(locationId,roomId,options={}){
    guardedRoomPanel('journey and custody',()=>{
     const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(priorLocation.locationId,location.id);
     window.FE_HORSE_CUSTODY?.onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid);
+    reviewCashOnArrival(priorLocation.locationId,location.id);
     window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,true);
    });
   }
@@ -3127,6 +3142,7 @@ function enterMapDestination(id,event,requestedRoomId){
   guardedRoomPanel('fare and custody',()=>{
    const paid=window.FE_TRAVEL?.recordProvisional?.(prior.locationId,place.id);
    window.FE_HORSE_CUSTODY?.onArrival?.(S,prior.locationId,place.id,!!paid);
+   reviewCashOnArrival(prior.locationId,place.id);
   });
  }
  guardedRoomPanel('visit leads',()=>window.FE_MAP_LEADS?.visit?.(S,place.id));
