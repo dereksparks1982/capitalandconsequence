@@ -766,7 +766,7 @@ function restoreStockTradeQuantities(){
 function brokerChannel(){return window.FE_BROKER?.channel?.(S,currentCityLocation().locationId,S.characterRoute)||null}
 function renderBrokerOffice(){
  const panel=document.getElementById('cityRoomBrokerage');if(!panel)return;
- const active=cityRoomSession.locationId==='brokerOffice'&&!cityRoomSession.dev;
+ const active=currentCityLocation().locationId==='brokerOffice'&&!cityRoomSession.dev;
  panel.hidden=!active;if(!active)return;
  const info=window.FE_BROKER?.progress?.(S),label=document.getElementById('brokerRelationStatus');
  if(info&&label)label.textContent='Separate game-date visits: '+info.visits+'. '+(info.wireAllowed?'Telegram instructions accepted from your executive office.':'Return on '+info.remaining+' more separate day'+(info.remaining===1?'':'s')+' to establish correspondence privileges.');
@@ -783,6 +783,23 @@ function renderBrokerOffice(){
   select.replaceChildren();
   for(const [k,v] of eligible){const opt=document.createElement('option');opt.value=k;opt.textContent=k+' · '+v.name;select.appendChild(opt)}
   if(eligible.some(([k])=>k===prev))select.value=prev;
+  const table=document.getElementById('brokerStockList');
+  if(table){
+   table.replaceChildren();
+   for(const [k,security] of eligible){
+    const quote=S.phase==='day'?security.open:security.price;
+    const prior=+security.prevClose||+security.open||quote;
+    const change=prior>0?(quote/prior-1)*100:0;
+    const tr=document.createElement('tr');
+    for(const value of [k,security.name,cash(quote),(change>=0?'+':'')+change.toFixed(2)+'%',String(S.portfolio[k]?.shares||0)]){
+     const td=document.createElement('td');td.textContent=value;tr.appendChild(td);
+    }
+    const td=document.createElement('td'),button=document.createElement('button');
+    button.type='button';button.textContent='Select';
+    button.onclick=()=>{select.value=k;document.getElementById('brokerStockQuantity')?.focus()};
+    td.appendChild(button);tr.appendChild(td);table.appendChild(tr);
+   }
+  }
  }
  for(const id of ['brokerBuy','brokerSell']){const btn=document.getElementById(id);if(btn)btn.disabled=!businessOpen()||S.paused}
 }
@@ -795,6 +812,7 @@ function brokerPlaceOrder(direction){
  result.textContent=S.transactions.length>count
   ?'Broker accepted '+(direction>0?'purchase':'sale')+' of '+qty+' '+k+' shares. Personal cash: '+cash(S.personalCash)+'.'
   :document.getElementById('notice')?.textContent||'Order not accepted.';
+ renderBrokerOffice();
 }
 function tradeQty(k){const el=$('#qty_'+k),n=Number(el?.value);return Number.isSafeInteger(n)&&n>0?n:0}
 function renderTradeEstimate(k){const el=$('#estimate_'+k);if(!el)return;const qty=tradeQty(k),x=S.stocks[k];if(!qty){el.textContent='';return}const commission=Math.max(1,qty*.05);el.textContent='Buy total '+cash(x.price*qty+commission)}
@@ -2157,6 +2175,7 @@ function openCityRoom(locationId,roomId,options={}){
  // bookkeeping. A secondary ledger exception cannot undo scene navigation.
  guardedRoomPanel('close map',()=>{closeTitleDialog();closeTitleMap()});
  if(!dev){
+  guardedRoomPanel('cash office',()=>window.FE_CASH_UI?.render?.(S,location.id,S.characterRoute,()=>{save(true);render();updateCashHeader();window.FE_CASH_UI?.render?.(S,location.id,S.characterRoute,()=>{save(true);render()})}));
   guardedRoomPanel('broker visit',()=>{
    if(location.id==='brokerOffice'){
     window.FE_BROKER?.visit?.(S,S.gameDate);
@@ -3089,6 +3108,15 @@ function enterMapDestination(id,event,requestedRoomId){
  document.body.classList.add('city-room-open');
  guardedRoomPanel('room access menu',()=>renderCityRoomDirectory(place,room.id));
  guardedRoomPanel('room opportunities',()=>window.FE_VENUES?.renderRoomOpportunities?.(place.id));
+ guardedRoomPanel('cash office after map travel',()=>window.FE_CASH_UI?.render?.(S,place.id,S.characterRoute,()=>{save(true);render();window.FE_CASH_UI?.render?.(S,place.id,S.characterRoute,()=>{save(true);render()})}));
+ guardedRoomPanel('broker after map travel',()=>{
+  if(place.id==='brokerOffice'){
+   window.FE_BROKER?.visit?.(S,S.gameDate);
+   const advice=window.FE_BROKER?.recordObservation?.(S,S.gameDate,S.stocks,S.portfolio);
+   if(advice)S.notes.push({date:displayDate(),source:'stockbroker consultation',text:advice.text});
+   renderBrokerOffice();
+  }else{const panel=document.getElementById('cityRoomBrokerage');if(panel)panel.hidden=true;}
+ });
  guardedRoomPanel('room storage',()=>window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(place.id,room.id));
  guardedRoomPanel('room market',()=>window.FE_MARKET_UI?.render?.());
  guardedRoomPanel('room housing',()=>window.FE_HOUSING?.renderHouseholdRecord?.(place.id,room.id));
