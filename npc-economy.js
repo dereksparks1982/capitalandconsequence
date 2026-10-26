@@ -23,6 +23,13 @@
   liWen:{occupation:'merchant',workplace:'oldChinatown',opening:3000,pay:103,betting:19},
   annaPetrovna:{occupation:'independent visitor',workplace:null,opening:2200,pay:0,betting:0},
   pavelOrlov:{occupation:'trade representative',workplace:'russianTradeHall',opening:7000,pay:150,betting:18},
+  edwinBooth:{occupation:'stage actor',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  josephJefferson:{occupation:'stage actor',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  johnMcCullough:{occupation:'stage actor',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  claraMorris:{occupation:'stage actress',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  johnTRaymond:{occupation:'stage actor',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  charlesHanford:{occupation:'theatre apprentice',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
+  williamRapley:{occupation:'theatre proprietor',workplace:'nationalTheatre',opening:0,pay:0,betting:0,monetary:false},
   alexiRurik:{occupation:'courier',workplace:'russianTradeHall',opening:950,pay:89,betting:23}
  });
  const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
