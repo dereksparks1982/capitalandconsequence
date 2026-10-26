@@ -51,7 +51,9 @@
   if(route!=='industrialist'&&(spec[0]==='companyCash'||spec[0]==='companyCarried'||spec[0]==='businessBank'))
    return {ok:false,reason:'Business funds belong to Federal Electric.'};
   if(spec[2]!==location)return {ok:false,reason:'Go to '+(spec[2]==='factory'?'Federal Electric':'the District Bank')+' to handle that cash.'};
-  const n=cents(Number(amount));
+  const raw=Number(amount),n=cents(raw);
+  if(!Number.isFinite(raw)||Math.abs(raw*100-n)>0.000001)
+   return {ok:false,reason:'Cash amounts must be exact dollars and cents.'};
   if(!nonnegative(n)||n<1)return {ok:false,reason:'Enter a positive cash amount.'};
   const a=ensure(save),[from,to]=spec;
   const source=from==='personalCash'||from==='companyCash'?save:a;
@@ -77,7 +79,9 @@
    'workingPoker','commercePoker','embassyPoker'].includes(location))
    return {ok:false,reason:'Go to a real gambling venue to wager.'};
   if(!['personal','company'].includes(funding))return {ok:false,reason:'Select cash to wager.'};
-  const n=cents(Number(amount));
+  const raw=Number(amount),n=cents(raw);
+  if(!Number.isFinite(raw)||Math.abs(raw*100-n)>0.000001)
+   return {ok:false,reason:'Cash amounts must be exact dollars and cents.'};
   if(!nonnegative(n)||n<1)return {ok:false,reason:'Invalid wager amount.'};
   const a=ensure(save),src=funding==='company'?a:save,key=funding==='company'?'companyCarried':'personalCash';
   if(cents(+src[key]||0)<n)return {ok:false,reason:'Not enough '+(funding==='company'?'carried company':'personal')+' cash.'};
