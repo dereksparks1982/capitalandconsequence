@@ -8,6 +8,9 @@
  function position(save,actor,id,clock){
   if(!actor||id!=='foremanSullivan'||!save?.componentWorks||!ops||!clock)return actor;
   if(actor.locationId!=='factory'||actor.status!=='present')return actor;
+  // Arrival/absence projection concerns production work, never Sullivan's
+  // existing privately rented bedroom on factory grounds.
+  if(actor.roomId==='workers-lodging')return actor;
   const day=new Date(clock.date+'T12:00:00Z').getUTCDay();
   const a=ops.arrival(save,clock.date);
   if(day<1||day>5||a.absent||clock.minuteOfDay<a.arrivalMinute||clock.minuteOfDay>=1020)
