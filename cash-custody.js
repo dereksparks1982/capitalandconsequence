@@ -21,6 +21,9 @@
   }
   for(const k of KEYS)if(!Number.isFinite(a[k])||a[k]<0)a[k]=0;
   if(!Array.isArray(a.history))a.history=[];
+  // Open escrow survives the 160-entry bounded activity display history.
+  if(!a.openWagers||typeof a.openWagers!=='object')a.openWagers={};
+  if(!Array.isArray(a.closedWagers))a.closedWagers=[];
   if(!nonnegative(a.nextId)||!a.nextId)a.nextId=1;
   return a;
  }
@@ -79,6 +82,8 @@
    'workingPoker','commercePoker','embassyPoker'].includes(location))
    return {ok:false,reason:'Go to a real gambling venue to wager.'};
   if(!['personal','company'].includes(funding))return {ok:false,reason:'Select cash to wager.'};
+  if(funding==='company'&&save.characterRoute&&save.characterRoute!=='industrialist')
+   return {ok:false,reason:'Only the Federal Electric owner controls these company funds.'};
   const raw=Number(amount),n=cents(raw);
   if(!Number.isFinite(raw)||Math.abs(raw*100-n)>0.000001)
    return {ok:false,reason:'Cash amounts must be exact dollars and cents.'};
@@ -91,6 +96,7 @@
    save.corporateMisuseCount=(+save.corporateMisuseCount||0)+1;
   }
   const entry={id:a.nextId++,date:save.gameDate||null,action:'wager',funding,amount:n/100,location};
+  a.openWagers[entry.id]={funding,stake:n/100,location};
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,ticket:{funding,stake:n/100,custodyId:entry.id},balances:balances(save)};
  }
@@ -99,16 +105,19 @@
       !Number.isFinite(ticket.stake)||ticket.stake<=0)return {ok:false,reason:'Invalid wager ticket.'};
   const a=ensure(save);
   const id=ticket.custodyId;
-  if(!nonnegative(id)||!a.history.some(h=>h.id===id&&h.action==='wager'&&h.funding===ticket.funding))
+  if(!nonnegative(id)||!id)return {ok:false,reason:'Invalid wager reference.'};
+  if(a.closedWagers.includes(id))return {ok:false,reason:'Wager already settled.'};
+  const opened=a.openWagers[id];
+  if(!opened||opened.funding!==ticket.funding||cents(opened.stake)!==cents(ticket.stake))
    return {ok:false,reason:'Wager not found in this profile.'};
-  if(a.history.some(h=>h.action==='wager-settlement'&&h.wagerId===id))
-   return {ok:false,reason:'Wager already settled.'};
   const n=cents(Number(payout)),dst=ticket.funding==='company'?a:save,key=ticket.funding==='company'?'companyCarried':'personalCash';
   dst[key]=money(cents(+dst[key]||0)+n);
   if(ticket.funding==='company')
    save.unaccountedFunds=Math.max(0,money(cents(+save.unaccountedFunds||0)-Math.min(n,cents(ticket.stake))));
   const entry={id:a.nextId++,date:save.gameDate||null,action:'wager-settlement',wagerId:id,
    funding:ticket.funding,payout:n/100,net:n/100-ticket.stake};
+  delete a.openWagers[id];
+  a.closedWagers.push(id);if(a.closedWagers.length>512)a.closedWagers.splice(0,a.closedWagers.length-512);
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,entry};
  }
