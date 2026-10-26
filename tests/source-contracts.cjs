@@ -46,14 +46,20 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===38,'All 38 city destinations have distinct map pins');
-check(new Set(ids).size===38,'No duplicate map location identifiers');
-check(new Set(nums).size===38&&Math.max(...nums)===38,'Map marker numbers 1-38');
+check(pins.length===40,'All 40 city destinations have distinct map pins');
+check(new Set(ids).size===40,'No duplicate map location identifiers');
+check(new Set(nums).size===40&&Math.max(...nums)===40,'Map marker numbers 1-40');
 check(city.getLocation('franciscanMonastery').map.n===35&&city.getLocation('franciscanMonastery').category==='religious','Franciscan Monastery is historical marker 35');
 check(city.mapLocations().find(v=>v.n===35).origin==='historical','Monastery uses a red historical marker');
 check(city.getLocation('cobblerShop').map.n===36&&city.mapLocations().find(v=>v.n===36).origin==='fictional','Cobbler uses blue marker 36');
 check(city.getLocation('easternMarket').map.n===37&&city.getLocation('georgetownMarketHouse').map.n===38,'Historical markets use pins 37 and 38');
 check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
+check(city.getLocation('secondNightclub').name==='Le Paon d’Or'&&city.getLocation('secondNightclub').map.n===15,'Lui retains original nightclub pin 15 with new French name');
+check(city.getLocation('nationalTheatre').map.n===39,'National Theatre gets new pin 39');
+check(city.getLocation('districtBank').map.n===40,'Optional bank gets new pin 40');
+check(city.getRoom('hillsdale','hillsdale-butcher').name==='Hillsdale Butcher'&&
+ city.getRoom('hillsdale','hillsdale-market').name==='Hillsdale Market','Hillsdale stores are rooms on existing pin 13');
+check(!pins.some(p=>p.id==='hillsdale-butcher'||p.id==='hillsdale-market'),'Hillsdale shops are not separate map pins');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale / Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
@@ -353,11 +359,14 @@ const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===14,'Eleven named Washington residents and exactly three unselected playable protagonists have autonomous agents');
+check(npc.list().length===21,'Eighteen named Washington residents and exactly three unselected playable protagonists have autonomous agents');
  check(!npc.list().some(v=>v.id==='charlieWhitcomb'),'Selected industrialist is never also an NPC');
  check(['samHarlan','eliCrowe','edmundWardman'].every(id=>npc.list().some(v=>v.id===id)),'The other three protagonists receive independent AI definitions');
 check(npc.list().some(v=>v.id==='samuelTilden'),'President Tilden is a historically based resident');
 check(npc.list().some(v=>v.id==='luiDelacroix'),'Lui is a distinct scheduled proprietor of the second nightclub');
+check(['edwinBooth','josephJefferson','johnMcCullough','claraMorris','johnTRaymond','charlesHanford','williamRapley'].every(id=>npc.list().some(v=>v.id===id)),
+ 'Seven permanent alternate-history theatrical Washington residents have autonomous agent definitions');
+check(npc.list().find(v=>v.id==='liWen').language==='zh','Li Wen is Chinese-only, not the default English language');
 check(npc.syncClock()===true,'Initial clock slot schedules residents');
 check(npc.visibleAt('factory').some(x=>x.id==='foremanSullivan'),'Founding workshop assistant works at the factory');
 const npcOriginal=JSON.stringify(npcSave.npcSimulation);
@@ -425,6 +434,17 @@ check(appSource.includes('Number.isSafeInteger(qty)||qty<1'),'Stock orders rejec
 check(appSource.includes('!stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))'),'Stock orders enforce period listings beyond UI controls');
 check(broker.channel(JSON.parse(JSON.stringify(account)),'factory')==='telegram','Broker relationship survives autosave');
 check(index.includes('brokerage.js?v=')&&index.includes('id="cityRoomBrokerage"'),'Broker service is present in the city room');
+check(index.includes('id="brokerStockList"')&&appSource.includes('renderBrokerOffice();'),
+ 'Broker has a full saved-stock quotation list and map entry renderer');
+check(index.includes('cash-custody.js?v=')&&index.includes('cash-custody-ui.js?v=')&&
+ index.includes('id="cityRoomCashOffice"'),'Cash custody and optional bank exist in physical Washington rooms');
+check(index.includes('id="cityRoomPersonalCash"')&&index.includes('id="cityRoomCompanyCash"'),
+ 'Room header shows spendable personal cash and separately carried business cash');
+check(appSource.includes('function displayHeaderTurn(){return clockText()}'),
+ 'Old campaign FREE PLAY turn label is replaced with actual in-world time');
+check(appSource.includes('reviewCashOnArrival(prior.locationId,place.id)'),
+ 'Robbery exposure only follows actual journey to a different location');
+
 check(appSource.includes('if(!brokerChannel())return note('),'Back-end stock order enforces broker relationship');
 const adviceStocks={
  FALL:{price:82,prevClose:84,history:[{close:100},{close:97},{close:94},{close:90},{close:85}]},
