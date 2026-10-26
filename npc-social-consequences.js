@@ -11,6 +11,7 @@
   disagreement:Object.freeze({mood:-6,memory:'conflict',text:'I disagreed with another resident.'})
  });
  const LIMIT=160;
+ const memory=typeof module==='object'&&module.exports?require('./npc-memory.js'):root.FE_NPC_MEMORY;
  const clamp=(number)=>Math.max(0,Math.min(100,Number.isFinite(number)?number:65));
  function ensure(world){
   if(!world||typeof world!=='object'||!world.agents||typeof world.agents!=='object')
@@ -46,7 +47,7 @@
   for(const [actor,otherId] of [[left,record.partnerId],[right,record.actorId]]){
    if(actor.needs?.version===1)
     actor.needs.mood=Math.round(clamp(actor.needs.mood+consequence.mood)*100)/100;
-   root.FE_NPC_MEMORY?.remember?.(save,actor.id,{
+   memory?.remember?.(save,actor.id,{
     date:record.date,key:'social|'+record.id+'|'+actor.id,
     kind:consequence.memory,withId:otherId,place:record.locationId,
     source:'firsthand-same-room',verified:true,
