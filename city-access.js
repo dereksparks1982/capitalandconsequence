@@ -34,7 +34,13 @@
     return {ok:true,locationId:id,roomId:room.id};
   }
   if(id==='secondNightclub'){
-   if(room.id==='doorman-post'&&role==='criminal')return {ok:true,locationId:id,roomId:room.id};
+   if(room.id==='doorman-post'&&(role==='criminal'||(person==='eliCrowe'&&actor.onDuty)))return {ok:true,locationId:id,roomId:room.id};
+   if(room.id==='proprietor-office'&&person==='luiDelacroix')return {ok:true,locationId:id,roomId:room.id};
+  }
+  if(id==='nationalTheatre'){
+   const company=new Set(['edwinBooth','josephJefferson','johnMcCullough','claraMorris','johnTRaymond','charlesHanford','williamRapley']);
+   if(room.id==='backstage'&&company.has(person)&&actor.onDuty)return {ok:true,locationId:id,roomId:room.id};
+   if(room.id==='manager-office'&&person==='williamRapley')return {ok:true,locationId:id,roomId:room.id};
   }
   if(id==='metropolitanPolice'){
    if(room.id==='station-duty-room'&&(role==='investigator'||(person==='inspectorHayes'&&actor.onDuty)))
