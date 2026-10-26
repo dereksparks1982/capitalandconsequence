@@ -350,7 +350,7 @@ document.addEventListener('click',e=>{
  e.preventDefault();e.stopImmediatePropagation();
  note('Game is paused. Press PLAY to resume.');
 },true);
-function updateCashHeader(){const company=$('#headerCompanyCash'),personal=$('#headerPersonalCash');if(company)company.textContent=money(S.companyCash);if(personal)personal.textContent=money(S.personalCash);window.FE_CASH_UI?.header?.(S)}
+function updateCashHeader(){const company=$('#headerCompanyCash'),personal=$('#headerPersonalCash');if(company)company.textContent=money(S.companyCash);if(personal)personal.textContent=money(S.personalCash);window.FE_CASH_UI?.header?.(S);pokerFunding()}
 function renderPauseToggle(){const btn=$('#pauseToggle');if(!btn)return;const paused=!!S.paused;btn.textContent=paused?'PLAY':'PAUSE';btn.setAttribute('aria-label',paused?'Play simulation':'Pause simulation');btn.setAttribute('aria-pressed',paused?'true':'false');btn.title=paused?'Play simulation':'Pause simulation';btn.classList.toggle('paused',paused)}
 window.updateCashHeader=updateCashHeader;
 function accountingExposure(){
@@ -1073,11 +1073,22 @@ const continueEmpire=$('#continueEmpire');if(continueEmpire)continueEmpire.oncli
 const campaignNewGame=$('#campaignNewGame');if(campaignNewGame)campaignNewGame.onclick=()=>startFreshGame();
 const pauseToggle=$('#pauseToggle');if(pauseToggle)pauseToggle.onclick=()=>{if(S.paused){clearPauseLock();S.paused=false;resumeTitleAudio()}else{S.paused=true;pauseTitleAudio();showTab('desk')}save(true);render()};
 function treasuryAmount(){const n=Math.floor(Number($('#treasuryAmount')?.value));return Number.isFinite(n)&&n>0?n:0}
+function treasuryHandlingTime(out){
+ const seconds=120;
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds)){
+  out.textContent='Not enough remaining business time to handle funds.';return false;
+ }
+ if(window.advanceWorldTime?.(seconds,true)!==seconds){
+  out.textContent='Cash handling was interrupted. No funds were moved.';return false;
+ }
+ return true;
+}
 const exploreIpo=$('#exploreIpo');if(exploreIpo)exploreIpo.onclick=()=>{ipoScaffoldOpen=!ipoScaffoldOpen;renderOwnership()};
 const closeIpoScaffold=$('#closeIpoScaffold');if(closeIpoScaffold)closeIpoScaffold.onclick=()=>{ipoScaffoldOpen=false;renderOwnership()};
 const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistribution.onclick=()=>{
  const amount=treasuryAmount(),out=$('#treasuryNote');if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
+ if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'ownerDistribution',amount,currentCityLocation().locationId,S.characterRoute);
  if(!result?.ok)return out.textContent=result?.reason||'Company cash may only be collected at Federal Electric.';
  S.notes.push({date:displayDate(),text:'A recorded owner distribution of '+cash(amount)+' was transferred from Federal Electric to personal funds.',source:'company books'});
@@ -1086,6 +1097,7 @@ const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistri
 const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCompanyFunds.onclick=()=>{
  const amount=treasuryAmount(),out=$('#treasuryNote');if(S.phase==='report')return out.textContent='The books are closed for the completed date.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
+ if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'irregularDraw',amount,currentCityLocation().locationId,S.characterRoute);
  if(!result?.ok)return out.textContent=result?.reason||'Company cash may only be collected at Federal Electric.';
  S.notes.push({date:displayDate(),text:cash(amount)+' of Federal Electric funds were diverted to personal use, creating an unexplained corporate shortfall.',source:'private financial record'});
@@ -1121,7 +1133,7 @@ function pokerFunding(){
  const select=document.getElementById('pokerFunding');
  const owner=S.characterRoute==='industrialist';
  const company=select?.querySelector('option[value="company"]');
- if(company)company.disabled=!owner;
+ if(company){company.disabled=!owner;company.hidden=!owner}
  if(!owner&&select?.value==='company')select.value='personal';
  return owner&&select?.value==='company'?'company':'personal';
 }
