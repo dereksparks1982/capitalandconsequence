@@ -6,6 +6,10 @@
 (function(root){
  'use strict';
  const CLUB=Object.freeze({
+  charlieWhitcomb:"I've heard of Madam Star's club. I won't claim to know what happens behind its private doors.",
+  samHarlan:"The Star Club isn't on my Hillsdale beat. I don't speak to incidents I haven't witnessed.",
+  eliCrowe:"I know the name. I work a different entrance, so don't ask me for their private arrangements.",
+  edmundWardman:"I've heard the club mentioned, but my duties at the asylum tell me nothing about its affairs.",
   madamStar:"It is my establishment, and I expect discretion and good manners from every guest. We offer fine dining and quiet company, not gambling.",
   eddieDoyle:"It costs a pretty penny, but I have met useful people there. Madam Star knows how to keep a room civilized.",
   inspectorHayes:"The Star Club? I know the name. Rumor is not evidence, and I won't pretend to know its private affairs.",
@@ -19,6 +23,10 @@
   alexiRurik:"Я слышал об этом клубе, но не знаю его хозяев."
  });
  const unknown=Object.freeze({
+  charlieWhitcomb:"I couldn't give you a reliable answer to that.",
+  samHarlan:"I haven't seen enough to say. I won't invent a report.",
+  eliCrowe:"I wouldn't know. I'm paid to keep the door, not everybody's secrets.",
+  edmundWardman:"I can't say that I know. My work does not make me an authority on everything.",
   madamStar:"I'm afraid that is not a matter on which I can speak with certainty.",
   eddieDoyle:"Couldn't tell you for certain. Plenty of talk goes round, but I wouldn't swear to it.",
   inspectorHayes:"I haven't sufficient information to answer that.",
