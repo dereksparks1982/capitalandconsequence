@@ -6,6 +6,15 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## October 26 source development: physical money and a lived-in Washington
+
+- **No mandatory bank.** Federal Electric cash sits at the works until the owner physically collects it. Business cash carried remains business property, distinct from personal cash. A fictional District Bank allows optional **business**, **personal checking**, and **general-purpose personal savings** accounts. Deposits and withdrawals require entering the bank. Company distributions/diversions require returning to Federal Electric; the ledger records improper personal withdrawals.
+- **Horse-racing cash:** Select personal carried cash or physically carried Federal Electric cash. Corporate wagers and any winnings remain company money. Accounting shortfalls from company gambling are recorded. Actual trips carrying large amounts involve a small saved risk of cash loss. Personal cash and carried company cash appear in the city-room header.
+- **Washington destinations:** the original, unchanging map gains **National Theatre (pin 39)** and **District Bank (pin 40)**. Pin **15** now names Lucien Étienne Delacroix's existing establishment **Le Paon d’Or, “The Golden Peacock”**. Hillsdale butcher and market occupy **rooms within Hillsdale (pin 13)** rather than extra pins; both sell finite stock. Broker office shows the full posted Federal Exchange security sheet and order controls.
+- **Residents and speech:** Edwin Booth, Joseph Jefferson, John McCullough, Clara Morris, John T. Raymond, Charles B. Hanford, and William W. Rapley live and work in **alternate-history 1878 Washington** with independent NPC schedules. Li Wen speaks Chinese only. NPC discretionary trips prioritize duties and personal sociability; simple greetings have an offline fallback. The date/time header no longer advertises the retired turn-based “FREE PLAY” mode.
+
+This work is a **source build, not a Linux acceptance release**. Targeted JavaScript regression passed (56 finance, 25 Hillsdale and 104 multi-route/multi-era NPC assertions), but complete offline Node tests and actual Electron gameplay remain unverified. No GitHub Actions are used, no executable was requested, and the original Washington map artwork must never be changed.
+
 ## Choose your life
 
 | Character | Starting life | What you can pursue |
