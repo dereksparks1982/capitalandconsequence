@@ -68,8 +68,13 @@
   if(choice.rest||!def.goals?.includes(choice.goal)||p.goal!==choice.goal||
     !actual?.locationId||!actual?.roomId)return false;
   if(p.evidenceKeys.includes(key+'|action'))return false;
-  const verified=actual.locationId===action.locationId&&
-   ['work','personal','wager-win','wager-loss'].includes(action.kind);
+  const samePlace=actual.locationId===action.locationId;
+  const verified=(samePlace&&['work','wager-win','wager-loss'].includes(action.kind))||
+   (action.kind==='personal'&&
+    (samePlace||actual.reason==='goal-directed')&&
+    ['routine','goal-directed'].includes(actual.reason));
+  // A genuine authorized goal-directed trip can differ from the first plan.
+  // A random excursion or a claimed arrival does not earn a goal milestone.
   // A venue visit is not proof that a trade was won or a friendship formed.
   if(!verified)return false;
   p.evidenceKeys.push(key+'|action');
