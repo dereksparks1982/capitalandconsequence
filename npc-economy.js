@@ -75,7 +75,8 @@
   let amount=0,kind='rest',description='Taking personal time away from public work.';
   const work=!!cfg.workplace&&locationId===cfg.workplace&&
    // Club evening staff and bookmaker at race meetings follow different shifts.
-   (def.id==='madamStar'?context.slot>=1:def.id==='eliCrowe'?context.slot>=2:context.slot<2);
+   (def.id==='madamStar'?context.slot>=1:def.id==='eliCrowe'?context.slot>=2:
+   cfg.workplace==='nationalTheatre'?context.slot<=2:context.slot<2);
   const trackOpen=context.slot===1&&context.weekday!==0;
   const canLeave=!!locationId&&context.slot===1;
   const weekend=context.weekday===6;
