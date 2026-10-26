@@ -53,7 +53,7 @@ This is a **private development alpha for Linux**, not a finished or accepted re
 
 The game has an existing Washington map, shop/finance systems, timed factory work, basic protagonist jobs, personal records, fishing, transport, and sporting prototypes. The expanded political cast, retail neighborhoods, social venues, tournament system and government gambling law are **development goals**, not false promises that everything is already playable.
 
-[Development roadmap](ROADMAP.md) · [Decisions and guardrails](DECISIONS.md) · [Technical handoff](CONTINUE-HERE.md) · [Room navigation repair and new-room checklist](ROOM-NAVIGATION-REPAIR.md) · [Permanent map rules](MAP-CANON.md) · [LEGAL.md](LEGAL.md).
+[Development roadmap](ROADMAP.md) · [Decisions and guardrails](DECISIONS.md) · [Current NPC AI + Star Club thread handoff](HANDOFF-2026-10-25-NPC-AI-AND-STAR-CLUB.md) · [Technical continuation](CONTINUE-HERE.md) · [Room navigation repair](ROOM-NAVIGATION-REPAIR.md) · [Permanent map rules](MAP-CANON.md) · [LEGAL.md](LEGAL.md).
 
 **Elderred Softworks LLC · DKLab**. Single `main` branch. Changes, acceptance, and release follow explicit owner approval.
 
