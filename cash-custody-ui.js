@@ -55,7 +55,7 @@
   if(select)select.onchange=describe;
   describe();
   const button=document.getElementById('cityRoomCashConfirm'),status=document.getElementById('cityRoomCashStatus');
-  if(button){button.disabled=!!save.paused||save.phase==='report';button.onclick=()=>{
+  if(button){button.disabled=!!save.paused||save.phase==='report'||(location==='districtBank'&&save.phase!=='day');button.onclick=()=>{
     const value=Number(document.getElementById('cityRoomCashAmount')?.value);
     const result=book.transfer(save,select.value,value,location,route);
     if(status)status.textContent=result.ok?'Transaction recorded at '+(location==='factory'?'Federal Electric':'the bank')+': '+fmt(value)+'.':result.reason;
