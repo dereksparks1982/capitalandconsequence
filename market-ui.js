@@ -2,18 +2,24 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),commerce=()=>window.FE_WASHINGTON_COMMERCE;
+function marketSite(){
+ const here=window.FE_CITY?.currentLocation?.();
+ if(here?.locationId==='oldChinatown'&&here.roomId==='market-street')return '';
+ if(here?.locationId==='hillsdale'&&['hillsdale-market','hillsdale-butcher'].includes(here.roomId))return here.roomId;
+ return null;
+}
 let message='';
 function permitted(){
  const p=window.FE_CITY?.currentLocation?.(),t=window.FE_WASHINGTON_TIME?.now?.(S);
- return !!p&&p.locationId==='oldChinatown'&&p.roomId==='market-street'&&!window.FE_CITY?.isDevRoom?.()&&S.phase==='day'&&!S.paused&&t?.minuteOfDay>=480&&t.minuteOfDay<1020&&typeof activeProfileId==='function'&&!!activeProfileId();
+ return !!p&&marketSite()!==null&&!window.FE_CITY?.isDevRoom?.()&&S.phase==='day'&&!S.paused&&t?.minuteOfDay>=480&&t.minuteOfDay<1020&&typeof activeProfileId==='function'&&!!activeProfileId();
 }
 function buy(id){
  if(!permitted()){message='The market is closed or you are not at its counter.';render();return;}
- const model=commerce(),m=model.ensure(S),good=model.GOODS.find(x=>x.id===id);
- if(!good||m.stock[id]<1){message='Sold out. Await the next physical delivery.';render();return;}
+ const model=commerce(),m=model.ensure(S),site=marketSite(),stock=site?m.siteStocks[site]:m.stock,good=model.GOODS.find(x=>x.id===id);
+ if(!good||!model.allowedAt(id,site)||stock[id]<1){message='Sold out. Await the next physical delivery.';render();return;}
  if(Math.round(S.personalCash*100)<good.cents){message='Not enough personal cash.';render();return;}
  if(window.advanceWorldTime(300)!==300){message='Trading hours ended before the purchase.';render();return;}
- const sale=model.purchase(S,'player',id,{date:S.gameDate});
+ const sale=model.purchase(S,'player',id,{date:S.gameDate,...(site?{siteId:site}:{})});
  message=sale.ok?'Purchased '+good.label+' for '+good.cents+'¢. Merchant stock and cash updated.':sale.reason;
  save(true);render();
 }
@@ -27,16 +33,19 @@ function use(id){
 function render(){
  const panel=$('cityRoomMarket');if(!panel)return;
  const current=window.FE_CITY?.currentLocation?.();
- const here=current?.locationId==='oldChinatown'&&current?.roomId==='market-street'&&!window.FE_CITY?.isDevRoom?.();
+ const site=marketSite(),here=site!==null&&!window.FE_CITY?.isDevRoom?.();
  panel.hidden=!here;if(!here)return;
  const m=commerce().ensure(S),open=permitted(),list=$('cityRoomMarketGoods'),bag=$('cityRoomMarketBag');
+ const stock=site?m.siteStocks[site]:m.stock;
+ const heading=panel.querySelector('h4');
+ if(heading)heading.textContent=site==='hillsdale-market'?'Hillsdale Market · Provisions':site==='hillsdale-butcher'?'Hillsdale Butcher · Meat and Provisions':'Market Street · Local Merchants';
  const note=$('cityRoomMarketNote');if(note)note.textContent=message||'Cash purchases use your personal account. Every sale reduces the actual merchant stock.';
  if(list){
   list.replaceChildren();
-  for(const g of commerce().GOODS){
+  for(const g of commerce().GOODS.filter(item=>commerce().allowedAt(item.id,site))){
    const row=document.createElement('div'),text=document.createElement('span'),button=document.createElement('button');
-   text.textContent=g.label+' · '+g.cents+'¢ · '+m.stock[g.id]+' in stock';
-   button.type='button';button.textContent='Buy';button.disabled=!open||m.stock[g.id]<1||Math.round(S.personalCash*100)<g.cents||m.playerBag.length>=24;
+   text.textContent=g.label+' · '+g.cents+'¢ · '+stock[g.id]+' in stock';
+   button.type='button';button.textContent='Buy';button.disabled=!open||stock[g.id]<1||Math.round(S.personalCash*100)<g.cents||m.playerBag.length>=24;
    button.onclick=()=>buy(g.id);row.append(text,button);list.appendChild(row);
   }
  }
