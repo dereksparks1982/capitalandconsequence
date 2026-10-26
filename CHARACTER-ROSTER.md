@@ -9,7 +9,7 @@
 - **Elias “Eli” Crowe**: lowly nightclub doorman employed by Lui; not automatically a criminal.
 - **Edmund Wardman**: lowly orderly at fictional **District Asylum**; unnamed older brother runs the institution; no automatic management power.
 
-Other three continue their own autonomous histories during a single-character playthrough. Routes do not predetermine whether anyone becomes a criminal, investigator, politician or institution head.
+**Source checkpoint, October 25:** Whichever playable character is selected is excluded from NPC control; the other three are now initial scheduled AI residents with their own unique names, professions, locations, ordinary weekday/weekend routines, personality foundations and character-card dialogue. This is a beginning, **not yet** a full independently simulated lifetime, mature career, or canonical personal salary. Routes do not predetermine whether anyone becomes a criminal, investigator, politician or institution head.
 
 ## Recurring Washington figures (fictional)
 
