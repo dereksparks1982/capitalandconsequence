@@ -1117,6 +1117,17 @@ $('#visitStarBrief').onclick=()=>visitStar(900,50,.12,1,'day');
 $('#visitStarAfternoon').onclick=()=>visitStar(1800,150,.28,2,'day');
 const visitStarEveningBrief=$('#visitStarEveningBrief');if(visitStarEveningBrief)visitStarEveningBrief.onclick=()=>visitStar(900,100,.18,1,'night');
 const visitStarEvening=$('#visitStarEvening');if(visitStarEvening)visitStarEvening.onclick=()=>visitStar(1800,300,.38,2,'night');
+function pokerFunding(){
+ const select=document.getElementById('pokerFunding');
+ const owner=S.characterRoute==='industrialist';
+ const company=select?.querySelector('option[value="company"]');
+ if(company)company.disabled=!owner;
+ if(!owner&&select?.value==='company')select.value='personal';
+ return owner&&select?.value==='company'?'company':'personal';
+}
+function pokerCustodyLocation(circle){
+ return {working:'workingPoker',middle:'commercePoker',elite:'embassyPoker'}[circle]||null;
+}
 function pokerClubStatus(circle){
  const introduced=circle==='working'||(circle==='middle'?!!S.middlePokerUnlocked:!!S.elitePokerUnlocked);
  return window.FE_CLUB_MEMBERSHIPS?.access(S,circle,S.gameDate,introduced)||
@@ -1158,18 +1169,23 @@ function playPokerCircle(circle,stake){
  const venueId={working:'working-poker',middle:'commerce-poker',elite:'embassy-poker'}[circle];
  if(!venueId||window.FE_VENUES&&!window.FE_VENUES.canUse(venueId)){$('#pokerNote').textContent='Travel to the correct gambling room first.';return}
  if(S.pokerPlayed[circle]>=pokerLimit(circle)){$('#pokerNote').textContent='No sessions remain at this table today.';return}
- if(S.personalCash<stake){$('#pokerNote').textContent='You need '+cash(stake)+' personal cash.';return}
  const sessions=pokerSessions();
  if(sessions.pending.some(p=>p.profileId===activeProfileId()&&p.gameDate===S.gameDate)){$('#pokerNote').textContent='An earlier card session remains open. Its stake is reserved.';return}
  const token=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
- sessions.pending.push({id:token,profileId:activeProfileId(),circle,stake,gameDate:S.gameDate,claimed:false});
- S.personalCash-=stake;S.pokerPlayed[circle]++;save(true);
+ const funding=pokerFunding();
+ const booked=window.FE_CASH_CUSTODY?.stake?.(S,funding,stake,pokerCustodyLocation(circle));
+ if(!booked?.ok){$('#pokerNote').textContent=booked?.reason||'The wager could not be reserved.';return}
+ sessions.pending.push({id:token,profileId:activeProfileId(),circle,stake,gameDate:S.gameDate,
+  claimed:false,funding,custodyTicket:booked.ticket});
+ S.pokerPlayed[circle]++;save(true);window.updateCashHeader?.();
  const isTrial=pokerClubStatus(circle).status==='trial';
  const popup=window.open('poker.html?room='+encodeURIComponent(circle)+'&session='+encodeURIComponent(token)+'&trial='+(isTrial?'1':'0'),'FEPoker_'+token,'popup=yes,width=1180,height=860,resizable=yes,scrollbars=yes');
  if(!popup){
+  const voided=window.FE_CASH_CUSTODY?.cancel?.(S,booked.ticket);
+  if(!voided?.ok){$('#pokerNote').textContent='Could not cancel reservation: '+(voided?.reason||'unknown error');return}
   sessions.pending=sessions.pending.filter(p=>p.id!==token);
-  S.personalCash+=stake;S.pokerPlayed[circle]--;save(true);
-  $('#pokerNote').textContent='Poker popup blocked. The stake has been refunded.';
+  S.pokerPlayed[circle]--;save(true);window.updateCashHeader?.();
+  $('#pokerNote').textContent='Poker popup blocked. The unused stake returned to '+(funding==='company'?'carried company cash':'personal cash')+'.';
  }
  renderWashington();
 }
@@ -1183,13 +1199,15 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteou
  if(!entry||!entry.claimed||entry.profileId!==activeProfileId()||entry.circle!==circle||state.settled.some(p=>p.id===token))return false;
  if(!Number.isFinite(+rawDelta)||!Number.isFinite(+rawHands))return false;
  const delta=clamp(Math.round(+rawDelta),-entry.stake,3*entry.stake),hands=Math.max(0,Math.min(1000,Math.floor(+rawHands)));
+ const paid=window.FE_CASH_CUSTODY?.settle?.(S,entry.custodyTicket,entry.stake+delta);
+ if(!paid?.ok)return false;
  state.pending=state.pending.filter(p=>p.id!==token);
  state.settled.push({id:token,circle,delta,turn:S.turnSerial});
  if(state.settled.length>256)state.settled.splice(0,state.settled.length-256);
  if(!Array.isArray(S.outcomeEvents))S.outcomeEvents=[];
  S.outcomeEvents.push({id:'poker:'+token,type:'poker-result',delta,turn:S.turnSerial});
  if(S.outcomeEvents.length>512)S.outcomeEvents.splice(0,S.outcomeEvents.length-512);
- S.personalCash+=entry.stake+delta;
+ window.updateCashHeader?.();
  recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous');
  return true;
 };
@@ -1216,7 +1234,10 @@ function resolveUnfinishedPoker(token){
  store.pending=store.pending.filter(p=>p.id!==token);
  store.settled.push({id:token,circle:pending.circle,delta:refund?0:-pending.stake,turn:S.turnSerial,resolution:refund?'undealt-canceled':'forfeit'});
  if(store.settled.length>256)store.settled.splice(0,store.settled.length-256);
- if(refund){S.personalCash+=pending.stake;}
+ const receipt=refund?window.FE_CASH_CUSTODY?.cancel?.(S,pending.custodyTicket):
+  window.FE_CASH_CUSTODY?.settle?.(S,pending.custodyTicket,0);
+ if(!receipt?.ok)return false;
+ window.updateCashHeader?.();
  if(!Array.isArray(S.outcomeEvents))S.outcomeEvents=[];
  S.outcomeEvents.push({id:'poker:'+token,type:refund?'poker-undealt-canceled':'poker-forfeit',delta:refund?0:-pending.stake,turn:S.turnSerial});
  if(S.outcomeEvents.length>512)S.outcomeEvents.splice(0,S.outcomeEvents.length-512);
