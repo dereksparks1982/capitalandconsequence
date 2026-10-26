@@ -26,7 +26,7 @@ assert.equal(money.transfer(s,'withdrawSavings',50,'districtBank','industrialist
 assert.equal(money.balances(s).personalSavings,50);
 assert.equal(s.personalCash,470);
 assert.equal(money.transfer(s,'depositSavings',30,'factory','industrialist').ok,false);
-assert.equal(money.transfer(s,'depositSavings',1.001,'districtBank','industrialist').ok,true);
+assert.equal(money.transfer(s,'depositSavings',1.001,'districtBank','industrialist').ok,false,'No fractional-cent silent rounding');
 assert.equal(money.transfer(s,'depositBusiness',2000,'districtBank','industrialist').ok,false);
 const beforeCasino={personalCash:s.personalCash,atWorks:s.companyCash,businessBank:money.balances(s).businessBank};
 assert.equal(money.stake(s,'company',100,'brokerOffice').ok,false);
