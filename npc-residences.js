@@ -1,7 +1,8 @@
 /* Capital & Consequence: confirmed, permission-gated private NPC residences.
  * Only known canonical assignments belong here. Never infer a bedroom from
  * a workplace, a venue, an NPC's nationality, or an unconfirmed address.
- * Resolves a nightly destination; it does not advance time or teleport anyone.
+ * Resolves a known nightly room at the existing routine boundary. Actual
+ * transit duration and movement between destinations remain unfinished.
  */
 (function(root){
  'use strict';
