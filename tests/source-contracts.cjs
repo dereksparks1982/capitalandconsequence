@@ -292,6 +292,15 @@ check(read('workshop-presence.js').includes("actor.roomId==='workers-lodging'"),
 check(read('npc-ai.js').includes('FE_NPC_NEEDS?.settle?.(a,def,S.worldCalendar.worldMinute'),'Resident condition follows the player-controlled saved clock');
 check(index.includes('npc-intentions.js?v=')&&index.indexOf('npc-intentions.js?v=')<index.indexOf('npc-ai.js?v='),'NPC intentional travel planner loads before runtime');
 check(index.includes('npc-social.js?v=')&&index.indexOf('npc-social.js?v=')<index.indexOf('npc-ai.js?v='),'Social encounter module loads before NPC runtime');
+check(index.includes('npc-social-consequences.js?v=')&&
+ index.indexOf('npc-memory.js?v=')<index.indexOf('npc-social-consequences.js?v=')&&
+ index.indexOf('npc-social.js?v=')<index.indexOf('npc-social-consequences.js?v=')&&
+ index.indexOf('npc-social-consequences.js?v=')<index.indexOf('npc-ai.js?v='),
+ 'Real private encounters update mood and memory after social and memory services load');
+check(pkg.scripts['test:source'].includes('tests/npc-social-consequences.cjs'),
+ 'Authentic room meetings have offline privacy, mood and replay regression coverage');
+check(read('npc-ai.js').includes('FE_NPC_SOCIAL_CONSEQUENCES?.apply?.(S,w,record)'),
+ 'NPC social consequences consume only events returned by actual meeting engine');
 check(index.includes('npc-dialogue.js?v=')&&index.indexOf('npc-dialogue.js?v=')<index.indexOf('npc-ai.js?v='),'Dialogue runtime loads before NPC conversation UI');
 check(index.includes('sky-cycle.js?v=')&&index.includes('vendor/astronomy-engine/astronomy.browser.js?v='),'Astronomical game HUD loads its pinned MIT engine');
 check(index.includes('id="washingtonSky"')&&index.includes('id="washingtonWeather"')&&index.includes('id="washingtonSunMoon"'),'Weather and moon cycle have compact persistent bar readouts');
