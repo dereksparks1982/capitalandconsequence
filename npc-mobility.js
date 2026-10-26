@@ -41,6 +41,11 @@
    if(actor.id==='foremanSullivan'&&allowed.includes('production-floor'))room='production-floor';
    if(actor.id==='charlieWhitcomb'&&context.slot===1&&allowed.includes('executive-office'))room='executive-office';
    if(actor.id==='eliCrowe'&&allowed.includes('doorman-post'))room='doorman-post';
+   if(loc.id==='nationalTheatre'){
+    if(actor.id==='williamRapley'&&allowed.includes('manager-office'))room='manager-office';
+    else if(actor.id==='charlesHanford'&&allowed.includes('backstage'))room='backstage';
+    else if(allowed.includes('auditorium'))room='auditorium';
+   }
    if(actor.job==='orderly'&&allowed.includes('orderly-station'))room='orderly-station';
   }
   if(actor.id==='samHarlan'&&loc.id==='metropolitanPolice'&&allowed.includes('station-duty-room'))
