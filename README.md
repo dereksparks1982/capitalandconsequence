@@ -15,6 +15,12 @@
 
 This work is a **source build, not a Linux acceptance release**. Targeted JavaScript regression passed (56 finance, 25 Hillsdale and 104 multi-route/multi-era NPC assertions), but complete offline Node tests and actual Electron gameplay remain unverified. No GitHub Actions are used, no executable was requested, and the original Washington map artwork must never be changed.
 
+### Further October 26 source work: betting and bank handling
+
+Company and personal money stay different even inside a betting room. Licensed boxing and the Boiler Room, Commerce Club and Embassy Room poker games now accept a deliberate choice of *carried personal cash* or *carried Federal Electric cash* (for its owner). Poker popup reservations, refunds, forfeitures and quick simulated sessions preserve that origin, with persistent wager receipts preventing double payment. An invalid bank or factory money transaction consumes no time; an accepted one takes two minutes of player-triggered world time. Theatre residents now retain their individual rehearsals and stage-management routines in authorized theatre rooms rather than turning into generic retail clerks.
+
+The offline regressions now include finance/teller timing, long-lived wagering, and seven theater workers. In source-only V8 checks, 405 focused finance assertions, 145 theater assertions and 104 two-era/four-route integration assertions passed. A complete Node regression run and Electron hands-on test have **not** been performed. No GitHub Actions or new Linux executable were used.
+
 ## Choose your life
 
 | Character | Starting life | What you can pursue |
