@@ -9,6 +9,7 @@ const economy=require('../npc-economy.js');
 const mobility=require('../npc-mobility.js');
 const needs=require('../npc-needs.js'),weekly=require('../npc-weekly-schedule.js');
 const residences=require('../npc-residences.js');
+const plans=require('../npc-life-plans.js');
 const source=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
 const citySource=fs.readFileSync(path.join(__dirname,'../city.js'),'utf8');
 const cityWindow={};
@@ -40,6 +41,7 @@ function scenario(route){
   FE_NPC_CALENDAR:calendar,FE_CALENDAR_BRIDGE:bridge,FE_NPC_KNOWLEDGE:knowledge,
   FE_NPC_ITINERARY:itinerary,FE_NPC_AGENCY:agency,FE_NPC_ECONOMY:economy,
   FE_NPC_MOBILITY:mobility,FE_NPC_NEEDS:needs,FE_NPC_WEEKLY:weekly,
+  FE_NPC_LIFE_PLANS:plans,
   FE_NPC_RESIDENCES:residences,
   FE_CITY:{currentLocation:()=>current},
   FE_NPC_CARD:{open:options=>cardCalls.push(options),sync(){}},
@@ -60,6 +62,11 @@ function scenario(route){
  assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
    S.npcSimulation.agents[id]?.needs?.version===1),
   'Every currently eligible simulated character keeps saved individual needs');
+ assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
+   S.npcSimulation.agents[id]?.lifePlan?.version===1),
+  'Every currently active resident keeps a separate saved personal plan');
+ assert.equal(S.npcSimulation.agents[main[route]],undefined,
+  'Selected playable character has no off-camera personal plan');
  assert.equal(npc.syncClock(),false,'No second clock settlement without player time');
  assert.equal(JSON.stringify(S.worldCalendar),clockBefore,'NPC replay did not advance the master clock');
  // Characters are clickable in the actual-room resident list.
@@ -76,6 +83,9 @@ function scenario(route){
  // selected protagonist or grant restricted-door permissions.
  bridge.spend(S,10*3600);
  assert.equal(npc.syncClock(),true);
+ const starPlan=npc.inspect('madamStar')?.lifePlan;
+ assert.ok(starPlan?.goal&&starPlan.history.length<=12,
+  'Madam Star retains a bounded, private multi-step goal');
  assert.ok(npc.inspect('madamStar')?.needs?.lastMinute===S.worldCalendar.worldMinute,
   'World time advances the resident condition, not the reverse');
  if(route!=='criminal'){
