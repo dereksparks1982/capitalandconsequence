@@ -33,8 +33,12 @@
   let room=loc.defaultRoom;
   if(working){
    if(actor.id==='foremanSullivan'&&allowed.includes('production-floor'))room='production-floor';
+   if(actor.id==='charlieWhitcomb'&&context.slot===1&&allowed.includes('executive-office'))room='executive-office';
+   if(actor.id==='eliCrowe'&&allowed.includes('doorman-post'))room='doorman-post';
    if(actor.job==='orderly'&&allowed.includes('orderly-station'))room='orderly-station';
   }
+  if(actor.id==='samHarlan'&&loc.id==='metropolitanPolice'&&allowed.includes('station-duty-room'))
+   room='station-duty-room';
   if(!allowed.includes(room))room=allowed[hash(prefix+'|room')%allowed.length];
   return {locationId:loc.id,roomId:room,activity:loc.id===initial?
    (context.defaultActivity||'attending to personal business'):'visiting '+loc.name,
