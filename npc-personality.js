@@ -37,7 +37,8 @@
   const trust=relationship*.45;
   const score=t.sociability*.48+t.patience*.22+energy*.16+t.politeness*.13+
    trust-(occupied?20:0)-(topic==='work'&&occupied?14:0)-
-   (hunger>70?(hunger-70)*.18:0)-(mood<45?(45-mood)*.25:0);
+   (hunger>70?(hunger-70)*.18:0)-(mood<45?(45-mood)*.25:0)+
+   (mood>70?Math.min(7,(mood-70)*.14):0);
   const roll=hash(def.id+'|'+date+'|'+guest+'|'+topic)%100;
   // A well-mannered professional always acknowledges a polite greeting,
   // but this does not obligate them to disclose anything else.
