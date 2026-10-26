@@ -281,6 +281,9 @@ check(read('component-works-panel.js').includes('S.componentTransactionSequence=
 check(appSource.includes('componentWorks:window.FE_COMPONENT_WORKS?.createOpeningOrders?.(window.FE_COMPONENT_WORKS?.createState?.(CAMPAIGN_START_DATE))'),'Component inventory lives inside the player save');
 check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
+check(index.includes('npc-needs.js?v=')&&index.indexOf('npc-weekly-schedule.js?v=')<index.indexOf('npc-needs.js?v=')&&index.indexOf('npc-needs.js?v=')<index.indexOf('npc-ai.js?v='),'Personal needs load after weekly plans and before NPC agency');
+check(pkg.scripts['test:source'].includes('tests/npc-needs.cjs'),'Rest, hunger, mood and reload must have an offline regression suite');
+check(read('npc-ai.js').includes('FE_NPC_NEEDS?.settle?.(a,def,S.worldCalendar.worldMinute'),'Resident condition follows the player-controlled saved clock');
 check(index.includes('npc-intentions.js?v=')&&index.indexOf('npc-intentions.js?v=')<index.indexOf('npc-ai.js?v='),'NPC intentional travel planner loads before runtime');
 check(index.includes('npc-social.js?v=')&&index.indexOf('npc-social.js?v=')<index.indexOf('npc-ai.js?v='),'Social encounter module loads before NPC runtime');
 check(index.includes('npc-dialogue.js?v=')&&index.indexOf('npc-dialogue.js?v=')<index.indexOf('npc-ai.js?v='),'Dialogue runtime loads before NPC conversation UI');
