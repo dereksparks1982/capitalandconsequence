@@ -53,7 +53,7 @@ function scenario(route){
  const clockBefore=JSON.stringify(S.worldCalendar);
  const npc=window.FE_NPC_AI;
  assert.equal(npc.syncClock(),true);
- assert.equal(npc.list().length,14,'11 residents and exactly three autonomous protagonists');
+ assert.equal(npc.list().length,21,'18 residents and exactly three autonomous protagonists');
  const ids=npc.list().map(x=>x.id);
  assert.equal(ids.includes(main[route]),false,'Never spawn the active playable character');
  assert.equal(npc.inspect(main[route]),null,'Player life is not an NPC inspection');
