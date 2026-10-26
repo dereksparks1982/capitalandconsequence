@@ -59,6 +59,32 @@
   }
   if(!history.length)log.appendChild(element('p','npc-card-hint','You may speak to this person. What you say is up to you.'));
   dialog.appendChild(log);
+  // Optional natural-language shortcuts and unrestricted text coexist.
+  // Every shortcut uses the SAME game-space speaker, access and language rules.
+  if(typeof options.onQuick==='function'){
+   const actions=[['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington'],['today','Ask About Today']];
+   const bar=element('div','npc-card-quick'),buttons=[];
+   for(const [topic,label] of actions){
+    const button=element('button','npc-card-quick-action',label);button.type='button';
+    buttons.push(button);
+    button.onclick=async()=>{
+     if(ticket!==sequence||buttons.some(b=>b.disabled))return;
+     if(options.valid&&!options.valid()){close();return}
+     buttons.forEach(b=>b.disabled=true);
+     appendLine(log,'You','['+label+']');
+     try{
+      const answer=await options.onQuick(topic);
+      if(ticket!==sequence)return;
+      appendLine(log,answer?.ok?options.name:'Notice',String(answer?.ok?answer.reply:(answer?.reason||'No answer.')));
+     }catch(error){
+      if(ticket!==sequence)return;
+      appendLine(log,'Notice','The conversation could not continue.');
+     }finally{if(ticket===sequence)buttons.forEach(b=>b.disabled=false)}
+    };
+    bar.appendChild(button);
+   }
+   dialog.appendChild(bar);
+  }
   const form=element('form','npc-card-form');
   const label=element('label','', 'Your words');label.setAttribute('for','npcCardWords');
   const input=element('textarea');input.id='npcCardWords';input.maxLength=600;input.rows=3;input.required=true;
