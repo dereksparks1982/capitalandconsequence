@@ -121,6 +121,26 @@
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,entry};
  }
+ // An undealt/unopened ticket is a void, not a genuine wager outcome.
+ // Only callers that verified the game never began should use this.
+ function cancel(save,ticket){
+  if(!ticket||!['personal','company'].includes(ticket.funding))return {ok:false,reason:'Invalid stake reference.'};
+  const a=ensure(save),id=ticket.custodyId,opened=a.openWagers[id];
+  if(!nonnegative(id)||!opened||opened.funding!==ticket.funding||cents(opened.stake)!==cents(ticket.stake))
+   return {ok:false,reason:'Unsettled reservation not found.'};
+  const dst=ticket.funding==='company'?a:save,key=ticket.funding==='company'?'companyCarried':'personalCash';
+  dst[key]=money(cents(+dst[key]||0)+cents(opened.stake));
+  if(ticket.funding==='company'){
+   save.unaccountedFunds=Math.max(0,money(cents(+save.unaccountedFunds||0)-cents(opened.stake)));
+   save.corporateMisuseCount=Math.max(0,(+save.corporateMisuseCount||0)-1);
+  }
+  delete a.openWagers[id];a.closedWagers.push(id);
+  if(a.closedWagers.length>512)a.closedWagers.splice(0,a.closedWagers.length-512);
+  const entry={id:a.nextId++,date:save.gameDate||null,action:'wager-canceled',
+   wagerId:id,funding:ticket.funding,returned:opened.stake};
+  a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
+  return {ok:true,entry};
+ }
  // A physically travelled cash bag is at risk. The outcome is evaluated
  // ONCE on a real trip, never for an inactive game, save or rendered location.
  const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
@@ -148,7 +168,7 @@
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,occurred:true,lost:entry.amount,companyLoss,personalLoss,entry};
  }
- const api=Object.freeze({ensure,balances,transfer,stake,settle,travelRisk});
+ const api=Object.freeze({ensure,balances,transfer,stake,settle,cancel,travelRisk});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_CASH_CUSTODY=api;
 })(typeof window!=='undefined'?window:globalThis);
