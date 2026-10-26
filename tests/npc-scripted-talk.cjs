@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),talk=require('../npc-scripted-talk.js');
+const asker={id:'madamStar',name:'Madam Star',occupation:'Star Club proprietor'};
+const eddie={id:'eddieDoyle',name:'Eddie Doyle',occupation:'Bookmaker'};
+const star=talk.answer(asker,'What do you think of the Star Club?');
+assert.equal(star.handled,true);assert.match(star.reply,/my establishment/i);
+assert.notEqual(star.reply,talk.answer(eddie,'Tell me about the Star Club').reply);
+assert.equal(talk.answer({id:'foremanSullivan',name:'Sullivan'},'Is the Star Club worth visiting?').handled,true);
+assert.match(talk.answer(eddie,'What is a Corvette?').reply,/don't know what you mean/);
+assert.equal(talk.answer(eddie,'Tell me the mayor\'s private diary').handled,false);
+assert.match(talk.answer(eddie,'Tell me the mayor\'s private diary').reply,/Couldn't tell you/);
+assert.equal(talk.answer(eddie,'Where are we?',{place:'Star Club'}).reply,'We are at Star Club.');
+assert.match(talk.answer({id:'alexiRurik',name:'Alexi',language:'ru'},'What is a computer?').reply,/Я не понимаю/);
+assert.equal(talk.answer(asker,'What is your name?').reply,'My name is Madam Star.');
+console.log('PASS character-specific open questions, Star Club perspectives, ignorance and era boundaries');
