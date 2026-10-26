@@ -1,14 +1,25 @@
 /* Capital & Consequence: non-guaranteed weekly routines for named NPCs.
- * Daily windows: 8 AM-noon, noon-5 PM, 5-10 PM and 10 PM-8 AM.
+ * Seven provisional activity windows nested in four financial windows.
+ * Only player-controlled time advances the world; public plans are not guarantees.
  * The existing NPC agency and room permissions still determine actual visits.
  */
 (function(root){
  'use strict';
  const WEEK=Object.freeze({
+  charlieWhitcomb:{work:['factory|reviewing workshop orders','factory|supervising production',null,null],
+   sat:['factory|reviewing Saturday dispatches',null,null,null],sun:[null,null,null,null]},
+  samHarlan:{work:['hillsdale|walking the Hillsdale beat','hillsdale|responding to routine calls','metropolitanPolice|filing station reports',null],
+   sat:['hillsdale|walking his weekend beat','metropolitanPolice|filing weekend reports',null,null],
+   sun:[null,null,null,null]},
+  eliCrowe:{work:[null,null,'secondNightclub|working the evening door','secondNightclub|admitting late guests'],
+   sat:[null,null,'secondNightclub|checking evening arrivals','secondNightclub|minding the late entrance'],
+   sun:[null,null,null,null]},
+  edmundWardman:{work:['blackwoodAsylum|preparing the orderly station','blackwoodAsylum|attending to patients',null,null],
+   sat:['blackwoodAsylum|covering the morning ward',null,null,null],sun:[null,null,null,null]},
   samuelTilden:{work:['whiteHouse|reviewing executive correspondence','whiteHouse|receiving authorized visitors',null,null],sat:['whiteHouse|urgent presidential papers',null,null,null],sun:[null,null,null,null]},
   madamStar:{work:['star|reviewing appointments','star|receiving callers','star|hosting guests','star|concluding private business'],sat:['star|reviewing reservations','star|receiving weekend guests','star|hosting Saturday guests','star|concluding private business'],sun:[null,'star|reviewing accounts','star|receiving quiet company',null]},
   luiDelacroix:{work:[null,'secondNightclub|overseeing staff','secondNightclub|hosting patrons','secondNightclub|closing the house'],sat:[null,'secondNightclub|preparing the evening','secondNightclub|hosting the Saturday crowd','secondNightclub|closing the house'],sun:[null,null,'secondNightclub|attending private business',null]},
-  foremanSullivan:{work:['factory|preparing tools','factory|assisting with component orders',null,null],sat:[null,null,null,null],sun:[null,null,null,null]},
+  foremanSullivan:{work:['factory|preparing tools','factory|assisting with component orders',null,null],sat:[null,'oldChinatown|shopping for weekly necessities',null,null],sun:[null,null,null,null]},
   eddieDoyle:{work:['races|reviewing entries','races|taking bets','star|making introductions',null],sat:['races|reviewing Saturday entries','races|taking bets','star|socializing',null],sun:[null,null,'star|visiting acquaintances',null]},
   inspectorHayes:{work:['metropolitanPolice|reviewing reports','metropolitanPolice|attending to police duties','washingtonArena|watching a public event',null],sat:[null,null,'washingtonArena|watching the fights',null],sun:[null,null,null,null]},
   chenMei:{work:['oldChinatown|opening the market','oldChinatown|speaking with customers',null,null],sat:['oldChinatown|taking Saturday customers','oldChinatown|settling accounts',null,null],sun:[null,null,null,null]},
@@ -21,6 +32,10 @@
  // These describe usual activities, never guaranteed appearances.
  // Off-duty whereabouts remain private until a real home/location is modeled.
  const DETAILS=Object.freeze({
+  charlieWhitcomb:['reviewing workshop orders','checking production progress','taking a midday meal','reviewing workshop accounts',null,null,null],
+  samHarlan:['beginning the Hillsdale beat','checking on neighborhood concerns','taking a midday meal while on duty','continuing his assigned patrol','filing station reports','completing station paperwork',null],
+  eliCrowe:[null,null,null,null,'checking invitations at the entrance','admitting arriving patrons','attending the late entrance'],
+  edmundWardman:['preparing the orderly station','working under the hospital staff','taking a midday meal on duty','attending to ward duties',null,null,null],
   samuelTilden:['reviewing morning correspondence','meeting authorized petitioners','taking a short midday meal','conducting executive business',null,null,null],
   madamStar:['reviewing reservations and accounts','arranging the evening house','meeting staff over a midday meal','receiving callers','welcoming evening guests','attending to discreet club matters','concluding the night’s accounts'],
   luiDelacroix:[null,null,'taking a midday meal with staff','arranging the evening programme','overseeing patrons and performers','handling the late evening crowd','closing the house'],
@@ -51,7 +66,8 @@
   if(!Number.isInteger(weekday)||weekday<0||weekday>6)throw Error('Valid NPC weekday required');
   const segment=segmentAt(minute),day=segment.priorDay?(weekday+6)%7:weekday;
   const basic=at(def,day,segment.slot),index=SEGMENTS.findIndex(v=>v.from===segment.from);
-  const detail=DETAILS[def.id]?.[index];
+  const usual=at(def,1,segment.slot);
+  const detail=basic.locationId===usual.locationId?DETAILS[def.id]?.[index]:null;
   return {locationId:basic.locationId,activity:basic.locationId?(detail||basic.activity):null,
    slot:segment.slot,from:segment.from,until:segment.until,priorDay:segment.priorDay,weekday:day};
  }
