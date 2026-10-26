@@ -312,6 +312,14 @@ check(read('npc-ai.js').includes('recordWitnessedMeetings(window.FE_NPC_SOCIAL?.
 check(pkg.scripts['test:source'].includes('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
 check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
 check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
+check(index.includes('npc-life-plans.js?v=')&&
+ index.indexOf('npc-agency.js?v=')<index.indexOf('npc-life-plans.js?v=')&&
+ index.indexOf('npc-life-plans.js?v=')<index.indexOf('npc-ai.js?v='),'Personal goal commitments load after agency and before NPC simulation');
+check(pkg.scripts['test:source'].includes('tests/npc-life-plans.cjs'),'Private NPC plans have replay and social-proof regression coverage');
+check(read('npc-ai.js').includes('FE_NPC_LIFE_PLANS?.commit?.')&&
+ read('npc-ai.js').includes('FE_NPC_LIFE_PLANS?.record?.')&&
+ read('npc-ai.js').includes('reflectActualMeetings(w,meetings,key)'),'NPC plans receive decisions, true activity receipts and only recorded meetings');
+
 check(read('npc-ai.js').includes('planDecision(w,def,a'),'Both NPC period types use private utility planning');
 check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('id="npcContactItinerary"'),'Public itinerary module and Contact File panel are wired');
 check(appSource.includes('window.FE_NPC_AI?.renderContactItineraries?.()'),'Main journal rendering refreshes learned NPC itineraries');
