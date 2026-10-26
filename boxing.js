@@ -143,7 +143,11 @@ function settleBet(id,result){
  const card=S.boxing.card,bet=card.bets[id];if(!bet||bet.settled)return;
  const odds=card.bouts[id].odds?.[bet.fighterId]||2;
  const payout=result.winnerId===bet.fighterId?Math.round(bet.wager*odds):0;
- bet.settled=true;bet.payout=payout;bet.net=payout-bet.wager;if(payout)S.personalCash+=payout;
+ if(bet.custodyTicket){
+  const settled=window.FE_CASH_CUSTODY?.settle?.(S,bet.custodyTicket,payout);
+  if(!settled?.ok)throw Error('Could not settle owned boxing stake: '+(settled?.reason||'custody service unavailable'));
+ }else if(payout)S.personalCash+=payout;
+ bet.settled=true;bet.payout=payout;bet.net=payout-bet.wager;window.updateCashHeader?.();
 }
 function processSchedule(){
  if(S.phase!=='night')return false;
@@ -164,8 +168,12 @@ function placeBet(id){
  if(card.bets[id])return setNote('You already have a ticket on '+d.label+'.');
  const fighterId=Number($b('boxingPick_'+id)?.value),wager=Math.max(1,Math.floor(Number($b('boxingWager_'+id)?.value)||0));
  if(!bout.fighters.includes(fighterId))return setNote('Choose a fighter.');
- if(S.personalCash<wager)return setNote('Not enough personal cash for that wager.');
- S.personalCash-=wager;card.bets[id]={fighterId,wager,settled:false};save(true);render();setNote('Wager accepted: '+fighter(fighterId).name+' to win '+d.label+' · '+cash(wager)+'.');
+ const funding=$b('boxingFunding_'+id)?.value==='company'?'company':'personal';
+ const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,wager,'washingtonArena');
+ if(!paid?.ok)return setNote(paid?.reason||'You do not have the selected carried cash.');
+ card.bets[id]={fighterId,wager,settled:false,funding,custodyTicket:paid.ticket};
+ save(true);window.updateCashHeader?.();render();
+ setNote('Wager accepted: '+fighter(fighterId).name+' to win '+d.label+' · '+cash(wager)+' · '+(funding==='company'?'Federal Electric carried funds':'personal cash')+'.');
 }
 function setNote(t){const el=$b('boxingNote');if(el)el.textContent=t}
 function recordLine(f){return f.wins+'-'+f.losses+(f.draws?'-'+f.draws:'')+(f.knockouts?' · '+f.knockouts+' KO':'')}
@@ -180,7 +188,7 @@ function boutCard(d){
  return '<article class="boxing-bout"><header><div><h4>'+d.label+'</h4><small>'+escapeHtml(a.weightClass)+' · '+d.rounds+' rounds scheduled</small></div><div class="boxing-countdown" data-bout="'+d.id+'"><small>BELL IN</small><b>'+fmt(post)+'</b></div></header>'+
  '<div class="boxing-matchup"><div><b>'+escapeHtml(a.name)+'</b><small>'+escapeHtml(a.style)+' · '+recordLine(a)+'</small><strong>'+frac(b.odds[a.id])+'</strong></div><span>vs.</span><div><b>'+escapeHtml(c.name)+'</b><small>'+escapeHtml(c.style)+' · '+recordLine(c)+'</small><strong>'+frac(b.odds[c.id])+'</strong></div></div>'+
  (bet?'<p class="boxing-ticket">Ticket: '+escapeHtml(fighter(bet.fighterId).name)+' · '+cash(bet.wager)+'</p>':
- '<div class="boxing-bet"><label>Fighter<select id="boxingPick_'+d.id+'"><option value="'+a.id+'">'+escapeHtml(a.name)+' ('+frac(b.odds[a.id])+')</option><option value="'+c.id+'">'+escapeHtml(c.name)+' ('+frac(b.odds[c.id])+')</option></select></label><label>Wager<input id="boxingWager_'+d.id+'" type="number" min="1" step="1" value="25"></label><button class="boxing-bet-btn" data-bout="'+d.id+'">Place Bet</button></div>')+'</article>';
+ '<div class="boxing-bet"><label>Fighter<select id="boxingPick_'+d.id+'"><option value="'+a.id+'">'+escapeHtml(a.name)+' ('+frac(b.odds[a.id])+')</option><option value="'+c.id+'">'+escapeHtml(c.name)+' ('+frac(b.odds[c.id])+')</option></select></label><label>Funding<select id="boxingFunding_'+d.id+'"><option value="personal">Personal cash</option>'+(S.characterRoute==='industrialist'?'<option value="company">Carried company cash</option>':'')+'</select></label><label>Wager<input id="boxingWager_'+d.id+'" type="number" min="1" step="1" value="25"></label><button class="boxing-bet-btn" data-bout="'+d.id+'">Place Bet</button></div>')+'</article>';
 }
 function renderRoster(){
  const el=$b('boxingRoster');if(!el)return;
@@ -195,7 +203,7 @@ function renderLedger(){
 function render(){
  const box=$b('boxingModule');if(!box)return;ensureState();
  $b('boxingMeta').textContent=(S.boxing.card?.championship?'D.C. BOXING CHAMPIONSHIP · '+S.boxing.card.championship.roundId.toUpperCase()+' · ':'')+(S.phase==='night'?'Washington Arena · Tonight\'s licensed card · Opening bout at 45:00 remaining · Main event at 05:00':S.phase==='report'?'Washington Arena · Tonight\'s card is complete.':'Washington Arena · Licensed boxing opens during Washington Night.');
- $b('boxingBankroll').textContent=cash(S.personalCash);
+ $b('boxingBankroll').textContent=cash(S.personalCash)+' personal · '+cash(window.FE_CASH_CUSTODY?.balances?.(S)?.companyCarried||0)+' carried company';
  if(S.phase==='day')$b('boxingCard').innerHTML='<p class="muted">The arena opens during Washington Night. The announced card will be available for wagering after the Business Day closes.</p>';
  else{$b('boxingCard').innerHTML=CARD.map(boutCard).join('');$b('boxingCard').querySelectorAll('.boxing-bet-btn').forEach(btn=>btn.addEventListener('click',()=>placeBet(btn.dataset.bout)))}
  renderRoster();renderLedger();
@@ -205,7 +213,7 @@ function tick(){
  if(lastPhase!==S.phase){lastPhase=S.phase;render()}
  const changed=processSchedule();
  if(changed)render();
- else if(S.phase==='night'){$b('boxingCard')?.querySelectorAll('.boxing-countdown[data-bout]').forEach(el=>{const d=boutDef(el.dataset.bout),clock=el.querySelector('b');if(d&&clock)clock.textContent=fmt(Math.max(0,S.dayRemaining-d.threshold))});const bank=$b('boxingBankroll');if(bank)bank.textContent=cash(S.personalCash)}
+ else if(S.phase==='night'){$b('boxingCard')?.querySelectorAll('.boxing-countdown[data-bout]').forEach(el=>{const d=boutDef(el.dataset.bout),clock=el.querySelector('b');if(d&&clock)clock.textContent=fmt(Math.max(0,S.dayRemaining-d.threshold))});const bank=$b('boxingBankroll');if(bank)bank.textContent=cash(S.personalCash)+' personal · '+cash(window.FE_CASH_CUSTODY?.balances?.(S)?.companyCarried||0)+' carried company'}
 }
 document.addEventListener('click',e=>{if(e.target?.dataset?.tab==='racing'||e.target?.dataset?.activityTarget==='boxing')setTimeout(render,0)});
 ensureState();lastPhase=S.phase;render();setInterval(tick,1000);
