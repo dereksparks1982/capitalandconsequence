@@ -250,7 +250,8 @@
    const action=completed.action;
    const movementAction={...action,key,date:period.day,slot:period.slot,
     activity:action.locationId===period.locationId?period.activity:action.activity};
-   const moved=pickRoom(def,a,movementAction,w),destination=moved.locationId;
+   const lodging=window.FE_NPC_RESIDENCES?.nightStay?.(def,c,window.FederalElectricCity);
+   const moved=lodging||pickRoom(def,a,movementAction,w),destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
    a.activity=moved.activity;
