@@ -400,6 +400,16 @@
     recordInteraction(id,route,'refused',0);
    return {ok:false,reason:def.name+': '+temperament.reason};
   }
+  // Quick questions obey precisely the same language barrier as free speech.
+  // Hearing an untranslated response never counts as earning acquaintance.
+  const languages=window.FE_NPC_LANGUAGE?.spoken?.(def)||[def.language||'en'];
+  const understood=languages.some(code=>(Array.isArray(S.playerLanguages)?S.playerLanguages:['en']).includes(code));
+  if(!understood){
+   const say=languages.includes('zh')?{greet:'你好。',work:'我正在做生意。',city:'這裏是華盛頓。',today:'今天我有自己的事情要辦。'}:
+    languages.includes('ru')?{greet:'Добрый день.',work:'Я занят работой.',city:'Это Вашингтон.',today:'У меня свои дела.'}:null;
+   if(say)return {ok:true,name:def.name,reply:say[topic],comprehended:false,reason:'The language is not understood.'};
+   return {ok:false,reason:'You do not share a language with '+def.name+'.'};
+  }
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
   const reply=def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
