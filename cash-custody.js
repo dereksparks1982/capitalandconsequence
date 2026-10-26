@@ -49,8 +49,9 @@
   ownerDistributionCarried:['companyCarried','personalCash','factory'],
   irregularDrawCarried:['companyCarried','personalCash','factory']
  });
- function transfer(save,action,amount,location,route){
+ function quote(save,action,amount,location,route){
   const spec=OPS[action];if(!spec)return {ok:false,reason:'Unknown cash operation.'};
+  if(!save||typeof save!=='object')return {ok:false,reason:'No active profile.'};
   if(route!=='industrialist'&&(spec[0]==='companyCash'||spec[0]==='companyCarried'||spec[0]==='businessBank'))
    return {ok:false,reason:'Business funds belong to Federal Electric.'};
   if(spec[2]!==location)return {ok:false,reason:'Go to '+(spec[2]==='factory'?'Federal Electric':'the District Bank')+' to handle that cash.'};
@@ -60,10 +61,17 @@
   if(!nonnegative(n)||n<1)return {ok:false,reason:'Enter a positive cash amount.'};
   const a=ensure(save),[from,to]=spec;
   const source=from==='personalCash'||from==='companyCash'?save:a;
-  const target=to==='personalCash'||to==='companyCash'?save:a;
   const available=cents(+source[from]||0);
-  if(available<n)return {ok:false,reason:'Insufficient money at this physical source.'};
-  source[from]=money(available-n);
+  if(!nonnegative(available)||available<n)return {ok:false,reason:'Insufficient money at this physical source.'};
+  return {ok:true,from,to,cents:n};
+ }
+ function transfer(save,action,amount,location,route){
+  const proposal=quote(save,action,amount,location,route);
+  if(!proposal.ok)return proposal;
+  const a=ensure(save),{from,to,cents:n}=proposal;
+  const source=from==='personalCash'||from==='companyCash'?save:a;
+  const target=to==='personalCash'||to==='companyCash'?save:a;
+  source[from]=money(cents(+source[from]||0)-n);
   target[to]=money(cents(+target[to]||0)+n);
   const diverted=action==='irregularDraw'||action==='irregularDrawCarried';
   const distribution=action==='ownerDistribution'||action==='ownerDistributionCarried';
@@ -168,7 +176,7 @@
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,occurred:true,lost:entry.amount,companyLoss,personalLoss,entry};
  }
- const api=Object.freeze({ensure,balances,transfer,stake,settle,cancel,travelRisk});
+ const api=Object.freeze({ensure,balances,quote,transfer,stake,settle,cancel,travelRisk});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_CASH_CUSTODY=api;
 })(typeof window!=='undefined'?window:globalThis);
