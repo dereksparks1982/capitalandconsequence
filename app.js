@@ -2108,6 +2108,7 @@ function openCityRoom(locationId,roomId,options={}){
  // The location is provisional until room widgets successfully render. On failure
  // restore prior state rather than saving a phantom visit that blocks Go There.
  try{
+  window.FE_NPC_CARD?.close?.();
   guardedRoomPanel('previous activity',()=>restoreLocalVenueActivity());
   cityRoomSession={locationId:location.id,roomId:room.id,dev,source};
   if(!dev)S.currentLocation={locationId:location.id,roomId:room.id};
@@ -2184,6 +2185,7 @@ function openCityRoom(locationId,roomId,options={}){
  return true;
 }
 function closeCityRoom(){
+ window.FE_NPC_CARD?.close?.();
  restoreLocalVenueActivity();
  const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}
  document.body.classList.remove('city-room-open');
