@@ -108,7 +108,34 @@
   a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
   return {ok:true,entry};
  }
- const api=Object.freeze({ensure,balances,transfer,stake,settle});
+ // A physically travelled cash bag is at risk. The outcome is evaluated
+ // ONCE on a real trip, never for an inactive game, save or rendered location.
+ const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+ function travelRisk(save,trip,forcedRoll=null){
+  if(!trip||!trip.from||!trip.to||trip.from===trip.to||!Number.isSafeInteger(trip.minute))
+   return {ok:false,reason:'Only a physical journey can risk carried cash.'};
+  const a=ensure(save),id=trip.from+'>'+trip.to+'|'+trip.minute;
+  if(!Array.isArray(a.travelChecks))a.travelChecks=[];
+  if(a.travelChecks.includes(id))return {ok:true,repeated:true,lost:0};
+  a.travelChecks.push(id);if(a.travelChecks.length>100)a.travelChecks.splice(0,a.travelChecks.length-100);
+  const total=(+save.personalCash||0)+a.companyCarried;
+  if(total<100)return {ok:true,lost:0};
+  const risk=Math.min(520,Math.round(45+(trip.night?125:0)+Math.max(0,total-100)/15));
+  const roll=Number.isSafeInteger(forcedRoll)&&forcedRoll>=0&&forcedRoll<10000?
+   forcedRoll:hash(String(save.gameDate)+'|'+id+'|'+String(save.characterRoute||''))%10000;
+  if(roll>=risk)return {ok:true,lost:0};
+  const loss=Math.min(total,Math.max(2,Math.round(total*(.09+hash(id+'|severity')%24/100)*100)/100));
+  const companyLoss=Math.min(a.companyCarried,Math.round(loss*100*(a.companyCarried/total))/100);
+  const personalLoss=Math.min(+save.personalCash||0,Math.round((loss-companyLoss)*100)/100);
+  a.companyCarried=money(cents(a.companyCarried)-cents(companyLoss));
+  save.personalCash=money(cents(+save.personalCash||0)-cents(personalLoss));
+  if(companyLoss>0)save.unaccountedFunds=(+save.unaccountedFunds||0)+companyLoss;
+  const entry={id:a.nextId++,date:save.gameDate||null,action:'journey-cash-loss',
+   location:trip.to,from:trip.from,amount:companyLoss+personalLoss,companyLoss,personalLoss};
+  a.history.push(entry);if(a.history.length>160)a.history.splice(0,a.history.length-160);
+  return {ok:true,occurred:true,lost:entry.amount,companyLoss,personalLoss,entry};
+ }
+ const api=Object.freeze({ensure,balances,transfer,stake,settle,travelRisk});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_CASH_CUSTODY=api;
 })(typeof window!=='undefined'?window:globalThis);
