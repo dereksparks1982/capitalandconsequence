@@ -23,10 +23,16 @@
   if(preferred?.ok)loc=city.getLocation(context.preferredDestination);
   // Existing job obligations take precedence. Gambling losses cannot be
   // reassigned to a random room after the bet was actually settled.
-  if(!working&&!preferred?.ok&&!context.priorityDestination&&context.slot===1&&choices.length&&hash(prefix+'|outing')%100<35)
-   loc=choices[hash(prefix+'|outing-place')%choices.length];
-  else if(!loc&&!working&&context.slot<3&&choices.length&&hash(prefix+'|errand')%100<28)
-   loc=choices[hash(prefix+'|errand-place')%choices.length];
+  // Ordinary daytime work and market duty are not random broker visits.
+  // Off-duty leisure has personality-dependent odds and real room access.
+  const sociability=Math.max(0,Math.min(100,+context.sociability||50));
+  const chance=Math.round(6+sociability*.16);
+  const leisure=choices.filter(x=>['social','theatre','sport','culture','park'].includes(x.category));
+  const offDuty=context.slot>=2&&!working&&!context.priorityDestination;
+  if(offDuty&&!preferred?.ok&&leisure.length&&hash(prefix+'|outing')%100<chance)
+   loc=leisure[hash(prefix+'|outing-place')%leisure.length];
+  else if(!loc&&offDuty&&leisure.length&&hash(prefix+'|errand')%100<12)
+   loc=leisure[hash(prefix+'|errand-place')%leisure.length];
   if(!loc)return {locationId:null,roomId:null,activity:null,reason:'off-duty'};
   const allowed=access.rooms(city,actor,loc.id,context.date);
   if(!allowed.length)return {locationId:null,roomId:null,activity:null,reason:'access-denied'};
