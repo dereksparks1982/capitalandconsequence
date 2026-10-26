@@ -306,7 +306,9 @@ check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<inde
 check(read('npc-ai.js').includes('planDecision(w,def,a'),'Both NPC period types use private utility planning');
 check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('id="npcContactItinerary"'),'Public itinerary module and Contact File panel are wired');
 check(appSource.includes('window.FE_NPC_AI?.renderContactItineraries?.()'),'Main journal rendering refreshes learned NPC itineraries');
-check(read('npc-ai.js').includes("['city','Ask About Washington']"),'A separate public conversation topic is offered');
+check(read('npc-ai.js').includes('window.FE_NPC_CARD?.open?.(')&&
+ read('npc-character-card.js').includes('npc-card-transcript')&&
+ !read('npc-ai.js').includes("['city','Ask About Washington']"),'NPC room lists open individual freeform dialogue cards without topic menus');
 check(read('npc-ai.js').includes("m.key==='greet'&&m.withId===route"),'Only personally greeted contacts are eligible for itinerary cards');
 check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migrate to NPC simulation safely');
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
