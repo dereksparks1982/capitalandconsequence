@@ -19,7 +19,7 @@
   pavelOrlov:"The Star Club is sometimes useful for introductions. A good merchant remembers the difference between a social acquaintance and a trustworthy partner.",
   samuelTilden:"I am acquainted with the name, but I cannot speak to the private affairs of its patrons.",
   chenMei:"I've heard of the place, but it isn't part of my ordinary business. I wouldn't claim to know the people inside.",
-  liWen:"It is an expensive establishment from what I hear. I could not offer an informed opinion about its management.",
+  liWen:'聽說那是一家很昂貴的會所。我不了解他們的內部事務。',
   alexiRurik:"Я слышал об этом клубе, но не знаю его хозяев."
  });
  const unknown=Object.freeze({
@@ -36,27 +36,29 @@
   pavelOrlov:"I do not know enough about that to say.",
   samuelTilden:"I have no reliable information on that subject.",
   chenMei:"I don't know enough about that to tell you.",
-  liWen:"I couldn't say for certain.",
+  liWen:'我不清楚。',
   alexiRurik:"Не знаю."
  });
  function answer(npc,utterance,context={}){
   if(!npc||typeof utterance!=='string'||!utterance.trim())throw Error('NPC and spoken question required');
   const q=utterance.trim().toLowerCase(),id=npc.id;
   const un=unknown[id]||(npc.language==='ru'?"Не знаю.":"I don't know enough about that.");
-  const russian=npc.language==='ru';
+  const russian=npc.language==='ru',chinese=npc.language==='zh';
   const year=Number(String(context.date||'1878').slice(0,4))||1878;
   const alwaysFuture=/\b(smartphones?|cellphones?|internet|laptops?|corvettes?|satellites?|spacecraft|electric cars?)\b/i;
   const earlyFuture=/\b(television|tvs?|computers?|airplanes?|aeroplanes?|rockets?|movies?|cinema|radio broadcasts?)\b/i;
-  if((year<1950&&alwaysFuture.test(q))||(year<1890&&earlyFuture.test(q)))return {handled:true,reply:russian?"Я не понимаю, о чём вы говорите.":"I'm afraid I don't know what you mean by that.",kind:'unknown-era'};
+  if((year<1950&&alwaysFuture.test(q))||(year<1890&&earlyFuture.test(q)))return {handled:true,reply:chinese?'我不知道你說的是甚麼。':russian?"Я не понимаю, о чём вы говорите.":"I'm afraid I don't know what you mean by that.",kind:'unknown-era'};
+  if(/^(?:hello|hi|hey|good morning|good afternoon|good evening|greetings|您好|你好|早安|晚上好|привет|здравствуйте)[.!? ]*$/i.test(q))
+   return {handled:true,reply:chinese?'你好。':russian?'Здравствуйте.':"Good day.",kind:'greeting'};
   if(/\b(star club|madam star(?:'s)? (?:club|establishment)|club of madam star)\b/i.test(q))
    return {handled:true,reply:CLUB[id]||un,kind:'club-opinion'};
   if(/\b(who are you|your name|what is your name|introduce yourself)\b/i.test(q))
-   return {handled:true,reply:russian?"Меня зовут "+npc.name+".":"My name is "+npc.name+".",kind:'identity'};
+   return {handled:true,reply:chinese?'我叫李文。':russian?"Меня зовут "+npc.name+".":"My name is "+npc.name+".",kind:'identity'};
   if(/\b(your work|your job|what do you do|what is your occupation|where do you work)\b/i.test(q))
-   return {handled:true,reply:russian?un:"I am "+String(npc.occupation||'occupied with my affairs').toLowerCase()+".",kind:'occupation'};
+   return {handled:true,reply:russian||chinese?un:"I am "+String(npc.occupation||'occupied with my affairs').toLowerCase()+".",kind:'occupation'};
   if(/\b(where are we|what is this place|where am i)\b/i.test(q)){
    const place=String(context.place||'').trim();
-   return {handled:true,reply:place?(russian?"Мы сейчас в "+place+".":"We are at "+place+"."):un,kind:'present-place'};
+   return {handled:true,reply:place?(chinese?'我們現在在華盛頓。':russian?"Мы сейчас в "+place+".":"We are at "+place+"."):un,kind:'present-place'};
   }
   return {handled:false,reply:un,kind:'uncertain'};
  }
