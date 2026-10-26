@@ -6,12 +6,7 @@
  'use strict';
  const clock=typeof module==='object'&&module.exports?require('./world-clock.js'):root.FE_WORLD_CLOCK;
  const weekly=typeof module==='object'&&module.exports?require('./npc-weekly-schedule.js'):root.FE_NPC_WEEKLY;
- const periods=Object.freeze([
-  Object.freeze({from:480,until:720,slot:0}),
-  Object.freeze({from:720,until:1020,slot:1}),
-  Object.freeze({from:1020,until:1320,slot:2}),
-  Object.freeze({from:1320,until:1920,slot:3})
- ]);
+ const periods=weekly.segments;
  function publicPlace(def,weekday,slot){
   if(!def||!Array.isArray(def.places)||!Number.isSafeInteger(weekday)||weekday<0||weekday>6)
    throw Error('NPC public routine required');
@@ -24,11 +19,11 @@
   for(let offset=-1;offset<days;offset++){
    const at=day+offset*1440,weekday=new Date(at*60000).getUTCDay();
    for(const p of periods){
-    const locationId=publicPlace(def,weekday,p.slot);
-    if(!locationId)continue;
+    const plan=weekly.atMinute(def,weekday,p.from);
+    if(!plan.locationId)continue;
     const start=at+p.from,end=at+p.until;
     if(end<=world.worldMinute)continue;
-    out.push({id:def.id,locationId,activity:weekly.at(def,weekday,p.slot).activity||'visiting',
+    out.push({id:def.id,locationId:plan.locationId,activity:plan.activity||'visiting',
      from:start,until:end,iso:clock.formatMinute(start),
      untilIso:clock.formatMinute(end),ongoing:world.worldMinute>=start});
    }
