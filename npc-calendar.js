@@ -1,6 +1,7 @@
 /* v0.6.49: provisional saved-calendar NPC periods, no wall time. */
 (function(root){
  'use strict';
+ const weekly=typeof module==='object'&&module.exports?require('./npc-weekly-schedule.js'):root.FE_NPC_WEEKLY;
  const NAMES=Object.freeze(['early-business','late-business','early-night','late-night']);
  function slot(t){
   if(!Number.isSafeInteger(t)||t<0||t>=1440)throw Error('Invalid NPC minute');
@@ -14,13 +15,10 @@
  function at(c,d){
   const key=signature(c),n=slot(c.minuteOfDay);
   if(!d||!Array.isArray(d.places)||!Array.isArray(d.activities))throw Error('NPC definition required');
-  let locationId=d.places[n]||null;
-  if((d.availableFrom&&c.date<d.availableFrom)||(d.availableUntil&&c.date>d.availableUntil))locationId=null;
-  // Provisional workweek only. Absence does not disclose private whereabouts.
-  if((c.weekday===0||c.weekday===6)&&n<2&&
-   (d.id==='foremanSullivan'||d.id==='inspectorHayes'))locationId=null;
-  return {key,slot:n,name:NAMES[n],locationId,
-   activity:locationId?(d.activities[n]||'occupied'):null};
+  const plan=weekly.at(d,c.weekday,n);
+  const open=!(d.availableFrom&&c.date<d.availableFrom)&&!(d.availableUntil&&c.date>d.availableUntil);
+  return {key,slot:n,name:NAMES[n],locationId:open?plan.locationId:null,
+   activity:open?plan.activity:null};
  }
  const api=Object.freeze({slot,signature,at});
  if(typeof module==='object'&&module.exports)module.exports=api;
