@@ -308,7 +308,7 @@
  }
  async function converseAtLocation(id,utterance){
   const dev=window.FE_NPC_DIALOGUE,model=window.FE_NPC_LLM;
-  if(!profile()||!dev||!model?.chat)return {ok:false,reason:'Connect a local language model to converse freely.'};
+  if(!profile()||!dev)return {ok:false,reason:'Conversation is unavailable.'};
   if(S.paused||S.phase==='report')return {ok:false,reason:'Conversation is unavailable while the game is paused.'};
   const def=BY_ID.get(id),w=ensure(),actor=w?.agents[id],position=window.FE_CITY?.currentLocation?.(),profileId=profile();
   const shown=observedPosition(id,actor);
@@ -332,21 +332,29 @@
     activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId,socialStyle:temperament?.style||'conversational'})}
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
-  const result=await model.chat({messages:query.messages});
-  if(!result?.ok||typeof result.text!=='string'||!result.text.trim())return {ok:false,reason:result?.reason||'The resident did not respond.'};
+  const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name});
+  let spoken=scripted?.handled?scripted.reply:null;
+  if(!spoken&&model?.chat){
+   try{
+    const result=await model.chat({messages:query.messages});
+    if(result?.ok&&typeof result.text==='string'&&result.text.trim())spoken=result.text.trim();
+   }catch(e){/* No remote provider required. An unavailable local model must not break ordinary conversation. */}
+  }
+  if(!spoken)spoken=scripted?.reply||'I cannot say that I know.';
+  if(spoken.length>4000)spoken=spoken.slice(0,4000);
   const now=window.FE_CITY?.currentLocation?.(),latest=observedPosition(id,S.npcSimulation?.agents?.[id]);
   if(profile()!==profileId||observedDate()!==date||!now||now.locationId!==position.locationId||
     now.roomId!==position.roomId||latest?.status!=='present'||
     latest.locationId!==position.locationId||latest.roomId!==position.roomId)
    return {ok:false,reason:'The meeting ended before the reply arrived. No conversation was saved.'};
-  dev.record(S,id,{date,user:utterance.trim(),reply:result.text,place:position.locationId});
+  dev.record(S,id,{date,user:utterance.trim(),reply:spoken,place:position.locationId});
   window.FE_NPC_MEMORY?.remember?.(S,id,{date,kind:'conversation',withId:route,place:position.locationId,source:'player-speech',verified:false,
    text:'The visitor asked: '+utterance.trim().slice(0,205)});
   window.FE_NPC_MEMORY?.reflect?.(S,id,date,route);
   recordInteraction(id,route,'freeform',0);
   // Spoken dialogue is a record, not a performed action or a verified clue.
   if(typeof save==='function')save(true);
-  return {ok:true,name:def.name,reply:result.text};
+  return {ok:true,name:def.name,reply:spoken};
  }
  function publicContacts(){
   // Only face-to-face greetings by this character reveal an NPC's usual routine.
@@ -392,38 +400,29 @@
   const panel=document.getElementById('cityRoomVisitors'),list=document.getElementById('cityRoomVisitorList');
   if(!panel||!list)return;
   list.replaceChildren();
-  const currentRoom=window.FE_CITY?.currentLocation?.()?.roomId||null;
-  for(const visitor of visibleAt(locationId).filter(v=>!currentRoom||!v.roomId||v.roomId===currentRoom)){
-   const row=document.createElement('article');row.className='fe-npc-visitor';
-   const p=document.createElement('p');p.textContent=visitor.name+' is '+visitor.activity+'.';row.appendChild(p);
-   const controls=document.createElement('div');controls.className='fe-npc-visitor-actions';
-   const response=document.createElement('p');response.className='fe-npc-response';response.setAttribute('role','status');
-   for(const [topic,label] of [['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington'],['today','Ask About Today']]){
-    const button=document.createElement('button');button.type='button';button.textContent=label;
-    button.addEventListener('click',()=>{
-     const result=talkAtLocation(visitor.id,topic);
-     response.textContent=result.ok?result.name+': '+result.reply:result.reason;
-    });controls.appendChild(button);
-   }
-   const form=document.createElement('form');form.className='fe-npc-freeform';
-   const input=document.createElement('input');input.type='text';input.maxLength=600;input.required=true;
-   input.placeholder='Ask anything in your shared language';input.setAttribute('aria-label','Speak to '+visitor.name);
-   const ask=document.createElement('button');ask.type='submit';ask.textContent='Speak';
-   form.append(input,ask);
-   form.addEventListener('submit',async event=>{
-    event.preventDefault();
-    if(ask.disabled)return;
-    const words=input.value.trim();if(!words)return;
-    ask.disabled=true;response.textContent=visitor.name+' is considering your words…';
-    try{const reply=await converseAtLocation(visitor.id,words);
-     response.textContent=reply.ok?visitor.name+': '+reply.reply:reply.reason;
-     if(reply.ok)input.value='';
-    }catch(e){response.textContent='Conversation failed: '+String(e.message||e).slice(0,140)}
-    finally{ask.disabled=false}
+  const current=window.FE_CITY?.currentLocation?.();
+  for(const visitor of visibleAt(locationId).filter(v=>current?.roomId&&v.roomId===current.roomId)){
+   const def=BY_ID.get(visitor.id);
+   const row=document.createElement('div');row.className='fe-npc-visitor';
+   const select=document.createElement('button');select.type='button';select.className='fe-npc-select';
+   select.textContent=visitor.name+' · '+visitor.activity;
+   select.setAttribute('aria-label','Speak with '+visitor.name);
+   const valid=()=>{
+    const here=window.FE_CITY?.currentLocation?.(),overlay=document.getElementById('cityRoomOverlay');
+    return !!here&&!overlay?.hidden&&here.locationId===locationId&&here.roomId===current.roomId&&
+     visibleAt(locationId).some(v=>v.id===visitor.id&&v.roomId===here.roomId);
+   };
+   select.addEventListener('click',()=>{
+    if(!valid())return;
+    window.FE_NPC_CARD?.open?.({id:visitor.id,name:visitor.name,occupation:def?.occupation||'Washington resident',
+     sex:['madamStar','chenMei'].includes(visitor.id)?'woman':'man',
+     history:window.FE_NPC_DIALOGUE?.history?.(S,visitor.id)||[],valid,
+     onSpeak:words=>converseAtLocation(visitor.id,words)});
    });
-   row.appendChild(controls);row.appendChild(form);row.appendChild(response);list.appendChild(row);
+   row.appendChild(select);list.appendChild(row);
   }
   panel.hidden=!list.children.length;
+  window.FE_NPC_CARD?.sync?.();
  }
  function recordInteraction(id,withId,kind,relationshipDelta=0){
   const w=ensure(),a=w?.agents[id];
