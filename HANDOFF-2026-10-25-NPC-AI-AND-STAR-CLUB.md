@@ -1,6 +1,8 @@
 # Capital & Consequence · Living Washington AI and Star Club handoff
 **Authoritative conversation handoff, 25 October 2026.** Start here when the current chat reaches its limit. This is a source-and-design checkpoint, **not** a claim of desktop acceptance, finished NPC intelligence, finished Star Club gameplay, or an accepted release.
 
+**Three non-negotiable acceptance phrases:** **NO GitHub Actions.** NPCs must be able to say **“I don't know”** rather than invent knowledge. Only the owner can grant **manual acceptance** after seeing the relevant Linux build work; targeted JS checks or GitHub commits are not a game release.
+
 ## 1. Owner authorization and immutable workflow
 - Owner explicitly authorized **research and continued building in successive, verifiable source slices**, committing source and updated docs directly to existing single `main` branch. This latest request prioritizes a complete roadmap and handoff before further work.
 - **Do not use GitHub Actions**: no runners, workflow runs, cloud packages, uploads, or CI as a substitute for local/manual tests. No executable, AppImage, archive or release requested. Local tests may be run when an actual environment with source is available, but do not claim the full suite ran merely because test files were authored.
