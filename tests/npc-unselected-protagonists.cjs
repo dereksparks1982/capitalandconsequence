@@ -7,6 +7,7 @@ const itinerary=require('../npc-itinerary.js');
 const agency=require('../npc-agency.js');
 const economy=require('../npc-economy.js');
 const mobility=require('../npc-mobility.js');
+const needs=require('../npc-needs.js'),weekly=require('../npc-weekly-schedule.js');
 const source=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
 const citySource=fs.readFileSync(path.join(__dirname,'../city.js'),'utf8');
 const cityWindow={};
@@ -37,7 +38,8 @@ function scenario(route){
  const window={
   FE_NPC_CALENDAR:calendar,FE_CALENDAR_BRIDGE:bridge,FE_NPC_KNOWLEDGE:knowledge,
   FE_NPC_ITINERARY:itinerary,FE_NPC_AGENCY:agency,FE_NPC_ECONOMY:economy,
-  FE_NPC_MOBILITY:mobility,FE_CITY:{currentLocation:()=>current},
+  FE_NPC_MOBILITY:mobility,FE_NPC_NEEDS:needs,FE_NPC_WEEKLY:weekly,
+  FE_CITY:{currentLocation:()=>current},
   FE_NPC_CARD:{open:options=>cardCalls.push(options),sync(){}},
   FederalElectricCity:city
  };
@@ -53,6 +55,8 @@ function scenario(route){
  assert.equal(npc.inspect(main[route]),null,'Player life is not an NPC inspection');
  assert.equal(S.npcSimulation.agents[main[route]],undefined);
  assert.equal(Object.values(main).filter(id=>ids.includes(id)).length,3);
+ assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.needs?.version===1),
+  'Each simulated character maintains saved individual needs');
  assert.equal(npc.syncClock(),false,'No second clock settlement without player time');
  assert.equal(JSON.stringify(S.worldCalendar),clockBefore,'NPC replay did not advance the master clock');
  // Characters are clickable in the actual-room resident list.
@@ -69,6 +73,8 @@ function scenario(route){
  // selected protagonist or grant restricted-door permissions.
  bridge.spend(S,10*3600);
  assert.equal(npc.syncClock(),true);
+ assert.ok(npc.inspect('madamStar')?.needs?.lastMinute===S.worldCalendar.worldMinute,
+  'World time advances the resident condition, not the reverse');
  if(route!=='criminal'){
   const eli=npc.visibleAt('secondNightclub').find(x=>x.id==='eliCrowe');
   assert.ok(eli,'Unselected Eli works a real evening shift');
