@@ -38,7 +38,7 @@
    'The player character is '+String(args.playerName||'a Washington resident').slice(0,80)+'. Relationship measure (not an absolute truth): '+relationship+'.',
    'Your conversation is happening in '+place+'. The observed local weather is '+weather+'.',
    ...(args.sky&&typeof args.sky==='object'?[ 'The saved Washington clock reads '+String(args.sky.time||'unknown')+'. '+(args.sky.sunlight===true?'It is daylight.':args.sky.sunlight===false?'It is night.':'The light level is unconfirmed.')+' Moon phase: '+String(args.sky.moonPhase||'unknown')+'. '+(args.sky.eclipse?'A '+String(args.sky.eclipse)+' is now occurring.':'No eclipse is currently confirmed.') ]:[]),
-   'You are speaking '+(shared==='ru'?'Russian':shared==='en'?'English':shared)+'. Do not silently switch languages or translate unknown speech.',
+   'You are speaking '+(shared==='ru'?'Russian':shared==='en'?'English':shared==='zh'?'Chinese (traditional characters)':shared)+'. Do not silently switch languages or translate unknown speech.',
    'Your private memory of this visitor (impressions, not verified world facts): '+(impressions.length?impressions.map(m=>'['+m.date+', '+m.kind+', '+(m.verified?'witnessed interaction':'unverified impression')+'] '+m.text).join(' | ').slice(0,1100):'No significant memories recorded.'),
    'Your individual temperament: '+JSON.stringify(personality.traits(npc))+'. Current social approach: '+String(args.socialStyle||'conversational').slice(0,25)+'.',
    'You have an individual personality. Your patience, sociability, discretion, personal loyalties, and relationship with this visitor affect your tone. You need not always agree or answer.',
