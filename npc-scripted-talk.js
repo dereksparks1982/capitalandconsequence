@@ -34,8 +34,10 @@
   const q=utterance.trim().toLowerCase(),id=npc.id;
   const un=unknown[id]||(npc.language==='ru'?"Не знаю.":"I don't know enough about that.");
   const russian=npc.language==='ru';
-  const future=/\b(television|tvs?|smartphones?|cellphones?|internet|computers?|laptops?|corvettes?|satellites?|airplanes?|aeroplanes?|rockets?|spacecraft|movies?|cinema|electric cars?|radio broadcasts?)\b/i;
-  if(future.test(q))return {handled:true,reply:russian?"Я не понимаю, о чём вы говорите.":"I'm afraid I don't know what you mean by that.",kind:'unknown-era'};
+  const year=Number(String(context.date||'1878').slice(0,4))||1878;
+  const alwaysFuture=/\b(smartphones?|cellphones?|internet|laptops?|corvettes?|satellites?|spacecraft|electric cars?)\b/i;
+  const earlyFuture=/\b(television|tvs?|computers?|airplanes?|aeroplanes?|rockets?|movies?|cinema|radio broadcasts?)\b/i;
+  if((year<1950&&alwaysFuture.test(q))||(year<1890&&earlyFuture.test(q)))return {handled:true,reply:russian?"Я не понимаю, о чём вы говорите.":"I'm afraid I don't know what you mean by that.",kind:'unknown-era'};
   if(/\b(star club|madam star(?:'s)? (?:club|establishment)|club of madam star)\b/i.test(q))
    return {handled:true,reply:CLUB[id]||un,kind:'club-opinion'};
   if(/\b(who are you|your name|what is your name|introduce yourself)\b/i.test(q))
