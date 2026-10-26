@@ -60,6 +60,10 @@ check(city.getLocation('districtBank').map.n===40,'Optional bank gets new pin 40
 check(city.getRoom('hillsdale','hillsdale-butcher').name==='Hillsdale Butcher'&&
  city.getRoom('hillsdale','hillsdale-market').name==='Hillsdale Market','Hillsdale stores are rooms on existing pin 13');
 check(!pins.some(p=>p.id==='hillsdale-butcher'||p.id==='hillsdale-market'),'Hillsdale shops are not separate map pins');
+check(require('../city-access.js').canRoom(city,{kind:'npc',id:'williamRapley',onDuty:true},'nationalTheatre','manager-office','1878-01-03').ok,'William Rapley alone manages the theatre office');
+check(!require('../city-access.js').canRoom(city,{kind:'npc',id:'eliCrowe',route:'criminal'},'secondNightclub','proprietor-office','1878-01-03').ok,'Eli does not control Lui private office');
+check(require('../city-access.js').canRoom(city,{kind:'npc',id:'luiDelacroix'},'secondNightclub','proprietor-office','1878-01-03').ok,'Lui owns his cabaret and can access his office');
+check(pkg.scripts['test:source'].includes('tests/hillsdale-commerce.cjs')&&pkg.scripts['test:source'].includes('tests/cash-custody.cjs'),'New shop and money modules are included in offline regression suite');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale / Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
@@ -349,7 +353,9 @@ check(index.indexOf('npc-itinerary.js?v=')<index.indexOf('npc-ai.js?v=')&&index.
 check(appSource.includes('window.FE_NPC_AI?.renderContactItineraries?.()'),'Main journal rendering refreshes learned NPC itineraries');
 check(read('npc-ai.js').includes('window.FE_NPC_CARD?.open?.(')&&
  read('npc-character-card.js').includes('npc-card-transcript')&&
- !read('npc-ai.js').includes("['city','Ask About Washington']"),'NPC room lists open individual freeform dialogue cards without topic menus');
+ read('npc-character-card.js').includes("'Ask About Washington'")&&
+ read('npc-ai.js').includes('onQuick:topic=>talkAtLocation(visitor.id,topic)'),
+ 'Resident name opens a personal character card with both optional quick speech and unrestricted free text');
 check(read('npc-ai.js').includes("m.key==='greet'&&m.withId===route"),'Only personally greeted contacts are eligible for itinerary cards');
 check(appSource.includes('fresh.npcSimulation=x.npcSimulation'),'Old saves migrate to NPC simulation safely');
 check(appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Authoritative game clock notifies NPC schedules');
