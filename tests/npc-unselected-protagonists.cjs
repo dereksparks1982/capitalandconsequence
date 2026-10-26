@@ -44,6 +44,7 @@ function scenario(route){
  vm.runInNewContext(source,{window,document,S,activeProfileId:()=>route+'-profile',
   save:()=>saved++},{filename:'npc-ai.js'});
  bridge.start(S,'1890-01-03');
+ const clockBefore=JSON.stringify(S.worldCalendar);
  const npc=window.FE_NPC_AI;
  assert.equal(npc.syncClock(),true);
  assert.equal(npc.list().length,14,'11 residents and exactly three autonomous protagonists');
@@ -53,8 +54,7 @@ function scenario(route){
  assert.equal(S.npcSimulation.agents[main[route]],undefined);
  assert.equal(Object.values(main).filter(id=>ids.includes(id)).length,3);
  assert.equal(npc.syncClock(),false,'No second clock settlement without player time');
- const before=JSON.stringify(S.worldCalendar);
- assert.equal(before,JSON.stringify(S.worldCalendar),'NPC replay did not advance the master clock');
+ assert.equal(JSON.stringify(S.worldCalendar),clockBefore,'NPC replay did not advance the master clock');
  // Characters are clickable in the actual-room resident list.
  if(route!=='investigator'){
   assert.ok(npc.visibleAt('hillsdale').some(p=>p.id==='samHarlan'));
