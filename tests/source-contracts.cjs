@@ -283,6 +283,12 @@ check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'187
 check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
 check(index.includes('npc-needs.js?v=')&&index.indexOf('npc-weekly-schedule.js?v=')<index.indexOf('npc-needs.js?v=')&&index.indexOf('npc-needs.js?v=')<index.indexOf('npc-ai.js?v='),'Personal needs load after weekly plans and before NPC agency');
 check(pkg.scripts['test:source'].includes('tests/npc-needs.cjs'),'Rest, hunger, mood and reload must have an offline regression suite');
+check(index.includes('npc-residences.js?v=')&&index.indexOf('city-access.js?v=')<index.indexOf('npc-residences.js?v=')&&
+ index.indexOf('npc-residences.js?v=')<index.indexOf('npc-ai.js?v='),'Nightly NPC lodging checks normal restricted room authority');
+check(pkg.scripts['test:source'].includes('tests/npc-residences.cjs'),'Private bedroom occupancy and permission tests are mandatory');
+check(read('npc-ai.js').includes('FE_NPC_RESIDENCES?.nightStay?.(def,c,window.FederalElectricCity)'),'NPC calendar resolves verified owned/rented overnight rooms only');
+check(read('workshop-presence.js').includes("actor.roomId==='workers-lodging'"),'Work-shift projection never erases a sleeping renter');
+
 check(read('npc-ai.js').includes('FE_NPC_NEEDS?.settle?.(a,def,S.worldCalendar.worldMinute'),'Resident condition follows the player-controlled saved clock');
 check(index.includes('npc-intentions.js?v=')&&index.indexOf('npc-intentions.js?v=')<index.indexOf('npc-ai.js?v='),'NPC intentional travel planner loads before runtime');
 check(index.includes('npc-social.js?v=')&&index.indexOf('npc-social.js?v=')<index.indexOf('npc-ai.js?v='),'Social encounter module loads before NPC runtime');
