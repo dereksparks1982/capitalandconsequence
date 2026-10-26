@@ -30,13 +30,13 @@
  }
  // Work BACKWARD from the known previous close so the opening sheet agrees
  // exactly with its last published historical closing price.
- function seed({ticker,sector,opening,openDate,vol=.04,count=520}){
+ function seed({ticker,sector,opening,openDate,vol=.04,count=520,previousClose=null}){
   if(typeof ticker!=='string'||!ticker||!Number.isFinite(opening)||opening<=0)
    throw Error('Stock seed requires a valid security and opening quote.');
   const days=tradingDaysBefore(openDate,count),result=[];
   const openingGap=(unit(ticker+'|open|'+openDate)-.5)*Math.min(.018,.004+vol*.18);
   // Caller can supply an exact previous close to match its own opening gap.
-  let previous=price(opening/(1+openingGap));
+  let previous=Number.isFinite(previousClose)&&previousClose>0?price(previousClose):price(opening/(1+openingGap));
   for(let i=days.length-1;i>=0;i--){
    const day=days[i];result.push({date:day,close:previous});
    previous=price(previous/(1+dailyMove(ticker,sector,day,vol)));
