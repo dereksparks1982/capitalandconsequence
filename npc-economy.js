@@ -7,6 +7,13 @@
 (function(root){
  'use strict';
  const SETTINGS=Object.freeze({
+  // Unselected protagonists have real routine records, but their canonical
+  // personal starting cash, wages and household budgets are undecided.
+  // Never manufacture wealth or debt for them just for being off-camera.
+  charlieWhitcomb:{occupation:'workshop owner',workplace:'factory',opening:0,pay:0,betting:0,credit:false,monetary:false},
+  samHarlan:{occupation:'patrolman',workplace:'hillsdale',opening:0,pay:0,betting:0,credit:false,monetary:false},
+  eliCrowe:{occupation:'doorman',workplace:'secondNightclub',opening:0,pay:0,betting:0,credit:false,monetary:false},
+  edmundWardman:{occupation:'orderly',workplace:'blackwoodAsylum',opening:0,pay:0,betting:0,credit:false,monetary:false},
   samuelTilden:{occupation:'president',workplace:'whiteHouse',opening:9000,pay:0,betting:0},
   madamStar:{occupation:'club proprietor',workplace:'star',opening:8500,pay:185,betting:16},
   foremanSullivan:{occupation:'workshop assistant',workplace:'factory',opening:2100,pay:0,betting:9},
@@ -61,7 +68,7 @@
   let amount=0,kind='rest',description='Taking personal time away from public work.';
   const work=!!cfg.workplace&&locationId===cfg.workplace&&
    // Club evening staff and bookmaker at race meetings follow different shifts.
-   (def.id==='madamStar'?context.slot>=1:context.slot<2);
+   (def.id==='madamStar'?context.slot>=1:def.id==='eliCrowe'?context.slot>=2:context.slot<2);
   const trackOpen=context.slot===1&&context.weekday!==0;
   const canLeave=!!locationId&&context.slot===1;
   const weekend=context.weekday===6;
@@ -84,7 +91,7 @@
   }else if(work&&!context.rest){
    // Federal Electric pays its assistant at close from actual company cash.
     // Never mint independent NPC wages for the same shift.
-    const pay=def.id==='foremanSullivan'?0:cfg.pay+hash(tag+'|job')%46;
+    const pay=cfg.pay===0?0:cfg.pay+hash(tag+'|job')%46;
    const repaid=Math.min(ec.debtCents,Math.floor(pay/4));
    ec.debtCents-=repaid;
    amount=pay-repaid;
@@ -98,7 +105,7 @@
     def.id==='madamStar'?'overseeing the Star Club accounts':
     'handling business orders and receipts';
    description='Completed a scheduled '+cfg.occupation+' work period'+(repaid?' and repaid a portion of an earlier loan.':'.');
-  }else if(context.slot===3){
+  }else if(context.slot===3&&cfg.monetary!==false){
    // For live saves, purchases already moved cash/stock at the observed market.
    // Legacy isolated action tests without a market keep the old bounded allowance.
    const recordedMarket=!!context.save&&!!root.FE_WASHINGTON_COMMERCE;
@@ -107,7 +114,7 @@
    kind='household';
    description=recordedMarket?'Reviewed household bills already paid from recorded market purchases.':'Settled ordinary household expenses.';
    // Credit is explicit and bounded, not an unexplained negative balance.
-   if(ec.balanceCents<80&&ec.debtCents<650&&(+def.traits?.caution||60)>=50){
+   if(cfg.credit!==false&&ec.balanceCents<80&&ec.debtCents<650&&(+def.traits?.caution||60)>=50){
     const advance=Math.min(240,650-ec.debtCents);
     ec.balanceCents+=advance;
     ec.debtCents+=advance;
@@ -123,7 +130,7 @@
   // and Sullivan's Saturday groceries. Never advance world time for NPC actions.
   let purchased=null;
   const market=context.save&&root.FE_WASHINGTON_COMMERCE;
-  if(market&&context.slot===1&&!context.rest&&ec.balanceCents>=4){
+  if(market&&cfg.monetary!==false&&context.slot===1&&!context.rest&&ec.balanceCents>=4){
    const shopping=['bread','soap','onions','milk','potatoes','eggs','produce','bacon'];
    const start=hash(tag+'|shop')%shopping.length;
    for(let i=0;i<shopping.length;i++){
