@@ -1620,3 +1620,27 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-directo
 body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeholder{
  background:linear-gradient(145deg,#e7d8bb 0%,#d9c5a1 52%,#b89971 100%);
 }
+
+/* Conversation is a separate resident card above a room, never room controls. */
+.fe-npc-select{display:block;width:100%;min-height:44px;text-align:left;border:1px solid #806b4d;background:#eee0c2;color:#2b2117;padding:10px 14px;font:700 15px/1.4 Georgia,serif;cursor:pointer}
+.fe-npc-select:hover,.fe-npc-select:focus-visible{background:#faf0d6;outline:2px solid #9b4e1e;outline-offset:2px}
+.npc-card-overlay{position:fixed;inset:0;z-index:2300000;background:rgba(12,12,17,.86);display:flex;justify-content:center;align-items:center;padding:16px}
+.npc-card{width:min(790px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden;background:#e5dac1;color:#292117;border:3px double #a48652;box-shadow:0 12px 38px rgba(0,0,0,.6);font:15px/1.55 Georgia,serif}
+.npc-card-header{display:flex;align-items:center;gap:20px;padding:16px;background:linear-gradient(100deg,#3c3228,#665137);color:#fff2dc;border-bottom:3px solid #9c7c47}
+.npc-card-portrait{display:flex;justify-content:center;align-items:end;width:126px;height:155px;flex:0 0 126px;border:2px solid #b49c77;background:linear-gradient(#cfc6b7,#867961);overflow:hidden}
+.npc-card-portrait svg{width:100%;height:100%;fill:#39332d}
+.npc-card-identity{flex:1;min-width:0}
+.npc-card-identity h2{font:700 clamp(20px,3vw,30px) Georgia,serif;color:#fff2dc;margin:0 0 8px}
+.npc-card-identity p{margin:0;color:#f2dec0}
+.npc-card-close{align-self:flex-start;width:44px;height:44px;flex-shrink:0;font:30px Arial,sans-serif;border:1px solid #bea678;background:#32281f;color:#fff2dc;cursor:pointer}
+.npc-card-transcript{flex:1;min-height:100px;overflow:auto;padding:18px 20px;background:#f2e7d2}
+.npc-card-transcript .npc-card-line{margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.npc-card-hint{color:#655a49;font-style:italic}
+.npc-card-pending{color:#6d6050;font-style:italic}
+.npc-card-form{display:flex;flex-direction:column;gap:9px;padding:14px 20px;background:#d7c6a6;border-top:2px solid #9f8559}
+.npc-card-form label{font-weight:700}
+.npc-card-form textarea{display:block;box-sizing:border-box;width:100%;min-height:76px;max-height:150px;resize:vertical;background:#fff9ed;color:#20190f;border:2px solid #857151;padding:10px;font:16px/1.45 Georgia,serif}
+.npc-card-send{align-self:flex-end;min-width:105px;min-height:44px;padding:8px 17px;background:#393026;color:#fff2da;border:1px solid #836741;font:700 15px Georgia,serif;cursor:pointer}
+.npc-card-send:disabled{opacity:.5;cursor:wait}
+.npc-card :is(button,textarea):focus-visible{outline:3px solid #b87b36;outline-offset:2px}
+@media(max-width:540px){.npc-card-overlay{padding:0}.npc-card{max-height:100%;height:100%;width:100%;border:0}.npc-card-header{gap:10px;padding:10px}.npc-card-portrait{width:83px;height:104px;flex-basis:83px}.npc-card-transcript{padding:12px}.npc-card-form{padding:12px}}
