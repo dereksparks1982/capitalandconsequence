@@ -69,6 +69,14 @@
   if(/storm|lightning|blizzard|ice|heavy snow/.test(weather))risk=bounded(risk+15);
   if(environment?.sunlight===false)risk=bounded(risk+7);
   if(environment?.eclipse)risk=bounded(risk+9);
+  // Only events recorded in this person's own actual-room social ledger
+  // affect confidence and caution. No knowledge of another resident's secrets.
+  const assists=Math.max(0,Math.floor(Number(agent.social?.assists)||0));
+  const disputes=Math.max(0,Math.floor(Number(agent.social?.disagreements)||0));
+  if(assists||disputes){
+   social=bounded(social+Math.min(12,assists*3)-Math.min(16,disputes*4));
+   risk=bounded(risk+Math.min(18,disputes*4));
+  }
   const finance=agent.economy?Math.round((agent.economy.balanceCents<600?(600-agent.economy.balanceCents)/8:0)+(agent.economy.debtCents||0)/30):0;
   return Object.freeze({financialStrain:bounded(finance),workPressure:bounded(workPressure),risk:bounded(risk),
    social:bounded(social),rumors,firstHand:bounded(firstHand*10),
