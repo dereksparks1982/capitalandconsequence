@@ -1644,3 +1644,19 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .npc-card-send:disabled{opacity:.5;cursor:wait}
 .npc-card :is(button,textarea):focus-visible{outline:3px solid #b87b36;outline-offset:2px}
 @media(max-width:540px){.npc-card-overlay{padding:0}.npc-card{max-height:100%;height:100%;width:100%;border:0}.npc-card-header{gap:10px;padding:10px}.npc-card-portrait{width:83px;height:104px;flex-basis:83px}.npc-card-transcript{padding:12px}.npc-card-form{padding:12px}}
+
+/* Physical money and the broker's current posted securities belong to a place. */
+.city-room-cash-header{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;align-content:center;margin-left:auto;font:700 12px Georgia,serif;color:#55452e}
+.city-room-cash-header span{padding:7px 9px;border:1px solid #9c855e;background:#f9f0db;white-space:nowrap}
+.city-room-cash-header strong{display:block;font-size:16px;color:#272016}
+.city-room-cash-office,.broker-quotation-sheet{border:2px solid #8d744c;padding:14px;margin:16px 0;background:#f4ebd8}
+.cash-office-balances{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:7px;margin:12px 0}
+.cash-office-balance{border:1px solid #bdab8c;background:#fff9ed;padding:8px;display:flex;flex-direction:column;gap:3px}
+.cash-office-balance strong{font-size:17px}
+.city-room-cash-office label{display:block;margin:10px 0}
+.city-room-cash-office :is(input,select){max-width:100%;padding:8px;background:#fffaf0;border:1px solid #8d744c}
+.broker-quote-overflow{overflow-x:auto;max-height:340px}
+.broker-quote-overflow table{border-collapse:collapse;width:100%;font:14px Georgia,serif}
+.broker-quote-overflow th,.broker-quote-overflow td{padding:7px 8px;border-bottom:1px solid #baaa8c;text-align:left}
+.broker-quote-overflow button{min-height:34px}
+@media(max-width:700px){.city-room-cash-header{justify-content:flex-start;margin-left:0;order:3;width:100%}.city-room-cash-header span{flex:1;font-size:10px}}
