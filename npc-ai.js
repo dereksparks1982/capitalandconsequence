@@ -209,15 +209,19 @@
    const decision=planDecision(w,def,a,period.name,key);
    const rest=decision.rest,natural=rest?null:period.locationId;
    const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
-    key,date:c.date,slot:period.slot,weekday:c.weekday,seed:w.seed,
+    key:period.economyKey,date:period.day,slot:period.slot,weekday:period.weekday,seed:w.seed,
     rest,save:S,defaultLocation:natural,defaultActivity:rest?null:period.activity});
    a.goal=decision.goal;
-   const action=completed.action,moved=pickRoom(def,a,action,w),destination=moved.locationId;
+   const action=completed.action;
+   const movementAction={...action,key,date:period.day,slot:period.slot,
+    activity:action.locationId===period.locationId?period.activity:action.activity};
+   const moved=pickRoom(def,a,movementAction,w),destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
    a.activity=moved.activity;
    a.status=destination?'present':'off-duty';
-   a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
+   // Mid-period routine changes do not mint extra income, purchases or fatigue.
+   if(!completed.repeated)a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastCalendarSlot=key;
    w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
     slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason,
