@@ -2247,6 +2247,7 @@ function returnCityRoomToOffice(){
   if(previous.locationId!=='factory'){
    const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
    window.FE_HORSE_CUSTODY?.onArrival?.(S,previous.locationId,'factory',!!journeyPaid);
+    reviewCashOnArrival(previous.locationId,'factory');
   }
   window.FE_NPC_AI?.syncClock?.();
   save(true);
