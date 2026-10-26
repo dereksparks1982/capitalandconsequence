@@ -422,7 +422,7 @@
    select.addEventListener('click',()=>{
     if(!valid())return;
     window.FE_NPC_CARD?.open?.({id:visitor.id,name:visitor.name,occupation:def?.occupation||'Washington resident',
-     sex:['madamStar','chenMei'].includes(visitor.id)?'woman':'man',
+     sex:['madamStar','chenMei','annaPetrovna'].includes(visitor.id)?'woman':'man',
      history:window.FE_NPC_DIALOGUE?.history?.(S,visitor.id)||[],valid,
      onSpeak:words=>converseAtLocation(visitor.id,words)});
    });
