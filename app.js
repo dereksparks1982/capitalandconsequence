@@ -1231,12 +1231,12 @@ function resolveUnfinishedPoker(token){
  const store=pokerSessions(),pending=store.pending.find(p=>p.id===token&&p.profileId===activeProfileId());
  if(!pending||store.settled.some(p=>p.id===token))return false;
  const refund=!pending.claimed;
- store.pending=store.pending.filter(p=>p.id!==token);
- store.settled.push({id:token,circle:pending.circle,delta:refund?0:-pending.stake,turn:S.turnSerial,resolution:refund?'undealt-canceled':'forfeit'});
- if(store.settled.length>256)store.settled.splice(0,store.settled.length-256);
  const receipt=refund?window.FE_CASH_CUSTODY?.cancel?.(S,pending.custodyTicket):
   window.FE_CASH_CUSTODY?.settle?.(S,pending.custodyTicket,0);
  if(!receipt?.ok)return false;
+ store.pending=store.pending.filter(p=>p.id!==token);
+ store.settled.push({id:token,circle:pending.circle,delta:refund?0:-pending.stake,turn:S.turnSerial,resolution:refund?'undealt-canceled':'forfeit'});
+ if(store.settled.length>256)store.settled.splice(0,store.settled.length-256);
  window.updateCashHeader?.();
  if(!Array.isArray(S.outcomeEvents))S.outcomeEvents=[];
  S.outcomeEvents.push({id:'poker:'+token,type:refund?'poker-undealt-canceled':'poker-forfeit',delta:refund?0:-pending.stake,turn:S.turnSerial});
@@ -1254,12 +1254,40 @@ if(unresolvedPokerResolve)unresolvedPokerResolve.onclick=()=>{
 };
 function pokerSimSeconds(circle){return circle==='working'?300:circle==='middle'?600:1500}
 function simulatePoker(circle,stake){
- const lawVenueId={working:'working-poker',middle:'commerce-poker',elite:'embassy-poker'}[circle];
- const lawRuling=window.FE_GAMBLING_LAW?.classify({venueId:lawVenueId,game:'texas-holdem',eventKind:'regular',date:S.gameDate});
- if(!lawRuling||!lawRuling.allowed){$('#pokerNote').textContent=lawRuling?.reason||'Gambling permission registry unavailable.';return}
-
  const venue={working:'working-poker',middle:'commerce-poker',elite:'embassy-poker'}[circle];
- if(!venue||!window.FE_VENUES?.canUse(venue))return $('#pokerNote').textContent='Visit the appropriate card room to play.';if(S.pokerDay!==S.gameDate){S.pokerDay=S.gameDate;S.pokerPlayed={working:0,middle:0,elite:0}}if(!pokerAccess(circle)){$('#pokerNote').textContent=pokerClubStatus(circle).message;return}if(S.pokerPlayed[circle]>=pokerLimit(circle))return $('#pokerNote').textContent='No more '+pokerCircleName(circle)+' sessions are available today.';if(S.personalCash<stake)return $('#pokerNote').textContent='You need '+cash(stake)+' personal cash for this table.';const simSeconds=pokerSimSeconds(circle);if(!window.FE_WASHINGTON_TIME.canSpend(S,simSeconds))return $('#pokerNote').textContent='The game clock is paused or unavailable.';S.pokerPlayed[circle]++;const hands=6+Math.floor(Math.random()*10),swing={working:5,middle:18,elite:80}[circle];let delta=0;for(let i=0;i<hands;i++){const r=Math.random();delta+=r<.43?-swing*(.25+Math.random()*.85):r<.83?swing*(.2+Math.random()*.7):swing*(.8+Math.random()*1.7)}delta=Math.round(delta);delta=clamp(delta,-Math.min(stake,S.personalCash),stake*2);recordPokerResult(circle,delta,hands,true,simSeconds,true,'courteous')}
+ const lawRuling=window.FE_GAMBLING_LAW?.classify({venueId:venue,game:'texas-holdem',eventKind:'regular',date:S.gameDate});
+ if(!lawRuling?.allowed)return $('#pokerNote').textContent=lawRuling?.reason||'Poker activity unavailable.';
+ if(!venue||!window.FE_VENUES?.canUse(venue))return $('#pokerNote').textContent='Visit the correct card room first.';
+ if(S.paused||!activeProfileId())return;
+ if(S.pokerDay!==S.gameDate){S.pokerDay=S.gameDate;S.pokerPlayed={working:0,middle:0,elite:0}}
+ if(!pokerAccess(circle))return $('#pokerNote').textContent=pokerClubStatus(circle).message;
+ if(S.pokerPlayed[circle]>=pokerLimit(circle))
+  return $('#pokerNote').textContent='No more '+pokerCircleName(circle)+' sessions are available today.';
+ if(unresolvedPoker())return $('#pokerNote').textContent='Resolve the unfinished poker session first.';
+ const duration=pokerSimSeconds(circle);
+ if(!window.FE_WASHINGTON_TIME.canSpend(S,duration))return $('#pokerNote').textContent='The game clock is paused or unavailable.';
+ const funding=pokerFunding();
+ const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,stake,pokerCustodyLocation(circle));
+ if(!paid?.ok)return $('#pokerNote').textContent=paid?.reason||'Insufficient carried cash.';
+ const hands=6+Math.floor(Math.random()*10),swing={working:5,middle:18,elite:80}[circle];
+ let delta=0;
+ for(let i=0;i<hands;i++){
+  const roll=Math.random();
+  delta+=roll<.43?-swing*(.25+Math.random()*.85):
+   roll<.83?swing*(.2+Math.random()*.7):swing*(.8+Math.random()*1.7);
+ }
+ delta=clamp(Math.round(delta),-stake,stake*2);
+ const settled=window.FE_CASH_CUSTODY?.settle?.(S,paid.ticket,stake+delta);
+ if(!settled?.ok){
+  // The settled stake must not disappear when a local engine is unavailable.
+  console.error('Simulated poker custody settlement failed:',settled?.reason);
+  $('#pokerNote').textContent='Wager settlement unavailable; review the cash ledger before playing again.';
+  save(true);return;
+ }
+ S.pokerPlayed[circle]++;
+ window.updateCashHeader?.();
+ recordPokerResult(circle,delta,hands,true,duration,false,'courteous');
+}
 window.FE_POKER_CLOCK=()=>window.FE_WASHINGTON_TIME.now(S)?.time||null;
 function pokerButton(circle,stake){return playPokerCircle(circle,stake)}
 $('#pokerWorking').onclick=()=>pokerButton('working',25);$('#pokerMiddle').onclick=()=>pokerButton('middle',100);$('#pokerElite').onclick=()=>pokerButton('elite',500);$('#simPokerWorking').onclick=()=>simulatePoker('working',25);$('#simPokerMiddle').onclick=()=>simulatePoker('middle',100);$('#simPokerElite').onclick=()=>simulatePoker('elite',500);
