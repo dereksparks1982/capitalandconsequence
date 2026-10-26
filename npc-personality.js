@@ -30,11 +30,14 @@
   const t=traits(def),date=String(context.date||''),guest=String(visitor.id||'stranger');
   const relationship=Math.min(100,Math.max(-100,Number(actor.relationships?.[guest])||0));
   const energy=bounded(actor.energy??80);
+  const hunger=bounded(actor.needs?.hunger??25);
+  const mood=bounded(actor.needs?.mood??65);
   const occupied=!!context.occupied;
   const topic=String(context.topic||'greet');
   const trust=relationship*.45;
   const score=t.sociability*.48+t.patience*.22+energy*.16+t.politeness*.13+
-   trust-(occupied?20:0)-(topic==='work'&&occupied?14:0);
+   trust-(occupied?20:0)-(topic==='work'&&occupied?14:0)-
+   (hunger>70?(hunger-70)*.18:0)-(mood<45?(45-mood)*.25:0);
   const roll=hash(def.id+'|'+date+'|'+guest+'|'+topic)%100;
   // A well-mannered professional always acknowledges a polite greeting,
   // but this does not obligate them to disclose anything else.
@@ -43,6 +46,8 @@
   const style=relationship<=-35?'guarded':t.pride>=80?'proud':t.politeness>=78?'courteous':
    t.sociability<=43?'reserved':'conversational';
   const reason=allowed?'':occupied?'I am occupied just now. Perhaps another time.':
+   energy<=28?'I am weary and would rather rest just now.':
+   hunger>=85?'I ought to find something to eat first.':
    t.politeness>=70?'Forgive me, but I do not wish to converse at present.':
    t.pride>=70?'I have nothing to discuss with you.':'Not now.';
   return Object.freeze({allowed,reason,style,score:Math.round(score),traits:t});
