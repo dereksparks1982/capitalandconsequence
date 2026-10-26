@@ -26,7 +26,14 @@
   liWen:{work:['oldChinatown|meeting merchants','oldChinatown|following business orders',null,null],sat:['oldChinatown|attending the Saturday trade','oldChinatown|reconciling receipts',null,null],sun:[null,null,null,null]},
   alexiRurik:{work:['russianTradeHall|seeking work','races|following a delivery','workingPoker|watching the game',null],sat:[null,'races|seeking courier work','workingPoker|watching the game',null],sun:[null,null,null,null]},
   annaPetrovna:{work:['russianTradeHall|meeting visiting merchants','russianTradeHall|attending correspondence',null,null],sat:[null,'russianTradeHall|speaking with acquaintances',null,null],sun:[null,null,null,null]},
-  pavelOrlov:{work:['russianTradeHall|meeting traders','russianTradeHall|discussing orders','star|attending an evening gathering',null],sat:[null,'russianTradeHall|consulting visiting merchants',null,null],sun:[null,null,null,null]}
+  pavelOrlov:{work:['russianTradeHall|meeting traders','russianTradeHall|discussing orders','star|attending an evening gathering',null],sat:[null,'russianTradeHall|consulting visiting merchants',null,null],sun:[null,null,null,null]},
+  edwinBooth:{work:['nationalTheatre|rehearsing dramatic roles','nationalTheatre|studying a script','nationalTheatre|performing on stage',null],sat:['nationalTheatre|rehearsing dramatic roles','nationalTheatre|studying a script','nationalTheatre|performing on stage',null],sun:[null,null,null,null]},
+  josephJefferson:{work:['nationalTheatre|rehearsing the repertoire','nationalTheatre|meeting the acting company','nationalTheatre|performing a comedy',null],sat:['nationalTheatre|rehearsing the repertoire','nationalTheatre|meeting the acting company','nationalTheatre|performing a comedy',null],sun:[null,null,null,null]},
+  johnMcCullough:{work:['nationalTheatre|practising tragic passages','nationalTheatre|working with the company','nationalTheatre|playing his role',null],sat:['nationalTheatre|practising tragic passages','nationalTheatre|working with the company','nationalTheatre|playing his role',null],sun:[null,null,null,null]},
+  claraMorris:{work:['nationalTheatre|rehearsing a dramatic role','nationalTheatre|consulting stage staff','nationalTheatre|giving the evening performance',null],sat:['nationalTheatre|rehearsing a dramatic role','nationalTheatre|consulting stage staff','nationalTheatre|giving the evening performance',null],sun:[null,null,null,null]},
+  johnTRaymond:{work:['nationalTheatre|preparing a comic part','nationalTheatre|rehearsing with actors','nationalTheatre|performing a comic role',null],sat:['nationalTheatre|preparing a comic part','nationalTheatre|rehearsing with actors','nationalTheatre|performing a comic role',null],sun:[null,null,null,null]},
+  charlesHanford:{work:['nationalTheatre|preparing backstage equipment','nationalTheatre|studying a small speaking role','nationalTheatre|assisting with the evening show',null],sat:['nationalTheatre|preparing backstage equipment','nationalTheatre|studying a small speaking role','nationalTheatre|assisting with the evening show',null],sun:[null,null,null,null]},
+  williamRapley:{work:['nationalTheatre|checking the accounts','nationalTheatre|reviewing stage bookings','nationalTheatre|observing the show',null],sat:['nationalTheatre|checking the accounts','nationalTheatre|reviewing stage bookings','nationalTheatre|observing the show',null],sun:[null,null,null,null]}
  });
 
  // These describe usual activities, never guaranteed appearances.
@@ -46,7 +53,14 @@
   liWen:['reviewing morning stock and orders','meeting visiting merchants','taking a midday meal nearby','settling afternoon trade',null,null,null],
   alexiRurik:['seeking legitimate courier work','arranging a delivery','taking a midday meal while travelling','checking on courier prospects','observing a public card game','speaking with acquaintances',null],
   annaPetrovna:['meeting visiting traders','reading trade correspondence','taking a midday meal','speaking with merchants and acquaintances',null,null,null],
-  pavelOrlov:['reviewing trade correspondence','meeting prospective buyers','taking a midday meal','negotiating commercial arrangements','speaking with evening guests','maintaining commercial contacts',null]
+  pavelOrlov:['reviewing trade correspondence','meeting prospective buyers','taking a midday meal','negotiating commercial arrangements','speaking with evening guests','maintaining commercial contacts',null],
+  edwinBooth:['rehearsing dramatic roles','studying a script','taking a midday meal at the theatre','studying a script','performing on stage','performing on stage',null],
+  josephJefferson:['rehearsing the repertoire','meeting the acting company','taking a midday meal at the theatre','meeting the acting company','performing a comedy','performing a comedy',null],
+  johnMcCullough:['practising tragic passages','working with the company','taking a midday meal at the theatre','working with the company','playing his role','playing his role',null],
+  claraMorris:['rehearsing a dramatic role','consulting stage staff','taking a midday meal at the theatre','consulting stage staff','giving the evening performance','giving the evening performance',null],
+  johnTRaymond:['preparing a comic part','rehearsing with actors','taking a midday meal at the theatre','rehearsing with actors','performing a comic role','performing a comic role',null],
+  charlesHanford:['preparing backstage equipment','studying a small speaking role','taking a midday meal at the theatre','studying a small speaking role','assisting with the evening show','assisting with the evening show',null],
+  williamRapley:['checking the accounts','reviewing stage bookings','taking a midday meal at the theatre','reviewing stage bookings','observing the show','observing the show',null]
  });
  const SEGMENTS=Object.freeze([
   Object.freeze({from:480,until:600,slot:0}),
