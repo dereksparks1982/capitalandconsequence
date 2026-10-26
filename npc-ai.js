@@ -238,6 +238,9 @@
     a.locationId=null;a.roomId=null;a.activity=null;a.status='inactive';a.lastCalendarSlot=key;continue;
    }
    const period=window.FE_NPC_CALENDAR.at(c,def);
+   // Personal condition comes from elapsed saved world time, not from page
+   // redraws, NPC clocks, or a fixed energy charge per rendered time slot.
+   window.FE_NPC_NEEDS?.settle?.(a,def,S.worldCalendar.worldMinute,window.FE_NPC_WEEKLY);
    const decision=planDecision(w,def,a,period.name,key);
    const rest=decision.rest,natural=rest?null:period.locationId;
    const completed=window.FE_NPC_ECONOMY.actionFor(def,a,{
@@ -253,7 +256,8 @@
    a.activity=moved.activity;
    a.status=destination?'present':'off-duty';
    // Mid-period routine changes do not mint extra income, purchases or fatigue.
-   if(!completed.repeated)a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
+   if(!window.FE_NPC_NEEDS&&!completed.repeated)
+    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
    a.lastCalendarSlot=key;
    w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
     slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason,
