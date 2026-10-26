@@ -55,8 +55,9 @@ function scenario(route){
  assert.equal(npc.inspect(main[route]),null,'Player life is not an NPC inspection');
  assert.equal(S.npcSimulation.agents[main[route]],undefined);
  assert.equal(Object.values(main).filter(id=>ids.includes(id)).length,3);
- assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.needs?.version===1),
-  'Each simulated character maintains saved individual needs');
+ assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
+   S.npcSimulation.agents[id]?.needs?.version===1),
+  'Every currently eligible simulated character keeps saved individual needs');
  assert.equal(npc.syncClock(),false,'No second clock settlement without player time');
  assert.equal(JSON.stringify(S.worldCalendar),clockBefore,'NPC replay did not advance the master clock');
  // Characters are clickable in the actual-room resident list.
