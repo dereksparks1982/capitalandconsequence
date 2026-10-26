@@ -1,3 +1,5 @@
+> **Later source slice:** All four protagonists have been added to the native NPC roster, with the selected protagonist excluded, so each game has the eleven existing scheduled residents **plus exactly three autonomous off-camera protagonists**. The newcomer schedules, workplaces, restricted-room permissions, own character-card replies and salary-neutral economics are prototypes, not complete simulated careers. `tests/npc-unselected-protagonists.cjs` checks this contract; full local Node/Electron suite still unverified. No separate player-facing AI chat.
+
 > **Current follow-through:** [Complete owner conversation and next-slice handoff](HANDOFF-2026-10-25-NPC-AI-AND-STAR-CLUB.md). This earlier audit remains useful for completed source and upstream references; the linked handoff is authoritative for the final **card-only free-text conversation**, **all-NPC scheduling**, and **Star Club private-room/favorites** requirements. No GitHub Actions or executable.
 
 # Living Washington AI: dependency audit and implementation slices
