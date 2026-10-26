@@ -1,3 +1,5 @@
+> **Current follow-through:** [Complete owner conversation and next-slice handoff](HANDOFF-2026-10-25-NPC-AI-AND-STAR-CLUB.md). This earlier audit remains useful for completed source and upstream references; the linked handoff is authoritative for the final **card-only free-text conversation**, **all-NPC scheduling**, and **Star Club private-room/favorites** requirements. No GitHub Actions or executable.
+
 # Living Washington AI: dependency audit and implementation slices
 **Source checkpoint: October 25, 2026. Development only.**
 This document records actual source, approved user behavior, and remaining work. It does not claim desktop acceptance.
