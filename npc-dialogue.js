@@ -6,6 +6,7 @@
  const canon=typeof module==='object'&&module.exports?require('./world-canon.js'):root.FE_WORLD_CANON;
  const lang=typeof module==='object'&&module.exports?require('./npc-language.js'):root.FE_NPC_LANGUAGE;
  const memory=typeof module==='object'&&module.exports?require('./npc-memory.js'):root.FE_NPC_MEMORY;
+ const personality=typeof module==='object'&&module.exports?require('./npc-personality.js'):root.FE_NPC_PERSONALITY;
  const valid=v=>typeof v==='string'&&/^[a-zA-Z][a-zA-Z0-9]{0,39}$/.test(v);
  function ensure(save){
   if(!save||typeof save!=='object')throw Error('Profile state required');
@@ -39,6 +40,7 @@
    ...(args.sky&&typeof args.sky==='object'?[ 'The saved Washington clock reads '+String(args.sky.time||'unknown')+'. '+(args.sky.sunlight===true?'It is daylight.':args.sky.sunlight===false?'It is night.':'The light level is unconfirmed.')+' Moon phase: '+String(args.sky.moonPhase||'unknown')+'. '+(args.sky.eclipse?'A '+String(args.sky.eclipse)+' is now occurring.':'No eclipse is currently confirmed.') ]:[]),
    'You are speaking '+(shared==='ru'?'Russian':shared==='en'?'English':shared)+'. Do not silently switch languages or translate unknown speech.',
    'Your private memory of this visitor (impressions, not verified world facts): '+(impressions.length?impressions.map(m=>'['+m.date+', '+m.kind+', '+(m.verified?'witnessed interaction':'unverified impression')+'] '+m.text).join(' | ').slice(0,1100):'No significant memories recorded.'),
+   'Your individual temperament: '+JSON.stringify(personality.traits(npc))+'. Current social approach: '+String(args.socialStyle||'conversational').slice(0,25)+'.',
    'You have an individual personality. Your patience, sociability, discretion, personal loyalties, and relationship with this visitor affect your tone. You need not always agree or answer.',
    'If the visitor refers to television, smartphones, future automobiles or events not invented or known by this in-world date, react as a person of your era who has no such knowledge. Do not explain modern technology as an encyclopedia.',
    ...c.lines,
