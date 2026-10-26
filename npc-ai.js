@@ -8,6 +8,31 @@
  'use strict';
  const SLOT_NAMES=Object.freeze(['early-business','late-business','early-night','late-night']);
  const DEFINITIONS=Object.freeze([
+  {id:'charlieWhitcomb',route:'industrialist',name:'Charles “Charlie” Whitcomb',
+   occupation:'Federal Electric owner',ambition:'build-a-lasting-electrical-manufacturing-business',
+   publicRemark:"Federal Electric is my business. I cannot promise an order that has not been agreed.",
+   traits:{sociability:60,caution:62,ambition:85},places:['factory','factory',null,null],
+   activities:['reviewing workshop orders','supervising the electrical works',null,null],
+   goals:['manage-the-workshop','maintain-business-contacts','plan-future-orders']},
+  {id:'samHarlan',route:'investigator',name:'Samuel “Sam” Harlan',
+   occupation:'Metropolitan Police patrolman on the Hillsdale beat',
+   ambition:'serve-his-neighborhood-and-make-his-own-decisions',
+   publicRemark:"I walk the Hillsdale beat. I can only report what I have actually seen.",
+   traits:{sociability:67,caution:74,ambition:66},places:['hillsdale','hillsdale','metropolitanPolice',null],
+   activities:['walking the Hillsdale beat','attending to neighborhood calls','filing an ordinary patrol report',null],
+   goals:['walk-hillsdale-beat','help-local-residents','complete-station-reports']},
+  {id:'eliCrowe',route:'criminal',name:'Elias “Eli” Crowe',
+   occupation:'Nightclub doorman',ambition:'make-an-independent-living',
+   publicRemark:"I mind the entrance. You will have to ask the proprietor about his private affairs.",
+   traits:{sociability:54,caution:76,ambition:67},places:[null,null,'secondNightclub','secondNightclub'],
+   activities:[null,null,'admitting evening patrons','attending to the late entrance'],
+   goals:['work-the-nightclub-door','earn-an-honest-living','make-new-acquaintances']},
+  {id:'edmundWardman',route:'wardman',name:'Edmund Wardman',
+   occupation:'Orderly at District Asylum',ambition:'make-a-life-away-from-family-expectations',
+   publicRemark:"I attend to my duties as an orderly. I do not run the institution.",
+   traits:{sociability:48,caution:80,ambition:68},places:['blackwoodAsylum','blackwoodAsylum',null,null],
+   activities:['preparing the orderly station','attending to patients under supervision',null,null],
+   goals:['perform-orderly-duties','earn-colleagues-trust','seek-independent-prospects']},
   {id:'samuelTilden',name:'President Samuel J. Tilden',
    occupation:'President of the United States (alternate election of 1876)',
    historical:true,availableFrom:'1877-03-04',availableUntil:'1887-03-03',
@@ -66,7 +91,12 @@
    goals:['develop-trade','expand-connections','protect-reputation']}
  ]);
  const BY_ID=new Map(DEFINITIONS.map(d=>[d.id,d]));
- const WORKPLACES={samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
+ // The selected protagonist is controlled by the player, NEVER by this AI.
+ // The other three remain individual NPCs on this profile.
+ function isPlayer(def){return !!def.route&&def.route===(S.characterRoute||'industrialist')}
+ function autonomous(){return DEFINITIONS.filter(def=>!isPlayer(def))}
+
+ const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
@@ -81,7 +111,7 @@
   if(!Array.isArray(w.events))w.events=[];
   window.FE_NPC_KNOWLEDGE?.ensure?.(w);
   if(!Number.isSafeInteger(w.lastStep)||w.lastStep<0)w.lastStep=(turn-1)*4-1;
-  for(const def of DEFINITIONS){
+  for(const def of autonomous()){
    if(!w.agents[def.id]||typeof w.agents[def.id]!=='object'){
     w.agents[def.id]={
      id:def.id,locationId:null,status:'unscheduled',activity:null,goal:def.goals[0],
@@ -114,12 +144,12 @@
   let exchanged=0;
   // No broadcasts or global reputation query. Only physically co-located,
   // currently present people with a sufficiently confident report may talk.
-  for(const speaker of DEFINITIONS){
+  for(const speaker of autonomous()){
    const from=w.agents[speaker.id];
    if(!from||from.status!=='present'||!from.locationId||!from.roomId)continue;
    const facts=knowledge.knownFacts(w,speaker.id).filter(r=>window.FE_NPC_RUMORS?.shareable?.(r)).slice(-6);
    if(!facts.length)continue;
-   for(const listener of DEFINITIONS){
+   for(const listener of autonomous()){
     if(listener.id===speaker.id||!window.FE_NPC_LANGUAGE?.common?.(speaker,listener))continue;
     const to=w.agents[listener.id];
     if(!window.FE_NPC_RUMORS?.coPresent?.(from,to))continue;
@@ -139,7 +169,7 @@
  }
  function recordWitnessedMeetings(records){
   if(!records?.length||S.npcOffscreenCatchup||window.FE_CITY?.isDevRoom?.())return;
-  const found=window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),DEFINITIONS);
+  const found=window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),autonomous());
   if(found?.length&&typeof renderNotes==='function')renderNotes();
  }
  function planDecision(w,def,a,period,signature){
@@ -154,7 +184,9 @@
  function pickRoom(def,agent,action,w){
   if(!window.FE_NPC_MOBILITY||!window.FederalElectricCity)throw Error('NPC city mobility module required');
   return window.FE_NPC_MOBILITY.visit(window.FederalElectricCity,
-   {kind:'npc',id:def.id,workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
+   {kind:'npc',id:def.id,route:def.route||null,job:def.id==='edmundWardman'?'orderly':null,
+    residences:def.id==='charlieWhitcomb'?['home']:[],
+    workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
    {date:action.date,key:action.key,seed:w.seed,slot:action.slot,
     defaultLocation:action.locationId,defaultActivity:action.activity,
     priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
@@ -163,7 +195,7 @@
  function stepOnce(w,absolute){
   if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
   const slot=absolute%4,turn=Math.floor(absolute/4)+1;
-  for(const def of DEFINITIONS){
+  for(const def of autonomous()){
    const a=w.agents[def.id];
    const dateForEra=observedDate();
    if((def.availableFrom&&dateForEra<def.availableFrom)||(def.availableUntil&&dateForEra>def.availableUntil)){
@@ -189,7 +221,7 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,absolute);
-  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{
+  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{
    key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'}));
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
@@ -200,7 +232,7 @@
   const turn=Math.max(1,Math.floor(+S.turnSerial||1));
   // Wholesale shipments only on actually reached Monday/Thursday morning slots.
   window.FE_WASHINGTON_COMMERCE?.deliveryForCalendar?.(S,c.date,window.FE_NPC_CALENDAR.slot(c.minuteOfDay));
-  for(const def of DEFINITIONS){
+  for(const def of autonomous()){
    const a=w.agents[def.id];
    if((def.availableFrom&&c.date<def.availableFrom)||(def.availableUntil&&c.date>def.availableUntil)){
     a.locationId=null;a.roomId=null;a.activity=null;a.status='inactive';a.lastCalendarSlot=key;continue;
@@ -228,7 +260,7 @@
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,hash(key),turn);
-  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,DEFINITIONS,{key,turn,date:c.date}));
+  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{key,turn,date:c.date}));
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function syncClock(){
@@ -265,7 +297,7 @@
  }
  function visibleAt(locationId){
   const w=ensure();if(!w||!locationId)return [];
-  return DEFINITIONS.filter(d=>observedPosition(d.id,w.agents[d.id])?.locationId===locationId)
+  return autonomous().filter(d=>observedPosition(d.id,w.agents[d.id])?.locationId===locationId)
    .map(d=>{const a=observedPosition(d.id,w.agents[d.id]);return {id:d.id,name:d.name,roomId:a.roomId||null,activity:a.activity||'present'}});
  }
  // Face-to-face contact only. This uses the NPC's public routine, not
@@ -274,7 +306,7 @@
   if(!['greet','work','city','today'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
   const shown=observedPosition(id,a);
-  if(!def||!a||!position||shown?.locationId!==position.locationId||(position.roomId&&shown.roomId&&position.roomId!==shown.roomId)||shown?.status!=='present')
+  if(!def||isPlayer(def)||!a||!position||shown?.locationId!==position.locationId||(position.roomId&&shown.roomId&&position.roomId!==shown.roomId)||shown?.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
   const route=S.characterRoute||'industrialist',date=observedDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
@@ -323,7 +355,7 @@
   if(S.paused||S.phase==='report')return {ok:false,reason:'Conversation is unavailable while the game is paused.'};
   const def=BY_ID.get(id),w=ensure(),actor=w?.agents[id],position=window.FE_CITY?.currentLocation?.(),profileId=profile();
   const shown=observedPosition(id,actor);
-  if(!def||!actor||shown?.status!=='present'||!position||
+  if(!def||isPlayer(def)||!actor||shown?.status!=='present'||!position||
    shown.locationId!==position.locationId||shown.roomId!==position.roomId)
    return {ok:false,reason:'That resident is not in this room.'};
   const date=observedDate(),route=S.characterRoute||'industrialist';
@@ -372,7 +404,7 @@
   // Private goals, inferred secrets and rumor contents never reach these cards.
   const w=ensure(),route=S.characterRoute||'industrialist';
   if(!w)return [];
-  return DEFINITIONS.filter(d=>w.agents[d.id]?.memories.some(m=>m.key==='greet'&&m.withId===route))
+  return autonomous().filter(d=>w.agents[d.id]?.memories.some(m=>m.key==='greet'&&m.withId===route))
    .map(d=>{
     const a=w.agents[d.id],next=window.FE_NPC_ITINERARY?.next?.(d,S)||null;
     return {id:d.id,name:d.name,occupation:d.occupation,affinity:a.relationships[route]||0,
@@ -455,10 +487,10 @@
  }
  function inspect(id){
   const a=ensure()?.agents[id],def=BY_ID.get(id);
-  if(!a||!def)return null;
+  if(!a||!def||isPlayer(def))return null;
   return {id,name:def.name,occupation:def.occupation,ambition:def.ambition,
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
- function list(){return DEFINITIONS.map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
+ function list(){return autonomous().map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
  window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,converseAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();
