@@ -13,6 +13,7 @@
   chenMei:{patience:72,politeness:81,pride:47,discretion:67,curiosity:77,honesty:84},
   liWen:{patience:65,politeness:75,pride:64,discretion:79,curiosity:68,honesty:74},
   alexiRurik:{patience:35,politeness:43,pride:76,discretion:88,curiosity:58,honesty:61},
+  annaPetrovna:{patience:67,politeness:75,pride:51,discretion:78,curiosity:65,honesty:79},
   pavelOrlov:{patience:70,politeness:86,pride:63,discretion:80,curiosity:73,honesty:77},
   samuelTilden:{patience:47,politeness:80,pride:73,discretion:90,curiosity:56,honesty:75}
  });
