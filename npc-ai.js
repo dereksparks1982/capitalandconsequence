@@ -167,6 +167,18 @@
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
   return exchanged;
  }
+ // A private social-goal milestone requires a real same-room encounter.
+ // Do not manufacture a meeting merely because an NPC wanted to socialize.
+ function reflectActualMeetings(w,records,key){
+  const plans=window.FE_NPC_LIFE_PLANS;
+  if(!plans||!records?.length)return;
+  for(const record of records){
+   for(const id of [record.actorId,record.partnerId]){
+    const def=BY_ID.get(id),actor=w.agents[id];
+    if(def&&!isPlayer(def)&&actor)plans.witness(def,actor,record,key);
+   }
+  }
+ }
  function recordWitnessedMeetings(records){
   if(!records?.length||S.npcOffscreenCatchup||window.FE_CITY?.isDevRoom?.())return;
   const found=window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),autonomous());
@@ -175,7 +187,11 @@
  function planDecision(w,def,a,period,signature){
   const agency=window.FE_NPC_AGENCY;
   if(!agency)throw Error('NPC agency module required before world simulation');
-  const situation=agency.observe(def,a,S,w,window.FE_WASHINGTON_TIME?.environment?.(S)),choice=agency.choose(def,a,situation,period);
+  const situation=agency.observe(def,a,S,w,window.FE_WASHINGTON_TIME?.environment?.(S));
+  const proposal=agency.choose(def,a,situation,period);
+  // Keep an individual intention between observed periods. A meaningful
+  // priority change can revise it; small score noise cannot erase progress.
+  const choice=window.FE_NPC_LIFE_PLANS?.commit?.(def,a,proposal,signature)||proposal;
   // Private intention, updated only once per reached routine period.
   a.lastDecision={goal:choice.goal,reason:choice.reason,score:choice.score,
    situation:{...situation},at:signature};
@@ -215,14 +231,18 @@
    a.activity=moved.activity;
    a.status=destination?'present':'off-duty';
    a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
+   if(!completed.repeated)
+    window.FE_NPC_LIFE_PLANS?.record?.(def,a,decision,action,moved,'legacy|'+absolute);
    a.lastStep=absolute;
    // Private events and cash remain in this profile; no false public dispatch.
    w.events.push({id:def.id+'|'+turn+'|'+slot,actorId:def.id,turn,slot:SLOT_NAMES[slot],locationId:destination,goal:a.goal,decisionReason:decision.reason,
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,absolute);
-  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{
-   key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'}));
+  const meetings=window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{
+   key:'legacy|'+absolute,turn,date:/^\d{4}-\d{2}-\d{2}$/.test(observedDate())?observedDate():'1890-01-02'})||[];
+  reflectActualMeetings(w,meetings,'legacy|'+absolute);
+  recordWitnessedMeetings(meetings);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function calendarOnce(w,c,key){
@@ -259,13 +279,19 @@
    // Mid-period routine changes do not mint extra income, purchases or fatigue.
    if(!window.FE_NPC_NEEDS&&!completed.repeated)
     a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
+   // A second activity inside one financial period is not another real
+   // settlement. Private plans count only recorded, present actions.
+   if(!completed.repeated)
+    window.FE_NPC_LIFE_PLANS?.record?.(def,a,decision,action,moved,key);
    a.lastCalendarSlot=key;
    w.events.push({id:def.id+'|calendar|'+key,actorId:def.id,turn,date:c.date,
     slot:period.name,locationId:destination,goal:a.goal,decisionReason:decision.reason,
     action:action.kind,roomId:moved.roomId});
   }
   exchangeLocalRumors(w,hash(key),turn);
-  recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{key,turn,date:c.date}));
+  const meetings=window.FE_NPC_SOCIAL?.meet?.(w,autonomous(),{key,turn,date:c.date})||[];
+  reflectActualMeetings(w,meetings,key);
+  recordWitnessedMeetings(meetings);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
  function syncClock(){
