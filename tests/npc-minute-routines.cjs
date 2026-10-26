@@ -11,7 +11,9 @@ const star={id:'madamStar',places:['star','star','star','star'],
  activities:['opening','visiting','receiving guests','closing']};
 const at=(date,weekday,minuteOfDay)=>({date,weekday,minuteOfDay});
 assert.equal(weekly.segments.length,7);
-assert.equal(weekly.registered.length,11);
+assert.equal(weekly.registered.length,15);
+assert.equal(weekly.atMinute(worker,6,730).locationId,'oldChinatown','Sullivan shopping location');
+assert.equal(weekly.atMinute(worker,6,730).activity,'shopping for weekly necessities');
 assert.equal(calendar.signature(at('1890-01-03',5,599)),'1890-01-03|0');
 assert.equal(calendar.signature(at('1890-01-03',5,600)),'1890-01-03|0@600');
 assert.equal(calendar.signature(at('1890-01-03',5,720)),'1890-01-03|1');
@@ -56,4 +58,4 @@ for(const id of weekly.registered){
 }
 assert.throws(()=>weekly.atMinute(worker,1,-1));
 assert.throws(()=>weekly.atMinute(worker,7,720));
-console.log('PASS seven individual daily routine windows, no second shift, overnight, weekends and public itinerary');
+console.log('PASS 15 NPC seven-window routines, no second shift, overnight, weekends and public itinerary');
