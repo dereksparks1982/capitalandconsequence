@@ -25,15 +25,15 @@
  });
  function render(save,location,route,changed){
   const panel=document.getElementById('cityRoomCashOffice');if(!panel)return;
-  const options=ACTIONS[location]||[];
+  const options=location==='factory'&&route!=='industrialist'?[]:ACTIONS[location]||[];
   panel.hidden=!options.length;
   if(!options.length)return;
   const b=book.balances(save),summary=document.getElementById('cityRoomCashBalances');
   if(summary){
    summary.replaceChildren();
    for(const [name,value] of [
-    ['Company cash at works',b.companyAtWorks],['Company cash carried',b.companyCarried],
-    ['Company bank',b.businessBank],['Personal cash carried',b.personalCarried],
+    ...(route==='industrialist'?[['Company cash at works',b.companyAtWorks],['Company cash carried',b.companyCarried],
+    ['Company bank',b.businessBank]]:[]),['Personal cash carried',b.personalCarried],
     ['Personal checking',b.personalChecking],['General savings',b.personalSavings]]){
     const row=document.createElement('div');row.className='cash-office-balance';
     const label=document.createElement('span');label.textContent=name;
