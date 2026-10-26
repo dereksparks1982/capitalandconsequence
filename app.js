@@ -286,7 +286,7 @@ function loadInitial(){
 function displayDate(){return new Date(S.gameDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 function displayHeaderDate(){const iso=window.FE_WASHINGTON_TIME?.now?.(S)?.date||S.gameDate;const d=new Date(iso+'T12:00:00'),days=['SUN','MON','TUES','WED','THUR','FRI','SAT'],months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];return days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()}
 function displayTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY':'TURN '+Math.min(S.turnSerial,CAMPAIGN_TURNS)+' OF '+CAMPAIGN_TURNS}
-function displayHeaderTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY':'TURN '+Math.min(S.turnSerial,CAMPAIGN_TURNS)+'/'+CAMPAIGN_TURNS}
+function displayHeaderTurn(){return clockText()}
 function clockText(){return window.FE_WASHINGTON_TIME?.now?.(S)?.time||'TIME UNAVAILABLE'}
 function businessOpen(){return S.phase==='day'}
 const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
@@ -350,7 +350,7 @@ document.addEventListener('click',e=>{
  e.preventDefault();e.stopImmediatePropagation();
  note('Game is paused. Press PLAY to resume.');
 },true);
-function updateCashHeader(){const company=$('#headerCompanyCash'),personal=$('#headerPersonalCash');if(company)company.textContent=money(S.companyCash);if(personal)personal.textContent=money(S.personalCash)}
+function updateCashHeader(){const company=$('#headerCompanyCash'),personal=$('#headerPersonalCash');if(company)company.textContent=money(S.companyCash);if(personal)personal.textContent=money(S.personalCash);window.FE_CASH_UI?.header?.(S)}
 function renderPauseToggle(){const btn=$('#pauseToggle');if(!btn)return;const paused=!!S.paused;btn.textContent=paused?'PLAY':'PAUSE';btn.setAttribute('aria-label',paused?'Play simulation':'Pause simulation');btn.setAttribute('aria-pressed',paused?'true':'false');btn.title=paused?'Play simulation':'Pause simulation';btn.classList.toggle('paused',paused)}
 window.updateCashHeader=updateCashHeader;
 function accountingExposure(){
@@ -362,9 +362,10 @@ function accountingExposure(){
  return 'LOW';
 }
 function renderTreasury(){
+ const atWorks=currentCityLocation().locationId==='factory'&&!cityRoomSession.dev;
  const draw=$('#ownerDrawsToday'),diverted=$('#divertedToday'),missing=$('#unaccountedFunds'),exposure=$('#accountingExposure'),distribution=$('#ownerDistribution'),divert=$('#divertCompanyFunds');
  if(draw)draw.textContent=money(S.ownerDistributionsToday||0);if(diverted)diverted.textContent=money(S.divertedToday||0);if(missing)missing.textContent=money(S.unaccountedFunds||0);if(exposure)exposure.textContent=accountingExposure();
- if(distribution)distribution.disabled=!businessOpen()||S.paused;if(divert)divert.disabled=S.phase==='report'||S.paused;
+ if(distribution)distribution.disabled=!businessOpen()||S.paused||!atWorks;if(divert)divert.disabled=S.phase==='report'||S.paused||!atWorks;
 }
 let ipoScaffoldOpen=false;
 function companyValueEstimate(){
@@ -1059,14 +1060,16 @@ const closeIpoScaffold=$('#closeIpoScaffold');if(closeIpoScaffold)closeIpoScaffo
 const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistribution.onclick=()=>{
  const amount=treasuryAmount(),out=$('#treasuryNote');if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
- S.companyCash-=amount;S.personalCash+=amount;S.ownerDistributionsToday=(S.ownerDistributionsToday||0)+amount;
+ const result=window.FE_CASH_CUSTODY?.transfer?.(S,'ownerDistribution',amount,currentCityLocation().locationId,S.characterRoute);
+ if(!result?.ok)return out.textContent=result?.reason||'Company cash may only be collected at Federal Electric.';
  S.notes.push({date:displayDate(),text:'A recorded owner distribution of '+cash(amount)+' was transferred from Federal Electric to personal funds.',source:'company books'});
  out.textContent='Recorded distribution completed: '+cash(amount)+' moved to personal cash.';save();render();
 };
 const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCompanyFunds.onclick=()=>{
  const amount=treasuryAmount(),out=$('#treasuryNote');if(S.phase==='report')return out.textContent='The books are closed for the completed date.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
- S.companyCash-=amount;S.personalCash+=amount;S.divertedToday=(S.divertedToday||0)+amount;S.unaccountedFunds=(S.unaccountedFunds||0)+amount;S.corporateMisuseCount=(S.corporateMisuseCount||0)+1;
+ const result=window.FE_CASH_CUSTODY?.transfer?.(S,'irregularDraw',amount,currentCityLocation().locationId,S.characterRoute);
+ if(!result?.ok)return out.textContent=result?.reason||'Company cash may only be collected at Federal Electric.';
  S.notes.push({date:displayDate(),text:cash(amount)+' of Federal Electric funds were diverted to personal use, creating an unexplained corporate shortfall.',source:'private financial record'});
  out.textContent='Company funds diverted: '+cash(amount)+' moved to personal cash. Accounting exposure is now '+accountingExposure()+'.';save();render();
 };
