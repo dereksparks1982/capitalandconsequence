@@ -1,6 +1,11 @@
-# Federal Electric · Legal and third-party notices
+# Capital & Consequence · Legal and third-party notices
 
-Federal Electric is an independent fictional game published by Elderred Softworks LLC. Its fictional people and events are not claims about real persons.
+**Copyright © 2026 Derek Sparks. All rights reserved.**  
+**Published by Elderred Softworks LLC.**
+
+**PROPRIETARY PROJECT.** The game's original code, writing, designs, characters, and other original material are protected by the [all-rights-reserved LICENSE](LICENSE). Making this repository public does **not** give anyone permission to reuse, modify, republish, sell, or redistribute its proprietary contents. The only general end-user permission in that license is to run an official, unmodified build for personal, noncommercial gameplay. Third-party materials and rights remain subject to their own licenses and applicable law.
+
+Capital & Consequence is an independent fictional game published by Elderred Softworks LLC. Its fictional people and events are not claims about real persons.
 
 ## Contact
 
@@ -25,4 +30,4 @@ For a project, licensing, or attribution concern, contact the maintainer through
 
 The Federal Electric v0.6.53 murder-case engine is original JavaScript implementation. No upstream Python, Rust or TypeScript source was copied into this version. Future third-party source imports must retain applicable copyright and license notices. Source visibility on GitHub alone does not grant an unrestricted license to reuse copyrighted code.
 
-The presence of these acknowledgments does not change the license of Federal Electric's original code. This document is informational, not legal advice.
+The presence of these acknowledgments does not change the license of Federal Electric's original code. This third-party notice is informational. The project's licensing terms are in [LICENSE](LICENSE); this document does not replace them.
