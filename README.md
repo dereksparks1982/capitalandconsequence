@@ -8,6 +8,8 @@
 
 ## Current development checkpoint: v0.6.90-dev (28 October 2026)
 
+**Owner correction for pin #12:** Charlie's residence is now simply **Home** and its map marker is **black, matching his owned Federal Electric factory**. Existing plot coordinates and original guide art were not moved or changed.
+
 **Owner-requested Washington map correction (October 28, later revision):** White anchor dots, dashed leader lines and collision-based pin drifting have been **removed**. Every numbered pin remains at its own assigned plotted position throughout zoom, pan and information-card opening. Nearby markers may overlap rather than shifting their apparent geography. Hovering or focusing brings the chosen marker and label to the front; the existing 40-location directory remains the reliable way to select covered pins. The three previously identified off-print **provisional** sites still dock to the guide edge, with a clear warning, because their real position is outside this immutable guide. The original artwork and saved x/y coordinates have not been changed.
 
 
