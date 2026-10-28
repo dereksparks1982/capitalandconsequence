@@ -24,7 +24,7 @@
  function at(c,d){
   const key=signature(c);
   if(!d||!Array.isArray(d.places)||!Array.isArray(d.activities))throw Error('NPC definition required');
-  const plan=weekly.atMinute(d,c.weekday,c.minuteOfDay),day=businessDay(c);
+  const plan=weekly.atMinute(d,c.weekday,c.minuteOfDay,c.date),day=businessDay(c);
   const open=!(d.availableFrom&&c.date<d.availableFrom)&&!(d.availableUntil&&c.date>d.availableUntil);
   return {key,slot:plan.slot,name:NAMES[plan.slot],locationId:open?plan.locationId:null,
    activity:open?plan.activity:null,weekday:plan.weekday,day,
