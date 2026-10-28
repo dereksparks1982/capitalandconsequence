@@ -169,9 +169,11 @@ function placeBet(id){
  const fighterId=Number($b('boxingPick_'+id)?.value),wager=Math.max(1,Math.floor(Number($b('boxingWager_'+id)?.value)||0));
  if(!bout.fighters.includes(fighterId))return setNote('Choose a fighter.');
  const funding=$b('boxingFunding_'+id)?.value==='company'?'company':'personal';
+ if(!window.FE_BETTING_TIME?.canPlace?.())return setNote('The clock is paused or the bet cannot be entered right now.');
  const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,wager,'washingtonArena');
  if(!paid?.ok)return setNote(paid?.reason||'You do not have the selected carried cash.');
  card.bets[id]={fighterId,wager,settled:false,funding,custodyTicket:paid.ticket};
+ window.FE_BETTING_TIME.chargeMinute();
  save(true);window.updateCashHeader?.();render();
  setNote('Wager accepted: '+fighter(fighterId).name+' to win '+d.label+' · '+cash(wager)+' · '+(funding==='company'?'Federal Electric carried funds':'personal cash')+'.');
 }
