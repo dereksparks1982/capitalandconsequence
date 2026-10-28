@@ -13,3 +13,20 @@ assert.equal(talk.answer(eddie,'Where are we?',{place:'Star Club'}).reply,'We ar
 assert.match(talk.answer({id:'alexiRurik',name:'Alexi',language:'ru'},'What is a computer?').reply,/Я не понимаю/);
 assert.equal(talk.answer(asker,'What is your name?').reply,'My name is Madam Star.');
 console.log('PASS character-specific open questions, Star Club perspectives, ignorance and era boundaries');
+const at=(activity='')=>({date:'1878-01-03',place:'National Theatre',activity});
+const who=(id)=>({id,name:id,occupation:'Washington resident'});
+assert.match(talk.answer(who('charlieWhitcomb'),'what do you do',at()).reply,/I own Federal Electric/);
+assert.match(talk.answer(who('samHarlan'),'tell me about your work',at()).reply,/Hillsdale beat/);
+assert.match(talk.answer(who('eliCrowe'),'where do you work',at()).reply,/Le Paon d'Or/);
+assert.match(talk.answer(who('claraMorris'),'your job',at()).reply,/National Theatre/);
+assert.match(talk.answer(who('foremanSullivan'),'where do you live',at()).reply,/rent a small room/);
+const live=talk.answer(who('samHarlan'),'what are you doing today',at('walking the Hillsdale beat'));
+assert.equal(live.kind,'observed-activity');
+assert.match(live.reply,/walking the Hillsdale beat/);
+assert.ok(!talk.answer(who('samHarlan'),'what are you doing today',at()).reply.includes('walking the Hillsdale beat'),
+ 'An unknown activity cannot be invented');
+assert.equal(talk.answer(who('edwinBooth'),'meet me tomorrow',at()).kind,'no-unearned-commitment');
+assert.equal(talk.answer(who('edwinBooth'),'smartphone',at()).kind,'unknown-era');
+assert.match(talk.answer(who('alexiRurik'),'where do you live',at()).reply,/Не знаю/);
+console.log('PASS individual work and observed activity, no invented plans, eras, unknown homes');
+
