@@ -1,3 +1,7 @@
+## Printed-map coordinate follow-up: 40 locations, 1–30 / A–R
+
+All forty numbered pins now share the exact city registry's printed guide grid. Five anchored map landmarks have corrected explanatory coordinates (White House 12-I, Government Hospital 25-R, Washington Airport 9-P, Georgetown Canal 7-I, Eastern Branch 24-M). The fictional District Asylum #22 is shown at its approximate location 26-Q. An information card no longer conceals numbered badges: displaced badges have a leader line pointing to a dot at their immutable source coordinate. This is a UI overlay only: the original scanned artwork and saved pin coordinates do not change. The heading displays the actual rendered-marker count. See `MAP-PIN-COORDINATE-AUDIT-2026-10-28.md` for every number and verification category.
+
 # Capital & Consequence v0.6.89-dev: Development Patch Notes
 
 **Status:** unaccepted source checkpoint, October 28, 2026. This is not a finished or certified Linux release.
