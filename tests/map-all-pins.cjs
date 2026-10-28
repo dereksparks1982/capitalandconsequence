@@ -1,5 +1,5 @@
 'use strict';
-/* Unfiltered Washington pins: every #1..#40 must be visible and clickable.
+/* Unfiltered Washington pins: every #1..#40 stays at its true image anchor.
  * This is an offline source/DOM simulation; no Electron or Actions needed. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'..',name),'utf8');
@@ -61,10 +61,23 @@ sandbox.testCode=snippets+`
  for(const p of coords){
   if(!Number.isFinite(p.x)||!Number.isFinite(p.y))throw Error('No visible position for '+p.id);
  }
- for(let a=0;a<coords.length;a++)for(let b=a+1;b<coords.length;b++){
-  if(Math.hypot(coords[a].x-coords[b].x,coords[a].y-coords[b].y)<30)
-   throw Error('Unfiltered map pins overlap: '+coords[a].id+' / '+coords[b].id);
+ // All forty markers are tied to one consistent image coordinate.
+ // Overlap is intentional; the player explicitly rejected shifting pins.
+ function expectedAnchor(id){
+  const place=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+  const point=titleMapDisplayCoordinate(place,img);
+  return {x:titleMapState.x+point.x*titleMapState.scale,
+   y:titleMapState.y+point.y*titleMapState.scale};
  }
+ function assertAnchored(markers){
+  for(const marker of markers){
+   const point=expectedAnchor(marker.dataset.mapLocation);
+   const x=parseFloat(marker.style.left),y=parseFloat(marker.style.top);
+   if(Math.abs(x-point.x)>.001||Math.abs(y-point.y)>.001)
+    throw Error('Map pin moved off assigned image coordinate: '+marker.dataset.mapLocation);
+  }
+ }
+ assertAnchored(all);
  for(const id of ['capitalSpeedway','eastLivery','chainBridgeFishing']){
   const m=coords.find(x=>x.id===id);
   if(!m?.title.includes('map edge'))throw Error('Off-guide provisional pin not docked: '+id);
@@ -93,26 +106,31 @@ sandbox.testCode=snippets+`
   if(Math.abs(marker.x-expectedX)>0.001||Math.abs(marker.y-expectedY)>0.001)
    throw Error('Map-anchored landmark badge shifted: '+id);
  }
- // Card covers a lower-right region in normal play: District Asylum #22 must
- // still be visible and clickable alongside the other thirty-nine badges.
+ // Opening a location card MUST NOT move any map pin. A pin can be
+ // covered by an information card; its directory entry remains accessible.
  infoCard.hidden=false;
+ const beforeCard=Object.fromEntries(all.map(m=>[m.dataset.mapLocation,[m.style.left,m.style.top]]));
  checkPins('all','all','');
- const rect=infoCard.getBoundingClientRect();
- const shifted=layer.querySelectorAll('[data-map-location]').map(m=>({
-   id:m.dataset.mapLocation,x:parseFloat(m.style.left),y:parseFloat(m.style.top)
- }));
- for(const badge of shifted){
-  if(badge.x>=rect.left-17&&badge.x<=rect.right+17&&
-     badge.y>=rect.top-17&&badge.y<=rect.bottom+17)
-    throw Error('Map info card obscures numbered pin '+badge.id);
+ assertAnchored(all);
+ for(const marker of all){
+  const before=beforeCard[marker.dataset.mapLocation];
+  if(marker.style.left!==before[0]||marker.style.top!==before[1])
+   throw Error('Info card repositioned pinned place '+marker.dataset.mapLocation);
  }
- if(!shifted.some(x=>x.id==='blackwoodAsylum'))throw Error('Asylum #22 missing');
+ if(!all.find(x=>x.dataset.mapLocation==='blackwoodAsylum'))throw Error('Asylum #22 missing');
  infoCard.hidden=true;
+ // Zoom and pan must preserve fixed map-image anchor relationships.
+ titleMapState.scale=.78;titleMapState.x=-250;titleMapState.y=-110;
  checkPins('all','all','');
+ assertAnchored(all);
+ titleMapState.scale=.39;titleMapState.x=0;titleMapState.y=0;
+ checkPins('all','all','');
+ assertAnchored(all);
 `;
 vm.runInNewContext(sandbox.testCode,sandbox,{filename:'map-view-simulation.js'});
 const html=read('index.html'),css=read('styles.css');
 assert.ok(html.includes('src="assets/artwork/maps/title-map-1938.jpg?'),'Immutable original guide map remains');
 assert.ok(css.includes('#titleMapClose.title-map-close')&&css.includes('position:absolute;right:9px;top:9px;z-index:12;'),
  'Red X is pinned inside the game window independent of horizontal toolbar overflow');
-console.log('PASS all 40 map pins, edge docking, no overlapping centers, filter, colors, red X and original art');
+assert.ok(!source.includes('titleMapPinTethers')&&!source.includes('title-map-pin-tether'),'White dots and pin tethers were removed');
+console.log('PASS 40 anchored map pins, card/zoom/pan stability, edge warnings, filters, red X and original artwork');
