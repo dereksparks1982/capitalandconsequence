@@ -1763,3 +1763,18 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .city-room-fishing-fleet h4,.city-room-fishing-fleet h5{margin:6px 0 9px}
 .fishing-vessel,.fishing-catch{padding:8px;margin:6px 0;border:1px solid #a8916e;background:#f2e5ca}
 .fishing-vessel p{margin:3px 0}
+
+/* Sixty individual, save-backed, use-developed skills for all four roles. */
+#personalSkillRegistry{padding:15px;background:#eee4d1;color:#33291c;border:1px solid #b09d7e}
+#personalSkillRegistry>label{font:700 14px Georgia,serif;display:flex;align-items:center;gap:9px;margin-bottom:7px}
+#personalSkillRegistry select{padding:6px;min-width:205px;max-width:100%}
+#skillCount{margin:6px 0 13px;font:700 13px Georgia,serif}
+.skills-category{margin:15px 0 23px}
+.skills-category h3{margin:3px 0 9px;font:700 19px Georgia,serif;border-bottom:2px solid #a99677;padding-bottom:4px;color:#412f1c}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px}
+.skill-card{display:grid;grid-template-columns:1fr auto;gap:6px 11px;align-items:center;padding:9px 10px;background:#fcf7eb;border:1px solid #bcaa8a;color:#2b241d}
+.skill-card b{font:bold 14px Georgia,serif}
+.skill-card output{font:700 13px 'Courier New',monospace}
+.skill-card progress{grid-column:1/3;width:100%;height:12px;accent-color:#456f4f}
+.skill-card small{grid-column:1/3;color:#68553e;font-style:italic}
+.skill-card p{grid-column:1/3;margin:0;font:12px/1.35 Georgia,serif;color:#5b4b3a}
