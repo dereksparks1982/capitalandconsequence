@@ -1,5 +1,8 @@
 # Character Codex: Elias “Eli” Crowe
 
+> **Canonical identity update · October 28, 2026:** Eli's proprietor is now the approved Frenchman **Lucien Étienne “Lui” Delacroix**. His registered Washington nightclub is **Le Paon d’Or (The Golden Peacock)**, map pin **#15**; the stable internal location ID remains `secondNightclub`. Eli begins an ordinary doorman with **no ownership or automatic criminal affiliation**. The earlier assertions below that the owner and venue's public name were not finalized are superseded. Story approval does not mean the full social/underworld simulation is implemented.
+
+
 **Project:** Capital & Consequence  
 **Canonical protagonist:** Elias “Eli” Crowe  
 **Career route ID:** `criminal` (legacy persistent key, although Eli begins in **ordinary employment**).  
@@ -7,7 +10,7 @@
 
 ## Starting life
 
-Eli works as an **anonymous employee watching the door of a Washington nightclub**. The proprietor barely knows he exists, and Eli has no share in the property, office privileges or criminal organization. The venue is currently named **Second Nightclub** in the city registry only because the final title has not been approved. The owner's name is likewise **not finalized**.
+Eli works as an **anonymous employee watching the door of a Washington nightclub**. The proprietor barely knows he exists, and Eli has no share in the property, office privileges or criminal organization. The internal venue ID remains **`secondNightclub`**, but the public venue name is **Le Paon d’Or (The Golden Peacock)**. Its owner is **Lucien Étienne “Lui” Delacroix**, whose name is approved.
 
 Eli has his own **personal desk and work ledger**, and a physically reachable **Doorman’s Station** inside the registered nightclub. A public main room is available to ordinary visitors; the proprietor's private office remains restricted to management.
 
