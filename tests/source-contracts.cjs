@@ -194,7 +194,7 @@ check(horse.incident('h','returned','recovery-2','home')===true,'Valid recovery 
 check(!appSource.includes('pokerTestClicks')&&!appSource.includes('pokerTestReset'),'Seven-click table bypass removed');
 check(appSource.includes('window.FE_POKER_AUTHORIZE=')&&appSource.includes('window.FE_POKER_SETTLE='),'One-use poker settlement installed');
 check(read('poker.html').includes('No active poker session'),'Unreserved popup does not deal');
-check(appSource.includes('S.personalCash-=stake')&&appSource.includes('S.personalCash+=entry.stake+delta'),'Poker stake escrow and settlement');
+check(appSource.includes('FE_CASH_CUSTODY?.stake?.(S,funding,stake,pokerCustodyLocation(circle))')&&appSource.includes('FE_CASH_CUSTODY?.settle?.(S,entry.custodyTicket,entry.stake+delta)')&&appSource.includes('FE_CASH_CUSTODY?.cancel?.(S,booked.ticket)'),'Poker stakes reserve, settle and refund through one-use cash custody receipts');
 check(appSource.includes('fresh.pokerSessions=')&&appSource.includes('outcomeEvents.push'),'Poker save migration and outcome ledger');
 check(appSource.includes('function canEnterPastime(')&&appSource.includes('b.disabled=!canEnterPastime(group,id)'),'Global pastimes require correct local venue');
 check(read('racing.js').includes("canUse('horse-racing')"),'Horse wagers only at racetrack');
