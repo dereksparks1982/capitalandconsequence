@@ -89,8 +89,8 @@ assert.ok(app.includes("marker.hidden=!location||!titleMapMatchesFilters(locatio
  'all registered numbered map pins appear without an active filter');
 assert.ok(app.includes("function titleMapDisplayCoordinate(location,img)"),
  'off-print coordinates get a display-only map-edge anchor');
-assert.ok(app.includes("Math.hypot(p.x-other.x,p.y-other.y)>=31"),
- 'overlapping pin centers are spread for readable clickable numbers');
+assert.ok(app.includes("Math.hypot(p.x-other.x,p.y-other.y)>=34"),
+ 'visible pin badges are separated by at least 34 on-screen pixels');
 assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
  'actual out-of-print position remains documented; no source coordinate moves');
 assert.ok(css.includes("#titleMapClose.title-map-close")&&
