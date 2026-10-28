@@ -1,3 +1,4 @@
+- [x] **October 28 final owner map correction:** Pin **#12 Home** (not “Our Home”) is **black for Charlie**, identical to Federal Electric's black owned pin. Its original x/y and `home` ID remain unchanged. Added regression assertion and refreshed JS cache links.
 [Current handoff: v0.6.90-dev, 28 Oct 2026](HANDOFF-2026-10-28-v0.6.90-dev.md) · [Canonical owner decisions](DECISIONS.md) · [Character Codex](CODEX-INDEX.md). **Read newest headings first: older completed source slices are archival and may describe superseded UI behaviors.**
 
 ## October 28, 2026 owner correction · anchored Washington pins
