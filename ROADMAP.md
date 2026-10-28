@@ -1,3 +1,16 @@
+## 28 October 2026 · v0.6.90-dev, not accepted
+- [x] Save-backed **60** individual 0–100 skills across all four playable characters, role-starting values and a **Journal → Skills** directory. Fishing and selected industrial/maritime actions now earn skill; other categories await their actual activities, not free XP.
+- [x] Full unfolded paper map lying on the career desk. Click it to enter the original fixed Washington map with 40 numbered, editable pins. Hover names stay in front; mapped owned property pins appear black. No new unapproved geographic map pins or map art.
+- [x] Broker-only stock trade access; all period-listed stocks displayed at physical office, searchable by company or ticker and filterable by sector. Repeated visits unlock *telegram* instructions from the executive office, not telephone trading. Finite fictional issued/offered shares.
+- [x] First playable steelworks, regional railroad, merchant cargo shipping, and fishing vessels. Different treasuries, upkeep, repairs, finite goods, commercial routes, captain/merchant leads, some sea-loss hazards.
+- [x] Skill-100 legendary sturgeon (0.5% per eligible cast); preserved/paid trophy mounting, Saturday fishing meets, newspaper notices, and skiff/smack/trawler types.
+- [x] Audit repairs: source runner now reports all tests; updated old 38/40 and NPC count assumptions, map collision spec, market branches, Go There test stub. Go There now requires successful travel/room-walk accounting before location commit.
+- [x] Focused V8 simulations for industry, ship arrivals, fishing vessels, skills and 20,000 high-skill fishing casts passed.
+- [ ] **Release gate:** Run `bash scripts/local-source-qa.sh` locally, fix any remaining failures, perform direct Ubuntu Electron playthrough. Full current Node suite and Electron gameplay have **not** been run here. Do **not** claim QA green or create an accepted release/tag yet. No Actions.
+- [ ] Remaining design: concrete player ownership/acquisition registration for additional sites, ship captains as autonomous named individuals, historically verified port risks, full steel/rail capacity, broader cargo invoicing, meaningful activities for remaining skills, stock liquidity across NPC traders, realistic IPO underwriting, marine insurance claims and international navigation.
+- [ ] After owner accepts a tested snapshot, follow required local commit+annotated tag, then GitHub push+verify; keep original fixed 1938 guide art and user-approved UI geometry.
+See [v0.6.90 development notes](docs/RELEASE-NOTES-v0.6.90-dev.md).
+
 ### October 28 follow-up: 1–30 / A–R historical coordinate preservation
 - [x] Recount all forty distinct numbered markers, ensure no duplicates or missing numbers.
 - [x] Use a single printed-image grid converter in `city.js` for the map, location card and directory.
