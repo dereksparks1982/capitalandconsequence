@@ -936,6 +936,13 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
  return spent;
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
+/* Booking a wager takes one minute regardless of stake or game type.
+   Only accepted wagers call chargeMinute, once per accepted ticket.
+   The same authoritative world simulation runs NPCs and ongoing events. */
+window.FE_BETTING_TIME=Object.freeze({
+ canPlace:()=>!S.paused&&S.phase!=='report'&&!!window.FE_WASHINGTON_TIME?.canSpend?.(S,60),
+ chargeMinute:()=>!S.paused&&S.phase!=='report'&&advanceWorldSimulation(60,true,'action')===60
+});
 // Component transactions that land exactly at 5 PM hold the bell only until
 // their inventory/cash receipt has been committed. No NPC adds clock time.
 window.advanceWorkshopTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action',true);
@@ -1209,6 +1216,7 @@ function playPokerCircle(circle,stake){
  if(sessions.pending.some(p=>p.profileId===activeProfileId()&&p.gameDate===S.gameDate)){$('#pokerNote').textContent='An earlier card session remains open. Its stake is reserved.';return}
  const token=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
  const funding=pokerFunding();
+ if(!window.FE_BETTING_TIME.canPlace()){$('#pokerNote').textContent='The game clock is paused or unavailable.';return}
  const booked=window.FE_CASH_CUSTODY?.stake?.(S,funding,stake,pokerCustodyLocation(circle));
  if(!booked?.ok){$('#pokerNote').textContent=booked?.reason||'The wager could not be reserved.';return}
  sessions.pending.push({id:token,profileId:activeProfileId(),circle,stake,gameDate:S.gameDate,
@@ -1223,6 +1231,7 @@ function playPokerCircle(circle,stake){
   S.pokerPlayed[circle]--;save(true);window.updateCashHeader?.();
   $('#pokerNote').textContent='Poker popup blocked. The unused stake returned to '+(funding==='company'?'carried company cash':'personal cash')+'.';
  }
+ if(popup)window.FE_BETTING_TIME.chargeMinute();
  renderWashington();
 }
 window.FE_POKER_AUTHORIZE=(token,circle)=>{
@@ -1303,6 +1312,7 @@ function simulatePoker(circle,stake){
  const duration=pokerSimSeconds(circle);
  if(!window.FE_WASHINGTON_TIME.canSpend(S,duration))return $('#pokerNote').textContent='The game clock is paused or unavailable.';
  const funding=pokerFunding();
+ if(!window.FE_BETTING_TIME.canPlace())return $('#pokerNote').textContent='The game clock is paused or unavailable.';
  const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,stake,pokerCustodyLocation(circle));
  if(!paid?.ok)return $('#pokerNote').textContent=paid?.reason||'Insufficient carried cash.';
  const hands=6+Math.floor(Math.random()*10),swing={working:5,middle:18,elite:80}[circle];
@@ -1322,6 +1332,7 @@ function simulatePoker(circle,stake){
  }
  S.pokerPlayed[circle]++;
  window.updateCashHeader?.();
+ window.FE_BETTING_TIME.chargeMinute();
  recordPokerResult(circle,delta,hands,true,duration,false,'courteous');
 }
 window.FE_POKER_CLOCK=()=>window.FE_WASHINGTON_TIME.now(S)?.time||null;
