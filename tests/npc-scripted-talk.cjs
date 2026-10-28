@@ -30,3 +30,20 @@ assert.equal(talk.answer(who('edwinBooth'),'smartphone',at()).kind,'unknown-era'
 assert.match(talk.answer(who('alexiRurik'),'where do you live',at()).reply,/Не знаю/);
 console.log('PASS individual work and observed activity, no invented plans, eras, unknown homes');
 
+
+
+// Boy Mercer is named, speaks in contradictory first-person boasts, and never
+// grants employment, property, money, verified history, or actual appointments.
+const boy={id:'boyMercer',name:'Boy Mercer',occupation:'unattached drifter'};
+const firstBoy=talk.answer(boy,'Where do you live?',{date:'1878-01-03',history:[]});
+const againBoy=talk.answer(boy,'Where do you live?',{date:'1878-01-03',
+ history:[{user:'Where do you live?',reply:firstBoy.reply}]});
+assert.equal(firstBoy.kind,'boy-mercer-unverified-story');
+assert.equal(firstBoy.reliable,false);
+assert.notEqual(firstBoy.reply,againBoy.reply,'Boy tells mutually inconsistent accounts');
+assert.match(firstBoy.reply,/Willard/);
+assert.match(againBoy.reply,/never set foot/i);
+assert.equal(talk.answer(boy,'tell me about your job',{history:[]}).kind,'boy-mercer-unverified-story');
+assert.equal(talk.answer(boy,'what is a smartphone',{date:'1878-01-03'}).kind,'unknown-era',
+ 'Boy cannot actually know future technology');
+console.log('PASS Boy Mercer knowingly unreliable fictional dialogue with persistent contradictions');
