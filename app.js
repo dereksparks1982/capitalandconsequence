@@ -3465,7 +3465,12 @@ function initTitleMapViewer(){
  $('#titleMapZoomOut').onclick=()=>titleMapZoom(1/1.4);
  viewer.addEventListener('click',e=>{if(e.target===viewer)closeTitleMapOrReturnToLocation()});
  viewport.addEventListener('click',e=>{if(e.target===viewport)closeTitleMapLocation()});
- viewport.addEventListener('wheel',e=>{e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+ // Wheel events originating in the location information card belong to its
+ // scrollable text, NOT to the map beneath it. Keep map zoom for map-only input.
+ viewport.addEventListener('wheel',e=>{
+  if(e.target?.closest?.('#titleMapLocationCard'))return;
+  e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY);
+ },{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
  viewport.addEventListener('pointerdown',e=>{
   if(e.target?.closest?.('button,input,select,textarea,a,#titleMapLocationCard'))return;
