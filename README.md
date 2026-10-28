@@ -6,6 +6,16 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## October 28, 2026 · v0.6.89 incremental time-actions build
+
+**Requested desk controls, exact order:** **Step Away From Desk** opens the original Washington map rather than a room; **Go to Lunch** advances the player's authoritative world clock to **12:00 PM the same day** and simulates all intervening production, residents, market and events without moving/eating automatically; **End Business Day** advances the current workday to the **5:00 PM closing bell**, simulating the missing hours without moving or sleeping. At noon or later Go to Lunch does not jump to the next day.
+
+**Incremental time costs:** opening the map **1 minute**, closing the visible map **1 minute** including after successful travel, a cross-location trip **30 minutes**, movement between two different rooms of the same location **1 minute**, successful placement of a wager **1 minute** at horse/dog/motor racing, boxing, underground fights, cockfighting and poker. The poker session duration is additional; an undealt poker popup blocked by the browser is not charged for a wager. No charge for the same room or viewing a map that is already open. All these use the single authoritative saved world clock; residents do not advance the world clock independently.
+
+**Boy Mercer:** Irregular date-dependent routine with frequent card-room games, competent bluffing, wins and losses, rare risky theft/cheating attempts, occasional modest wages unloading liquor from a horse-drawn delivery wagon, and ordinary living expenses. No permanent job, fixed public itinerary, invented house, or supernatural success. His absurd, contradictory stories remain only claims in his personal saved conversations. His outcome ledger belongs only to him; no named player/merchant is charged by invented bets or thefts.
+
+**Validation:** Source syntax and focused scripted timing checks performed; full offline Node suite and direct Ubuntu Electron playthrough are still required for acceptance. This is not a finished release and no GitHub Actions were used.
+
 ## October 28, 2026 development checkpoint · v0.6.89
 
 **Developer panel and map-pin correction.** The developer panel now starts **closed on every launch**, rather than opening automatically. A small **DEV** toggle at bottom left, or **Ctrl+Shift+D**, opens/closes it manually; a player who opens it can leave it visible while travelling. The unwanted dashed/dotted outlines around certain unverified Washington location pins are removed. Their verification metadata, editable labels, pin locations, category filtering and the fixed original map image are unchanged.
