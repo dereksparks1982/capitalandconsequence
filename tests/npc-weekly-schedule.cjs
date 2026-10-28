@@ -16,7 +16,7 @@ for(const id of weekly.registered)for(let day=0;day<7;day++)for(let slot=0;slot<
  const result=weekly.at(def(id),day,slot);
  assert.ok(result.locationId===null||typeof result.locationId==='string');
 }
-assert.equal(weekly.registered.length,22);
+assert.equal(weekly.registered.length,23);
 assert.equal(weekly.at(def('newResident'),1,0).locationId,'factory');
 assert.throws(()=>weekly.at(def('newResident'),7,0));
-console.log('PASS 22 named NPC weekly workdays, weekend routines, and unknown-NPC fallback');
+console.log('PASS 23 named NPC weekly workdays, weekend routines, and unknown-NPC fallback');
