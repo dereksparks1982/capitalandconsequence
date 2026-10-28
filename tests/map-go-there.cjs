@@ -5,7 +5,7 @@ const app=read('app.js'),styles=read('styles.css'),citySource=read('city.js');
 const start=app.indexOf('function enterMapDestination('),end=app.indexOf('function buildTitleMapMarkers(',start);
 assert.ok(start>0&&end>start,'Live room navigation bridge is present');
 const source=app.slice(start,end);
-function scenario({denied=false,restricted=false,destinationRoom=null}={}){
+function scenario({denied=false,restricted=false,destinationRoom=null,failedJourney=false}={}){
  let rendered=0,saved=0,menus=0,journeys=0;
  const map={hidden:false},notice={textContent:''};
  const body={appendChild(el){el.parentNode=this},classList:{entries:new Set(),add(v){this.entries.add(v)},remove(v){this.entries.delete(v)}}};
@@ -14,7 +14,7 @@ function scenario({denied=false,restricted=false,destinationRoom=null}={}){
  const place={id:'star',name:'Star Club',defaultRoom:'star-room'};
  const context={S,
   document:{body,getElementById:id=>({cityRoomOverlay:overlay,titleMapViewer:map,titleMapTravelNote:notice,titleMapLocationTravel:{dataset:{locationId:'star'}}}[id]||null)},
-  window:{FederalElectricCity:{},FE_CITY_ACCESS:{canRoom(){return {ok:!denied,reason:'Invitation required'}}},FE_TRAVEL:{recordProvisional(){journeys++;return true}}},
+  window:{FederalElectricCity:{},FE_CITY_ACCESS:{canRoom(){return {ok:!denied,reason:'Invitation required'}}},FE_TRAVEL:{recordProvisional(){journeys++;return !failedJourney},recordRoomMove(){journeys++;return !failedJourney}}},
   titleMapSelectedLocationId:'star',TITLE_MAP_LOCATIONS:[{id:'star',name:'Star Club'}],titleDevUnlockAllRooms:false,cityRoomSession:{},
   cityLocation:id=>id==='star'?place:null,cityRoom:(id,roomId)=>({id:roomId||'star-room',restricted}),
   mapTravelRestriction:()=>'',currentCityLocation:()=>({...S.currentLocation}),
@@ -36,6 +36,12 @@ assert.equal(salon.session.dev,false,'map navigation never grants dev permission
 assert.equal(salon.saved,1,'actual visit requests autosave');
 assert.equal(salon.journeys,1,'real travel records its journey');
 assert.equal(salon.menus,1,'room menu updated after player privileges restored');
+const stopped=scenario({failedJourney:true});
+assert.equal(stopped.result,false,'Rejected journey cannot teleport player');
+assert.equal(stopped.S.currentLocation.locationId,'factory','Location remains at origin if travel is not paid');
+assert.equal(stopped.map.hidden,false,'Map stays open after travel failure');
+assert.equal(stopped.overlay.hidden,true,'Unpaid destination preview is hidden');
+assert.equal(stopped.saved,0,'No unpaid destination is autosaved');
 const dining=scenario({destinationRoom:'dining-room'});
 assert.equal(dining.result,true);assert.equal(dining.S.currentLocation.roomId,'dining-room');
 const privateDenied=scenario({restricted:true,denied:true,destinationRoom:'madam-office'});
@@ -50,4 +56,4 @@ assert.match(styles,/body\.city-room-open > #cityRoomOverlay/);
 const context={window:{}};vm.runInNewContext(citySource,context);
 assert.equal(context.window.FederalElectricCity.getLocation('star').defaultRoom,'star-room');
 assert.equal(context.window.FederalElectricCity.getRoom('star','star-room').name,'Star Club Salon');
-console.log('PASS: Go There uses known-working renderer with normal room permissions, autosave, room navigation and map closure');
+console.log('PASS: Go There room navigation, normal room permissions, paid time before relocation, rollback and autosave');
