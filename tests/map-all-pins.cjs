@@ -9,6 +9,13 @@ const pins=city.window.FederalElectricCity.mapLocations();
 assert.equal(pins.length,40,'The city registry contains 40 numbered locations');
 assert.deepEqual(Array.from(pins,v=>v.n).sort((a,b)=>a-b),Array.from({length:40},(_,i)=>i+1));
 const byN=n=>pins.find(x=>x.n===n);
+assert.equal(byN(12).id,'home','Pin #12 is Charlie’s own residence');
+assert.equal(byN(12).name,'Home','Pin #12 must be labeled Home, not Our Home');
+const ownership=require('../industrial-empire.js');
+assert.equal(ownership.ownedLocation({characterRoute:'industrialist'},'home'),true,'Charlies Home #12 uses the black owned-pin treatment');
+assert.equal(ownership.ownedLocation({characterRoute:'industrialist'},'factory'),true,'Federal Electric also uses black owned-pin treatment');
+assert.equal(ownership.ownedLocation({characterRoute:'investigator'},'home'),false,'Other playable characters do not automatically own Charlies residence');
+
 assert.equal(byN(4).id,'workingPoker');
 assert.equal(byN(11).id,'universityMaryland');
 assert.equal(byN(14).id,'brokerOffice');
