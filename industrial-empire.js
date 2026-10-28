@@ -95,6 +95,15 @@ function buyShip(save,type){
  return result('Vessel added to merchant fleet.');
 }
 function daysFor(a,b,type){return Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*(type==='steamer'?.85:1.12)))}
+function availableFederalCargo(save){
+ // 1878 Federal Electric manufactures actual telegraph keys and fittings,
+ // not light bulbs; sell and transport only real finished warehouse goods.
+ if(save.componentWorks?.warehouse){
+  const p=Object.entries(save.componentWorks.warehouse).find(([,quantity])=>Number.isSafeInteger(quantity)&&quantity>=5);
+  return p?{source:'componentWorks',productId:p[0],units:5}:null;
+ }
+ return (save.inventoryByGrade?.standard||0)>=100?{source:'legacyBulbs',productId:'standard',units:100}:null;
+}
 function dispatch(save,id,dest,cargo,insured){
  const e=ensure(save),f=e.fleet,ship=f.ships.find(v=>v.id===id);
  if(!ship||ship.status!=='in-port'||!f.ports.includes(dest)||dest===ship.port)return result('Unavailable: ship or established route not ready.');
@@ -102,13 +111,17 @@ function dispatch(save,id,dest,cargo,insured){
  if(!['freight','electric'].includes(cargo))return result('Unavailable: unknown cargo.');
  const charge=ship.type==='steamer'?210:110,insurance=insured?Math.ceil(PRICE[ship.type]*.0075):0;
  if(f.cash<charge+insurance)return result('Unavailable: fleet treasury needs '+money(charge+insurance)+' for fees, coal and insurance.');
- if(cargo==='electric'&&(save.characterRoute!=='industrialist'||(save.inventoryByGrade?.standard||0)<100))
-  return result('Unavailable: Federal Electric needs 100 uncommitted standard goods in its warehouse.');
- if(cargo==='electric')save.inventoryByGrade.standard-=100;
+ const consignment=cargo==='electric'?availableFederalCargo(save):null;
+ if(cargo==='electric'&&(save.characterRoute!=='industrialist'||!consignment))
+  return result('Unavailable: Federal Electric must have five real 1878 finished components, or 100 later-era standard goods, in its warehouse.');
+ if(consignment){
+  if(consignment.source==='componentWorks')save.componentWorks.warehouse[consignment.productId]-=consignment.units;
+  else save.inventoryByGrade.standard-=consignment.units;
+ }
  f.cash-=charge+insurance;ledger(f,save.gameDate,'Departure, port fees'+(insured?', hull insurance':''),-charge-insurance);
  const from=ship.port,days=daysFor(from,dest,ship.type);ship.status='at-sea';
- ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0};
- event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?'100 Federal Electric goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
+ ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0,consignment};
+ event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?consignment.units+' '+consignment.productId+' goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
  root.FE_SKILLS?.practice?.(save,'logistics',{amount:.28,difficulty:51,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Scheduling cargo shipment'});
  root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.17,difficulty:43,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Cargo manifest review'});
  return result('Voyage begun. Expected '+ship.trip.eta+'.');
@@ -133,11 +146,21 @@ function verifyLead(save,name){
  return result('New trade route established: '+name+'.');
 }
 function sellElectric(save,port){
- const e=ensure(save),f=e.fleet;
- if((f.electric[port]||0)<100||save.paused||save.phase!=='day')return result('Unavailable: no delivered components or commercial offices are closed.');
- f.electric[port]-=100;save.companyCash+=15;
- event(e,save.gameDate,'Consignee in '+port+' paid Federal Electric $15.00 for 100 delivered components.');
- return result('100 components sold at '+port+'; $15.00 credited to Federal Electric, not to the shipping line.');
+ const e=ensure(save),f=e.fleet,stock=f.electric[port];
+ if(!Array.isArray(stock)||!stock.length||save.paused||save.phase!=='day')return result('Unavailable: no delivered components or commercial offices are closed.');
+ const cargo=stock[0];
+ const price=cargo.source==='componentWorks'?root.FE_COMPONENT_WORKS?.PRODUCTS?.[cargo.productId]?.unitPriceCents||0:15;
+ if(price<=0)return result('Unavailable: consignee has no valid product quotation.');
+ const cents=cargo.source==='componentWorks'?Math.round(cargo.units*price*.8):Math.round(15*100);
+ if(cargo.source==='componentWorks'){
+  if(!save.componentWorks)return result('Unavailable: component works books unavailable.');
+  save.componentWorks.cashCents+=cents;
+  save.componentWorks.ledger.push({kind:'export-consignment',date:save.gameDate,productId:cargo.productId,units:cargo.units,revenueCents:cents});
+ }else save.companyCash+=cents/100;
+ stock.shift();
+ event(e,save.gameDate,'Consignee in '+port+' paid Federal Electric '+money(cents/100)+' for '+cargo.units+' '+cargo.productId+' goods, credited to its own company books.');
+ root.FE_SKILLS?.practice?.(save,'salesmanship',{amount:.25,difficulty:46,event:'export-sale:'+port+':'+save.gameDate,source:'Overseas Federal Electric sale'});
+ return result(cargo.units+' '+cargo.productId+' goods sold at '+port+' for '+money(cents/100)+'.');
 }
 function arrive(e,ship,date){
  const v=ship.trip;if(!v)return;const key=ship.id+'|'+v.depart+'|'+v.to+'|'+v.cargo;
@@ -152,7 +175,7 @@ function arrive(e,ship,date){
  const damage=draw<risk+piracy?Math.round(8+roll(key+'|damage')*37):Math.round(1+roll(key+'|wear')*4);
  ship.condition=Math.max(7,ship.condition-damage);ship.port=v.to;ship.status='in-port';ship.trip=null;ship.experience++;
  if(v.cargo==='freight'){e.fleet.cash+=v.fee;ledger(e.fleet,date,'Completed merchant freight: '+v.to,v.fee)}
- else e.fleet.electric[v.to]=(e.fleet.electric[v.to]||0)+100;
+ else {if(!Array.isArray(e.fleet.electric[v.to]))e.fleet.electric[v.to]=[];e.fleet.electric[v.to].push(v.consignment)}
  event(e,date,ship.name+' arrived in '+v.to+'; '+(v.cargo==='freight'?'freight fee '+money(v.fee):'Federal Electric goods await consignee')+'. Hull '+ship.condition+'%.');
  const candidates=weather.leads.filter(p=>!e.fleet.ports.includes(p)&&!e.fleet.leads.some(x=>x.port===p));
  if(candidates.length&&roll(key+'|contact')<Math.min(.72,.38+ship.experience*.04)){
@@ -201,11 +224,11 @@ function render(save,onChange){
  for(const ship of f.ships){
   html+='<article class="empire-ship"><strong>'+esc(ship.name)+'</strong> · '+esc(ship.status==='lost'?'LOST AT SEA':ship.status==='at-sea'?'AT SEA':'IN PORT')+' · Hull '+ship.condition.toFixed(0)+'% · '+esc(ship.status==='at-sea'?ship.trip.from+' → '+ship.trip.to+' · due '+ship.trip.eta:ship.port);
   if(ship.status==='in-port'){
-   html+='<div class="empire-voyage"><label>Destination <select data-ship-port="'+ship.id+'">'+f.ports.filter(x=>x!==ship.port).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label><label>Cargo <select data-ship-cargo="'+ship.id+'"><option value="freight">Merchant Freight</option><option value="electric">100 Federal Electric standard goods</option></select></label><label><input type="checkbox" data-ship-insure="'+ship.id+'"> Hull insurance</label>'+button('dispatch:'+ship.id,'Dispatch Ship')+button('repair-ship:'+ship.id,'Shipyard Repair')+'</div>';
+   html+='<div class="empire-voyage"><label>Destination <select data-ship-port="'+ship.id+'">'+f.ports.filter(x=>x!==ship.port).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label><label>Cargo <select data-ship-cargo="'+ship.id+'"><option value="freight">Merchant Freight</option><option value="electric">Federal Electric finished components (real inventory)</option></select></label><label><input type="checkbox" data-ship-insure="'+ship.id+'"> Hull insurance</label>'+button('dispatch:'+ship.id,'Dispatch Ship')+button('repair-ship:'+ship.id,'Shipyard Repair')+'</div>';
   }
   html+='</article>';
  }
- for(const [port,qty]of Object.entries(f.electric))if(qty>=100)html+='<p>Consigned Federal Electric goods in '+esc(port)+': '+qty+' components. '+button('sell-electric:'+port,'Complete local sale')+'</p>';
+ for(const [port,goods]of Object.entries(f.electric))if(Array.isArray(goods)&&goods.length)html+='<p>Consigned Federal Electric goods in '+esc(port)+': '+goods.map(g=>g.units+' '+g.productId).join(', ')+'. '+button('sell-electric:'+port,'Complete local sale')+'</p>';
  html+='<h4>Captain & Superintendent Reports</h4><div class="empire-log">'+e.log.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div><p class="fine">Voyages follow the in-game calendar. Ships incur crew and hull upkeep, sometimes require repairs, may suffer storm loss or piracy on historically exposed routes, and occasionally uncover commercial leads. Losses are not reversed automatically.</p>';
  host.innerHTML=html;
  host.onclick=event=>{
