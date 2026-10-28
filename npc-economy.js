@@ -17,7 +17,7 @@
   samuelTilden:{occupation:'president',workplace:'whiteHouse',opening:9000,pay:0,betting:0},
   madamStar:{occupation:'club proprietor',workplace:'star',opening:8500,pay:185,betting:16},
   foremanSullivan:{occupation:'workshop assistant',workplace:'factory',opening:2100,pay:0,betting:9},
-  boyMercer:{occupation:'self-described errand runner',workplace:null,opening:0,pay:0,betting:0,credit:false,monetary:false},
+  boyMercer:{occupation:'occasional liquor delivery laborer and gambler',workplace:null,opening:340,pay:0,betting:0,credit:false,monetary:false},
   eddieDoyle:{occupation:'bookmaker',workplace:'races',opening:3800,pay:120,betting:36},
   inspectorHayes:{occupation:'police inspector',workplace:'metropolitanPolice',opening:4100,pay:125,betting:12},
   chenMei:{occupation:'merchant',workplace:'oldChinatown',opening:2900,pay:95,betting:8},
@@ -61,6 +61,80 @@
   const v=Math.abs(Math.round(cents));
   return (cents<0?'−':'')+'$'+(v/100).toFixed(2);
  }
+ function boyAction(def,actor,context,ec,tag){
+  // A cash-strapped card sharp. Only one financial settlement per actual
+  // calendar period; the global clock remains controlled solely by the player.
+  // Opponents are anonymous card-room patrons; no named NPC or player is robbed
+  // or charged without a shared counterparty transaction.
+  const venue=context.rest?null:context.defaultLocation||null;
+  let kind='personal',activity=context.rest?null:context.defaultActivity||null;
+  let amount=0,stake=0,caught=false,description='Keeping out of sight; where he sleeps is unknown.';
+  const isDelivery=venue==='secondNightclub'&&context.weekday===3&&context.slot===1;
+  if(isDelivery){
+   const wages=80+hash(tag+'|dray-wages')%56;
+   ec.balanceCents+=wages;ec.earnedCents+=wages;ec.shiftsWorked++;
+   kind='odd-job';amount=wages;
+   activity='unloading casks and crates from the tavern liquor delivery wagon';
+   description='Earned a small cash payment for unloading a delivery wagon. No standing employment.';
+  }else if(venue==='workingPoker'&&ec.balanceCents>=18){
+   stake=Math.min(ec.balanceCents,24+hash(tag+'|stake')%90);
+   const roll=hash(tag+'|cards')%100,skill=64;
+   const win=roll<skill;
+   amount=win?Math.round(stake*(.5+(hash(tag+'|reward')%81)/100)):-stake;
+   // He sometimes palms cards or cheats; getting caught costs him money.
+   const cheat=hash(tag+'|cheat')%100<24;
+   caught=cheat&&hash(tag+'|noticed')%100<17;
+   if(caught)amount=-stake;
+   ec.balanceCents+=amount;ec.wageredCents+=stake;
+   if(amount>0)ec.betsWon++;else ec.betsLost++;
+   kind=caught?'card-cheating-caught':cheat?'card-cheating':win?'card-win':'card-loss';
+   activity=caught?'being challenged over a suspicious hand':cheat?'concealing a crooked card trick':
+    win?'bluffing a card-table opponent into folding':'losing money at cards';
+   description=caught?'Caught trying to cheat at an ordinary card table and lost his stake.':
+    cheat?'Attempted a crooked hand; his table winnings or losses were recorded.':
+    win?'Won a small card-table pot with a well-timed bluff.':'Lost a hand at the card table.';
+  }else if(venue==='races'&&ec.balanceCents>=20){
+   stake=Math.min(ec.balanceCents,20+hash(tag+'|racing-stake')%55);
+   const win=hash(tag+'|race')%100<39;
+   amount=win?Math.round(stake*(.8+hash(tag+'|race-pay')%31/100)):-stake;
+   ec.balanceCents+=amount;ec.wageredCents+=stake;
+   if(win)ec.betsWon++;else ec.betsLost++;
+   kind=win?'wager-win':'wager-loss';
+   activity='following a wager at the race grounds';
+   description=win?'Collected modest winnings on a wager.':'Lost a small wager at the races.';
+  }else if(venue&&hash(tag+'|lift')%100<28){
+   // Petty theft is risky and not a reliable source of income. These are
+   // minor amounts from unnamed passersby; no imaginary named victim records.
+   const success=hash(tag+'|lift-result')%100<34;
+   caught=!success&&hash(tag+'|caught-lifting')%100<29;
+   amount=success?(8+hash(tag+'|coins')%27):caught?-Math.min(ec.balanceCents,15):0;
+   ec.balanceCents+=amount;
+   kind=success?'petty-theft':caught?'petty-theft-caught':'petty-theft-failed';
+   activity=success?'slipping away with small change':caught?'fleeing after an attempted theft':'looking for an easy mark';
+   description=success?'Stole loose change from an unnamed passerby.':
+    caught?'Failed at a theft and paid a small immediate penalty.':'Tried to steal and obtained nothing.';
+  }else if(venue){
+   description='Hanging about with no steady employment; his claims are not evidence.';
+  }
+  // Modest living expenses make occasional wins a necessity, not a license to
+  // accumulate limitless wealth, and are not fictitiously charged to a player.
+  if(context.slot===3&&ec.balanceCents>0){
+   const spend=Math.min(ec.balanceCents,19+hash(tag+'|meals')%28);
+   ec.balanceCents-=spend;amount-=spend;
+   description+=' Spent a little of his own cash on food and necessities.';
+  }
+  ec.balanceCents=clamp(ec.balanceCents,0,10000000);
+  const action={key:context.key,date:context.date,slot:context.slot,kind,
+   locationId:venue,activity,amountCents:amount,stakeCents:stake,
+   cheatingDetected:caught,marketReceiptId:null,
+   // His speeches and private activity claims should not be treated as facts
+   // just because he invented a tale in dialogue with the protagonist.
+   publicLine:'Boy Mercer claims it was his lucky day, but the story changes every time.',
+   description};
+  ec.lastKey=context.key;ec.lastAction=action;ec.history.push(action);
+  if(ec.history.length>24)ec.history.splice(0,ec.history.length-24);
+  return {repeated:false,action};
+ }
  function actionFor(def,actor,context){
   if(!def||!actor||!context||typeof context.key!=='string'||!context.key)throw Error('NPC action context required');
   const cfg=SETTINGS[def.id]||{occupation:def.occupation||'worker',workplace:null,opening:2200,pay:90,betting:12};
@@ -71,6 +145,7 @@
      typeof context.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(context.date))
    throw Error('Action needs an observed saved-calendar period');
   const tag=String(context.seed||'local')+'|'+context.key+'|'+def.id;
+  if(def.id==='boyMercer')return boyAction(def,actor,context,ec,tag);
   let locationId=context.rest?null:context.defaultLocation||null;
   let activity=context.rest?null:context.defaultActivity||null;
   let amount=0,kind='rest',description='Taking personal time away from public work.';
