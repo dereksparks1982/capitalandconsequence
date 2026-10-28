@@ -1,3 +1,12 @@
+## October 28, 2026 owner correction · anchored Washington pins
+
+- [x] Remove **white anchor dots, leader lines, and dynamic collision-spreading**. User rejected pins jumping between zoom levels.
+- [x] Numbered map pins stay at their **assigned plotted coordinates** through pan, zoom, filters and open location cards. Preserve original Washington artwork, 40-pin directory, edited names and historical x/y.
+- [x] For overlapping pins, bring hovered/focused/selected marker labels above neighbors rather than pushing markers elsewhere. Directory still selects all 40.
+- [x] Three known off-print provisional destinations remain edge-docked with warnings, pending real map placement; do not invent sites.
+- [x] Revise map source regressions to require fixed anchors and forbid white-dot/tether rendering.
+- [ ] Still requires complete local Node QA and owner-tested Ubuntu Electron confirmation. No GitHub Actions.
+
 ## 28 October 2026 · v0.6.90-dev, not accepted
 - [x] Save-backed **60** individual 0–100 skills across all four playable characters, role-starting values and a **Journal → Skills** directory. Fishing and selected industrial/maritime actions now earn skill; other categories await their actual activities, not free XP.
 - [x] Full unfolded paper map lying on the career desk. Click it to enter the original fixed Washington map with 40 numbered, editable pins. Hover names stay in front; mapped owned property pins appear black. No new unapproved geographic map pins or map art.
