@@ -2872,12 +2872,9 @@ const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
 });
 // Printed Washington In and Out Guide raster: grid 1-30 / A-R.
 function titleMapGridAt(x,y){
- const px=x*2048,py=y*1159;
- // Coordinate origin/spacing from the owner's fixed 2048x1159 scan.
- if(px<286||px>1778||py<30||py>864)return 'Outside map';
- const col=Math.max(1,Math.min(30,Math.round((px-323)/48.5)+1));
- const row=Math.max(0,Math.min(17,Math.round((py-59)/45.55)));
- return col+'-'+String.fromCharCode(65+row);
+ // City registry owns the ONLY printed 1–30 / A–R coordinate transform.
+ // The 1938 guide artwork is fixed through every playable year.
+ return window.FederalElectricCity.mapGridReference(x,y);
 }
 function titleMapMatchesSearch(location){
  if(!titleMapSearchQuery)return true;
