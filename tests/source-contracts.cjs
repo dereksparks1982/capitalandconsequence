@@ -7,6 +7,8 @@ const assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8');
 const pkg=JSON.parse(read('package.json'));
+const mandatoryTest=rel=>pkg.scripts['test:source']==='node tests/run-all.cjs' && fs.existsSync(path.join(root,rel)) && rel.startsWith('tests/') && rel.endsWith('.cjs');
+
 const citySource=read('city.js'),appSource=read('app.js');
 const housingSource=read('housing.js'),effectsSource=read('personal-effects.js'),venuesSource=read('venue-opportunities.js');
 const dollSource=read('paper-doll.js'),index=read('index.html');
@@ -63,7 +65,7 @@ check(!pins.some(p=>p.id==='hillsdale-butcher'||p.id==='hillsdale-market'),'Hill
 check(require('../city-access.js').canRoom(city,{kind:'npc',id:'williamRapley',onDuty:true},'nationalTheatre','manager-office','1878-01-03').ok,'William Rapley alone manages the theatre office');
 check(!require('../city-access.js').canRoom(city,{kind:'npc',id:'eliCrowe',route:'criminal'},'secondNightclub','proprietor-office','1878-01-03').ok,'Eli does not control Lui private office');
 check(require('../city-access.js').canRoom(city,{kind:'npc',id:'luiDelacroix'},'secondNightclub','proprietor-office','1878-01-03').ok,'Lui owns his cabaret and can access his office');
-check(pkg.scripts['test:source'].includes('tests/hillsdale-commerce.cjs')&&pkg.scripts['test:source'].includes('tests/cash-custody.cjs'),'New shop and money modules are included in offline regression suite');
+check(mandatoryTest('tests/hillsdale-commerce.cjs')&&mandatoryTest('tests/cash-custody.cjs'),'New shop and money modules are included in offline regression suite');
 check(city.getLocation('home').map.n===12,'Home is marker 12');
 check(city.getLocation('hillsdale').map.n===13&&city.getLocation('hillsdale').name==='Hillsdale / Barry Farm','Barry Farm is marker 13 under stable hillsdale identifier');
 check(city.getLocation('barryFarm')===null,'Duplicate Barry Farm registry entry removed');
@@ -284,27 +286,27 @@ check(appSource.includes("CAMPAIGN_START_DATE='1878-01-02'")&&appSource.includes
 check(appSource.includes('workers:1,machinery:92,workforce:{present:1')&&appSource.includes('window.FE_WORKSHOP_STAFF.settleDay(S)'),'1878 owner starts with one assistant and real single payroll');
 check(index.indexOf('workshop-staff.js?v=')<index.indexOf('app.js?v='),'Assistant payroll loads before gameplay');
 check(read('component-works.js').includes('minutesRequired=p.minutes*units,laborCostCents=0'),'Owner assembly does not pay imaginary second wages');
-check(pkg.scripts['test:source'].includes('tests/workshop-staff.cjs'),'Assistant payroll invariants belong to source QA');
-check(pkg.scripts['test:source'].includes('tests/workshop-closing.cjs'),'Exact 5 PM workshop cash and closing ledger integration required');
+check(mandatoryTest('tests/workshop-staff.cjs'),'Assistant payroll invariants belong to source QA');
+check(mandatoryTest('tests/workshop-closing.cjs'),'Exact 5 PM workshop cash and closing ledger integration required');
 check(appSource.includes('window.advanceWorkshopTime=')&&appSource.includes('window.finishWorkshopClosingBell=')&&appSource.includes('deferWorkshopClose&&S.componentWorks&&remaining===0'),'5 PM waits for committed component receipt before day close');
 check(read('component-works-panel.js').includes('S.componentTransactionSequence=Math.max(S.componentTransactionSequence||0,sequence)'),'Closing-bell autosave includes transaction token sequence');
 check(appSource.includes('componentWorks:window.FE_COMPONENT_WORKS?.createOpeningOrders?.(window.FE_COMPONENT_WORKS?.createState?.(CAMPAIGN_START_DATE))'),'Component inventory lives inside the player save');
-check(pkg.scripts['test:source'].includes('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
-check(pkg.scripts['test:source'].includes('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
+check(mandatoryTest('tests/component-works-live.cjs'),'1878 gameplay time/transactions are mandatory QA');
+check(mandatoryTest('tests/component-works.cjs'),'Separate 1878 transactional component factory regression tests are required');
 check(index.includes('npc-needs.js?v=')&&index.indexOf('npc-weekly-schedule.js?v=')<index.indexOf('npc-needs.js?v=')&&index.indexOf('npc-needs.js?v=')<index.indexOf('npc-ai.js?v='),'Personal needs load after weekly plans and before NPC agency');
 check(index.includes('npc-household-receipts.js?v=')&&
  index.indexOf('washington-commerce.js?v=')<index.indexOf('npc-household-receipts.js?v=')&&
  index.indexOf('npc-household-receipts.js?v=')<index.indexOf('npc-ai.js?v='),
  'Paid Washington market acquisitions load before resident simulation');
-check(pkg.scripts['test:source'].includes('tests/npc-household-receipts.cjs'),
+check(mandatoryTest('tests/npc-household-receipts.cjs'),
  'Real purchases, retailer stocks, player money and no-fictional-meal rules have offline regression coverage');
 check(read('npc-ai.js').includes('FE_NPC_HOUSEHOLD_RECEIPTS?.sync?.(S,def.id)'),
  'Each resident gains only their own actually paid market receipt evidence');
 
-check(pkg.scripts['test:source'].includes('tests/npc-needs.cjs'),'Rest, hunger, mood and reload must have an offline regression suite');
+check(mandatoryTest('tests/npc-needs.cjs'),'Rest, hunger, mood and reload must have an offline regression suite');
 check(index.includes('npc-residences.js?v=')&&index.indexOf('city-access.js?v=')<index.indexOf('npc-residences.js?v=')&&
  index.indexOf('npc-residences.js?v=')<index.indexOf('npc-ai.js?v='),'Nightly NPC lodging checks normal restricted room authority');
-check(pkg.scripts['test:source'].includes('tests/npc-residences.cjs'),'Private bedroom occupancy and permission tests are mandatory');
+check(mandatoryTest('tests/npc-residences.cjs'),'Private bedroom occupancy and permission tests are mandatory');
 check(read('npc-ai.js').includes('FE_NPC_RESIDENCES?.nightStay?.(def,c,window.FederalElectricCity)'),'NPC calendar resolves verified owned/rented overnight rooms only');
 check(read('workshop-presence.js').includes("actor.roomId==='workers-lodging'"),'Work-shift projection never erases a sleeping renter');
 
@@ -316,16 +318,16 @@ check(index.includes('npc-social-consequences.js?v=')&&
  index.indexOf('npc-social.js?v=')<index.indexOf('npc-social-consequences.js?v=')&&
  index.indexOf('npc-social-consequences.js?v=')<index.indexOf('npc-ai.js?v='),
  'Real private encounters update mood and memory after social and memory services load');
-check(pkg.scripts['test:source'].includes('tests/npc-social-consequences.cjs'),
+check(mandatoryTest('tests/npc-social-consequences.cjs'),
  'Authentic room meetings have offline privacy, mood and replay regression coverage');
 check(read('npc-ai.js').includes('FE_NPC_SOCIAL_CONSEQUENCES?.apply?.(S,w,record)'),
  'NPC social consequences consume only events returned by actual meeting engine');
 check(index.includes('npc-dialogue.js?v=')&&index.indexOf('npc-dialogue.js?v=')<index.indexOf('npc-ai.js?v='),'Dialogue runtime loads before NPC conversation UI');
 check(index.includes('sky-cycle.js?v=')&&index.includes('vendor/astronomy-engine/astronomy.browser.js?v='),'Astronomical game HUD loads its pinned MIT engine');
 check(index.includes('id="washingtonSky"')&&index.includes('id="washingtonWeather"')&&index.includes('id="washingtonSunMoon"'),'Weather and moon cycle have compact persistent bar readouts');
-check(pkg.scripts['test:source'].includes('tests/sky-cycle.cjs'),'Moon, sun and Washington eclipse regression suite mandatory');
+check(mandatoryTest('tests/sky-cycle.cjs'),'Moon, sun and Washington eclipse regression suite mandatory');
 check(index.includes('world-canon.js?v=')&&index.indexOf('world-canon.js?v=')<index.indexOf('npc-dialogue.js?v='),'Dated alternate history is injected before dialogue prompts');
-check(pkg.scripts['test:source'].includes('tests/npc-dialogue.cjs')&&pkg.scripts['test:source'].includes('tests/npc-llm.cjs'),'Unscripted language and loopback test suites included');
+check(mandatoryTest('tests/npc-dialogue.cjs')&&mandatoryTest('tests/npc-llm.cjs'),'Unscripted language and loopback test suites included');
 check(read('npc-ai.js').includes('converseAtLocation(visitor.id,words)'),'In-person residents accept arbitrary typed conversation');
 check(read('desktop/preload.cjs').includes('FE_NPC_LLM')&&read('desktop/main.cjs').includes('fe:llm:chat'),'Sandboxed local-model bridge wired');
 check(pkg.build.files.includes('desktop/npc-llm.cjs'),'Native local-model transport included in future desktop package');
@@ -335,15 +337,15 @@ check(read('npc-ai.js').includes('FE_NPC_SOCIAL?.meet?.'),'NPC simulation record
 check(index.includes('npc-witness.js?v=')&&index.indexOf('npc-witness.js?v=')<index.indexOf('npc-ai.js?v='),'First-hand witness journal engine loads before the NPC simulator');
 check(index.includes('npc-rumors.js?v=')&&index.indexOf('npc-rumors.js?v=')<index.indexOf('npc-ai.js?v='),'Rumor privacy and trust policy loads before NPC execution');
 check(read('npc-ai.js').includes('FE_NPC_RUMORS?.coPresent?.(from,to)'),'Rumors require identical actual rooms');
-check(pkg.scripts['test:source'].includes('tests/npc-rumors.cjs'),'Rumor relationship and privacy tests are part of mandatory QA');
+check(mandatoryTest('tests/npc-rumors.cjs'),'Rumor relationship and privacy tests are part of mandatory QA');
 check(read('npc-ai.js').includes('recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.'),'New meetings may become personally witnessed journal events');
-check(pkg.scripts['test:source'].includes('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
+check(mandatoryTest('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
 check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
 check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
 check(index.includes('npc-life-plans.js?v=')&&
  index.indexOf('npc-agency.js?v=')<index.indexOf('npc-life-plans.js?v=')&&
  index.indexOf('npc-life-plans.js?v=')<index.indexOf('npc-ai.js?v='),'Personal goal commitments load after agency and before NPC simulation');
-check(pkg.scripts['test:source'].includes('tests/npc-life-plans.cjs'),'Private NPC plans have replay and social-proof regression coverage');
+check(mandatoryTest('tests/npc-life-plans.cjs'),'Private NPC plans have replay and social-proof regression coverage');
 check(read('npc-ai.js').includes('FE_NPC_LIFE_PLANS?.commit?.')&&
  read('npc-ai.js').includes('FE_NPC_LIFE_PLANS?.record?.')&&
  read('npc-ai.js').includes('reflectActualMeetings(w,meetings,key)'),'NPC plans receive decisions, true activity receipts and only recorded meetings');
@@ -510,8 +512,8 @@ const oldCalendar={};check(bridge.migrate(oldCalendar,{gameDate:'1938-09-30',day
 check(appSource.includes('window.FE_WASHINGTON_TIME.advance(S,delta,kind)')&&appSource.includes("advanceWorldSimulation(1,false,'tick')"),'Player action and active game tick use same saved clock');
 check(index.includes('washington-time.js?v=')&&index.indexOf('time-transactions.js?v=')<index.indexOf('washington-time.js?v=')&&index.indexOf('washington-time.js?v=')<index.indexOf('app.js?v='),'One Washington clock gateway loads before the game');
 check(!appSource.includes("handoff?.(S,'close-business'")&&!appSource.includes('S.dayRemaining=Math.max(0,S.dayRemaining-1)'),'No clock-jump handoffs or real-hour phase expiry');
-check(pkg.scripts['test:source'].includes('tests/washington-time.cjs'),'One-world-time and midnight regression tests are mandatory');
-check(pkg.scripts['test:source'].includes('tests/washington-pacing.cjs'),'NPC and clock pacing regressions are mandatory');
+check(mandatoryTest('tests/washington-time.cjs'),'One-world-time and midnight regression tests are mandatory');
+check(mandatoryTest('tests/washington-pacing.cjs'),'NPC and clock pacing regressions are mandatory');
 check(appSource.includes('secondsToBoundary(S)')&&appSource.includes('window.FE_NPC_AI?.syncClock?.()'),'Long time skips replay crossed NPC schedule slots');
 check(read('journey-planner.js').includes('window.advanceWorldTime?.(gameMinutes*60,true)'),'Travel follows the player clock and NPC catch-up');
 check(!appSource.includes('advanceProduction(window.FE_WASHINGTON_TIME.rate(S),false)'),'No acceleration in passive factory work');
@@ -608,23 +610,23 @@ check(index.indexOf('npc-daybook.js?v=')<index.indexOf('npc-ai.js?v='),'Real cal
 check(index.indexOf('npc-economy.js?v=')>index.indexOf('npc-agency.js?v=')&&index.indexOf('npc-economy.js?v=')<index.indexOf('npc-ai.js?v='),'Economic NPC action planner is loaded between intelligence and runtime');
 check(read('npc-ai.js').includes('FE_NPC_ECONOMY.actionFor')&&read('npc-ai.js').includes('converseAtLocation(visitor.id,words)'),'NPC economic lives and conversation-card replies share character identity');
 check(index.indexOf('city-access.js?v=')<index.indexOf('npc-mobility.js?v='),'Shared room permission rules load before autonomous travel');
-check(pkg.scripts['test:source'].includes('tests/city-access.cjs'),'Explicit room permission regression test required');
+check(mandatoryTest('tests/city-access.cjs'),'Explicit room permission regression test required');
 check(index.indexOf('npc-mobility.js?v=')<index.indexOf('npc-ai.js?v=')&&index.includes('npc-mobility.js?v='),'NPC room access loads before scheduling');
 check(npc.list().some(x=>x.id==='alexiRurik'&&x.language==='ru'),'Alexi Rurik speaks only Russian');
-check(pkg.scripts['test:source'].includes('tests/npc-economy.cjs'),'Economic idempotence regression tests required');
+check(mandatoryTest('tests/npc-economy.cjs'),'Economic idempotence regression tests required');
 check(index.includes('murder-cases.js?v=')&&index.includes('detective-cases.js?v='),'Investigator case engine and runtime are loaded');
 check(index.indexOf('murder-cases.js?v=')<index.indexOf('detective-cases.js?v=')&&index.indexOf('detective-cases.js?v=')<index.indexOf('career-shell.js?v='),'Case engine loads before desk wiring');
 check(!read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career-shell.js').includes('Detective casework is not authorized at rookie rank.'),'Rookie patrolman has no investigator casebook access');
 check(read('career-shell.css').includes('.detective-case-person'),'Casebook responsive styles exist');
 check(read('README.md').includes('[LEGAL.md](LEGAL.md)')&&read('LEGAL.md').includes('Contact'),'README and GitHub legal contact notice registered');
-check(pkg.scripts['test:source'].includes('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
+check(mandatoryTest('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
 check(city.getRoom('secondNightclub','doorman-post')?.restricted===true,'Eli’s workplace is an authorized staff room');
 check(city.getRoom('secondNightclub','proprietor-office')?.restricted===true,'Proprietor office stays restricted');
 check(routes.get('criminal').startingRoomId==='doorman-post','Eli starts at his assigned workroom');
 check(require('../city-access.js').canRoom(city,{route:'criminal'},'secondNightclub','doorman-post','1890-01-02').ok,'Doorman can access his shift post');
 check(!require('../city-access.js').canRoom(city,{route:'criminal'},'secondNightclub','proprietor-office','1890-01-02').ok,'Unknown doorman cannot open proprietor office');
-check(pkg.scripts['test:source'].includes('tests/doorman-duty.cjs'),'Source QA executes doorman wage tests');
-check(pkg.scripts['test:source'].includes('tests/orderly-duty.cjs'),'Source QA tests Edmund Wardman live employment');
+check(mandatoryTest('tests/doorman-duty.cjs'),'Source QA executes doorman wage tests');
+check(mandatoryTest('tests/orderly-duty.cjs'),'Source QA tests Edmund Wardman live employment');
 check(index.includes('orderly-duty.js?v=')&&index.includes('orderly-ui.js?v='),'Edmund has a local institution duty engine and room/desk UI');
 check(read('career-shell.js').includes('FE_ORDERLY_UI?.refresh?.()'),'Shared career desk refreshes Edmund work ledger');
 check(city.getRoom('metropolitanPolice','station-duty-room')?.restricted===true,'Police station has a restricted patrol duty room');
@@ -635,7 +637,7 @@ check(require('../patrol-duty.js').STREETS.length===1&&require('../patrol-duty.j
 check(read('app.js').includes('FE_PATROL?.travel?.(S,entry.id)')&&read('app.js').includes('FE_PATROL?.travel?.(S,location.id)'), 'Map and direct travel enforce active patrol limits');
 check(require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','station-duty-room','1890-01-02').ok,'Officer may use his own duty room');
 check(!require('../city-access.js').canRoom(city,{route:'investigator'},'metropolitanPolice','sergeant-office','1890-01-02').ok,'Officer cannot enter his superior’s private office');
-check(pkg.scripts['test:source'].includes('tests/patrol-duty.cjs'),'Source QA includes actual patrol loop');
+check(mandatoryTest('tests/patrol-duty.cjs'),'Source QA includes actual patrol loop');
 check(city.getLocation('governmentHospital')?.name==='District General Hospital'&&city.getLocation('blackwoodAsylum')?.category==='government','One government District Asylum and a separate general hospital are registered');
 check(city.getLocation('governmentHospital').mapPlacement==='map-anchored'&&city.getLocation('governmentHospital').mapEvidence.includes('St. Elizabeths'),'Hospital uses the printed source-map artwork anchor, not an invented coordinate');
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
@@ -645,7 +647,7 @@ check(appSource.includes('if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!w
 check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').includes('document.body.appendChild(devPanel)'),'Dev panel stays accessible throughout the live game');
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
-check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
+check(mandatoryTest('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
 check(city.mapLocations().length===40,'All forty numbered locations include broker 14 and future theatre/bank sites');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
@@ -661,29 +663,29 @@ check(read('living-characters.js').includes("id==='wardman'"),'Wardman has disti
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
 
 check(index.includes('workshop-operations.js?v=')&&index.indexOf('workshop-operations.js?v=')<index.indexOf('app.js?v='),'Real workshop operations loaded before game');
-check(pkg.scripts['test:source'].includes('tests/workshop-operations.cjs'),'Shift/breakdown regression required in full Source QA');
+check(mandatoryTest('tests/workshop-operations.cjs'),'Shift/breakdown regression required in full Source QA');
 
 check(index.includes('washington-commerce.js?v=')&&index.indexOf('washington-commerce.js?v=')<index.indexOf('workshop-staff.js?v='),'Local economy loads before paid assistant');
-check(pkg.scripts['test:source'].includes('tests/washington-commerce.cjs'),'Local economy purchases have executable source QA');
+check(mandatoryTest('tests/washington-commerce.cjs'),'Local economy purchases have executable source QA');
 
 check(index.includes('livery-trade.js?v=')&&index.includes('livery-ui.js?v='),'Player can shop at physical rival liveries');
-check(pkg.scripts['test:source'].includes('tests/livery-trade.cjs'),'Physical livery transactions have mandatory regression test');
+check(mandatoryTest('tests/livery-trade.cjs'),'Physical livery transactions have mandatory regression test');
 
 check(index.includes('workshop-presence.js?v=')&&index.indexOf('workshop-presence.js?v=')<index.indexOf('npc-ai.js?v='),'Sullivan minute projection loads before AI');
-check(pkg.scripts['test:source'].includes('tests/workshop-presence.cjs'),'Minute-level shift projections are tested');
+check(mandatoryTest('tests/workshop-presence.cjs'),'Minute-level shift projections are tested');
 
 check(index.includes('horse-care.js?v=')&&index.indexOf('horse-care.js?v=')<index.indexOf('app.js?v='),'Horse care loads before day-close settlements');
 check(appSource.includes('window.FE_HORSE_CARE?.settleDay?.(S)'),'Player day close settles daily owned horse liabilities');
-check(pkg.scripts['test:source'].includes('tests/horse-care.cjs'),'Horse upkeep test is mandatory');
+check(mandatoryTest('tests/horse-care.cjs'),'Horse upkeep test is mandatory');
 
-check(pkg.scripts['test:source'].includes('tests/workshop-deadlines.cjs'),'Late railway settlement and blocked renewal have mandatory source QA');
+check(mandatoryTest('tests/workshop-deadlines.cjs'),'Late railway settlement and blocked renewal have mandatory source QA');
 check(read('component-works.js').includes('latePenaltyCents'),'Orders expose actual late deductions rather than fictional payment');
 
 check(index.includes('horse-custody.js?v=')&&index.indexOf('horse-custody.js?v=')<index.indexOf('app.js?v='),'Paid horse custody module loads before world travel');
-check(pkg.scripts['test:source'].includes('tests/horse-custody.cjs'),'Owned animal relocation cannot bypass paid travel');
+check(mandatoryTest('tests/horse-custody.cjs'),'Owned animal relocation cannot bypass paid travel');
 
 check(index.includes('horse-stable-ui.js?v=')&&index.indexOf('horse-stable-ui.js?v=')<index.indexOf('app.js?v='),'Home stable controls load before game');
-check(pkg.scripts['test:source'].includes('tests/home-stable.cjs')&&pkg.scripts['test:source'].includes('tests/livery-hire.cjs'),'Home transport and rental tests are mandatory');
+check(mandatoryTest('tests/home-stable.cjs')&&mandatoryTest('tests/livery-hire.cjs'),'Home transport and rental tests are mandatory');
 
 check(city.getLocation('potomacFishingBank')?.map?.n===29&&city.getRoom('potomacFishingBank','riverbank')?.id==='riverbank','Potomac fishing location is an addressable public room on marker 29');
 check(city.getLocation('potomacFishingBank')?.category==='leisure','Existing Potomac fishing spot now uses Leisure rather than racing');
@@ -692,7 +694,7 @@ check(['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','eas
 check(city.getLocation('babcockLake').availableUntil==='1888-12-31','Babcock Lake closes after historic filling rather than surviving indefinitely');
 check(appSource.includes("leisure:'Leisure & Outdoors'")&&appSource.includes("sport:'Recreation & Competition'"),'Fishing and competitive racing have separate map filters');
 check(index.includes('id="titleMapPinRename"')&&index.includes('id="titleMapPinResetName"'),'Player can set or reset names from map UI');
-check(pkg.scripts['test:source'].includes('tests/map-fishing-locations.cjs'),'Fishing map filters and pin names have real regression tests');
+check(mandatoryTest('tests/map-fishing-locations.cjs'),'Fishing map filters and pin names have real regression tests');
 
 check(index.includes('fishing-engine.js?v=')&&index.indexOf('fishing-engine.js?v=')<index.indexOf('app.js?v='),'Fishing simulation loads before saved game');
 check(index.includes('fishing-ui.js?v=')&&index.indexOf('fishing-ui.js?v=')>index.indexOf('app.js?v='),'Fishing controls load after game state');
@@ -700,7 +702,7 @@ check(index.includes('market-ui.js?v=')&&index.indexOf('market-ui.js?v=')>index.
 check(appSource.includes('window.FE_FISHING_UI?.render?.()')&&appSource.includes('window.FE_MARKET_UI?.render?.()'),'Room integrates actual fishing and merchant counters');
 check(read('npc-ai.js').includes('deliveryForCalendar?.(S,c.date'),'NPC calendar triggers actual physical restock');
 check(read('npc-economy.js').includes('market.purchase(context.save,def.id,goodId'),'Autonomous NPCs share purchased physical inventory');
-check(pkg.scripts['test:source'].includes('tests/fishing-play.cjs')&&pkg.scripts['test:source'].includes('tests/market-inventory.cjs')&&pkg.scripts['test:source'].includes('tests/npc-market-bridge.cjs'),'Mandatory gameplay and market regression suites');
+check(mandatoryTest('tests/fishing-play.cjs')&&mandatoryTest('tests/market-inventory.cjs')&&mandatoryTest('tests/npc-market-bridge.cjs'),'Mandatory gameplay and market regression suites');
 
 check(!read('styles.css').includes('border-style:dashed;'),'Unverified map pin metadata must not render dotted circles');
 check(read('career-shell.js').includes('devPanel.hidden=true'),'Developer panel must always start closed');
