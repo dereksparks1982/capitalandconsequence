@@ -1,3 +1,14 @@
+### v0.6.89 development continuation · incremental player time, October 28, 2026
+- [x] Exact desk button order: Step Away From Desk → Go to Lunch → End Business Day (New Game retained separately).
+- [x] Step Away opens the Washington map without automatically entering a room; opening and closing the visible map cost one minute apiece.
+- [x] Go to Lunch jumps only to the current day's noon with all intervening world simulation; End Business Day jumps only to the current day's 5 PM closing bell. No automatic food, sleep, or relocation.
+- [x] Provisional travel costs 30 minutes per new location; moving between different rooms of one location costs one minute. No duplicate charge for choosing the same room.
+- [x] Accepted bets incur one minute at horse/dog/midget races, boxing, underground prizefights/cockfights and poker. Event/game durations are additional. Invalid bets and blocked poker popup reservations incur no placement-time charge.
+- [x] Boy Mercer has an unpredictable, date-based gambling-heavy schedule, one small weekly liquor-wagon unloading job, no steady employment, personal card wins/losses, risky cheating and theft, separate cash/expenses, and contradictory unverified stories. No fabricated jobs, housing, named victims or automatic player money transfer.
+- [x] Focused source syntax tests plus travel idempotence checks; room and bet source-contracts extended.
+- [ ] Full offline Node suite and Linux Electron hands-on playthrough, plus owner acceptance. No GitHub Actions, finished executable claim, changed Washington artwork, or old-save migration.
+- [ ] Later: real NPC pathfinding across journeys, complete social consequences, deep poker/club membership gameplay, broader business/social economy and character-career content.
+
 ### Additional v0.6.89 source update (October 28): Boy Mercer and map information scrolling
 - [x] Keep long location information scrollable within its card; only pointer wheel on the map itself zooms the map.
 - [x] Add independent resident **Boy Mercer** (Boy given name, Mercer surname), using existing races/Chinatown/card-room spaces; no new map locations or pin changes.
