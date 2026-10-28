@@ -1735,3 +1735,31 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 #titleMapDirectory .title-map-directory-item.is-owned{
  border-left-color:#0f0f0f!important;background:#e2d8c1;
 }
+
+/* Acquired steelworks, railroad and maritime enterprise: separate accounts. */
+.industrial-empire{margin-top:16px!important;background:#ede5d4;border:2px solid #9d8764;padding:15px}
+.industrial-empire h3{margin:0 0 10px;font:700 21px Georgia,serif;color:#372c1d}
+.industrial-empire h4{margin:10px 0 8px;color:#3d3020}
+.empire-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}
+.empire-grid article,.empire-ship{padding:12px;margin:9px 0;border:1px solid #998467;background:#faf4e6;color:#29261f}
+.industrial-empire button,.city-room-fishing-fleet button{
+ border:1px solid #6a5738;background:#e1cfaa;color:#271e15;
+ font:700 13px Georgia,serif;padding:6px 9px;margin:4px;cursor:pointer
+}
+.empire-ship strong{color:#473116}
+.empire-voyage{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:8px}
+.empire-voyage label{display:flex;gap:4px;align-items:center;font-size:12px}
+.empire-voyage select{max-width:170px;padding:5px}
+.empire-log{max-height:185px;overflow-y:auto;background:#e4d5b6;padding:8px}
+.empire-log p{margin:4px 0;font-size:12px}
+.empire-lead{border-left:3px solid #af863c;padding:8px;background:#f5ebd2}
+.broker-search-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.broker-search-row label{font-size:13px;display:flex;flex-direction:column;gap:3px}
+.broker-search-row input,.broker-search-row select{padding:5px;max-width:220px}
+.broker-stock-detail{padding:9px;background:#f1e4ce;border:1px solid #a48f6b;margin:10px 0}
+.broker-stock-detail[hidden]{display:none}
+.broker-stock-detail .stock-history-chart{width:100%;height:auto;max-height:240px}
+.city-room-fishing-fleet{margin-top:12px;padding:12px;background:#e4d6b6;color:#2d2416;border:1px solid #846b45}
+.city-room-fishing-fleet h4,.city-room-fishing-fleet h5{margin:6px 0 9px}
+.fishing-vessel,.fishing-catch{padding:8px;margin:6px 0;border:1px solid #a8916e;background:#f2e5ca}
+.fishing-vessel p{margin:3px 0}
