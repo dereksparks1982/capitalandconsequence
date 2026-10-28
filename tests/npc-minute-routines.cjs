@@ -13,11 +13,12 @@ const at=(date,weekday,minuteOfDay)=>({date,weekday,minuteOfDay});
 assert.equal(weekly.segments.length,7);
 assert.equal(weekly.registered.length,16);
 assert.equal(weekly.atMinute(worker,6,730).locationId,'oldChinatown','Sullivan shopping location');
-const boy={id:'boyMercer',places:['races','oldChinatown','workingPoker',null],activities:['boasting','chatting','talking',null]};
-assert.equal(weekly.atMinute(boy,1,600).locationId,'races','Boy is out at the grounds during the morning');
-assert.equal(weekly.atMinute(boy,1,790).locationId,'oldChinatown','Boy visits a market in the afternoon');
-assert.equal(weekly.atMinute(boy,1,1200).locationId,'workingPoker','Boy seeks listeners among the card-room crowd');
-
+const boy={id:'boyMercer',places:[null,null,null,null],activities:[null,null,null,null]};
+assert.equal(weekly.atMinute(boy,3,720,'1890-01-08').locationId,'secondNightclub','Boy works one midweek liquor delivery, not a steady job');
+assert.equal(weekly.atMinute(boy,3,750,'1890-01-08').locationId,'secondNightclub','The same weekly dray shift stays in one financial slot');
+assert.equal(weekly.atMinute(boy,3,750,'1890-01-08').activity,'unloading liquor barrels from a horse-drawn delivery wagon');
+assert.deepEqual(weekly.atMinute(boy,5,1170,'1890-01-03'),weekly.atMinute(boy,5,1170,'1890-01-03'),'Save replay restores the same chaotic choice');
+assert.equal(itinerary.windows(boy,{worldMinute:clock.parseMinute('1890-01-08T08:00'),date:'1890-01-08'}).length,0,'Boy has no public predictable itinerary');
 assert.equal(weekly.atMinute(worker,6,730).activity,'shopping for weekly necessities');
 assert.equal(calendar.signature(at('1890-01-03',5,599)),'1890-01-03|0');
 assert.equal(calendar.signature(at('1890-01-03',5,600)),'1890-01-03|0@600');
