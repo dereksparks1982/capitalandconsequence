@@ -30,4 +30,26 @@ const courier={energy:83};
 const shift=eco.actionFor(alexi,courier,{date:'1890-01-03',key:'courier|0',slot:0,weekday:5,seed:4,
  defaultLocation:'russianTradeHall',defaultActivity:'arranging deliveries',rest:false});
 assert.equal(shift.action.kind,'work');
+// Boy has no permanent wage: one erratic delivery day, card wins/losses,
+// and no settlement duplication when a save or render replays the same key.
+const boy={id:'boyMercer',traits:{caution:36,honesty:4,sociability:90}};
+const bc={energy:90};
+const odd=eco.actionFor(boy,bc,{date:'1890-01-08',weekday:3,slot:1,
+ key:'1890-01-08|1',seed:42,defaultLocation:'secondNightclub',
+ defaultActivity:'unloading liquor barrels from a horse-drawn delivery wagon'});
+assert.equal(odd.action.kind,'odd-job');
+assert.ok(bc.economy.earnedCents>=80&&bc.economy.earnedCents<=135);
+assert.ok(bc.economy.shiftsWorked===1);
+const snapshot=JSON.stringify(bc.economy);
+assert.equal(eco.actionFor(boy,bc,{date:'1890-01-08',weekday:3,slot:1,
+ key:'1890-01-08|1',seed:42,defaultLocation:'secondNightclub'}).repeated,true);
+assert.equal(JSON.stringify(bc.economy),snapshot,'Autosave cannot repeat a delivery payment');
+const card=eco.actionFor(boy,bc,{date:'1890-01-08',weekday:3,slot:2,
+ key:'1890-01-08|2',seed:42,defaultLocation:'workingPoker',
+ defaultActivity:'playing cards for small stakes'});
+assert.ok(['card-win','card-loss','card-cheating','card-cheating-caught'].includes(card.action.kind));
+assert.ok(card.action.stakeCents>0,'Card games use actual Boy-owned money');
+assert.equal(bc.economy.wageredCents,card.action.stakeCents);
+assert.equal(bc.economy.shiftsWorked,1,'Playing cards is not another wage shift');
+
 console.log('PASS NPC earned shifts, household costs, credit, idempotence and Russian courier');
