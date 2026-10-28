@@ -1700,24 +1700,10 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
  border-style:solid;
 }
 
-/* Number badges may be spread to be clickable, but the true historic/place
-   anchor is always the dot at the end of its leader, in the original A–R
-   and 1–30 printed map grid. This is a UI overlay, not altered map art. */
-#titleMapMarkers .title-map-pin-tethers{
- position:absolute;inset:0;width:100%;height:100%;
- z-index:0;overflow:visible;pointer-events:none;
-}
-#titleMapMarkers .title-map-pin-tether{
- stroke:#f4d697;stroke-width:1.3;stroke-dasharray:3 2;
- opacity:.86;vector-effect:non-scaling-stroke;
-}
-#titleMapMarkers .title-map-pin-anchor{
- fill:#ffe1a3;stroke:#2d2213;stroke-width:1.2;
- pointer-events:none;
-}
+/* All pins stay at their own plotted anchors while zooming.
+   Overlap is handled solely by hover/focus/selected stacking, never by
+   relocating numbered pins or drawing anchor dots. */
 #titleMapMarkers .title-map-marker{z-index:1}
-#titleMapMarkers .title-map-marker.is-selected{z-index:4}
-
 
 /* Bring the hovered map place AND its name above all other numbered pins.
    The selected pin remains prominent until another hovered pin takes focus. */
