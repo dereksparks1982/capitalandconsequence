@@ -1,3 +1,12 @@
+## v0.6.89 source checkpoint · October 28, 2026 (pending owner acceptance)
+
+- [x] Developer panel starts hidden on every launch; deliberate DEV button or Ctrl+Shift+D toggles it without disturbing map/rooms.
+- [x] Remove dashed/unverified visual rings from Washington pins without deleting location verification metadata, editing pins, or replacing original artwork.
+- [x] Add individually authored public occupational dialogue for the defined NPCs and truthful activity replies based solely on the actor's current simulated activity. Established Sullivan lodging may be stated; unknown residences and proposed engagements remain uncertain. Free-text character cards and quick questions coexist.
+- [x] Add script-level/source-contract regression checks for the fixes. No GitHub Actions or installer.
+- [ ] Owner-run complete offline Node tests and actual Ubuntu gameplay acceptance; do not label this source slice a finished release.
+- [ ] Next deeper living-city slice: verified physical NPC travel, schedules and consequential economic outcomes without a second clock, invented homes or missed/duplicated settlements.
+
 # Active build queue and handoff · October 25, 2026
 
 **October 26 continuation (source committed, test executable deferred):** Financial custody beyond the horse track is now connected to **licensed boxing and the three poker tiers**, including poker window/game simulation, popup blocked, undealt refund and forfeited unfinished game. Player selects carried personal vs company money; corporate stakes remain corporate, actual losses stay on the company's books, profits return to the same ownership. Unsettled wagers have a persistent escrow independent of the rolling 160-item transaction history; retries and wrong-account claims cannot mint money. Physical cash desk/bank transfers quote available funds before spending **two player-triggered minutes**. Executive office draws/diversions also cost two minutes. Theatre actors retain individual actual stage/rehearsal schedule activities and distribute to allowed backstage/auditorium rooms; apprentice Hanford backstage, proprietor Rapley office; no fictional theatre payroll. Three new regression scripts registered with the existing offline source suite. **Source-only V8 checks passed: 405 banking/betting; 145 theatre permissions/attendance; 104 route/era simulation. Full Node test suite and Linux Electron UI NOT run.** No GitHub Actions, installers, map-artwork or old-save migration.
