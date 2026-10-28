@@ -14,6 +14,7 @@
  }
  function windows(def,world,days=8){
   if(!Number.isInteger(days)||days<1||days>14)throw Error('Invalid public horizon');
+  if(def?.id==='boyMercer')return []; // His whereabouts are not published, and plans are not promises.
   const now=clock.calendar(world),day=clock.parseMinute(now.date+'T00:00'),out=[];
   // Include yesterday so an overnight (10 PM–8 AM) period is detected after midnight.
   for(let offset=-1;offset<days;offset++){
