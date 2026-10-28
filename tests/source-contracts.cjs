@@ -704,3 +704,10 @@ check(!read('styles.css').includes('border-style:dashed;'),'Unverified map pin m
 check(read('career-shell.js').includes('devPanel.hidden=true'),'Developer panel must always start closed');
 check(read('career-shell.css').includes('#titleDevPanel.title-dev-panel[hidden]'),'Developer panel CSS must respect hidden state despite layout overrides');
 check(read('career-shell.js').includes("e.code==='KeyD'"),'Developer panel can be opened intentionally');
+
+// v0.6.89 map information card and Boy Mercer acceptance contracts.
+check(appSource.includes("e.target?.closest?.('#titleMapLocationCard')"),'Mouse wheel over location information must not zoom map');
+check(read('styles.css').includes('overscroll-behavior:contain;'),'Long map information card has its own bounded scroll');
+check(read('npc-ai.js').includes("id:'boyMercer',name:'Boy Mercer'"),'Boy Mercer is a named independent resident');
+check(read('npc-scripted-talk.js').includes("boy-mercer-unverified-story"),"Boy Mercer's contradictions are speech, not world facts");
+check(read('npc-economy.js').includes("boyMercer:{occupation:"),'Boy gets no invented economic payroll');
