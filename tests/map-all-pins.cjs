@@ -7,7 +7,7 @@ const city={window:{}};vm.runInNewContext(read('city.js'),city);
 vm.runInNewContext(read('map-pin-palette.js'),city);
 const pins=city.window.FederalElectricCity.mapLocations();
 assert.equal(pins.length,40,'The city registry contains 40 numbered locations');
-assert.deepEqual(pins.map(v=>v.n).sort((a,b)=>a-b),Array.from({length:40},(_,i)=>i+1));
+assert.deepEqual(Array.from(pins,v=>v.n).sort((a,b)=>a-b),Array.from({length:40},(_,i)=>i+1));
 const byN=n=>pins.find(x=>x.n===n);
 assert.equal(byN(4).id,'workingPoker');
 assert.equal(byN(11).id,'universityMaryland');
