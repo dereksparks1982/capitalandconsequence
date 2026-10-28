@@ -20,9 +20,9 @@
   madamStar:{work:['star|reviewing appointments','star|receiving callers','star|hosting guests','star|concluding private business'],sat:['star|reviewing reservations','star|receiving weekend guests','star|hosting Saturday guests','star|concluding private business'],sun:[null,'star|reviewing accounts','star|receiving quiet company',null]},
   luiDelacroix:{work:[null,'secondNightclub|overseeing staff','secondNightclub|hosting patrons','secondNightclub|closing the house'],sat:[null,'secondNightclub|preparing the evening','secondNightclub|hosting the Saturday crowd','secondNightclub|closing the house'],sun:[null,null,'secondNightclub|attending private business',null]},
   foremanSullivan:{work:['factory|preparing tools','factory|assisting with component orders',null,null],sat:[null,'oldChinatown|shopping for weekly necessities',null,null],sun:[null,null,null,null]},
-  boyMercer:{work:['races|telling stories to early visitors','oldChinatown|seeking an audience at the market','workingPoker|spinning stories to the card-room crowd',null],
-   sat:['races|making implausible boasts','oldChinatown|telling different versions of his past','workingPoker|holding court with listeners',null],
-   sun:[null,'oldChinatown|talking to passersby',null,null]},
+  // Boy has NO public fixed timetable. The actual day- and window-specific
+  // choices are made in boyAt, not stored as a conventional work schedule.
+  boyMercer:{work:[null,null,null,null],sat:[null,null,null,null],sun:[null,null,null,null]},
   eddieDoyle:{work:['races|reviewing entries','races|taking bets','star|making introductions',null],sat:['races|reviewing Saturday entries','races|taking bets','star|socializing',null],sun:[null,null,'star|visiting acquaintances',null]},
   inspectorHayes:{work:['metropolitanPolice|reviewing reports','metropolitanPolice|attending to police duties','washingtonArena|watching a public event',null],sat:[null,null,'washingtonArena|watching the fights',null],sun:[null,null,null,null]},
   chenMei:{work:['oldChinatown|opening the market','oldChinatown|speaking with customers',null,null],sat:['oldChinatown|taking Saturday customers','oldChinatown|settling accounts',null,null],sun:[null,null,null,null]},
@@ -50,9 +50,6 @@
   madamStar:['reviewing reservations and accounts','arranging the evening house','meeting staff over a midday meal','receiving callers','welcoming evening guests','attending to discreet club matters','concluding the night’s accounts'],
   luiDelacroix:[null,null,'taking a midday meal with staff','arranging the evening programme','overseeing patrons and performers','handling the late evening crowd','closing the house'],
   foremanSullivan:['checking tools and preparing components','assembling the day’s orders','taking a meal at the workshop','finishing ordered parts for dispatch',null,null,null],
-  boyMercer:['telling a stranger an elaborate story','collecting new listeners','taking a midday break among market visitors',
-   'contradicting his earlier account','boasting about his supposed connections',
-   'spinning a different version of the same tale',null],
   eddieDoyle:['reading racing entries','discussing entries with racegoers','taking a midday meal near the track','following the afternoon racing book','visiting acquaintances at the club','speaking quietly with regular patrons',null],
   inspectorHayes:['reviewing overnight incident reports','conducting police office business','taking a midday meal on duty','following up on reported incidents','observing a public sporting event','speaking with event staff',null],
   chenMei:['opening merchant stalls','meeting early customers','sharing a midday meal at the market','handling afternoon trade',null,null,null],
@@ -82,9 +79,34 @@
   if(minute<480)return {...SEGMENTS[6],priorDay:true};
   return {...SEGMENTS.find(v=>minute>=v.from&&minute<v.until),priorDay:false};
  }
- function atMinute(def,weekday,minute){
+ const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+ function boyAt(weekday,segment,date){
+  // One modest weekly liquor-delivery unloading job at the existing cabaret.
+  // On other days there is no boss and no reliable place to find Boy.
+  // The date alters the choices, so Mondays are not identical every week.
+  if(weekday===3&&segment.slot===1)
+   return {locationId:'secondNightclub',activity:'unloading liquor barrels from a horse-drawn delivery wagon'};
+  const roll=hash(String(date||'unknown-week')+'|boy|'+segment.from+'|'+weekday)%100;
+  const overnight=segment.from===1320||segment.priorDay;
+  const early=segment.slot===0;
+  if((overnight&&roll<48)||(early&&roll<37)||(roll<8))
+   return {locationId:null,activity:null}; // sleeping or whereabouts unknown
+  if(roll<66)
+   return {locationId:'workingPoker',activity:roll%4===0?'bluffing his way through a card game':'playing cards for small stakes'};
+  if(roll<83)
+   return {locationId:'races',activity:'looking for a wager and a profitable tale'};
+  if(roll<93)
+   return {locationId:'oldChinatown',activity:'seeking odd work and easy marks'};
+  return {locationId:'secondNightclub',activity:'trying to get into a game and find a willing listener'};
+ }
+ function atMinute(def,weekday,minute,date=null){
   if(!Number.isInteger(weekday)||weekday<0||weekday>6)throw Error('Valid NPC weekday required');
   const segment=segmentAt(minute),day=segment.priorDay?(weekday+6)%7:weekday;
+  if(def?.id==='boyMercer'){
+   const plan=boyAt(day,segment,date);
+   return {...plan,slot:segment.slot,from:segment.from,until:segment.until,
+    priorDay:segment.priorDay,weekday:day};
+  }
   const basic=at(def,day,segment.slot),index=SEGMENTS.findIndex(v=>v.from===segment.from);
   const usual=at(def,1,segment.slot);
   const detail=basic.locationId===usual.locationId?DETAILS[def.id]?.[index]:null;
