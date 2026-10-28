@@ -17,6 +17,7 @@
   samuelTilden:{occupation:'president',workplace:'whiteHouse',opening:9000,pay:0,betting:0},
   madamStar:{occupation:'club proprietor',workplace:'star',opening:8500,pay:185,betting:16},
   foremanSullivan:{occupation:'workshop assistant',workplace:'factory',opening:2100,pay:0,betting:9},
+  boyMercer:{occupation:'self-described errand runner',workplace:null,opening:0,pay:0,betting:0,credit:false,monetary:false},
   eddieDoyle:{occupation:'bookmaker',workplace:'races',opening:3800,pay:120,betting:36},
   inspectorHayes:{occupation:'police inspector',workplace:'metropolitanPolice',opening:4100,pay:125,betting:12},
   chenMei:{occupation:'merchant',workplace:'oldChinatown',opening:2900,pay:95,betting:8},
