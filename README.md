@@ -6,6 +6,16 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## October 28, 2026 development checkpoint · v0.6.89
+
+**Developer panel and map-pin correction.** The developer panel now starts **closed on every launch**, rather than opening automatically. A small **DEV** toggle at bottom left, or **Ctrl+Shift+D**, opens/closes it manually; a player who opens it can leave it visible while travelling. The unwanted dashed/dotted outlines around certain unverified Washington location pins are removed. Their verification metadata, editable labels, pin locations, category filtering and the fixed original map image are unchanged.
+
+**Living Washington dialogue slice.** Every defined resident has a role-appropriate answer about their established work. When asked what they are doing, the local scripted dialogue reports only that resident's **actual saved current activity**, if known. It otherwise admits uncertainty. Sullivan can state his confirmed rented workshop lodging; other unknown home addresses remain unknown. Conversations cannot fabricate a job offer, appointment, meeting, wages, promotions or private information. Free-text and existing quick questions remain available in each person's own character card. These are source improvements, not a claim that long-distance NPC journey simulation or all-resident household lives are complete.
+
+**Testing and delivery:** Offline targeted source contracts were added. A full local Node suite and a hands-on Ubuntu Electron playthrough must still be completed by the owner. This checkpoint is an **unaccepted development patch**. No GitHub Actions, Washington map artwork replacement, UI geometry relocation or save-game migration.
+
+
+
 ## Copyright and license
 
 **© 2026 Derek Sparks. All rights reserved. Published by Elderred Softworks LLC.**
@@ -70,7 +80,7 @@ Read more: [Character roster](CHARACTER-ROSTER.md) · [Living city and map](WASH
 
 ## Project status and future work
 
-This is a **private development alpha for Linux**, not a finished or accepted release. The current source milestone is **v0.6.88-dev**. [Source QA passed](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982) on the previously tested source. The prior Linux packaging workflow verified its archive, but delivery through GitHub Actions failed owing to artifact storage quota. **No new accepted desktop executable or validated end-to-end human playthrough can be claimed from that run.**
+This is a **publicly visible, proprietary development alpha for Linux**, not a finished or accepted release. The current source milestone is **v0.6.88-dev**. [Source QA passed](https://github.com/dereksparks1982/capitalconsequence/actions/runs/40069611982) on the previously tested source. The prior Linux packaging workflow verified its archive, but delivery through GitHub Actions failed owing to artifact storage quota. **No new accepted desktop executable or validated end-to-end human playthrough can be claimed from that run.**
 
 The game has an existing Washington map, shop/finance systems, timed factory work, basic protagonist jobs, personal records, fishing, transport, and sporting prototypes. The expanded political cast, retail neighborhoods, social venues, tournament system and government gambling law are **development goals**, not false promises that everything is already playable.
 
