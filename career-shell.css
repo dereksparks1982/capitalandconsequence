@@ -193,3 +193,20 @@ body > #titleDevPanel.title-dev-panel[hidden]{display:none!important}
 .fe-npc-freeform button{padding:7px 13px;cursor:pointer;min-height:38px}
 .fe-npc-freeform button:disabled{opacity:.55;cursor:progress}
 .fe-npc-response{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+
+
+/* Keep the approved blotter geometry: the existing map button becomes a
+   single loose, fully opened paper guide lying on the desk. No frame/folds. */
+.career-desk .career-desk-map{
+ padding:0;min-width:96px;min-height:88px;overflow:hidden;
+ border:1px solid #aa986f;background:#e4d3aa;
+ box-shadow:2px 3px 3px rgba(28,21,14,.52);
+ transform:rotate(-2deg);display:flex;align-items:stretch;justify-content:stretch;
+}
+.career-desk .career-desk-map img{
+ display:block;width:100%;height:100%;max-height:108px;object-fit:fill;
+ user-select:none;-webkit-user-drag:none;pointer-events:none;
+}
+.career-desk .career-desk-map:hover,.career-desk .career-desk-map:focus-visible{
+ filter:brightness(1.12);outline:2px solid #d8b669;outline-offset:2px;
+}
