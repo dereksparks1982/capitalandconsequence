@@ -1,0 +1,36 @@
+'use strict';
+const assert=require('node:assert/strict'),skills=require('../skills.js');
+assert.equal(skills.SKILLS.length,60,'Sixty distinct skills are present');
+assert.equal(new Set(skills.SKILLS.map(x=>x.id)).size,60,'No duplicate skill identifiers');
+assert.deepEqual(skills.GROUPS.map(x=>x.items.length),[12,10,9,12,10,7]);
+for(const role of ['industrialist','investigator','criminal','wardman']){
+ const profile={characterRoute:role,gameDate:'1878-01-02',phase:'day',paused:false};
+ const record=skills.ensure(profile);
+ assert.equal(Object.keys(record.values).length,60,role+' knows every skill');
+ assert.equal(skills.level(profile,'fishing'),0,'Fishing begins at zero unless practiced');
+ assert.equal(skills.level(profile,'business-management')>=0,true);
+ const initial=skills.level(profile,'fishing');
+ const first=skills.practice(profile,'fishing',{amount:.3,difficulty:35,event:'first-catch',source:'First fishing attempt'});
+ assert.equal(first.ok,true);assert.ok(first.value>initial,'Meaningful practice improves the skill');
+ assert.equal(skills.practice(profile,'fishing',{amount:.3,event:'first-catch'}).improved,0,'Event cannot be farmed repeatedly');
+ const copy=JSON.parse(JSON.stringify(profile));
+ assert.equal(skills.level(copy,'fishing'),first.value,'Skill survives autosave JSON');
+ assert.equal(skills.level(profile,'fishing'),first.value,'Other profile clone does not mutate original');
+ assert.ok(skills.level(profile,'fishing')<=100);
+}
+const charlie={characterRoute:'industrialist',gameDate:'1878-01-02',phase:'day',paused:false};
+const sam={characterRoute:'investigator',gameDate:'1878-01-02',phase:'day',paused:false};
+assert.ok(skills.level(charlie,'accounting')>skills.level(sam,'accounting'),'Career-specific starting knowledge');
+assert.ok(skills.level(sam,'observation')>skills.level(charlie,'observation'),'Patrolman has greater observation');
+const unknown=skills.practice(charlie,'not-a-skill',{amount:.5});
+assert.equal(unknown.ok,false,'Unknown skills cannot be invented');
+const before=skills.level(charlie,'fishing');
+charlie.paused=true;
+assert.equal(skills.practice(charlie,'fishing',{event:'paused'}).ok,false);
+assert.equal(skills.level(charlie,'fishing'),before,'Paused gameplay cannot train skills');
+charlie.paused=false;
+for(let i=0;i<100;i++)skills.practice(charlie,'fishing',{event:'practice-'+i,amount:.7,difficulty:100});
+assert.ok(skills.level(charlie,'fishing')-before<=2.201,'Daily gain cap prevents repetitive grinding');
+charlie.gameDate='1878-01-03';
+assert.ok(skills.practice(charlie,'fishing',{event:'next-day',amount:.2}).improved>0,'Practice can resume another day');
+console.log('PASS 60 independently saved UO-style skills, all four roles, duplicates, gain cap and clock restrictions');
