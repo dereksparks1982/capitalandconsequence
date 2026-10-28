@@ -13,6 +13,7 @@ function roll(key){let h=2166136261;for(const c of String(key)){h^=c.charCodeAt(
 function ensure(save){
  if(!save.fishingFleet||save.fishingFleet.version!==1)save.fishingFleet={version:1,lastDay:null,nextId:0,vessels:[],cash:0,log:[]};
  const f=save.fishingFleet;if(!Array.isArray(f.vessels))f.vessels=[];if(!Array.isArray(f.log))f.log=[];
+ if(!f.lastDay&&/^\d{4}-\d{2}-\d{2}$/.test(save.gameDate||''))f.lastDay=save.gameDate;
  return f;
 }
 function entry(f,date,msg){f.log.unshift(date+' · '+msg);f.log=f.log.slice(0,24)}
@@ -24,6 +25,7 @@ function buy(save,type){
  save.personalCash-=spec.price+5;f.cash+=5;
  const vessel={id:++f.nextId,type,name:spec.name+' '+f.nextId,condition:95,port:'Potomac',lastTrip:null,status:'active'};
  f.vessels.push(vessel);entry(f,save.gameDate,spec.name+' purchased; crew and maintenance reserves assigned.');
+ root.FE_SKILLS?.practice?.(save,'seamanship',{amount:.16,difficulty:35,event:'boat-buy:'+vessel.id,source:'Acquiring fishing craft'});
  return{ok:true,vessel,message:spec.name+' purchased. Ready for fishing.'};
 }
 function work(save,id,site){
@@ -32,7 +34,7 @@ function work(save,id,site){
  if(save.paused||save.phase==='report'||!root.FE_FISHING?.SITES?.[site])return{ok:false,reason:'Fishing vessel must launch from an active fishing bank.'};
  if(v.lastTrip===save.gameDate)return{ok:false,reason:'This vessel already worked its fishing grounds today.'};
  if(v.condition<30)return{ok:false,reason:'Vessel condition is unsafe. Arrange shipyard repairs.'};
- const expenses=spec.type==='trawler'?12:spec.upkeep*6;
+ const expenses=v.type==='trawler'?12:spec.upkeep*6;
  if(f.cash<expenses)return{ok:false,reason:'Fishing treasury cannot cover fuel, bait, crew and port fees.'};
  f.cash-=expenses;v.lastTrip=save.gameDate;v.condition=Math.max(0,v.condition-(3+roll(id+'|wear|'+save.gameDate)*4));
  const storm=roll(id+'|storm|'+site+'|'+save.gameDate);
@@ -44,6 +46,8 @@ function work(save,id,site){
   sale=+(catchTons*(v.type==='trawler'?2.2:1.1)).toFixed(2);
  f.cash+=sale;
  entry(f,save.gameDate,v.name+' returned '+catchTons+' baskets of commercial fish to the market. Net sale '+sale.toFixed(2)+' dollars; hull '+v.condition.toFixed(0)+'%.');
+ root.FE_SKILLS?.practice?.(save,'fishing',{amount:.28,difficulty:50,event:'commercial-haul:'+v.id+':'+save.gameDate,source:'Working commercial fishing grounds'});
+ root.FE_SKILLS?.practice?.(save,'seamanship',{amount:.24,difficulty:43,event:'commercial-haul:'+v.id+':'+save.gameDate,source:'Handling working fishing vessel'});
  return{ok:true,catchBaskets:catchTons,revenue:sale,message:v.name+' landed '+catchTons+' baskets; fishing treasury received $'+sale.toFixed(2)+'.'};
 }
 function repair(save,id){
@@ -52,6 +56,7 @@ function repair(save,id){
  const fee=+(Math.max(.50,(100-v.condition)*(spec.price/1400))).toFixed(2);
  if(f.cash<fee)return{ok:false,reason:'Insufficient fishing treasury for $'+fee.toFixed(2)+' repairs.'};
  f.cash-=fee;v.condition=100;
+ root.FE_SKILLS?.practice?.(save,'ship-repair',{amount:.27,difficulty:48,event:'fishing-ship-repair:'+v.id+':'+save.gameDate,source:'Supervising fishing vessel repair'});
  entry(f,save.gameDate,v.name+' repaired for $'+fee.toFixed(2)+'.');
  return{ok:true,message:v.name+' fully repaired.'};
 }
