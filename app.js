@@ -3369,12 +3369,38 @@ function enterMapDestination(id,event,requestedRoomId){
   if(permission?.ok!==true)return fail(permission?.reason||'This room requires authorization.');
  }
  const prior=currentCityLocation();
+ const changesLocation=prior.locationId!==place.id;
+ const changesRoom=!changesLocation&&prior.roomId!==room.id;
+ // Preflight before previewing the destination: missing travel accounting must
+ // never become a free teleport, even if secondary room panels throw.
+ if(changesLocation&&!window.FE_TRAVEL?.recordProvisional)
+  return fail('Travel service is unavailable. You have not left your current location.');
+ if(changesRoom&&!window.FE_TRAVEL?.recordRoomMove)
+  return fail('Room walking service is unavailable. You have not moved.');
  let rendered=false;
  try{rendered=!!openCityRoom(place.id,room.id,{dev:true,source:'map'})}
  catch(error){console.error('Go There renderer failed:',id,error)}
  const overlay=document.getElementById('cityRoomOverlay');
  if(!rendered||!overlay||overlay.hidden||overlay.dataset.locationId!==place.id)
   return fail('Could not open '+place.name+'.');
+ // A successful graphical preview is not a completed trip. Commit player
+ // travel accounting BEFORE changing the character's location or closing the
+ // map. Failed accounting leaves the player at the origin and map available.
+ if(changesLocation||changesRoom){
+  let recorded=false;
+  try{
+   recorded=!!(changesLocation
+    ?window.FE_TRAVEL.recordProvisional(prior.locationId,place.id)
+    :window.FE_TRAVEL.recordRoomMove(place.id,prior.roomId,room.id));
+  }catch(error){console.error('Go There travel ledger failed:',id,error)}
+  if(!recorded){
+   overlay.hidden=true;
+   document.body.classList.remove('city-room-open');
+   const map=document.getElementById('titleMapViewer');
+   if(map)map.hidden=false;
+   return fail('The journey could not be recorded. No relocation was completed.');
+  }
+ }
  // Never leave developer privileges active on a regular player visit.
  S.currentLocation={locationId:place.id,roomId:room.id};
  cityRoomSession={locationId:place.id,roomId:room.id,dev:false,source:'map'};
@@ -3398,15 +3424,11 @@ function enterMapDestination(id,event,requestedRoomId){
  guardedRoomPanel('room livery',()=>window.FE_LIVERY_UI?.render?.(place.id,room.id,S,recordLiveryPurchase,true));
  guardedRoomPanel('room stable',()=>window.FE_HORSE_STABLE_UI?.render?.(place.id,room.id,S,recordLiveryPurchase,true));
  guardedRoomPanel('control status',()=>updateTitleDevCityControls());
- if(prior.locationId!==place.id){
-  guardedRoomPanel('fare and custody',()=>{
-   const paid=window.FE_TRAVEL?.recordProvisional?.(prior.locationId,place.id);
-   window.FE_HORSE_CUSTODY?.onArrival?.(S,prior.locationId,place.id,!!paid);
-   reviewCashOnArrival(prior.locationId,place.id);
-  });
- }
- if(prior.locationId===place.id&&prior.roomId!==room.id){
-  guardedRoomPanel('room walking time',()=>window.FE_TRAVEL?.recordRoomMove?.(place.id,prior.roomId,room.id));
+ if(changesLocation){
+  // These are secondary arrival services. The world-clock journey has
+  // ALREADY succeeded; no error here can waive travel time.
+  guardedRoomPanel('horse custody after recorded travel',()=>window.FE_HORSE_CUSTODY?.onArrival?.(S,prior.locationId,place.id,true));
+  guardedRoomPanel('cash review after recorded travel',()=>reviewCashOnArrival(prior.locationId,place.id));
  }
  guardedRoomPanel('visit leads',()=>window.FE_MAP_LEADS?.visit?.(S,place.id));
  guardedRoomPanel('autosave',()=>save(true));
