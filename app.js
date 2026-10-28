@@ -3069,7 +3069,7 @@ function loadTitleMapLocationLayout(){
  }
  updateTitleMapPinLabels();
 }
-function pinDisplayName(location){return location.pinLabel||location.name}
+function pinDisplayName(location){return location.id==='home'&&location.pinLabel==='Our Home'?'Home':location.pinLabel||location.name}
 function updateTitleMapPinLabels(){
  for(const location of TITLE_MAP_LOCATIONS){
   const marker=[...document.querySelectorAll('[data-map-location]')].find(e=>e.dataset.mapLocation===location.id);
