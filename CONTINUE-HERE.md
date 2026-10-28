@@ -1,5 +1,8 @@
 # START HERE: October 25, 2026 current-thread handoff
 
+> **NEWEST DEVELOPMENT CONTINUATION · OCTOBER 28, 2026:** User approved exact three desk controls in order: Step Away From Desk (always opens map), Go to Lunch (simulate through noon of same day), End Business Day (simulate through 5 PM, without sleep). User approved incremental simulated time: opening map 1m, closing visible map 1m, cross-location travel 30m, different room same site 1m, successfully accepted wager at any modeled venue 1m. No charge for invalid/duplicate bet, same room, already open/closed map, or blocked poker popup. Poker game duration remains extra. Boy Mercer has no regular steady job; he is a skilled card shark and chronic liar, gambles frequently, sometimes steals or cheats, earns modest small cash unloading a Wednesday horse-drawn liquor wagon, and has fluctuating individual balances; unknown housing remains unknown. Source changes in v0.6.89-dev. No Actions, map changes, or full Node/Electron QA; do not claim final release until owner tests.
+
+
 > **ADDITIONAL v0.6.89 FIX · OCTOBER 28:** The map location information card now has its own overflow scroll; the map viewport's wheel handler explicitly ignores wheel events inside the card. Added Boy Mercer, a compulsive liar with an independent routine and stories that change across his saved conversation history. These are only his statements and do not mint contracts, salaries, housing, club privileges or actual meetings. Added tests and refreshed browser script references. No GitHub Actions, original map changes or pin relocations. Pending Linux desktop owner trial.
 
 
