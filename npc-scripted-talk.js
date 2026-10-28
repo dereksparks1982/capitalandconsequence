@@ -65,6 +65,54 @@
   charlesHanford:"I'm learning backstage work and small parts at the National Theatre. I have a great deal left to learn.",
   williamRapley:"I manage the National Theatre's bookings and accounts. Actors must rehearse, but a theatre must also keep its books."
  });
+ // Boy Mercer is a habitual fabricator: different versions of his past appear
+ // in the SAVED conversation transcript. None of these boasts writes world facts.
+ function boyCategory(q){
+  if(/\\b(where do you live|where is your home|where do you sleep|your address|your house)\\b/.test(q))return 'home';
+  if(/\\b(your work|your job|occupation|what do you do|where do you work|who employs|earn a living)\\b/.test(q))return 'job';
+  if(/\\b(your name|who are you|tell me about yourself|your family|where are you from)\\b/.test(q))return 'identity';
+  if(/\\b(meet|tomorrow|appointment|promise|hire me|lend me|money|fortune|wealth)\\b/.test(q))return 'promise';
+  return 'boast';
+ }
+ const BOY_TALES=Object.freeze({
+  home:[
+   "I have an entire suite at the Willard. They keep the best room for me.",
+   "The Willard? Never set foot inside it. I live on a houseboat on the Potomac.",
+   "Never owned a boat in my life. I sleep in a tiny attic above a butcher's shop.",
+   "I have no lodgings in Washington at all. Never have, as I told you before."
+  ],
+  job:[
+   "I'm superintendent of the race grounds. Every horse runs when I say so.",
+   "I have nothing to do with racing. I'm a trusted clerk at the White House.",
+   "I've never held an office job. I'm a celebrated opera singer, travelling incognito.",
+   "I don't work for anybody. In fact, I've never needed to earn a cent."
+  ],
+  identity:[
+   "Boy Mercer. The Mercer family has owned half the city for generations.",
+   "I'm Boy Mercer, the last of a family from the western frontier. We never owned a thing.",
+   "Boy Mercer, of course. I was born in Paris and brought here by a royal household.",
+   "Born and raised right here, my friend. Never crossed the ocean in my life."
+  ],
+  promise:[
+   "I'll introduce you to the President tomorrow. We are practically brothers.",
+   "I've never met the President. But I can get you the best job in the city by breakfast.",
+   "I don't know any employers. What I have is an inheritance worth a million dollars.",
+   "I haven't a cent to my name, which is precisely why I can't lend you any."
+  ],
+  boast:[
+   "I once won six races in an afternoon without ever backing a horse.",
+   "I've never gambled. My one great triumph was singing for a packed theatre.",
+   "I cannot carry a tune. But I have personally mapped every street in Washington.",
+   "I was never much for the city. In fact, I've hardly been here a week."
+  ]
+ });
+ function boyReply(q,context){
+  const kind=boyCategory(q);
+  const history=Array.isArray(context.history)?context.history:[];
+  const times=history.filter(row=>typeof row?.user==='string'&&boyCategory(row.user.toLowerCase())===kind).length;
+  return {handled:true,reply:BOY_TALES[kind][times%BOY_TALES[kind].length],
+   kind:'boy-mercer-unverified-story',reliable:false};
+ }
  function answer(npc,utterance,context={}){
   if(!npc||typeof utterance!=='string'||!utterance.trim())throw Error('NPC and spoken question required');
   const q=utterance.trim().toLowerCase(),id=npc.id;
@@ -74,6 +122,7 @@
   const alwaysFuture=/\b(smartphones?|cellphones?|internet|laptops?|corvettes?|satellites?|spacecraft|electric cars?)\b/i;
   const earlyFuture=/\b(television|tvs?|computers?|airplanes?|aeroplanes?|rockets?|movies?|cinema|radio broadcasts?)\b/i;
   if((year<1950&&alwaysFuture.test(q))||(year<1890&&earlyFuture.test(q)))return {handled:true,reply:chinese?'我不知道你說的是甚麼。':russian?"Я не понимаю, о чём вы говорите.":"I'm afraid I don't know what you mean by that.",kind:'unknown-era'};
+  if(id==='boyMercer')return boyReply(q,context);
   if(/^(?:hello|hi|hey|good morning|good afternoon|good evening|greetings|您好|你好|早安|晚上好|привет|здравствуйте)[.!? ]*$/i.test(q))
    return {handled:true,reply:chinese?'你好。':russian?'Здравствуйте.':"Good day.",kind:'greeting'};
   if(/\b(star club|madam star(?:'s)? (?:club|establishment)|club of madam star)\b/i.test(q))
