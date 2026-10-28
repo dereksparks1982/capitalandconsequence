@@ -1,3 +1,5 @@
+> **Latest after October 28 screenshots:** Pin **#12 is “Home”**, black like Federal Electric because Charlie owns it. Saved x/y and original map art untouched. See [binding current handoff](HANDOFF-2026-10-28-v0.6.90-dev.md).
+
 > **START IN THE NEW THREAD WITH THIS SINGLE CURRENT HANDOFF:** [HANDOFF-2026-10-28-v0.6.90-dev.md](HANDOFF-2026-10-28-v0.6.90-dev.md). Current map policy is no white dots, leader lines or shifted pins, 40 directory entries, original fixed art. Source-only and QA unaccepted. The older paragraphs below are timestamped historical records and are not new build instructions.
 
 ## October 28, 2026 owner correction · anchored Washington pins
