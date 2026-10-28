@@ -1946,7 +1946,7 @@ function openTitleNewspaper(){
  openTitleDialog('The Metropolitan Ledger',receipt+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
 }
-function closeTitleScreen(){document.getElementById('titleScreen')?.classList.remove('desk-interior');if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
+function closeTitleScreen(){document.getElementById('titleScreen')?.classList.remove('desk-interior');if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap(false);closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
  // Leaving the desk opens the unchanged Washington map, where the player
  // chooses the next location. Never teleport into a room on this click.
@@ -3384,8 +3384,16 @@ function openTitleMap(){
  const ready=()=>requestAnimationFrame(()=>{titleMapReset();viewport.focus()});
  if(img.complete&&img.naturalWidth)ready();else img.addEventListener('load',ready,{once:true});
 }
-function closeTitleMap(){
- const viewer=$('#titleMapViewer');if(viewer)viewer.hidden=true;
+function closeTitleMap(chargeTime=true){
+ const viewer=$('#titleMapViewer');
+ // Exactly one minute for an actual visible map closing. Internal cleanup
+ // on title/profile transitions explicitly opts out.
+ if(chargeTime&&viewer&&!viewer.hidden&&activeProfileId()&&!S.paused&&S.phase!=='report'){
+  const spent=advanceWorldSimulation(60,true,'action');
+  if(spent===60){save(true);render();}
+  else console.warn('Closing the map could not advance the full minute.');
+ }
+ if(viewer)viewer.hidden=true;
  titleMapOpenedFromGame=false;
  closeTitleMapLocation();
  document.body.classList.remove('title-map-open');
