@@ -16,8 +16,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishi
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.88','Current package version is v0.6.88');
-check(appSource.includes("APP_VERSION='v0.6.88-dev'"),'Game masthead uses v0.6.88');
+check(pkg.version==='0.6.89','Current package version is v0.6.89');
+check(appSource.includes("APP_VERSION='v0.6.89-dev'"),'Game masthead uses v0.6.89');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
@@ -32,7 +32,7 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('0.6.88'),'Local packaging uses the same number');
+check(read('build-linux.sh').includes('Existing resources/app.asar missing'),'In-place developer build requires an existing runtime archive');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
@@ -699,3 +699,8 @@ check(appSource.includes('window.FE_FISHING_UI?.render?.()')&&appSource.includes
 check(read('npc-ai.js').includes('deliveryForCalendar?.(S,c.date'),'NPC calendar triggers actual physical restock');
 check(read('npc-economy.js').includes('market.purchase(context.save,def.id,goodId'),'Autonomous NPCs share purchased physical inventory');
 check(pkg.scripts['test:source'].includes('tests/fishing-play.cjs')&&pkg.scripts['test:source'].includes('tests/market-inventory.cjs')&&pkg.scripts['test:source'].includes('tests/npc-market-bridge.cjs'),'Mandatory gameplay and market regression suites');
+
+check(!read('styles.css').includes('border-style:dashed;'),'Unverified map pin metadata must not render dotted circles');
+check(read('career-shell.js').includes('devPanel.hidden=true'),'Developer panel must always start closed');
+check(read('career-shell.css').includes('#titleDevPanel.title-dev-panel[hidden]'),'Developer panel CSS must respect hidden state despite layout overrides');
+check(read('career-shell.js').includes("e.code==='KeyD'"),'Developer panel can be opened intentionally');
