@@ -1454,9 +1454,7 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
  border-color:#f5d77e!important;box-shadow:0 0 0 2px #f2d48b,0 0 12px rgba(244,181,39,.75)!important;
 }
 #titleMapMarkers .title-map-marker.is-priority .title-map-marker-pin b{color:#fff5df!important}
-#titleMapMarkers .title-map-marker.is-unverified .title-map-marker-pin{
- border-style:dashed;
-}
+/* Location verification remains in pin metadata and cards, not as a dotted outline. */
 .title-map-head{flex-wrap:wrap}
 .title-map-tools{flex-wrap:wrap;justify-content:flex-end}
 .title-map-filter-label{display:inline-flex;align-items:center;gap:5px;color:#e8d5a9;font:700 12px Georgia,serif}
