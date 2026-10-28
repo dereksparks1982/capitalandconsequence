@@ -20,7 +20,7 @@ function scenario({denied=false,restricted=false,destinationRoom=null}={}){
   mapTravelRestriction:()=>'',currentCityLocation:()=>({...S.currentLocation}),
   openCityRoom(id,roomId,{dev,source}){assert.equal(dev,true);assert.equal(source,'map');rendered++;overlay.dataset.locationId=id;overlay.hidden=false;return true},
   guardedRoomPanel(name,fn){fn()},renderCityRoomDirectory(){menus++},updateTitleDevCityControls(){},recordLiveryPurchase(){},
-  save(){saved++},closeTitleDialog(){},closeTitleMap(){map.hidden=true},console:{warn(){},error(){}}
+  reviewCashOnArrival(){},save(){saved++},closeTitleDialog(){},closeTitleMap(){map.hidden=true},console:{warn(){},error(){}}
  };
  vm.createContext(context);vm.runInContext(source,context);
  const result=destinationRoom?context.enterMapDestination('star',null,destinationRoom):context.travelFromTitleMap({preventDefault(){},stopPropagation(){}});
