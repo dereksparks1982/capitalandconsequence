@@ -2290,6 +2290,11 @@ function openCityRoom(locationId,roomId,options={}){
     window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,true);
    });
   }
+  // A room-to-room transfer within one address costs one simulated minute.
+  // The map itself and travel to a new address are charged separately.
+  if(priorLocation.locationId===location.id&&priorLocation.roomId!==room.id){
+   guardedRoomPanel('room walking time',()=>window.FE_TRAVEL?.recordRoomMove?.(location.id,priorLocation.roomId,room.id));
+  }
   guardedRoomPanel('visit event',()=>window.FE_MAP_LEADS?.visit?.(S,location.id));
   guardedRoomPanel('arrival autosave',()=>save(true));
   guardedRoomPanel('NPC sync',()=>window.FE_NPC_AI?.syncClock?.());
@@ -2326,6 +2331,9 @@ function returnCityRoomToOffice(){
  if(!cityRoomSession.dev&&S.characterRoute==='industrialist'){
   const previous=currentCityLocation();
   S.currentLocation={locationId:'factory',roomId:'executive-office'};
+  if(previous.locationId==='factory'&&previous.roomId!=='executive-office'){
+   window.FE_TRAVEL?.recordRoomMove?.('factory',previous.roomId,'executive-office');
+  }
   if(previous.locationId!=='factory'){
    const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
    window.FE_HORSE_CUSTODY?.onArrival?.(S,previous.locationId,'factory',!!journeyPaid);
@@ -3228,6 +3236,9 @@ function enterMapDestination(id,event,requestedRoomId){
    reviewCashOnArrival(prior.locationId,place.id);
   });
  }
+ if(prior.locationId===place.id&&prior.roomId!==room.id){
+  guardedRoomPanel('room walking time',()=>window.FE_TRAVEL?.recordRoomMove?.(place.id,prior.roomId,room.id));
+ }
  guardedRoomPanel('visit leads',()=>window.FE_MAP_LEADS?.visit?.(S,place.id));
  guardedRoomPanel('autosave',()=>save(true));
  guardedRoomPanel('NPC clock',()=>window.FE_NPC_AI?.syncClock?.());
@@ -3351,10 +3362,19 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
- // The map is a standalone overlay. Never reveal or depend on the old title.
+ // Viewing the Washington map requires one player-controlled minute.
+ // Opening an already-visible map never costs again. The menu is free.
  const viewer=$('#titleMapViewer');
  if(!viewer||careerMainMenuVisible())return;
- if(viewer.hidden)titleMapOpenedFromGame=true;
+ if(viewer.hidden){
+  if(activeProfileId()){
+   if(S.paused||S.phase==='report'){note('Cannot open the map while time is paused or the daily report is open.');return}
+   const spent=advanceWorldSimulation(60,true,'action');
+   if(spent!==60){note('The map could not be opened because the minute was unavailable.');return}
+   save(true);render();
+  }
+  titleMapOpenedFromGame=true;
+ }
  loadTitleMapLocationLayout();
  renderUnpinnedCityDirectory();
  syncTitleMapFilters();
