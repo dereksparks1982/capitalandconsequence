@@ -134,4 +134,15 @@ assert.ok(app.includes("link.rel='noopener noreferrer'"), 'educational links ope
 assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&css.includes('background:rgba(36,94,154,.68)!important'),
  'red and blue numbered pin backgrounds are translucent');
 
+
+assert.equal(byId('blackwoodAsylum').grid,'26-Q','Fictional District Asylum #22 is at provisional printed grid 26-Q');
+for(const [id,grid] of Object.entries({whiteHouse:'12-I',governmentHospital:'25-R',
+ washingtonAirport:'9-P',georgetownCanal:'7-I',easternBranchFishing:'24-M'})){
+ assert.equal(byId(id).grid,grid,'Original guide source anchor for '+id+' has the right printed grid');
+}
+assert.ok(source('city.js').includes('mapGridReference,'),
+ 'Original printed coordinate mapping is also exported for map display use');
+assert.ok(app.includes("return window.FederalElectricCity.mapGridReference(x,y);"),
+ 'Map and registry share one source of truth for grid letters and numbers');
+
 console.log('PASS Washington guide: 40 numbered pins, 17 non-fiction / 23 fictional story cards, grid placement, export, pin confirmation and translucent colors');
