@@ -6,6 +6,12 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## Copyright and license
+
+**© 2026 Derek Sparks. All rights reserved. Published by Elderred Softworks LLC.**
+
+**Capital & Consequence is proprietary, not open source.** Public visibility of this GitHub repository does not grant permission to copy, modify, redistribute, resell, or use its original code, designs, writing, or assets in another project. Official unmodified builds may be run for personal, noncommercial gameplay under the narrow permission in [LICENSE](LICENSE). Third-party material retains its own applicable licenses, as documented in [LEGAL.md](LEGAL.md).
+
 ## October 26 source development: physical money and a lived-in Washington
 
 - **No mandatory bank.** Federal Electric cash sits at the works until the owner physically collects it. Business cash carried remains business property, distinct from personal cash. A fictional District Bank allows optional **business**, **personal checking**, and **general-purpose personal savings** accounts. Deposits and withdrawals require entering the bank. Company distributions/diversions require returning to Federal Electric; the ledger records improper personal withdrawals.
