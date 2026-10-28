@@ -33,6 +33,7 @@ function ensure(save){
  if(!e.fleet.electric)e.fleet.electric={};
  if(!Array.isArray(e.fleet.ledger))e.fleet.ledger=[];
  if(!Array.isArray(e.log))e.log=[];
+ if(!e.lastDate&&/^\d{4}-\d{2}-\d{2}$/.test(save.gameDate||''))e.lastDate=save.gameDate;
  return e;
 }
 function event(e,date,message){e.log.unshift(date+' · '+message);e.log=e.log.slice(0,40)}
@@ -46,6 +47,8 @@ function buy(save,kind){
  if(save.personalCash<required)return result('Unavailable: acquisition requires '+money(required)+' personal cash, including working capital.');
  save.personalCash-=required;subs.owned=true;subs.cash=reserve;
  event(e,save.gameDate,(kind==='steel'?'Potomac Iron & Steel Works':'Capital Branch Railway')+' acquired for '+money(PRICE[kind])+'. Subsidiary operating treasury '+money(reserve)+'.');
+ root.FE_SKILLS?.practice?.(save,'business-management',{amount:.65,difficulty:70,event:'acquire:'+kind,source:'Negotiating a subsidiary acquisition'});
+ root.FE_SKILLS?.practice?.(save,'negotiation',{amount:.35,difficulty:65,event:'acquire:'+kind,source:'Purchase agreement'});
  return result('Acquisition complete. Each company keeps its own operating cash.');
 }
 function millAction(save,kind){
@@ -55,6 +58,8 @@ function millAction(save,kind){
  const cost=kind==='rails'?235:160;if(m.cash<cost)return result('Unavailable: mill needs '+money(cost)+' for ore, coal and wages.');
  m.cash-=cost;m[kind]+=5;m.condition=Math.max(1,m.condition-1.5);
  ledger(m,save.gameDate,'Produce five tons of '+kind,-cost);event(e,save.gameDate,'Mill produced five tons of '+kind+'.');
+ root.FE_SKILLS?.practice?.(save,'metallurgy',{amount:.28,difficulty:45,event:'mill:'+kind+':'+m.ledger.length,source:'Working the iron and steel mill'});
+ root.FE_SKILLS?.practice?.(save,'manufacturing',{amount:.22,difficulty:45,event:'mill:'+kind+':'+m.ledger.length,source:'Rolling mill production'});
  return result('Produced five tons of '+kind+'.');
 }
 function merchantSale(save,kind){
@@ -62,6 +67,7 @@ function merchantSale(save,kind){
  if(!m.owned||save.phase!=='day'||save.paused||m[kind]<5)return result('Unavailable: five tons of stock and an open business day required.');
  const amount=kind==='rails'?315:225;m[kind]-=5;m.cash+=amount;
  ledger(m,save.gameDate,'Merchant bought five tons of '+kind,amount);
+ root.FE_SKILLS?.practice?.(save,'salesmanship',{amount:.26,difficulty:42,event:'sale:'+kind+':'+m.ledger.length,source:'Merchant steel sale'});
  return result('Merchant order delivered. Mill received '+money(amount)+'.');
 }
 function repairRails(save){
@@ -73,6 +79,8 @@ function repairRails(save){
  ledger(r,save.gameDate,'Track maintenance and rail replacements',-price);
  if(affiliated){m.rails-=5;m.cash+=price;ledger(m,save.gameDate,'Five tons rails sold to subsidiary railway',price)}
  event(e,save.gameDate,'Railroad repaired using '+(affiliated?'steelworks rails':'outside suppliers')+'.');
+ root.FE_SKILLS?.practice?.(save,'railway-operations',{amount:.31,difficulty:53,event:'repair:'+r.ledger.length,source:'Railway repair authorization'});
+ root.FE_SKILLS?.practice?.(save,'logistics',{amount:.2,difficulty:40,event:'repair:'+r.ledger.length,source:'Supply and track maintenance'});
  return result('Track restored to '+r.condition.toFixed(0)+'% condition.');
 }
 function buyShip(save,type){
@@ -83,6 +91,7 @@ function buyShip(save,type){
  const id=++f.nextId;
  f.ships.push({id,name:(type==='schooner'?'Schooner ':'Steamship ')+id,type,port:'Baltimore',condition:95,status:'in-port',trip:null,experience:0});
  event(e,save.gameDate,'Acquired '+type+' #'+id+' for '+money(price)+'; crew and home port assigned.');
+ root.FE_SKILLS?.practice?.(save,'business-management',{amount:.31,difficulty:50,event:'ship-buy:'+id,source:'Merchant shipping acquisition'});
  return result('Vessel added to merchant fleet.');
 }
 function daysFor(a,b,type){return Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*(type==='steamer'?.85:1.12)))}
@@ -100,6 +109,8 @@ function dispatch(save,id,dest,cargo,insured){
  const from=ship.port,days=daysFor(from,dest,ship.type);ship.status='at-sea';
  ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0};
  event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?'100 Federal Electric goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
+ root.FE_SKILLS?.practice?.(save,'logistics',{amount:.28,difficulty:51,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Scheduling cargo shipment'});
+ root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.17,difficulty:43,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Cargo manifest review'});
  return result('Voyage begun. Expected '+ship.trip.eta+'.');
 }
 function repairShip(save,id){
@@ -108,6 +119,7 @@ function repairShip(save,id){
  const price=Math.ceil((100-ship.condition)*(ship.type==='steamer'?38:24)+60);
  if(f.cash<price)return result('Unavailable: shipyard needs '+money(price)+' fleet cash.');
  f.cash-=price;ship.condition=100;ledger(f,save.gameDate,'Shipyard repair '+ship.name,-price);
+ root.FE_SKILLS?.practice?.(save,'ship-repair',{amount:.32,difficulty:56,event:'repair-ship:'+ship.id+':'+f.ledger.length,source:'Shipyard repairs'});
  return result(ship.name+' repaired to 100% condition.');
 }
 function verifyLead(save,name){
@@ -116,6 +128,8 @@ function verifyLead(save,name){
  if(f.cash<35)return result('Unavailable: port agent requires $35.00.');
  f.cash-=35;f.ports.push(name);f.leads.splice(idx,1);ledger(f,save.gameDate,'Port agent verification: '+name,-35);
  event(e,save.gameDate,'Commercial agent verified trade access in '+name+'.');
+ root.FE_SKILLS?.practice?.(save,'navigation',{amount:.2,difficulty:48,event:'verify:'+name,source:'New maritime route charts'});
+ root.FE_SKILLS?.practice?.(save,'negotiation',{amount:.28,difficulty:55,event:'verify:'+name,source:'Establishing overseas commercial contact'});
  return result('New trade route established: '+name+'.');
 }
 function sellElectric(save,port){
