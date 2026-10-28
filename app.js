@@ -3007,7 +3007,7 @@ function syncTitleMapFilters(){
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
   marker.classList.toggle('is-owned',!!location&&!!window.FE_EMPIRE?.ownedLocation?.(S,location.id));
  }
- // Filter changes may alter which markers need display-only collision spacing.
+ // Refresh fixed pin positions after filtering, without display offsets.
  titleMapPositionMarkers();
  const displayed=Array.from(layer.querySelectorAll('[data-map-location]')).filter(m=>!m.hidden);
  const pinStatus=document.getElementById('titleMapPinStatus');
@@ -3125,10 +3125,9 @@ function titleMapApply(){
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
 }
-// The source coordinates never move merely to make a pin visible.
-// Unverified points outside the printed guide dock on its edge. In ordinary
-// browsing, nearby pin CENTRES are separated in screen pixels so each of the
-// forty clickable numbers remains accessible at the initial fit scale.
+// Pins stay at their saved map coordinates at every zoom level. Off-print
+// provisional pins remain edge-docked solely to keep their directory entries
+// reachable on the fixed printed guide; the underlying coordinates do not move.
 function titleMapDisplayCoordinate(location,img){
  const w=img.naturalWidth,h=img.naturalHeight;
  const outside=titleMapGridAt(location.x,location.y)==='Outside map';
@@ -3137,97 +3136,25 @@ function titleMapDisplayCoordinate(location,img){
  return {x:x*w,y:y*h,outside};
 }
 function titleMapPositionMarkers(){
- const img=$('#titleMapImage'),layer=$('#titleMapMarkers');if(!img||!layer||!img.naturalWidth||!img.naturalHeight)return;
- const scale=titleMapState.scale,placed=[];
- const mapMarkers=Array.from(layer.querySelectorAll('[data-map-location]'));
- // Numbered badges can be nudged to avoid collisions, but a thin leader
- // always identifies the immutable real anchor. Never replace the artwork
- // or silently change a location's map-grid coordinates.
- let tethers=layer.querySelector?.('#titleMapPinTethers');
- if(!tethers&&document.createElementNS){
-  tethers=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  tethers.setAttribute('id','titleMapPinTethers');
-  tethers.classList.add('title-map-pin-tethers');
-  tethers.setAttribute('aria-hidden','true');
-  layer.prepend(tethers);
- }
- tethers?.replaceChildren();
- const order={'map-anchored':0,'area-located':1,'unverified':2};
- mapMarkers.sort((a,b)=>{
-  const x=TITLE_MAP_LOCATIONS.find(v=>v.id===a.dataset.mapLocation);
-  const y=TITLE_MAP_LOCATIONS.find(v=>v.id===b.dataset.mapLocation);
-  return (order[x?.placement]??3)-(order[y?.placement]??3)||(x?.n||0)-(y?.n||0);
- });
- const imgLeft=titleMapState.x+307/2048*img.naturalWidth*scale;
- const imgRight=titleMapState.x+1755/2048*img.naturalWidth*scale;
- const imgTop=titleMapState.y+50/1159*img.naturalHeight*scale;
- const imgBottom=titleMapState.y+839/1159*img.naturalHeight*scale;
- // The fixed description card can obscure lower-right places, including the
- // District Asylum (#22). Keep every numbered marker reachable while a card
- // is open, using temporary display offsets only, never saved map geometry.
- const viewport=$('#titleMapViewport'),infoCard=$('#titleMapLocationCard');
- const viewportRect=viewport?.getBoundingClientRect?.();
- const cardRect=infoCard&&!infoCard.hidden?infoCard.getBoundingClientRect?.():null;
- const blocked=viewportRect&&cardRect&&cardRect.width&&cardRect.height?{
-  left:cardRect.left-viewportRect.left-17,
-  top:cardRect.top-viewportRect.top-17,
-  right:cardRect.right-viewportRect.left+17,
-  bottom:cardRect.bottom-viewportRect.top+17
- }:null;
- const cardFree=p=>!blocked||p.x<blocked.left||p.x>blocked.right||p.y<blocked.top||p.y>blocked.bottom;
- for(const marker of mapMarkers){
+ const img=$('#titleMapImage'),layer=$('#titleMapMarkers');
+ if(!img||!layer||!img.naturalWidth||!img.naturalHeight)return;
+ // An assigned map position is always the pin's visible position.
+ // Zooming and panning transform this same anchor. No collision spreading,
+ // white anchor dots, leader lines, or automatic movement around open cards.
+ // Only the already-documented off-print provisional sites are edge-docked.
+ const scale=titleMapState.scale;
+ for(const marker of layer.querySelectorAll('[data-map-location]')){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  if(!location||marker.hidden)continue;
+  if(!location)continue;
   const point=titleMapDisplayCoordinate(location,img);
-  const cx=titleMapState.x+point.x*scale,cy=titleMapState.y+point.y*scale;
   marker.classList.toggle('is-edge-provisional',point.outside);
   marker.title=(window.FE_MAP_PIN_PALETTE?.info(location)?.name||'Washington location')+
    ' · '+pinDisplayName(location)+' · #'+location.n+
    ' · printed grid '+titleMapGridAt(location.x,location.y)+
    (point.outside?' · provisional marker at map edge; exact site outside guide':
     location.placement==='unverified'?' · approximate site, not historically verified':'');
-  let chosen={x:cx,y:cy};
-  // Editing uses the user's actual stored positions, not collision offsets.
-  if(!titleMapPinEdit){
-   const clear=p=>cardFree(p)&&placed.every(other=>Math.hypot(p.x-other.x,p.y-other.y)>=34);
-   if(!clear(chosen)){
-    let found=false;
-    // Includes enough room to escape a full-size detail panel, not just
-    // adjacent marker collisions. Preserve selected map grid/source x/y.
-    for(let radius=35;radius<=700&&!found;radius+=17){
-     for(let angle=0;angle<32;angle++){
-      const theta=2*Math.PI*angle/32;
-      const candidate={x:Math.max(imgLeft,Math.min(imgRight,cx+radius*Math.cos(theta))),
-       y:Math.max(imgTop,Math.min(imgBottom,cy+radius*Math.sin(theta)))};
-      if(clear(candidate)){chosen=candidate;found=true;break;}
-     }
-    }
-    if(!found&&blocked){
-     // Reduced-size screens may leave no room for all forty. Never claim a
-     // fabricated geographic position; a directory entry remains available.
-     console.warn('Map marker #'+location.n+' has no unobscured display slot.');
-    }
-   }
-   placed.push(chosen);
-  }
-  marker.style.left=chosen.x+'px';
-  marker.style.top=chosen.y+'px';
-  const displacement=Math.hypot(chosen.x-cx,chosen.y-cy);
-  marker.classList.toggle('has-map-tether',displacement>10);
-  if(displacement>10&&tethers&&document.createElementNS){
-   const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-   line.setAttribute('x1',String(cx));
-   line.setAttribute('y1',String(cy));
-   line.setAttribute('x2',String(chosen.x));
-   line.setAttribute('y2',String(chosen.y));
-   line.classList.add('title-map-pin-tether');
-   const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
-   dot.setAttribute('cx',String(cx));
-   dot.setAttribute('cy',String(cy));
-   dot.setAttribute('r','3.5');
-   dot.classList.add('title-map-pin-anchor');
-   tethers.append(line,dot);
-  }
+  marker.style.left=(titleMapState.x+point.x*scale)+'px';
+  marker.style.top=(titleMapState.y+point.y*scale)+'px';
  }
 }
 function closeTitleMapLocation(){
