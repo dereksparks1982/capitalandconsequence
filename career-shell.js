@@ -30,7 +30,36 @@
  const devPanel=document.getElementById('titleDevPanel');
  // Keep the complete existing dev panel on every screen instead of inside
  // the retired, inert illustrated title screen.
- if(devPanel)document.body.appendChild(devPanel);
+ if(devPanel){
+  // The panel is an opt-in diagnostic overlay, never visible at launch.
+  document.body.appendChild(devPanel);
+  devPanel.hidden=true;
+  const toggle=document.createElement('button');
+  toggle.id='careerDevToggle';
+  toggle.className='career-dev-toggle';
+  toggle.type='button';
+  toggle.textContent='DEV';
+  toggle.title='Toggle developer panel (Ctrl+Shift+D)';
+  toggle.setAttribute('aria-label','Open developer panel');
+  toggle.setAttribute('aria-controls','titleDevPanel');
+  toggle.setAttribute('aria-expanded','false');
+  const setOpen=open=>{
+   devPanel.hidden=!open;
+   toggle.setAttribute('aria-expanded',String(open));
+   toggle.setAttribute('aria-label',open?'Close developer panel':'Open developer panel');
+   toggle.textContent=open?'CLOSE DEV':'DEV';
+  };
+  toggle.addEventListener('click',()=>setOpen(devPanel.hidden));
+  document.addEventListener('keydown',e=>{
+   if(e.ctrlKey&&e.shiftKey&&e.code==='KeyD'){
+    e.preventDefault();e.stopPropagation();setOpen(devPanel.hidden);
+   }
+   if(e.key==='Escape'&&!devPanel.hidden){
+    setOpen(false);
+   }
+  });
+  document.body.appendChild(toggle);
+ }
  const dialog=document.getElementById('titleDialog');
  const map=document.getElementById('titleMapViewer');
  const roomOverlay=document.getElementById('cityRoomOverlay');
