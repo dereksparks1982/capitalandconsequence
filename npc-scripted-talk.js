@@ -39,6 +39,32 @@
   liWen:'我不清楚。',
   alexiRurik:"Не знаю."
  });
+ // Author-written public work facts. These describe an established role, never
+ // a completed shift, secret, payment, promotion, or promised appointment.
+ const DUTIES=Object.freeze({
+  charlieWhitcomb:"I own Federal Electric. We assemble and sell small electrical components and telegraph apparatus, and the workshop's orders come first.",
+  samHarlan:"I'm a Metropolitan Police patrolman assigned to the Hillsdale beat. I file reports about things I actually encounter.",
+  eliCrowe:"I work the entrance at Monsieur Delacroix's Le Paon d'Or. I am paid to manage the door, not speak for the owner.",
+  edmundWardman:"I work as an orderly at District Asylum, under other people's authority. I do not direct the institution.",
+  samuelTilden:"My public duties concern the executive government of these United States. Private petitions are not public announcements.",
+  madamStar:"I run the Star Club. We offer dinner and quiet company, not poker. My guests' private affairs are their own.",
+  luiDelacroix:"Le Paon d'Or is mine. I oversee the cabaret, its staff, and the evening entertainment.",
+  foremanSullivan:"I help with component assembly and the workshop's orders at Federal Electric. Saturday is for deliveries and ordinary errands, not another production shift.",
+  eddieDoyle:"I follow the racing book and arrange introductions. I will not call an unconfirmed rumor a result.",
+  inspectorHayes:"My business is police reports and public order. An investigation is not something I discuss over casual conversation.",
+  chenMei:"I work among the Chinatown merchants. Customers remember whether an order was actually fulfilled.",
+  liWen:"我在華盛頓的華人商業街做生意。",
+  alexiRurik:"Я ищу работу курьером. Обещание не означает выполненный заказ.",
+  annaPetrovna:"I maintain trade contacts and correspondence. I will not describe a proposed arrangement as a completed bargain.",
+  pavelOrlov:"I deal with merchants and business introductions. A conversation is not a signed contract.",
+  edwinBooth:"I study and rehearse dramatic roles at the National Theatre. I do not claim an engagement has been booked merely because we discussed one.",
+  josephJefferson:"I rehearse and perform at the National Theatre when my duties require it. Comedy needs as much preparation as tragedy.",
+  johnMcCullough:"My trade is the dramatic stage. I prepare my tragic roles with the National Theatre company.",
+  claraMorris:"I rehearse and perform dramatic parts at the National Theatre. My professional work is not drawing-room gossip.",
+  johnTRaymond:"I work in comedy at the National Theatre. It is still a profession that demands rehearsal.",
+  charlesHanford:"I'm learning backstage work and small parts at the National Theatre. I have a great deal left to learn.",
+  williamRapley:"I manage the National Theatre's bookings and accounts. Actors must rehearse, but a theatre must also keep its books."
+ });
  function answer(npc,utterance,context={}){
   if(!npc||typeof utterance!=='string'||!utterance.trim())throw Error('NPC and spoken question required');
   const q=utterance.trim().toLowerCase(),id=npc.id;
@@ -54,8 +80,16 @@
    return {handled:true,reply:CLUB[id]||un,kind:'club-opinion'};
   if(/\b(who are you|your name|what is your name|introduce yourself)\b/i.test(q))
    return {handled:true,reply:chinese?'我叫李文。':russian?"Меня зовут "+npc.name+".":"My name is "+npc.name+".",kind:'identity'};
-  if(/\b(your work|your job|what do you do|what is your occupation|where do you work)\b/i.test(q))
-   return {handled:true,reply:russian||chinese?un:"I am "+String(npc.occupation||'occupied with my affairs').toLowerCase()+".",kind:'occupation'};
+  if(/\b(your work|your job|what do you do|what is your occupation|where do you work|tell me about your work|how is work going)\b/i.test(q))
+   return {handled:true,reply:DUTIES[id]||(russian||chinese?un:"I work as "+String(npc.occupation||'a Washington resident').toLowerCase()+"."),kind:'occupation'};
+  if(/\b(what are you doing|what are you up to|what are you working on|what have you been doing today|how is your day going)\b/i.test(q)){
+   const actual=typeof context.activity==='string'?context.activity.trim().slice(0,140):'';
+   return {handled:true,reply:actual?(chinese?'我現在有自己的事情要辦。':russian?'У меня сейчас свои дела.':"At present I am "+actual.replace(/[.!?]+$/,'')+"."):un,kind:actual?'observed-activity':'uncertain'};
+  }
+  if(/\b(where do you live|where is your home|where do you sleep)\b/i.test(q))
+   return {handled:true,reply:id==='foremanSullivan'?"I rent a small room at Federal Electric. It is on the workshop premises.":un,kind:id==='foremanSullivan'?'known-residence':'uncertain'};
+  if(/\b(can we meet|meet me tomorrow|meet me later|promise to meet|make an appointment|give me a job|can you hire me)\b/i.test(q))
+   return {handled:true,reply:chinese?'我不能答應這件事。':russian?'Я не могу этого обещать.':"I cannot promise an appointment or a job simply because we've spoken. An actual arrangement would have to be made.",kind:'no-unearned-commitment'};
   if(/\b(where are we|what is this place|where am i)\b/i.test(q)){
    const place=String(context.place||'').trim();
    return {handled:true,reply:place?(chinese?'我們現在在華盛頓。':russian?"Мы сейчас в "+place+".":"We are at "+place+"."):un,kind:'present-place'};
