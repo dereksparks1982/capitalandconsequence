@@ -1,5 +1,7 @@
 # Character Codex: Edmund Wardman
 
+> **October 28 v0.6.90 source addendum:** Edmund now has his own autosaved **60-skill 0–100 registry**, with an initial emphasis on nursing, first aid, observation and study. This is not an unearned medical qualification, diagnosis authority or managerial promotion. The asylum is still operated by his **unnamed brother**. See [Codex Index](CODEX-INDEX.md) and [Current Handoff](HANDOFF-2026-10-28-v0.6.90-dev.md). Full Node/Electron acceptance remains outstanding.
+
 **Project:** Capital & Consequence  
 **Status:** Agreed character direction; documentation only, not a claim that gameplay is complete  
 **Recorded:** October 23, 2026  
