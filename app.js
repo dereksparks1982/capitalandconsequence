@@ -1938,11 +1938,8 @@ function openTitleNewspaper(){
 }
 function closeTitleScreen(){document.getElementById('titleScreen')?.classList.remove('desk-interior');if(!titleScreenDeskBreak)titleRadioLocationContext='office';closeTitleDialog();closeTitleMap();closeCityRoom();stopTitleCityAmbience(true);stopTitleNewspaperRustle(true);stopTitleFanAudio(true);stopTitleClockAudio(true);if(titleClockTimer){clearInterval(titleClockTimer);titleClockTimer=null}const screen=$('#titleScreen');if(screen)screen.hidden=true;startTitleRadioBackgroundFeeds();updateTitleRadioAudibility();if(!titleRadioOff&&titleRadioStationIndex===0)startTitleRadio()}
 function stepAwayFromDesk(){
- // The retired illustrated office title is never a navigation destination.
- // The personal career desk is the home UI; a step away opens the actual room
- // where the player stands, or the city map if they are at their own factory.
- const current=currentCityLocation();
- if(current.locationId!=='factory'&&openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'}))return;
+ // Leaving the desk opens the unchanged Washington map, where the player
+ // chooses the next location. Never teleport into a room on this click.
  openTitleMap();
 }
 function profileSummary(p){
