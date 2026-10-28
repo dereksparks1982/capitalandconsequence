@@ -468,7 +468,7 @@
     activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId,socialStyle:temperament?.style||'conversational'})}
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
-  const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name});
+  const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name,activity:actor.activity});
   let spoken=scripted?.handled?scripted.reply:null;
   if(!spoken&&model?.chat){
    try{
