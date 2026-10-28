@@ -204,7 +204,7 @@ check(read('underworld.js').includes("canUse('private-fight')")&&read('underworl
 check(appSource.includes("window.FE_VENUES?.canUse(venue)"),'Simulated poker cannot bypass card venue');
 check(appSource.includes('window.FE_VENUES?.canEnterLocation?.(loc.id)'),'Discovered secret sites appear only after unlock');
 const travelS={turnSerial:5,transport:{version:2,assets:[],events:[],journeys:[]}};
-const tctx={window:{FederalElectricCity:city,FE_TRANSPORT:{at:()=>[]},advanceWorldTime:()=>3600},S:travelS};
+const tctx={window:{FederalElectricCity:city,FE_TRANSPORT:{at:()=>[]},advanceWorldTime:()=>1800},S:travelS};
 vm.runInNewContext(read('journey-planner.js'),tctx,{filename:'journey-planner.js'});
 const travel=tctx.window.FE_TRAVEL;
 check(travel.modes.length===4,'Four distinct proposed transportation modes');
@@ -711,3 +711,34 @@ check(read('styles.css').includes('overscroll-behavior:contain;'),'Long map info
 check(read('npc-ai.js').includes("id:'boyMercer',name:'Boy Mercer'"),'Boy Mercer is a named independent resident');
 check(read('npc-scripted-talk.js').includes("boy-mercer-unverified-story"),"Boy Mercer's contradictions are speech, not world facts");
 check(read('npc-economy.js').includes("boyMercer:{occupation:"),'Boy gets no invented economic payroll');
+
+
+// Deterministic desk actions and incremental time advancement.
+check(index.indexOf('id="stepAwayDesk"')<index.indexOf('id="goToLunch"')&&
+ index.indexOf('id="goToLunch"')<index.indexOf('id="endDay"'),
+ 'Desk actions are Step Away, Go to Lunch, End Business Day, in exact order');
+check(appSource.includes("if(goToLunch)goToLunch.onclick=()=>")&&appSource.includes("secondsUntilLunch(S)"),
+ 'Lunch action advances player-controlled world to the same-day noon boundary');
+check(appSource.includes("secondsUntilBusinessClose(S)"),
+ 'End Business Day action simulates world through 5 PM');
+check(appSource.includes('function stepAwayFromDesk(){')&&
+ appSource.slice(appSource.indexOf('function stepAwayFromDesk(){'),appSource.indexOf('function profileSummary(')).includes('openTitleMap();'),
+ 'Step Away opens the city map, not an automatic room teleport');
+check(read('journey-planner.js').includes('const DEFAULT_TRAVEL_MINUTES=30;'),
+ 'Cross-location player travel requires exactly 30 provisional minutes');
+check(read('journey-planner.js').includes('function recordRoomMove(')&&
+ read('journey-planner.js').includes("window.advanceWorldTime?.(60,true)"),
+ 'Changing rooms within a location consumes one minute');
+check(appSource.includes('if(spent===60){save(true);render();}')&&
+ appSource.includes('function closeTitleMap(chargeTime=true)'),
+ 'A visible map closure consumes one minute and internal profile cleanup does not');
+check(appSource.includes("const spent=advanceWorldSimulation(60,true,'action');"),
+ 'Opening the map consumes one minute through authoritative clock');
+check(appSource.includes('window.FE_BETTING_TIME=Object.freeze({'),
+ 'Bet placement has a shared one-minute world simulation charge');
+for(const game of ['racing.js','oval-racing.js','boxing.js','underworld.js']){
+ check(read(game).includes('FE_BETTING_TIME.chargeMinute()'),game+' charges on accepted wagers');
+}
+check(appSource.includes('if(popup)window.FE_BETTING_TIME.chargeMinute()')&&
+ appSource.includes('window.FE_BETTING_TIME.chargeMinute();\n recordPokerResult'),
+ 'Poker only charges one minute on successful bet acceptance');
