@@ -3092,6 +3092,19 @@ function titleMapPositionMarkers(){
  const imgRight=titleMapState.x+1755/2048*img.naturalWidth*scale;
  const imgTop=titleMapState.y+50/1159*img.naturalHeight*scale;
  const imgBottom=titleMapState.y+839/1159*img.naturalHeight*scale;
+ // The fixed description card can obscure lower-right places, including the
+ // District Asylum (#22). Keep every numbered marker reachable while a card
+ // is open, using temporary display offsets only, never saved map geometry.
+ const viewport=$('#titleMapViewport'),infoCard=$('#titleMapLocationCard');
+ const viewportRect=viewport?.getBoundingClientRect?.();
+ const cardRect=infoCard&&!infoCard.hidden?infoCard.getBoundingClientRect?.():null;
+ const blocked=viewportRect&&cardRect&&cardRect.width&&cardRect.height?{
+  left:cardRect.left-viewportRect.left-17,
+  top:cardRect.top-viewportRect.top-17,
+  right:cardRect.right-viewportRect.left+17,
+  bottom:cardRect.bottom-viewportRect.top+17
+ }:null;
+ const cardFree=p=>!blocked||p.x<blocked.left||p.x>blocked.right||p.y<blocked.top||p.y>blocked.bottom;
  for(const marker of mapMarkers){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
   if(!location||marker.hidden)continue;
@@ -3105,16 +3118,23 @@ function titleMapPositionMarkers(){
   let chosen={x:cx,y:cy};
   // Editing uses the user's actual stored positions, not collision offsets.
   if(!titleMapPinEdit){
-   const clear=(p)=>placed.every(other=>Math.hypot(p.x-other.x,p.y-other.y)>=31);
+   const clear=p=>cardFree(p)&&placed.every(other=>Math.hypot(p.x-other.x,p.y-other.y)>=34);
    if(!clear(chosen)){
     let found=false;
-    for(let radius=32;radius<=160&&!found;radius+=16){
-     for(let angle=0;angle<24;angle++){
-      const theta=2*Math.PI*angle/24;
+    // Includes enough room to escape a full-size detail panel, not just
+    // adjacent marker collisions. Preserve selected map grid/source x/y.
+    for(let radius=35;radius<=700&&!found;radius+=17){
+     for(let angle=0;angle<32;angle++){
+      const theta=2*Math.PI*angle/32;
       const candidate={x:Math.max(imgLeft,Math.min(imgRight,cx+radius*Math.cos(theta))),
        y:Math.max(imgTop,Math.min(imgBottom,cy+radius*Math.sin(theta)))};
       if(clear(candidate)){chosen=candidate;found=true;break;}
      }
+    }
+    if(!found&&blocked){
+     // Reduced-size screens may leave no room for all forty. Never claim a
+     // fabricated geographic position; a directory entry remains available.
+     console.warn('Map marker #'+location.n+' has no unobscured display slot.');
     }
    }
    placed.push(chosen);
@@ -3127,6 +3147,7 @@ function closeTitleMapLocation(){
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
  titleMapSelectedLocationId=null;
  syncTitleMapFilters();
+ titleMapPositionMarkers();
 }
 // Preserve a visible explanation for historically locked and undiscovered locations.
 function mapTravelRestriction(location){
@@ -3226,6 +3247,7 @@ function openTitleMapLocation(id){
   travel.dataset.locationId=id;
  }
  card.hidden=false;
+ titleMapPositionMarkers();
 }
 function renameSelectedTitleMapPin(reset=false){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===titleMapSelectedLocationId),field=$('#titleMapPinName');
