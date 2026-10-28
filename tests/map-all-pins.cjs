@@ -36,16 +36,18 @@ const snippets=[
 const markers=pins.map(x=>({dataset:{mapLocation:x.id},hidden:false,style:{},
  classList:{toggle(){}},title:''}));
 const layer={classList:{toggle(){}},querySelectorAll:()=>markers};
+const mapViewport={getBoundingClientRect:()=>({left:0,top:0,right:940,bottom:555,width:940,height:555})};
+const infoCard={hidden:true,getBoundingClientRect:()=>({left:610,top:90,right:940,bottom:535,width:330,height:445})};
 const docElements={titleMapMarkers:layer,titleMapShowNames:{checked:false,setAttribute(){}},
- titleMapCategory:{value:'all'},titleMapOrigin:{value:'all'}};
+ titleMapCategory:{value:'all'},titleMapOrigin:{value:'all'},titleMapLocationCard:infoCard};
 const document={getElementById:id=>docElements[id]||null};
 const image={naturalWidth:2048,naturalHeight:1159};
-const sandbox={window:city.window,document,layer,img:image,TITLE_MAP_LOCATIONS:pins};
+const sandbox={window:city.window,document,layer,img:image,mapViewport,infoCard,TITLE_MAP_LOCATIONS:pins};
 sandbox.testCode=snippets+`
  const titleMapState={x:0,y:0,scale:.39},pinDisplayName=l=>l.name;
  let titleMapPinEdit=false,titleMapShowNames=false,titleMapSelectedLocationId=null;
  let titleMapCategory='all',titleMapOrigin='all',titleMapSearchQuery='';
- const $=id=>id==='#titleMapImage'?img:id==='#titleMapMarkers'?layer:null;
+ const $=id=>id==='#titleMapImage'?img:id==='#titleMapMarkers'?layer:id==='#titleMapViewport'?mapViewport:id==='#titleMapLocationCard'?infoCard:null;
  function renderTitleMapDirectory(){}
  function closeTitleMapLocation(){titleMapSelectedLocationId=null;}
  function checkPins(cat,origin,search){
@@ -72,6 +74,41 @@ sandbox.testCode=snippets+`
  if(checkPins('all','historical','').length!==17)throw Error('Historical filter must show 17');
  const broker=checkPins('all','all','broker').map(m=>m.dataset.mapLocation);
  if(broker.join(',')!=='brokerOffice')throw Error('Broker search must show broker #14');
+ // Every fixed or area-located historical source retains its genuine
+ // A–R / 1–30 grid. No algorithm is allowed to overwrite saved coordinates.
+ for(const [id,expected] of [['whiteHouse','12-I'],['governmentHospital','25-R'],
+  ['washingtonAirport','9-P'],['georgetownCanal','7-I'],['easternBranchFishing','24-M'],
+  ['blackwoodAsylum','26-Q']]){
+   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+   if(titleMapGridAt(location.x,location.y)!==expected)
+    throw Error('Wrong coordinate '+id+' expected '+expected);
+ }
+ const exactAnchors=['whiteHouse','governmentHospital','washingtonAirport',
+  'georgetownCanal','easternBranchFishing'];
+ for(const id of exactAnchors){
+  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+  const marker=coords.find(m=>m.id===id);
+  const expectedX=location.x*img.naturalWidth*titleMapState.scale;
+  const expectedY=location.y*img.naturalHeight*titleMapState.scale;
+  if(Math.abs(marker.x-expectedX)>0.001||Math.abs(marker.y-expectedY)>0.001)
+   throw Error('Map-anchored landmark badge shifted: '+id);
+ }
+ // Card covers a lower-right region in normal play: District Asylum #22 must
+ // still be visible and clickable alongside the other thirty-nine badges.
+ infoCard.hidden=false;
+ checkPins('all','all','');
+ const rect=infoCard.getBoundingClientRect();
+ const shifted=layer.querySelectorAll('[data-map-location]').map(m=>({
+   id:m.dataset.mapLocation,x:parseFloat(m.style.left),y:parseFloat(m.style.top)
+ }));
+ for(const badge of shifted){
+  if(badge.x>=rect.left-17&&badge.x<=rect.right+17&&
+     badge.y>=rect.top-17&&badge.y<=rect.bottom+17)
+    throw Error('Map info card obscures numbered pin '+badge.id);
+ }
+ if(!shifted.some(x=>x.id==='blackwoodAsylum'))throw Error('Asylum #22 missing');
+ infoCard.hidden=true;
+ checkPins('all','all','');
 `;
 vm.runInNewContext(sandbox.testCode,sandbox,{filename:'map-view-simulation.js'});
 const html=read('index.html'),css=read('styles.css');
