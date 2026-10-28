@@ -160,9 +160,11 @@ function placeBet(raceId){
  const horseId=Number($r('raceHorseSelect_'+d.id)?.value),type=$r('raceBetType_'+d.id)?.value||'win',wager=Math.max(1,Math.floor(Number($r('raceWager_'+d.id)?.value)||0));
  if(!r.participants.includes(horseId))return setRaceNote('Choose a horse in '+d.label+'.');
  const funding=$r('raceFunding_'+d.id)?.value==='company'?'company':'personal';
+ if(!window.FE_BETTING_TIME?.canPlace?.())return setRaceNote('The clock is paused or the bet cannot be entered right now.');
  const paid=window.FE_CASH_CUSTODY?.stake?.(S,funding,wager,'races');
  if(!paid?.ok)return setRaceNote(paid?.reason||'You lack the selected carried funds.');
  m.bets[d.id]={horseId,type,wager,settled:false,funding,custodyTicket:paid.ticket};
+ window.FE_BETTING_TIME.chargeMinute();
  window.updateCashHeader?.();
  save(true);renderRacing();setRaceNote('Wager accepted for '+d.label+': '+horse(horseId).name+' · '+type.toUpperCase()+' · '+cash(wager)+'.');
 }
