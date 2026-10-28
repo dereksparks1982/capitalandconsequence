@@ -1,3 +1,12 @@
+### Map visibility & optional IPO proposal · October 28, 2026
+- [x] Unfiltered All categories / All pins renders 40 of 40 numbered location markers, including #4 poker, #14 stockbroker, #39 National Theatre and #40 District Bank.
+- [x] Three edge-outlying provisional pins get display-only boundary docking; others get display-only collision spacing. No printed art, stored map coordinates or user-edited pin positions changed.
+- [x] Pins are colored by actual purpose, with National Theatre entertainment blue and finance offices commerce red, regardless of historical/fictional label.
+- [x] Red map close X permanently visible at upper-right inside map at desktop and narrow viewports.
+- [x] Focused V8 demonstration: 40 visible pins, zero missing, no close collisions at fit scale; finance filter shows #14/#40, historical filter 17, broker search #14.
+- [ ] Owner verification on Linux and full offline Node suite. Do not claim this v0.6.89 development patch accepted yet.
+- [ ] Optional IPO gameplay: sustained business performance + reputable broker/underwriter, accounting review, valuation/pricing, sale of shares, cash receipt, founder control and market quotation. No automatic listing or arbitrary mandatory calendar date. Existing Explore Public Offering remains disabled planning-only.
+
 ### v0.6.89 development continuation · incremental player time, October 28, 2026
 - [x] Exact desk button order: Step Away From Desk → Go to Lunch → End Business Day (New Game retained separately).
 - [x] Step Away opens the Washington map without automatically entering a room; opening and closing the visible map cost one minute apiece.
