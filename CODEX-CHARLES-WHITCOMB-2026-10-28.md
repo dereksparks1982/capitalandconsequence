@@ -12,7 +12,7 @@ The initial factory crew consists of **Charlie plus his one paid assistant, Sull
 
 Charlie has his own executive desk and records, factory production access and ordinary access to Washington according to time and room permissions. He keeps a **fully opened, flat paper copy** of the unchanged Washington In and Out Guide on his desk, without a frame, folds, added pins or a replacement artwork. Clicking the paper map opens the full interactive Washington map. The original map stays fixed for all game years.
 
-Federal Electric's **Washington pin is black from the beginning** because Charlie already owns it. Buying a small parcel of shares in another company does not by itself confer company ownership or change its pin color.
+Charlie's Capitol Hill residence is **Home (pin #12)**, not “Our Home”; its map pin is **black**, just like his factory. His existing map anchor/house address area are not moved. Federal Electric's **Washington pin is black from the beginning** because Charlie already owns it. Buying a small parcel of shares in another company does not by itself confer company ownership or change its pin color.
 
 ## Character freedom
 Charlie can work as an ordinary proprietor, improve production, seek contracts and personal relationships, or acquire more companies if he earns the means. He has **no guaranteed presidency, monopoly, wealth or industrial destiny**. Business ambitions and personal life both remain player-directed.
