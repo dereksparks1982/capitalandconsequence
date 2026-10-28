@@ -752,3 +752,18 @@ check(read('map-pin-palette.js').includes("'theatre'].includes(category)"),
 check(read('styles.css').includes('#titleMapClose.title-map-close')&&
  read('styles.css').includes('background:#9c282a;color:#fff7ec'),
  'Close map X is red and absolutely positioned inside game viewport');
+
+
+check(index.includes('id="titleMapPinStatus"')&&
+ appSource.includes("pinStatus.textContent=' · '+displayed.length+'/'+TITLE_MAP_LOCATIONS.length"),
+ 'Header shows actual unfiltered numbered markers loaded');
+check(read('city.js').includes('mapGridReference,')&&
+ appSource.includes('return window.FederalElectricCity.mapGridReference(x,y);'),
+ 'A–R and 1–30 grid conversion has a single authoritative registry source');
+check(read('styles.css').includes('.title-map-pin-tethers')&&
+ appSource.includes("line.classList.add('title-map-pin-tether')")&&
+ appSource.includes("dot.classList.add('title-map-pin-anchor')"),
+ 'Visually shifted pin badges have a stem and a dot at their immutable source position');
+check(appSource.includes("const cardRect=infoCard&&!infoCard.hidden?")&&
+ appSource.includes("const cardFree=p=>!blocked"),
+ 'Info card may not swallow map pins such as District Asylum #22');
