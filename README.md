@@ -6,6 +6,16 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## October 28, 2026 · complete Washington pin visibility correction
+
+**All 40 numbered locations now appear at once when Locations = All categories, Pins = All pins, and search is empty.** Previous code suppressed fifteen unverified locations even when filters were clear, including neighborhood poker #4, stockbroker #14, Le Paon d’Or #15, National Theatre #39, and District Bank #40. Three unverified pin coordinates (#18, #28, #34) also fell beyond the printable map area. Their original registry and user-edited coordinates are **unchanged**; their clickable symbols are now displayed at the nearest edge with an explicit approximate-location tooltip. Densely overlapping pin symbols are temporarily spread **for display only** at the current zoom. All numbers 1–40 remain directly clickable, with ordinary category and Fiction/Non-Fiction filters still functioning.
+
+**Category colors:** Government gold, commerce/finance red, entertainment/social blue, Hillsdale/Berry Farm brown, parks/universities green, religion purple, industry charcoal, water teal, healthcare light cream, housing/other gray. National Theatre #39 is explicitly entertainment blue, and broker #14 / bank #40 are commerce red. Each pin retains its established category metadata; source historical/fictional identities remain separate.
+
+**Close map button:** A high-contrast red X is absolutely positioned inside the top-right corner of the map window, regardless of toolbar width, wrapping or Ubuntu display size. The already approved one-minute map closing charge remains unchanged.
+
+**Federal Electric stock exchange:** The existing **Explore Public Offering** panel is a planning scaffold only. It does **not** list shares or sell company equity. Proposed next-stage gameplay: let the owner elect an IPO once the company has sustained real accounts and an underwriting arrangement, not after an arbitrary year or mandatory World's Fair. Model valuation, offering price, founder retained stake, dilution, fees, board/control and ongoing market quotation. No IPO has been activated in this patch.
+
 ## October 28, 2026 · v0.6.89 incremental time-actions build
 
 **Requested desk controls, exact order:** **Step Away From Desk** opens the original Washington map rather than a room; **Go to Lunch** advances the player's authoritative world clock to **12:00 PM the same day** and simulates all intervening production, residents, market and events without moving/eating automatically; **End Business Day** advances the current workday to the **5:00 PM closing bell**, simulating the missing hours without moving or sleeping. At noon or later Go to Lunch does not jump to the next day.
