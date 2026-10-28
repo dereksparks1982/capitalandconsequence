@@ -13,13 +13,19 @@
 - **Brokerage:** The stock-market trading screen is no longer accessible through the executive desk. The physical stockbroker's office has a searchable, sector-filtered list derived from the exact period-eligible market registry, with a quotation-history detail card. Orders require an in-person broker visit until a repeated-visit relationship grants **telegram instructions from the executive office**. Ordinary telephone orders are not introduced. Issued shares and currently offered shares are finite per fictional period corporation.
 - **Washington office and map:** The existing CITY MAP tile is replaced with a **flat, fully opened miniature of the exact original paper Washington map on the desk**, without pins or a frame. Click it for the full map. The 40 original map pins retain their exact coordinate anchors, with hovered labels above neighboring markers. Owned mapped places (including Federal Electric from the beginning) display **black markers** without relocating their coordinates. Newly acquired railroad/mill sites have no new Washington pin until a location is explicitly approved.
 
+## Washington map pin correction · owner revision on October 28
+
+The owner rejected the collision-avoidance UI after seeing white anchor dots, connecting lines and numbered markers that drifted on zoom. **Removed** the automatic on-screen pin offsets and the SVG dots/leader lines. All 40 numbered pins now use one fixed assigned map-image coordinate at every zoom level; opening an information card no longer moves them. Hover, focus and selection bring a pin and its name above neighboring markers. Geographic overlaps are allowed; the directory is available for covered places. Only the existing three outside-the-printed-guide provisional sites continue to dock to the map edge with explicit warnings. The original printed Washington artwork, user-saved pin coordinates, names and map-grid transformation were left unchanged.
+
+Added a map regression requiring stable anchors across zoom, pan and open information cards, and forbidding the former collision/dot/line code. These changes supersede any earlier notes referring to a 34-pixel pin-spacing contract.
+
 ## Quality assurance and source-audit response
 
 The owner supplied an independent six-page source audit by Claude, based on source snapshot **3021283**, reporting **77 test files, 66 passed, 11 failed**. The audit explicitly did **not** run Electron. It found a fail-fast QA command, stale hard-coded counts, brittle source-text assertions, a missing Go There test stub, and a possible map pin/Go There defect.
 
 Corrections applied here:
 - Replaced the chained npm test command with **`node tests/run-all.cjs`**, which executes **every test** and reports the entire failure list locally. The local shell checker also syntax-checks JS and does not use GitHub Actions, network, `set -e`, or a forced terminal exit.
-- Updated stale 38→40 map and 16/22→23 NPC counts, 16→17 historical map facts, the physical market delivery count after extra neighborhood shops, the current 34-pixel pin-spacing contract and developer-room guard text.
+- Updated stale 38→40 map and 16/22→23 NPC counts, 16→17 historical map facts, the physical market delivery count after extra neighborhood shops, the formerly applied 34-pixel pin-spacing contract (removed in the subsequent owner revision) and developer-room guard text.
 - Repaired the Go There test's missing cash-review stub; added a test asserting that **rejected travel cannot relocate, close the map, or autosave the destination**.
 - Changed the live Go There bridge so its provisional 30-minute travel cost or one-minute room-walk charge **must be successfully recorded before committing the destination**. Secondary room-panel exceptions can no longer waive travel time. The original map art and approved desk geometry were not changed.
 - Added focused tests for the 60-skill registry and new industrial, merchant-shipping, fishing-boat and legendary-fish mechanics.
