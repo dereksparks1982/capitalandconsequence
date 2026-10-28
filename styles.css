@@ -873,6 +873,14 @@ body.elephant-easter-egg-open{overflow:hidden}
  box-shadow:0 8px 24px rgba(0,0,0,.7);
  pointer-events:auto;
 }
+/* Long place descriptions and historical notes scroll INSIDE the information
+   card. Pointer wheel here must never zoom the background map. */
+.title-map-location-card{
+ max-height:calc(100% - 24px);
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ scrollbar-gutter:stable;
+}
 .title-map-location-card[hidden]{display:none}
 .title-map-location-card strong{
  display:block;
