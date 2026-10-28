@@ -2959,6 +2959,8 @@ function syncTitleMapFilters(){
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
  }
+ // Filter changes may alter which markers need display-only collision spacing.
+ titleMapPositionMarkers();
  if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&titleMapMatchesFilters(v)))closeTitleMapLocation();
  renderTitleMapDirectory();
 }
@@ -3092,7 +3094,7 @@ function titleMapPositionMarkers(){
  const imgBottom=titleMapState.y+839/1159*img.naturalHeight*scale;
  for(const marker of mapMarkers){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  if(!location)continue;
+  if(!location||marker.hidden)continue;
   const point=titleMapDisplayCoordinate(location,img);
   const cx=titleMapState.x+point.x*scale,cy=titleMapState.y+point.y*scale;
   marker.classList.toggle('is-edge-provisional',point.outside);
