@@ -188,7 +188,7 @@
   },
   {
    id:'home',
-   name:'Our Home',
+   name:'Home',
    area:'Capitol Hill · near Eastern Market, 7th and C Streets SE (proposed)',
    category:'residence',
    description:'A modest middle-class brick rowhouse in Capitol Hill. The household and furnishings have not yet been decided.',
