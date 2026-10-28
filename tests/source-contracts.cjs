@@ -541,7 +541,9 @@ clock.spendUntil(futureClock,'1890-01-07T09:00',e=>received.push(e.type));
 check(received.join(',')==='arrive','Long action time advances queued events once');
 check(clock.calendar(JSON.parse(JSON.stringify(futureClock))).iso==='1890-01-07T09:00','World calendar round-trips in per-profile JSON without offline advancement');
 check(appSource.includes('function initTitleMapFilters()')&&appSource.includes('function syncTitleMapFilters()'),'Map category filters and Show Names controls are wired');
-check(appSource.includes("marker.hidden=!location||(titleMapCategory!=='all'")&&appSource.includes("location.category!==titleMapCategory"),'Category filters hide only nonmatching actual map markers');
+check(appSource.includes("marker.hidden=!location||!titleMapMatchesFilters(location)")&&
+ appSource.includes("titleMapCategory==='all'||location.category===titleMapCategory"),
+ 'All 40 map markers visible by default; only chosen filters hide them');
 check(appSource.includes('select.onchange=()=>{titleMapCategory=select.value;syncTitleMapFilters()}'),'Changing categories updates map without relocating player');
 check(appSource.includes('names.onchange=()=>{titleMapShowNames=names.checked;syncTitleMapFilters()}'),'Names toggle controls map labels');
 check(index.includes('id="titleMapShowNames"')&&index.includes('id="titleMapCategory"'),'Map controls are present');
@@ -644,7 +646,7 @@ check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').inc
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
 check(pkg.scripts['test:source'].includes('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
-check(city.mapLocations().length===38,'Six fishing pins remain mapped alongside the historical monastery and market destinations');
+check(city.mapLocations().length===40,'All forty numbered locations include broker 14 and future theatre/bank sites');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
@@ -742,3 +744,11 @@ for(const game of ['racing.js','oval-racing.js','boxing.js','underworld.js']){
 check(appSource.includes('if(popup)window.FE_BETTING_TIME.chargeMinute()')&&
  appSource.includes('window.FE_BETTING_TIME.chargeMinute();\n recordPokerResult'),
  'Poker only charges one minute on successful bet acceptance');
+
+check(pins.find(v=>v.n===4)?.id==='workingPoker'&&pins.find(v=>v.n===14)?.id==='brokerOffice',
+ 'Previously hidden locations 4 and 14 are real entries and unfiltered pins');
+check(read('map-pin-palette.js').includes("'theatre'].includes(category)"),
+ 'Theatre pins inherit the entertainment-category color');
+check(read('styles.css').includes('#titleMapClose.title-map-close')&&
+ read('styles.css').includes('background:#9c282a;color:#fff7ec'),
+ 'Close map X is red and absolutely positioned inside game viewport');
