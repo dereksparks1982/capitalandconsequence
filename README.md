@@ -6,6 +6,12 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
+## October 28, 2026 · original Washington guide coordinate audit
+
+**Forty-number audit completed:** all numbers **1–40** have unique map identities. The printed coordinate reference uses numbered **1–30** columns and lettered **A–R** rows, drawn exclusively from the original unchanged Washington In and Out Guide. The same coordinate converter now powers the city registry, marker tooltips, renaming cards and searches. Five directly map-anchored historical references have checked grids: White House **#23 at 12-I**, Government Hospital **#16 at 25-R**, Washington Airport **#25 at 9-P**, Georgetown Canal **#32 at 7-I** and Eastern Branch shoreline **#33 at 24-M**. The invented District Asylum **#22** has an **approximate 26-Q** location, not a fabricated historical building.
+
+**Visibility acceptance:** The initial unfiltered map shows **40/40 numbered pins rendered** next to its heading. When an information card would obscure numbered markers, badges temporarily move aside and show thin leader lines ending in a dot at the **original source position**. The underlying image, historical anchors, normalized pin coordinates and edited names are not changed by this display-only adjustment. Source checks exercise the map with the information card open/closed, including #22, and the five exact map-anchored historical references. Three off-guide provisional destinations display on the printed map edge and retain their explicit off-guide warning rather than being assigned fictional historical grid cells. Complete results: [map coordinate audit](MAP-PIN-COORDINATE-AUDIT-2026-10-28.md).
+
 ## October 28, 2026 · complete Washington pin visibility correction
 
 **All 40 numbered locations now appear at once when Locations = All categories, Pins = All pins, and search is empty.** Previous code suppressed fifteen unverified locations even when filters were clear, including neighborhood poker #4, stockbroker #14, Le Paon d’Or #15, National Theatre #39, and District Bank #40. Three unverified pin coordinates (#18, #28, #34) also fell beyond the printable map area. Their original registry and user-edited coordinates are **unchanged**; their clickable symbols are now displayed at the nearest edge with an explicit approximate-location tooltip. Densely overlapping pin symbols are temporarily spread **for display only** at the current zoom. All numbers 1–40 remain directly clickable, with ordinary category and Fiction/Non-Fiction filters still functioning.
