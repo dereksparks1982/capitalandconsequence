@@ -1,5 +1,7 @@
 # Character Codex: Samuel “Sam” Harlan
 
+> **October 28 v0.6.90 source addendum:** All **60** use-based 0–100 skills now exist for Sam's saved character profile. His starting baseline emphasizes Observation and police duties, but he is still a rookie patrolman, not an automatically promoted detective. This skill registry does not alter the approved Hillsdale beat, private relationships, permissions or character canon. See [Codex Index](CODEX-INDEX.md) and [Current Handoff](HANDOFF-2026-10-28-v0.6.90-dev.md); complete Node/Electron acceptance remains pending.
+
 **Project:** Capital & Consequence
 **Canonical character:** Samuel “Sam” Harlan
 **Career route ID:** `investigator` (persisted legacy key; **starting job is patrolman**, not investigator)
