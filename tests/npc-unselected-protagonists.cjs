@@ -53,11 +53,13 @@ function scenario(route){
  const clockBefore=JSON.stringify(S.worldCalendar);
  const npc=window.FE_NPC_AI;
  assert.equal(npc.syncClock(),true);
- assert.equal(npc.list().length,21,'18 residents and exactly three autonomous protagonists');
+ assert.equal(npc.list().length,22,'19 residents and exactly three autonomous protagonists');
  const ids=npc.list().map(x=>x.id);
  assert.equal(ids.includes(main[route]),false,'Never spawn the active playable character');
  assert.equal(npc.inspect(main[route]),null,'Player life is not an NPC inspection');
  assert.equal(S.npcSimulation.agents[main[route]],undefined);
+ assert.ok(ids.includes('boyMercer'),'Boy Mercer is simulated as a separate Washington resident');
+ assert.equal(npc.inspect('boyMercer')?.economy?.earnedCents,0,'Boy earns no invented wages');
  assert.equal(Object.values(main).filter(id=>ids.includes(id)).length,3);
  assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
    S.npcSimulation.agents[id]?.needs?.version===1),
