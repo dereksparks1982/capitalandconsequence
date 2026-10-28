@@ -20,6 +20,8 @@ The new work includes **all 60 saved character skills (0–100)**; an unfolded m
 
 [Detailed v0.6.90 development notes and audit response](docs/RELEASE-NOTES-v0.6.90-dev.md).
 
+**For the next ChatGPT thread:** [October 28 complete source handoff](HANDOFF-2026-10-28-v0.6.90-dev.md) · [Character Codex Index](CODEX-INDEX.md) · [Binding Decisions](DECISIONS.md) · [Permanent Map Canon](MAP-CANON.md).
+
 
 ## October 28, 2026 · original Washington guide coordinate audit
 
