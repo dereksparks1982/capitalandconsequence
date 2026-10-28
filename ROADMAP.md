@@ -1,3 +1,5 @@
+[Current handoff: v0.6.90-dev, 28 Oct 2026](HANDOFF-2026-10-28-v0.6.90-dev.md) · [Canonical owner decisions](DECISIONS.md) · [Character Codex](CODEX-INDEX.md). **Read newest headings first: older completed source slices are archival and may describe superseded UI behaviors.**
+
 ## October 28, 2026 owner correction · anchored Washington pins
 
 - [x] Remove **white anchor dots, leader lines, and dynamic collision-spreading**. User rejected pins jumping between zoom levels.
@@ -25,17 +27,17 @@ See [v0.6.90 development notes](docs/RELEASE-NOTES-v0.6.90-dev.md).
 - [x] Use a single printed-image grid converter in `city.js` for the map, location card and directory.
 - [x] Correct inconsistent descriptive grid labels: White House 12-I, Government Hospital 25-R, Washington Airport 9-P, Georgetown Canal 7-I, Eastern Branch 24-M.
 - [x] Show #22 District Asylum at its fictional approximate sector 26-Q without claiming a real historic asylum there.
-- [x] When the map information card obscures badges, reposition their *display symbols only*; leader lines and dots identify unchanged source anchor locations. Preserve historical anchors and original image art.
+- [x] **ARCHIVED v0.6.89 experiment, REVERSED at owner request:** Previously repositioned badges behind information cards with white dots and leader lines. The current source removes this behavior. Never reintroduce shifting; preserve original anchors and map art.
 - [x] Add on-map true rendered pin count (40/40 when no filters) and regression check for card obstruction and five fixed anchors.
 - [x] Publish a complete forty-row pinned image-grid audit for approval.
 - [ ] Owner actual Ubuntu run, full offline Node suite, check all forty click targets. No GitHub Actions.
 
 ### Map visibility & optional IPO proposal · October 28, 2026
 - [x] Unfiltered All categories / All pins renders 40 of 40 numbered location markers, including #4 poker, #14 stockbroker, #39 National Theatre and #40 District Bank.
-- [x] Three edge-outlying provisional pins get display-only boundary docking; others get display-only collision spacing. No printed art, stored map coordinates or user-edited pin positions changed.
+- [x] **Historical v0.6.89 only; collision spacing removed in v0.6.90:** Three off-guide sites remain warning-labeled edge-docked. All other pins retain their exact displayed map anchors on zoom/pan, without white dots or lines.
 - [x] Pins are colored by actual purpose, with National Theatre entertainment blue and finance offices commerce red, regardless of historical/fictional label.
 - [x] Red map close X permanently visible at upper-right inside map at desktop and narrow viewports.
-- [x] Focused V8 demonstration: 40 visible pins, zero missing, no close collisions at fit scale; finance filter shows #14/#40, historical filter 17, broker search #14.
+- [x] **Archived prior QA:** An earlier V8 demonstration checked 40 registered pins and artificially spaced markers. That no-overlap assertion was intentionally discarded when the owner rejected drifting pins; current tests now assert stable coordinates, filters and 40 directory entries.
 - [ ] Owner verification on Linux and full offline Node suite. Do not claim this v0.6.89 development patch accepted yet.
 - [ ] Optional IPO gameplay: sustained business performance + reputable broker/underwriter, accounting review, valuation/pricing, sale of shares, cash receipt, founder control and market quotation. No automatic listing or arbitrary mandatory calendar date. Existing Explore Public Offering remains disabled planning-only.
 
