@@ -41,7 +41,7 @@ const docElements={titleMapMarkers:layer,titleMapShowNames:{checked:false,setAtt
 const document={getElementById:id=>docElements[id]||null};
 const image={naturalWidth:2048,naturalHeight:1159};
 const sandbox={window:city.window,document,layer,img:image,TITLE_MAP_LOCATIONS:pins};
-sandbox.testCode=snippets+\`
+sandbox.testCode=snippets+`
  const titleMapState={x:0,y:0,scale:.39},pinDisplayName=l=>l.name;
  let titleMapPinEdit=false,titleMapShowNames=false,titleMapSelectedLocationId=null;
  let titleMapCategory='all',titleMapOrigin='all',titleMapSearchQuery='';
@@ -72,7 +72,7 @@ sandbox.testCode=snippets+\`
  if(checkPins('all','historical','').length!==17)throw Error('Historical filter must show 17');
  const broker=checkPins('all','all','broker').map(m=>m.dataset.mapLocation);
  if(broker.join(',')!=='brokerOffice')throw Error('Broker search must show broker #14');
-\`;
+`;
 vm.runInNewContext(sandbox.testCode,sandbox,{filename:'map-view-simulation.js'});
 const html=read('index.html'),css=read('styles.css');
 assert.ok(html.includes('src="assets/artwork/maps/title-map-1938.jpg?'),'Immutable original guide map remains');
