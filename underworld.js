@@ -123,7 +123,8 @@ function placePrivateBet(){
  if(S.phase===e.phase&&S.dayRemaining<=e.threshold)return setNote('Betting is closed for that private fight.');
  if(e.bet)return setNote('You already have a wager on the private fight.');
  const id=Number($u('privateFightPick')?.value),wager=Math.max(1,Math.floor(Number($u('privateFightWager')?.value)||0));if(!e.fighters.includes(id))return;if(S.personalCash<wager)return setNote('Not enough personal cash.');
- S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};save(true);render();setNote('Private-fight wager accepted on '+pf(id).name+' · '+cash(wager)+'.');
+ if(!window.FE_BETTING_TIME?.canPlace?.())return setNote('The game clock is paused or unavailable.');
+ S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};window.FE_BETTING_TIME.chargeMinute();save(true);render();setNote('Private-fight wager accepted on '+pf(id).name+' · '+cash(wager)+'.');
 }
 function placeCockBet(){
  if(!window.FE_VENUES?.canUse('cockfight'))return setNote('You must visit the private cockfighting venue.');
@@ -132,7 +133,8 @@ function placeCockBet(){
  if(S.phase===e.phase&&S.dayRemaining<=e.threshold)return setNote('Betting is closed for that match.');
  if(e.bet)return setNote('You already have a wager on the cockfight.');
  const id=Number($u('cockfightPick')?.value),wager=Math.max(1,Math.floor(Number($u('cockfightWager')?.value)||0));if(!e.birds.includes(id))return;if(S.personalCash<wager)return setNote('Not enough personal cash.');
- S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};save(true);render();setNote('Cockfight wager accepted on '+bird(id).name+' · '+cash(wager)+'.');
+ if(!window.FE_BETTING_TIME?.canPlace?.())return setNote('The game clock is paused or unavailable.');
+ S.personalCash-=wager;e.bet={pickId:id,wager,settled:false};window.FE_BETTING_TIME.chargeMinute();save(true);render();setNote('Cockfight wager accepted on '+bird(id).name+' · '+cash(wager)+'.');
 }
 function setNote(t){const el=$u('underworldNote');if(el)el.textContent=t}
 function volunteerFight(){
