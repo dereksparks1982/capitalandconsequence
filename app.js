@@ -835,7 +835,7 @@ function renderBrokerOffice(){
       const series=stockHistorySeries(k),price=security.open||security.price;
       detail.hidden=false;
       detail.innerHTML='<h5>'+escapeHtml(security.name)+' · '+k+'</h5><p>Posted quote '+cash(price)+' · '+series.length+' recorded trading sessions · Historical prices, not future predictions.</p>'+
-       stockChartSvg(series,security.name)+'<p class="fine">Shares issued: '+(security.issuedShares||'not surveyed')+' · Shares offered for sale: '+(security.availableShares??'not surveyed')+'. Orders are handled through the broker.</p>';
+       stockChartSvg(series,security.name)+'<p class="fine">Shares issued: '+(security.issuedShares||'not surveyed')+' · Shares offered for sale: '+(security.sharesOffered??'not surveyed')+'. Orders are handled through the broker.</p>';
      }
      document.getElementById('brokerStockQuantity')?.focus();
     };
