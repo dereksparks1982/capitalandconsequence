@@ -4,10 +4,10 @@ const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 const ctx={window:{}};vm.runInNewContext(read('city.js'),ctx);
 const city=ctx.window.FederalElectricCity,access=require('../city-access.js');
 const ids=['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'];
-assert.equal(city.mapLocations().length,38);
+assert.equal(city.mapLocations().length,40);
 assert.deepEqual(ids.map(id=>city.getLocation(id).map.n),[29,30,31,32,33,34]);
 const numbers=city.mapLocations().map(x=>x.n);
-assert.equal(new Set(numbers).size,38);
+assert.equal(new Set(numbers).size,40);
 for(const id of ids){
  const loc=city.getLocation(id);
  assert.equal(loc.category,'leisure',id);
@@ -28,4 +28,4 @@ assert.ok(app.includes("label.textContent=pinDisplayName(location)"),'Pin label 
 assert.ok(app.includes("location.pinLabel=p.label.trim()"),'Names restore with the saved profile');
 assert.ok(app.includes("location.pinLabel=''"),'Switching profiles clears the previous custom pin name');
 assert.ok(app.includes("mapTravelRestriction(location)")&&app.includes("entry.availableUntil&&S.gameDate>entry.availableUntil"),'Historic lake is inaccessible after filling');
-console.log('PASS 38 map pins, six historical leisure fishing destinations, access limits, filters and safely persisted custom labels');
+console.log('PASS 40 map pins, six historical leisure fishing destinations, access limits, filters and safely persisted custom labels');
