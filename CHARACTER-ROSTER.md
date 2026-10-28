@@ -1,6 +1,8 @@
 # Character Roster · Capital & Consequence
 
-**Status:** Working source + approved story decisions as of October 24, 2026. **Names are not proof of complete AI routines or historical authenticity.** Use this register before naming any NPC. Entries labeled *planned* are not coded yet.
+**Status:** Approved story decisions and verified source identities, refreshed October 28, 2026. **Names are not proof of complete AI routines or historical authenticity.** Use this register before naming any NPC. Entries labeled *planned* are not coded yet.
+
+> **Current source and canon note (v0.6.90-dev):** All four playable characters have separate autosaved **60-skill** profiles, under **Journal → Skills**; roles have different skill baselines. Only a subset of actions currently awards skill. Charlie starts as owner of Federal Electric, and the player can later purchase separate steelworks, railroad and shipping businesses. The original 40-pin Washington map is fixed; its white anchor dots, leader lines and collision shifting were removed after owner rejection. The full Node suite and actual Electron playthrough have not been verified in this checkpoint. Character-specific documentation: [Codex index](CODEX-INDEX.md).
 
 ## Four protagonists
 
@@ -16,7 +18,7 @@
 | Person | Occupation / character relationship | Current status |
 | --- | --- | --- |
 | **Eleanor Victoria Ashcroft**, known as **Madam Star** | British head of **Star Club**; rules, refined table service, upscale food and drink, discreet companionship and musicians; **NO CARDS OR GAMBLING**. Fictional club founded by a president **not yet selected**. | Name approved in design; current source NPC uses alias only |
-| **Lucien Étienne “Lui” Delacroix** | French, gay, decadent cabaret/nightclub proprietor, employer of Eli. **Never “Tony.”** | Name approved; live location still says *Second Nightclub* |
+| **Lucien Étienne “Lui” Delacroix** | French, gay, decadent cabaret/nightclub proprietor of **Le Paon d’Or (The Golden Peacock)**, Eli's employer. **Never “Tony.”** | Approved name and public venue name; internal location ID remains `secondNightclub` |
 | **Sullivan** | Charlie's **sole workshop assistant**, not a foreman; $6/five-day week, 25¢ weekly factory room rent. First name undecided. | Working source; legacy internal ID `foremanSullivan` |
 | **Eddie Doyle** | Bookmaker, social intermediary for Commerce Club poker. | Source NPC |
 | **Inspector Arthur Hayes** | Metropolitan Police inspector. | Source NPC |
@@ -35,7 +37,7 @@
 
 ### People requiring names or further approval
 
-Edmund Wardman's older brother; the **two rival livery brothers**; owners and staff of **Capital Meats**, **District Meats**, the **Hillsdale Butcher**, and the **Hillsdale Market**; Hillsdale baker, grocery, doctor, pharmacist, boardinghouse and other merchants; Chinatown meat sellers; the allegedly corrupt police captain; **the president who established Star Club**; the final public name of Lui's nightclub. **Medford Meats / Medford Meat Packing was explicitly SCRAPPED.**
+Edmund Wardman's older brother; the **two rival livery brothers**; owners and staff of **Capital Meats**, **District Meats**, the **Hillsdale Butcher**, and the **Hillsdale Market**; Hillsdale baker, grocery, doctor, pharmacist, boardinghouse and other merchants; Chinatown meat sellers; the allegedly corrupt police captain; **the president who established Star Club**. **Medford Meats / Medford Meat Packing was explicitly SCRAPPED.**
 
 ### Poker participants currently in code
 
