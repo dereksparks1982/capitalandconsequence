@@ -393,7 +393,7 @@ function render(){
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
  document.body.classList.toggle('component-era',!!S.componentWorks);
  if(!periodRadioAvailable()){if(titleRadioAudio)titleRadioAudio.pause();for(const feed of titleRadioBackgroundFeeds.values())feed.pause()}
- $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();const rest=$('#endDay');if(rest)rest.textContent='Rest Until Morning';renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day Early':S.phase==='night'?'Retire Early':'Daily Report Open';endBtn.disabled=S.phase==='report'};
+ $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();const rest=$('#endDay');if(rest)rest.textContent='End Business Day Early';renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day Early · 5 PM':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
  updateCashHeader();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
  if(window.FE_LIVING_CHARACTERS?.renderPublicDispatches)window.FE_LIVING_CHARACTERS.renderPublicDispatches();
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
@@ -1058,12 +1058,26 @@ const abandonProduction=$('#abandonProduction');if(abandonProduction)abandonProd
 $('#maintain').onclick=()=>{if(!businessOpen())return note('Regular works maintenance authorization resumes next Business Day.');if(S.companyCash<80)return note('Insufficient company cash.');S.companyCash-=80;S.lastExpenses+=80;S.machinery=clamp(S.machinery+12,0,100);save();render()}
 $('#endDay').onclick=()=>{
  if(S.paused)return note('The game is paused.');
- const seconds=window.FE_WASHINGTON_TIME.secondsUntilMorning(S);
- if(!seconds||seconds<=0)return note('The next morning is unavailable.');
- if(!confirm('Rest until 8:00 AM? Washington and its residents continue through the elapsed hours.'))return;
- const elapsed=advanceWorldSimulation(seconds,true,'action');
- if(elapsed!==seconds)return note('The rest interval was interrupted.');
- save();render();note('Morning arrived. Washington continued while you rested.');
+ if(S.phase==='day'){
+  const seconds=window.FE_WASHINGTON_TIME.secondsUntilBusinessClose(S);
+  if(!seconds||seconds<=0)return note('The 5:00 PM closing bell is unavailable.');
+  if(!confirm('Advance to the 5:00 PM closing bell? Production, market trading, other residents and events will all be simulated through the intervening hours. Your character remains at the current location.'))return;
+  const priorLocation=JSON.stringify(currentCityLocation());
+  const elapsed=advanceWorldSimulation(seconds,true,'action');
+  if(elapsed!==seconds)return note('Advance to the closing bell was interrupted.');
+  save(true);render();
+  note('5:00 PM. The business day has closed and Washington Night begins. Your location is unchanged.');
+  if(JSON.stringify(currentCityLocation())!==priorLocation)console.warn('Ending business day changed player location unexpectedly.');
+  return;
+ }
+ if(S.phase==='night'){
+  const seconds=window.FE_WASHINGTON_TIME.secondsUntilMorning(S);
+  if(!seconds||seconds<=0)return note('The next morning is unavailable.');
+  if(!confirm('Advance to 8:00 AM without changing your location? Washington and its residents will continue through the intervening hours. This does not mean your character slept.'))return;
+  const elapsed=advanceWorldSimulation(seconds,true,'action');
+  if(elapsed!==seconds)return note('The overnight interval was interrupted.');
+  save(true);render();note('Morning arrived. Your character stayed at the selected location.');
+ }
 }
 const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
