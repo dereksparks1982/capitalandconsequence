@@ -6,10 +6,10 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const source=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const ctx={window:{}};vm.runInNewContext(source('city.js'),ctx);
 const sites=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(sites.length,38,'retain original destinations plus monastery cobbler and two historical markets');
-assert.equal(new Set(sites.map(s=>s.n)).size,38,'no duplicate numbered pins');
-assert.equal(sites.filter(s=>s.origin==='historical').length,16);
-assert.equal(sites.filter(s=>s.origin==='fictional').length,22);
+assert.equal(sites.length,40,'all forty registered playable destinations have numbered pins');
+assert.equal(new Set(sites.map(s=>s.n)).size,40,'no duplicate numbered pins');
+assert.equal(sites.filter(s=>s.origin==='historical').length,17);
+assert.equal(sites.filter(s=>s.origin==='fictional').length,23);
 for(const site of sites){
  if(site.origin==='historical'){
   assert.ok(site.history&&site.history.summary&&site.history.query,'Non-fiction reading required: '+site.id);
@@ -85,10 +85,17 @@ assert.ok(app.includes("if(!approved){"),'rejected map drops restore the previou
 assert.ok(app.includes("if(moved&&!onPrintedMap)"),'drops outside A–R / 1–30 grid are rejected');
 assert.ok(app.includes("location.x=before.x;location.y=before.y"),'rejected drops do not persist provisional placements');
 assert.ok(app.includes("commerce:'Markets & Repairs'"),'market and repair venues have distinct category filter');
-assert.ok(app.includes("(location.placement==='unverified'&&!location.userPlaced)"),
- 'unsurveyed coordinates do not appear as confirmed markers');
+assert.ok(app.includes("marker.hidden=!location||!titleMapMatchesFilters(location)"),
+ 'all registered numbered map pins appear without an active filter');
+assert.ok(app.includes("function titleMapDisplayCoordinate(location,img)"),
+ 'off-print coordinates get a display-only map-edge anchor');
+assert.ok(app.includes("Math.hypot(p.x-other.x,p.y-other.y)>=31"),
+ 'overlapping pin centers are spread for readable clickable numbers');
 assert.ok(app.includes("titleMapGridAt(location.x,location.y)==='Outside map'"),
- 'outside-index locations are not rendered over the printed map');
+ 'actual out-of-print position remains documented; no source coordinate moves');
+assert.ok(css.includes("#titleMapClose.title-map-close")&&
+ css.includes("background:#9c282a;color:#fff7ec"),
+ 'red close X is pinned to the upper-right corner');
 assert.ok(css.includes('data-origin="historical"')&&css.includes('data-origin="fictional"'));
 assert.ok(css.includes('.title-map-swatch.historical')&&css.includes('.title-map-swatch.fictional'));
 assert.ok(img.includes('id="titleMapLocationFact"')&&img.includes('id="cityRoomFact"'),
@@ -110,7 +117,7 @@ assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&
  css.includes('background:rgba(36,94,154,.68)!important'),
  'Only colored pin background is semitransparent; pin labels stay legible');
 
-assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,16,
+assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,17,
  'every historical place has a separate non-fiction reading note');
 assert.equal(sites.filter(s=>s.origin==='fictional'&&!!s.history).length,0,
  'invented businesses cannot claim non-fiction reading metadata');
@@ -127,4 +134,4 @@ assert.ok(app.includes("link.rel='noopener noreferrer'"), 'educational links ope
 assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&css.includes('background:rgba(36,94,154,.68)!important'),
  'red and blue numbered pin backgrounds are translucent');
 
-console.log('PASS Washington guide: 38 numbered pins, 16 non-fiction / 22 fictional story cards, grid placement, export, pin confirmation and translucent colors');
+console.log('PASS Washington guide: 40 numbered pins, 17 non-fiction / 23 fictional story cards, grid placement, export, pin confirmation and translucent colors');
