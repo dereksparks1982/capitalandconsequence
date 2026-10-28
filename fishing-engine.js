@@ -20,6 +20,7 @@ function ensure(save){
  const w=save.fishing;if(!Array.isArray(w.catches))w.catches=[];if(!Array.isArray(w.history))w.history=[];
  if(!Number.isFinite(+w.skill))w.skill=0;
  w.skill=Math.max(0,Math.min(100,+w.skill));
+ if(root.FE_SKILLS)w.skill=root.FE_SKILLS.level(save,'fishing');
  if(!Array.isArray(w.mounted))w.mounted=[];
  if(!Array.isArray(w.meetResults))w.meetResults=[];
  if(!Number.isSafeInteger(w.newsPendingId))w.newsPendingId=0;
@@ -41,6 +42,7 @@ function cast(save,site,date){
  if(w.session)return {ok:false,reason:'Finish or abandon your hooked fish first.'};
  if(w.catches.length>=8)return {ok:false,reason:'Your creel is full (eight fish).'};
  w.attempts++;const seed=hash(site+'|'+date+'|'+w.attempts);
+ root.FE_SKILLS?.practice?.(save,'angling-knowledge',{amount:.10,difficulty:35,event:'cast:'+site+':'+w.attempts,source:'Studying fishing water and bait'});
  // At fishing skill 100, 500 / 100000 casts hook a legendary fish:
  // exactly 0.5% per eligible cast. Below mastery the odds are lower.
  const rareRoll=hash('legendary|'+site+'|'+date+'|'+w.attempts)%100000;
@@ -72,13 +74,20 @@ function act(save,choice){
  // Fishing technique reduces avoidable tension, never removes risk.
  s.tension=Math.max(0,s.tension+wave%6+fish.strength*4-Math.floor(w.skill/20));
  if(choice!=='reel')s.range+=s.stamina>1?1:0;
- if(s.tension>=100){w.skill=Math.min(100,w.skill+.06);w.session=null;w.history.push({kind:'break',site:s.site,date:s.date,fish:s.fishId});return {ok:true,finished:true,caught:false,message:'The line snaps. '+message};}
- if(s.range>=17){w.skill=Math.min(100,w.skill+.06);w.session=null;w.history.push({kind:'escape',site:s.site,date:s.date,fish:s.fishId});return {ok:true,finished:true,caught:false,message:'The fish runs free. '+message};}
+ if(s.tension>=100){
+  if(root.FE_SKILLS)root.FE_SKILLS.practice(save,'fishing',{amount:.06,difficulty:45,event:'line-break:'+s.seed,source:'Lost fish on a snapped line'});
+  else w.skill=Math.min(100,w.skill+.06);
+  w.session=null;w.history.push({kind:'break',site:s.site,date:s.date,fish:s.fishId});return {ok:true,finished:true,caught:false,message:'The line snaps. '+message};}
+ if(s.range>=17){
+  if(root.FE_SKILLS)root.FE_SKILLS.practice(save,'fishing',{amount:.06,difficulty:45,event:'fish-escape:'+s.seed,source:'Lost fish in a long run'});
+  else w.skill=Math.min(100,w.skill+.06);
+  w.session=null;w.history.push({kind:'escape',site:s.site,date:s.date,fish:s.fishId});return {ok:true,finished:true,caught:false,message:'The fish runs free. '+message};}
  if(s.stamina===0&&s.range<=1){
   const legendary=s.fishId==='legendary';
   const fishRecord={id:'fish-'+w.attempts,kind:'fish',name:fish.name,species:s.fishId,
    site:s.site,date:s.date,legendary,weightLb:legendary?Math.round(150+hash('weight|'+s.seed)%260):Math.round(2+hash('weight|'+s.seed)%32)};
-  w.skill=Math.min(100,w.skill+(legendary?.8:.18));
+  if(root.FE_SKILLS)root.FE_SKILLS.practice(save,'fishing',{amount:legendary?.8:.18,difficulty:legendary?100:40,event:'land:'+s.seed,source:legendary?'Landed a legendary fish':'Landed '+fish.name});
+  else w.skill=Math.min(100,w.skill+(legendary?.8:.18));
   w.catches.push(fishRecord);w.session=null;w.history.push({...fishRecord,kind:'catch'});
   if(legendary)w.newsPendingId=fishRecord.id;
   return {ok:true,finished:true,caught:true,catch:fishRecord,message:legendary?'LEGENDARY CATCH! A '+fishRecord.weightLb+'-lb '+fish.name+'! The Metropolitan Ledger will carry your story.':'You land a '+fish.name+'. It goes into your creel.'};
