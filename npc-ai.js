@@ -56,6 +56,16 @@
    publicRemark:"I help Mr. Whitcomb with the shop's orders and apparatus. There's always another relay to check.",traits:{sociability:45,caution:81,ambition:59},places:['factory','factory',null,null],
    activities:['preparing tools and telegraph parts','assisting with orders and dispatches',null,null],
    goals:['check-workshop-tools','fill-component-orders','handle-supplies']},
+  {id:'boyMercer',name:'Boy Mercer',
+   occupation:'unattached drifter; claims to run errands',ambition:'be-thought-important-by-everyone',
+   // Boy lies even when he has nothing to gain. His stories are unverified speech,
+   // never changes to city canon, income, permissions, identities or ownership.
+   publicRemark:"I have done every job worth doing, though everyone remembers a different one.",
+   traits:{sociability:90,caution:36,ambition:64,honesty:4,pride:91,curiosity:88},
+   places:['races','oldChinatown','workingPoker',null],
+   activities:['telling stories near the grounds','speaking to market visitors',
+    'boasting among card-room regulars',null],
+   goals:['look-for-listeners','tell-a-bigger-story','seek-audience']},
   {id:'eddieDoyle',name:'Eddie Doyle',occupation:'Bookmaker',ambition:'build-a-reliable-network-of-contacts',
    publicRemark:"The race grounds are busy with talk. Half of it is hearsay, and the rest still needs checking.",traits:{sociability:91,caution:56,ambition:77},places:['races','races','star',null],
    activities:['speaking with racegoers','following the racing business','making evening introductions',null],
@@ -468,7 +478,7 @@
     activity:actor.activity,relationship:Number(actor.relationships?.[route]||0),playerId:route,locationId:position.locationId,socialStyle:temperament?.style||'conversational'})}
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
-  const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name,activity:actor.activity});
+  const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name,activity:actor.activity,history:dev.history(S,def.id)});
   let spoken=scripted?.handled?scripted.reply:null;
   if(!spoken&&model?.chat){
    try{
