@@ -26,5 +26,5 @@ for(const forbidden of ['home','licensedGamingHall','privateFightHall','notAPlac
  assert.notEqual(result.locationId,forbidden,'Intentions cannot bypass '+forbidden);
 }
 assert.equal(access.canRoom(city,actor,'factory','executive-office',date).ok,false);
-assert.equal(city.mapLocations().length,38);
+assert.equal(city.mapLocations().length,40);
 console.log('PASS NPC goal destinations, work and wager precedence, restricted doors and stable replay');
