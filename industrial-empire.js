@@ -208,7 +208,7 @@ function advance(save){
  e.lastDate=date;
  return e;
 }
-function ownedLocation(save,id){return id==='factory'&&save.characterRoute==='industrialist'||!!save.ownedLocationIds?.includes?.(id)}
+function ownedLocation(save,id){return (id==='factory'||id==='home')&&save.characterRoute==='industrialist'||!!save.ownedLocationIds?.includes?.(id)}
 function render(save,onChange){
  const host=document.getElementById('industrialEmpirePanel');if(!host)return;
  if(save.characterRoute!=='industrialist'){host.hidden=true;return}
