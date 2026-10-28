@@ -1717,3 +1717,21 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 }
 #titleMapMarkers .title-map-marker{z-index:1}
 #titleMapMarkers .title-map-marker.is-selected{z-index:4}
+
+
+/* Bring the hovered map place AND its name above all other numbered pins.
+   The selected pin remains prominent until another hovered pin takes focus. */
+#titleMapMarkers .title-map-marker.is-selected{z-index:22}
+#titleMapMarkers .title-map-marker:hover,
+#titleMapMarkers .title-map-marker:focus-visible{z-index:30}
+#titleMapMarkers .title-map-marker-label{
+ position:relative;z-index:2;pointer-events:none;
+ box-shadow:0 3px 11px #070605,0 0 0 1px rgba(247,219,159,.36);
+}
+#titleMapMarkers .title-map-marker.is-owned .title-map-marker-pin{
+ background:#111!important;color:#fff6df!important;
+ border-color:#f1e2ba!important;box-shadow:0 0 0 2px #100d0a,0 2px 6px #000!important;
+}
+#titleMapDirectory .title-map-directory-item.is-owned{
+ border-left-color:#0f0f0f!important;background:#e2d8c1;
+}
