@@ -68,10 +68,10 @@
  // Boy Mercer is a habitual fabricator: different versions of his past appear
  // in the SAVED conversation transcript. None of these boasts writes world facts.
  function boyCategory(q){
-  if(/\\b(where do you live|where is your home|where do you sleep|your address|your house)\\b/.test(q))return 'home';
-  if(/\\b(your work|your job|occupation|what do you do|where do you work|who employs|earn a living)\\b/.test(q))return 'job';
-  if(/\\b(your name|who are you|tell me about yourself|your family|where are you from)\\b/.test(q))return 'identity';
-  if(/\\b(meet|tomorrow|appointment|promise|hire me|lend me|money|fortune|wealth)\\b/.test(q))return 'promise';
+  if(/\b(where do you live|where is your home|where do you sleep|your address|your house)\b/.test(q))return 'home';
+  if(/\b(your work|your job|occupation|what do you do|where do you work|who employs|earn a living)\b/.test(q))return 'job';
+  if(/\b(your name|who are you|tell me about yourself|your family|where are you from)\b/.test(q))return 'identity';
+  if(/\b(meet|tomorrow|appointment|promise|hire me|lend me|money|fortune|wealth)\b/.test(q))return 'promise';
   return 'boast';
  }
  const BOY_TALES=Object.freeze({
