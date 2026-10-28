@@ -26,6 +26,13 @@
   const next=[480,720,1020,1320,1440].find(m=>m>c.minuteOfDay)||1440;
   return (next-c.minuteOfDay)*60-remainder(save);
  }
+ function secondsUntilBusinessClose(save){
+  // Skip only the unfinished business hours, never the player's evening.
+  if(save?.phase!=='day')return 0;
+  const c=now(save);
+  if(!c||c.minuteOfDay>=1020)return 0;
+  return (1020-c.minuteOfDay)*60-remainder(save);
+ }
  function secondsUntilMorning(save){
   const c=now(save);if(!c)return null;
   return ((c.minuteOfDay<480?480:1920)-c.minuteOfDay)*60-remainder(save);
@@ -43,7 +50,7 @@
    sunlight:s?.sunlight??null,moonPhase:s?.moonPhase??null,eclipse:s?.eclipse??null,
    sunrise:s?.sunrise??null,sunset:s?.sunset??null});
  }
- const api=Object.freeze({now,rate,available,canSpend,debit,advance,secondsToBoundary,secondsUntilMorning,nextCivilDay,environment});
+ const api=Object.freeze({now,rate,available,canSpend,debit,advance,secondsToBoundary,secondsUntilBusinessClose,secondsUntilMorning,nextCivilDay,environment});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_WASHINGTON_TIME=api;
 })(typeof window!=='undefined'?window:globalThis);
