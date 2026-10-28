@@ -1,3 +1,13 @@
+### October 28 follow-up: 1–30 / A–R historical coordinate preservation
+- [x] Recount all forty distinct numbered markers, ensure no duplicates or missing numbers.
+- [x] Use a single printed-image grid converter in `city.js` for the map, location card and directory.
+- [x] Correct inconsistent descriptive grid labels: White House 12-I, Government Hospital 25-R, Washington Airport 9-P, Georgetown Canal 7-I, Eastern Branch 24-M.
+- [x] Show #22 District Asylum at its fictional approximate sector 26-Q without claiming a real historic asylum there.
+- [x] When the map information card obscures badges, reposition their *display symbols only*; leader lines and dots identify unchanged source anchor locations. Preserve historical anchors and original image art.
+- [x] Add on-map true rendered pin count (40/40 when no filters) and regression check for card obstruction and five fixed anchors.
+- [x] Publish a complete forty-row pinned image-grid audit for approval.
+- [ ] Owner actual Ubuntu run, full offline Node suite, check all forty click targets. No GitHub Actions.
+
 ### Map visibility & optional IPO proposal · October 28, 2026
 - [x] Unfiltered All categories / All pins renders 40 of 40 numbered location markers, including #4 poker, #14 stockbroker, #39 National Theatre and #40 District Bank.
 - [x] Three edge-outlying provisional pins get display-only boundary docking; others get display-only collision spacing. No printed art, stored map coordinates or user-edited pin positions changed.
