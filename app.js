@@ -2894,14 +2894,14 @@ function focusTitleMapDirectoryLocation(id){
  const viewport=$('#titleMapViewport'),img=$('#titleMapImage');
  if(viewport&&img&&img.naturalWidth){
   const desired=Math.min(titleMapState.maxScale,Math.max(titleMapState.scale,titleMapState.minScale*2));
-  // Do not pan to the printed index if the pin has no in-map position.
-  if(titleMapGridAt(location.x,location.y)!=='Outside map'&&
-   (location.placement!=='unverified'||location.userPlaced)){
-   titleMapState.scale=desired;
-   titleMapState.x=viewport.clientWidth/2-location.x*img.naturalWidth*desired;
-   titleMapState.y=viewport.clientHeight/2-location.y*img.naturalHeight*desired;
-   titleMapClamp();titleMapApply();
-  }
+  // Every directory entry has a visible pin, including edge-docked
+  // provisional sites. Center on its displayed anchor without moving its
+  // stored location or claiming a verified historical address.
+  const point=titleMapDisplayCoordinate(location,img);
+  titleMapState.scale=desired;
+  titleMapState.x=viewport.clientWidth/2-point.x*desired;
+  titleMapState.y=viewport.clientHeight/2-point.y*desired;
+  titleMapClamp();titleMapApply();
  }
  openTitleMapLocation(id);
 }
@@ -2952,10 +2952,10 @@ function syncTitleMapFilters(){
  layer.classList.toggle('show-all-names',titleMapShowNames);
  for(const marker of layer.querySelectorAll('[data-map-location]')){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  marker.hidden=!location||(titleMapCategory!=='all'&&location.category!==titleMapCategory)||
-   (titleMapOrigin!=='all'&&location.origin!==titleMapOrigin)||!titleMapMatchesSearch(location)||
-   ((titleMapGridAt(location.x,location.y)==='Outside map'||
-     (location.placement==='unverified'&&!location.userPlaced))&&!titleMapPinEdit);
+  // Display ALL forty numbered registry pins when filters are clear.
+  // Unverified and off-print locations keep their placement warnings instead
+  // of disappearing from an otherwise unfiltered map.
+  marker.hidden=!location||!titleMapMatchesFilters(location);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
  }
@@ -3065,14 +3065,61 @@ function titleMapApply(){
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
 }
+// The source coordinates never move merely to make a pin visible.
+// Unverified points outside the printed guide dock on its edge. In ordinary
+// browsing, nearby pin CENTRES are separated in screen pixels so each of the
+// forty clickable numbers remains accessible at the initial fit scale.
+function titleMapDisplayCoordinate(location,img){
+ const w=img.naturalWidth,h=img.naturalHeight;
+ const outside=titleMapGridAt(location.x,location.y)==='Outside map';
+ const x=outside?Math.max(307/2048,Math.min(1755/2048,location.x)):location.x;
+ const y=outside?Math.max(50/1159,Math.min(839/1159,location.y)):location.y;
+ return {x:x*w,y:y*h,outside};
+}
 function titleMapPositionMarkers(){
  const img=$('#titleMapImage'),layer=$('#titleMapMarkers');if(!img||!layer||!img.naturalWidth||!img.naturalHeight)return;
- layer.querySelectorAll('[data-map-location]').forEach(marker=>{
-  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  if(!location)return;
-  marker.style.left=(titleMapState.x+location.x*img.naturalWidth*titleMapState.scale)+'px';
-  marker.style.top=(titleMapState.y+location.y*img.naturalHeight*titleMapState.scale)+'px';
+ const scale=titleMapState.scale,placed=[];
+ const mapMarkers=Array.from(layer.querySelectorAll('[data-map-location]'));
+ const order={'map-anchored':0,'area-located':1,'unverified':2};
+ mapMarkers.sort((a,b)=>{
+  const x=TITLE_MAP_LOCATIONS.find(v=>v.id===a.dataset.mapLocation);
+  const y=TITLE_MAP_LOCATIONS.find(v=>v.id===b.dataset.mapLocation);
+  return (order[x?.placement]??3)-(order[y?.placement]??3)||(x?.n||0)-(y?.n||0);
  });
+ const imgLeft=titleMapState.x+307/2048*img.naturalWidth*scale;
+ const imgRight=titleMapState.x+1755/2048*img.naturalWidth*scale;
+ const imgTop=titleMapState.y+50/1159*img.naturalHeight*scale;
+ const imgBottom=titleMapState.y+839/1159*img.naturalHeight*scale;
+ for(const marker of mapMarkers){
+  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
+  if(!location)continue;
+  const point=titleMapDisplayCoordinate(location,img);
+  const cx=titleMapState.x+point.x*scale,cy=titleMapState.y+point.y*scale;
+  marker.classList.toggle('is-edge-provisional',point.outside);
+  marker.title=(window.FE_MAP_PIN_PALETTE?.info(location)?.name||'Washington location')+
+   ' · '+pinDisplayName(location)+' · #'+location.n+
+   (point.outside?' · provisional marker at map edge; exact site outside guide':
+    location.placement==='unverified'?' · approximate site, not historically verified':'');
+  let chosen={x:cx,y:cy};
+  // Editing uses the user's actual stored positions, not collision offsets.
+  if(!titleMapPinEdit){
+   const clear=(p)=>placed.every(other=>Math.hypot(p.x-other.x,p.y-other.y)>=31);
+   if(!clear(chosen)){
+    let found=false;
+    for(let radius=32;radius<=160&&!found;radius+=16){
+     for(let angle=0;angle<24;angle++){
+      const theta=2*Math.PI*angle/24;
+      const candidate={x:Math.max(imgLeft,Math.min(imgRight,cx+radius*Math.cos(theta))),
+       y:Math.max(imgTop,Math.min(imgBottom,cy+radius*Math.sin(theta)))};
+      if(clear(candidate)){chosen=candidate;found=true;break;}
+     }
+    }
+   }
+   placed.push(chosen);
+  }
+  marker.style.left=chosen.x+'px';
+  marker.style.top=chosen.y+'px';
+ }
 }
 function closeTitleMapLocation(){
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
