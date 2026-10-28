@@ -1,5 +1,8 @@
 # START HERE: October 25, 2026 current-thread handoff
 
+> **ADDITIONAL v0.6.89 FIX · OCTOBER 28:** The map location information card now has its own overflow scroll; the map viewport's wheel handler explicitly ignores wheel events inside the card. Added Boy Mercer, a compulsive liar with an independent routine and stories that change across his saved conversation history. These are only his statements and do not mint contracts, salaries, housing, club privileges or actual meetings. Added tests and refreshed browser script references. No GitHub Actions, original map changes or pin relocations. Pending Linux desktop owner trial.
+
+
 > **LATEST v0.6.89 DEVELOPMENT SLICE · OCTOBER 28, 2026:** Fixed developer panel always opening at startup: it now starts hidden, with bottom-left DEV toggle / Ctrl+Shift+D, remaining available on all game screens when deliberately opened. Removed dotted borders solely from the CSS treatment of unverified pins; the Washington artwork, coordinates, pin identity, filter, edit and source metadata stay unchanged. Added individual work-identity speech to npc-scripted-talk.js plus observed current-activity answers via npc-ai.js context, actual confirmed Sullivan lodging, and refusal to fabricate appointments and employment. Updated tests/npc-scripted-talk.cjs and tests/source-contracts.cjs; actual Node/Electron acceptance still pending. Version label 0.6.89-dev, source only until accepted. No Actions or map/art replacement. The v0.6.89 work does NOT implement full NPC travel/economy autonomy.
 
 
