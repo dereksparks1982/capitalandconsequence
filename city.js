@@ -494,11 +494,11 @@
  // Named sites below are identified on the scan; invented street addresses
  // reference a *district/block*, not an invented historically verified doorway.
  const MAP_ARTWORK_ANCHORS=Object.freeze({
-  whiteHouse:[841,428,'White House / Executive Mansion grounds, printed on the map around 16-K'],
-  washingtonAirport:[718,730,'WASHINGTON AIRPORT lettering on the Virginia field, printed around 10-P'],
-  governmentHospital:[1483,834,'Government Hospital (St. Elizabeths hillside), southeastern edge near 27-Q'],
-  georgetownCanal:[638,415,'Georgetown C&O Canal, north bank of Potomac, around 9-I'],
-  easternBranchFishing:[1425,622,'Eastern Branch / Anacostia riverside, north bank near Navy Yard, around 25-N']
+  whiteHouse:[841,428,'White House / Executive Mansion grounds, printed guide coordinate 12-I'],
+  washingtonAirport:[718,730,'WASHINGTON AIRPORT lettering on the Virginia field, printed guide coordinate 9-P'],
+  governmentHospital:[1483,834,'Government Hospital (St. Elizabeths hillside), printed guide coordinate 25-R'],
+  georgetownCanal:[638,415,'Georgetown C&O Canal, north bank of Potomac, printed guide coordinate 7-I'],
+  easternBranchFishing:[1425,622,'Eastern Branch / Anacostia riverside, north bank near Navy Yard, printed guide coordinate 24-M']
  });
  const MAP_AREA_REFERENCES=Object.freeze({
   star:[826,405,'16th and H Streets NW, Hay-Adams houses near the White House; fictional club'],
@@ -598,6 +598,8 @@
   listLocations,
   getLocation,
   getRoom,
-  mapLocations
+  mapLocations,
+  mapGridReference,
+  mapGridConstants:Object.freeze({left:GRID_LEFT,top:GRID_TOP,columnPitch:GRID_COL_PITCH,rowPitch:GRID_ROW_PITCH,columns:30,rows:18,imageWidth:IMAGE_WIDTH,imageHeight:IMAGE_HEIGHT})
  };
 })();
