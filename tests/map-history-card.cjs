@@ -24,7 +24,7 @@ const render=new Function('document',source.slice(from,to)+'return renderPlaceRe
 const all=registry.listLocations();
 const real=all.filter(p=>p.mapOrigin==='historical');
 const invented=all.filter(p=>p.mapOrigin==='fictional');
-assert.equal(real.length,16);assert.equal(invented.length,22);
+assert.equal(real.length,17);assert.equal(invented.length,23);
 for(const place of real){
  assert.ok(place.history&&place.history.summary&&place.history.query,place.id+' has real-world reading');
  for(const isMap of [true,false]){
@@ -68,4 +68,4 @@ for(const place of invented){
   assert.equal(details.children.length,3,place.id+' fiction should never contain Wikipedia or LOC links');
  }
 }
-console.log('PASS 38 card identities; 16 real history panels with reading links and 22 separate fictional world histories');
+console.log('PASS 40 card identities; 17 real history panels with reading links and 23 separate fictional world histories');
