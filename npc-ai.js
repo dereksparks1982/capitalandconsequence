@@ -57,7 +57,7 @@
    activities:['preparing tools and telegraph parts','assisting with orders and dispatches',null,null],
    goals:['check-workshop-tools','fill-component-orders','handle-supplies']},
   {id:'boyMercer',name:'Boy Mercer',
-   occupation:'unattached drifter; claims to run errands',ambition:'be-thought-important-by-everyone',
+   occupation:'card sharp and occasional liquor-delivery hand',ambition:'scrape-by-and-stay-ahead-of-angry-card-players',
    // Boy lies even when he has nothing to gain. His stories are unverified speech,
    // never changes to city canon, income, permissions, identities or ownership.
    publicRemark:"I have done every job worth doing, though everyone remembers a different one.",
@@ -148,7 +148,7 @@
  function isPlayer(def){return !!def.route&&def.route===(S.characterRoute||'industrialist')}
  function autonomous(){return DEFINITIONS.filter(def=>!isPlayer(def))}
 
- const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall',edwinBooth:'nationalTheatre',josephJefferson:'nationalTheatre',johnMcCullough:'nationalTheatre',claraMorris:'nationalTheatre',johnTRaymond:'nationalTheatre',charlesHanford:'nationalTheatre',williamRapley:'nationalTheatre'};
+ const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',boyMercer:'secondNightclub',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall',edwinBooth:'nationalTheatre',josephJefferson:'nationalTheatre',johnMcCullough:'nationalTheatre',claraMorris:'nationalTheatre',johnTRaymond:'nationalTheatre',charlesHanford:'nationalTheatre',williamRapley:'nationalTheatre'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
  function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
  function profile(){return typeof activeProfileId==='function'?activeProfileId():''}
@@ -258,7 +258,7 @@
   return window.FE_NPC_MOBILITY.visit(window.FederalElectricCity,
    {kind:'npc',id:def.id,route:def.route||null,job:def.id==='edmundWardman'?'orderly':null,
     residences:def.id==='charlieWhitcomb'?['home']:[],
-    workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work',permits:[],roomPermits:[]},
+    workplaceId:WORKPLACES[def.id],onDuty:action.kind==='work'||action.kind==='odd-job',permits:[],roomPermits:[]},
    {date:action.date,key:action.key,seed:w.seed,slot:action.slot,
     sociability:def.traits?.sociability,
     defaultLocation:action.locationId,defaultActivity:action.activity,
