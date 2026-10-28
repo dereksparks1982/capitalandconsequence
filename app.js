@@ -292,6 +292,8 @@ function businessOpen(){return S.phase==='day'}
 const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
 function syncTopNavigation(id=document.querySelector('.tab.active')?.id||'desk'){const group=NAV_GROUP_BY_TAB[id]||id;document.querySelectorAll('nav button[data-nav-group]').forEach(btn=>btn.classList.toggle('active',btn.dataset.navGroup===group));document.querySelectorAll('.section-tabs button[data-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id))}
 function showTab(id){
+ // Stock quotations and orders are handled by a physical broker, never the executive desk.
+ if(id==='market')id='news';
  if(S.characterRoute!=='industrialist'&&['factory','warehouse','contracts'].includes(id))id='desk';
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
  const tab=$('#'+id);if(tab)tab.classList.add('active');
@@ -764,6 +766,7 @@ function restoreStockTradeQuantities(){
  }
 }
 function brokerChannel(){return window.FE_BROKER?.channel?.(S,currentCityLocation().locationId,S.characterRoute)||null}
+function listedStocks(){return Object.entries(S.stocks).filter(([k,v])=>stockAvailableInYear(k,v.sector,+S.gameDate.slice(0,4)))}
 function renderBrokerOffice(){
  const panel=document.getElementById('cityRoomBrokerage');if(!panel)return;
  const active=currentCityLocation().locationId==='brokerOffice'&&!cityRoomSession.dev;
@@ -779,24 +782,47 @@ function renderBrokerOffice(){
  const select=document.getElementById('brokerStockTicker');
  if(select){
   const prev=select.value;
-  const eligible=Object.entries(S.stocks).filter(([k,v])=>stockAvailableInYear(k,v.sector,+S.gameDate.slice(0,4)));
+  const eligible=listedStocks();
+  const count=document.getElementById('brokerStockCount');
+  if(count)count.textContent=eligible.length+' of '+eligible.length+' listed securities available for viewing in '+S.gameDate.slice(0,4)+'. Orders require your broker.';
+  const sectorField=document.getElementById('brokerStockSector');
+  const searchField=document.getElementById('brokerStockSearch');
+  const sectors=['All',...new Set(eligible.map(([,v])=>v.sector))].sort((a,b)=>a==='All'?-1:b==='All'?1:a.localeCompare(b));
+  if(sectorField&&Array.from(sectorField.options).map(o=>o.value).join('|')!==sectors.join('|')){
+   const last=sectorField.value;sectorField.replaceChildren();
+   for(const sector of sectors){const opt=document.createElement('option');opt.value=sector;opt.textContent=sector==='All'?'All sectors':sector;sectorField.appendChild(opt)}
+   sectorField.value=sectors.includes(last)?last:'All';
+  }
+  const needle=(searchField?.value||'').trim().toLowerCase();
+  const filtered=eligible.filter(([k,v])=>(!needle||(k+' '+v.name).toLowerCase().includes(needle))&&(!sectorField||sectorField.value==='All'||v.sector===sectorField.value));
+  if(count)count.textContent=filtered.length+' shown of '+eligible.length+' period-listed securities · '+S.gameDate.slice(0,4);
   select.replaceChildren();
   for(const [k,v] of eligible){const opt=document.createElement('option');opt.value=k;opt.textContent=k+' · '+v.name;select.appendChild(opt)}
   if(eligible.some(([k])=>k===prev))select.value=prev;
   const table=document.getElementById('brokerStockList');
   if(table){
    table.replaceChildren();
-   for(const [k,security] of eligible){
+   for(const [k,security] of filtered){
     const quote=S.phase==='day'?security.open:security.price;
     const prior=+security.prevClose||+security.open||quote;
     const change=prior>0?(quote/prior-1)*100:0;
     const tr=document.createElement('tr');
-    for(const value of [k,security.name,cash(quote),(change>=0?'+':'')+change.toFixed(2)+'%',String(S.portfolio[k]?.shares||0)]){
+    for(const value of [k,security.name,security.sector,cash(quote),(change>=0?'+':'')+change.toFixed(2)+'%',(security.yieldRate*100).toFixed(1)+'%',String(S.portfolio[k]?.shares||0)]){
      const td=document.createElement('td');td.textContent=value;tr.appendChild(td);
     }
     const td=document.createElement('td'),button=document.createElement('button');
     button.type='button';button.textContent='Select';
-    button.onclick=()=>{select.value=k;document.getElementById('brokerStockQuantity')?.focus()};
+    button.onclick=()=>{
+     select.value=k;selectedStockTicker=k;
+     const detail=document.getElementById('brokerStockDetail');
+     if(detail){
+      const series=stockHistorySeries(k),price=security.open||security.price;
+      detail.hidden=false;
+      detail.innerHTML='<h5>'+escapeHtml(security.name)+' · '+k+'</h5><p>Posted quote '+cash(price)+' · '+series.length+' recorded trading sessions · Historical prices, not future predictions.</p>'+
+       stockChartSvg(series,security.name)+'<p class="fine">Shares issued: '+(security.issuedShares||'not surveyed')+' · Shares offered for sale: '+(security.availableShares??'not surveyed')+'. Orders are handled through the broker.</p>';
+     }
+     document.getElementById('brokerStockQuantity')?.focus();
+    };
     td.appendChild(button);tr.appendChild(td);table.appendChild(tr);
    }
   }
@@ -2912,6 +2938,7 @@ function renderTitleMapDirectory(){
   b.className='title-map-directory-item';
   b.dataset.origin=location.origin;
    b.dataset.purpose=window.FE_MAP_PIN_PALETTE?.purpose(location)||'housing';
+  b.classList.toggle('is-owned',!!window.FE_EMPIRE?.ownedLocation?.(S,location.id));
   const grid=titleMapGridAt(location.x,location.y);
   const reviewed=location.placement==='map-anchored';
   b.textContent=location.n+'. '+pinDisplayName(location)+' · '+grid+
@@ -2955,6 +2982,7 @@ function syncTitleMapFilters(){
   marker.hidden=!location||!titleMapMatchesFilters(location);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
+  marker.classList.toggle('is-owned',!!location&&!!window.FE_EMPIRE?.ownedLocation?.(S,location.id));
  }
  // Filter changes may alter which markers need display-only collision spacing.
  titleMapPositionMarkers();
