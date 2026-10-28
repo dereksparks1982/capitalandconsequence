@@ -1672,3 +1672,30 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .npc-card-quick-action{padding:8px 10px;font:700 13px Georgia,serif;background:#f9efd9;color:#2b2218;border:1px solid #8a7048;min-height:36px;cursor:pointer}
 .npc-card-quick-action:hover{background:#fff8eb}
 .npc-card-quick-action:disabled{opacity:.5;cursor:wait}
+
+/* v0.6.89 map toolbar close control: always visible inside the game window,
+   independently of toolbar wrapping and the user's desktop panel width. */
+.title-map-card{position:relative}
+.title-map-head{padding-right:60px}
+#titleMapClose.title-map-close{
+ position:absolute;right:9px;top:9px;z-index:12;
+ display:grid;place-items:center;
+ width:39px;height:39px;min-width:39px;margin:0;padding:0;
+ border:2px solid #f0b0a4;border-radius:4px;
+ background:#9c282a;color:#fff7ec;
+ font:700 26px/1 Arial,sans-serif;
+ box-shadow:0 2px 8px rgba(0,0,0,.6);
+ cursor:pointer;
+}
+#titleMapClose.title-map-close:hover,
+#titleMapClose.title-map-close:focus-visible{
+ background:#c03638;outline:2px solid #ffe2bc;outline-offset:1px;
+}
+@media(max-width:700px){
+ .title-map-head{padding-right:54px}
+ #titleMapClose.title-map-close{right:6px;top:6px;width:36px;height:36px;min-width:36px}
+}
+/* Provisional edge-docked pins retain their ordinary CATEGORY COLOR. */
+#titleMapMarkers .title-map-marker.is-edge-provisional .title-map-marker-pin{
+ border-style:solid;
+}
