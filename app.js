@@ -165,6 +165,7 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  window.FE_FISHING?.ensure?.(fresh);
  window.FE_EMPIRE?.ensure?.(fresh);
  window.FE_FISHING_VESSELS?.ensure?.(fresh);
+ window.FE_SKILLS?.ensure?.(fresh);
  // Housing is an independent family/property record, not a company asset.
  // Existing profiles gain the baseline residence without claiming they own it.
  const oldHousing=x.housing&&typeof x.housing==='object'?x.housing:{};
@@ -291,7 +292,7 @@ function displayTurn(){return S.endlessMode?'TURN '+S.turnSerial+' · FREE PLAY'
 function displayHeaderTurn(){return clockText()}
 function clockText(){return window.FE_WASHINGTON_TIME?.now?.(S)?.time||'TIME UNAVAILABLE'}
 function businessOpen(){return S.phase==='day'}
-const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
+const NAV_GROUP_BY_TAB={desk:'desk',factory:'factory',warehouse:'factory',contracts:'factory',market:'markets',news:'markets',notebook:'journal',skillsTab:'journal',contactsTab:'journal',infoTab:'journal',helpTab:'journal'};
 function syncTopNavigation(id=document.querySelector('.tab.active')?.id||'desk'){const group=NAV_GROUP_BY_TAB[id]||id;document.querySelectorAll('nav button[data-nav-group]').forEach(btn=>btn.classList.toggle('active',btn.dataset.navGroup===group));document.querySelectorAll('.section-tabs button[data-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id))}
 function showTab(id){
  // Stock quotations and orders are handled by a physical broker, never the executive desk.
@@ -403,7 +404,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -3767,6 +3768,7 @@ function initTitleScreen(){
 }
 bootstrapProfiles();
 loadInitial();render();initTitleScreen();
+$('#skillFilter')?.addEventListener('change',()=>window.FE_SKILLS?.render?.(S));
 marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
 clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn()},1000);
 autosaveTimer=setInterval(()=>save(true),5000);
