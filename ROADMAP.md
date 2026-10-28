@@ -1,3 +1,9 @@
+### Additional v0.6.89 source update (October 28): Boy Mercer and map information scrolling
+- [x] Keep long location information scrollable within its card; only pointer wheel on the map itself zooms the map.
+- [x] Add independent resident **Boy Mercer** (Boy given name, Mercer surname), using existing races/Chinatown/card-room spaces; no new map locations or pin changes.
+- [x] His self-contradictory statements respond to repeated questions from SAVED conversation history. Claims are unreliable, never treated as canonical work, finances, real housing or scheduled appointments.
+- [x] Add source regression expectations for NPC roster, schedule, truth status and map wheel handler; full Linux Electron owner test still pending.
+
 ## v0.6.89 source checkpoint · October 28, 2026 (pending owner acceptance)
 
 - [x] Developer panel starts hidden on every launch; deliberate DEV button or Ctrl+Shift+D toggles it without disturbing map/rooms.
