@@ -2961,6 +2961,16 @@ function syncTitleMapFilters(){
  }
  // Filter changes may alter which markers need display-only collision spacing.
  titleMapPositionMarkers();
+ const displayed=Array.from(layer.querySelectorAll('[data-map-location]')).filter(m=>!m.hidden);
+ const pinStatus=document.getElementById('titleMapPinStatus');
+ if(pinStatus){
+  pinStatus.textContent=' · '+displayed.length+'/'+TITLE_MAP_LOCATIONS.length+' numbered pins rendered';
+ }
+ if(titleMapCategory==='all'&&titleMapOrigin==='all'&&!titleMapSearchQuery){
+  const seen=new Set(displayed.map(m=>m.dataset.mapLocation));
+  const missing=TITLE_MAP_LOCATIONS.filter(v=>!seen.has(v.id));
+  if(missing.length)console.error('Washington map missing numbered markers:',missing.map(v=>v.n+' '+v.name));
+ }
  if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&titleMapMatchesFilters(v)))closeTitleMapLocation();
  renderTitleMapDirectory();
 }
