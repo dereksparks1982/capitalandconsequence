@@ -22,7 +22,7 @@ function purpose(location){
  if(id==='oldChinatown')return 'commerce';
  if(['commerce','finance','transport'].includes(category))return 'commerce';
  if(category==='company')return 'industry';
- if(['sport','social','fair','gaming','underground'].includes(category))return 'entertainment';
+ if(['sport','social','fair','gaming','underground','theatre'].includes(category))return 'entertainment';
  if(category==='education')return 'green';
  if(category==='religious')return 'religion';
  if(category==='leisure')return 'water';
