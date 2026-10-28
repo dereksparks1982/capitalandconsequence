@@ -3089,6 +3089,18 @@ function titleMapPositionMarkers(){
  const img=$('#titleMapImage'),layer=$('#titleMapMarkers');if(!img||!layer||!img.naturalWidth||!img.naturalHeight)return;
  const scale=titleMapState.scale,placed=[];
  const mapMarkers=Array.from(layer.querySelectorAll('[data-map-location]'));
+ // Numbered badges can be nudged to avoid collisions, but a thin leader
+ // always identifies the immutable real anchor. Never replace the artwork
+ // or silently change a location's map-grid coordinates.
+ let tethers=layer.querySelector?.('#titleMapPinTethers');
+ if(!tethers&&document.createElementNS){
+  tethers=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  tethers.setAttribute('id','titleMapPinTethers');
+  tethers.classList.add('title-map-pin-tethers');
+  tethers.setAttribute('aria-hidden','true');
+  layer.prepend(tethers);
+ }
+ tethers?.replaceChildren();
  const order={'map-anchored':0,'area-located':1,'unverified':2};
  mapMarkers.sort((a,b)=>{
   const x=TITLE_MAP_LOCATIONS.find(v=>v.id===a.dataset.mapLocation);
@@ -3120,6 +3132,7 @@ function titleMapPositionMarkers(){
   marker.classList.toggle('is-edge-provisional',point.outside);
   marker.title=(window.FE_MAP_PIN_PALETTE?.info(location)?.name||'Washington location')+
    ' · '+pinDisplayName(location)+' · #'+location.n+
+   ' · printed grid '+titleMapGridAt(location.x,location.y)+
    (point.outside?' · provisional marker at map edge; exact site outside guide':
     location.placement==='unverified'?' · approximate site, not historically verified':'');
   let chosen={x:cx,y:cy};
@@ -3148,6 +3161,22 @@ function titleMapPositionMarkers(){
   }
   marker.style.left=chosen.x+'px';
   marker.style.top=chosen.y+'px';
+  const displacement=Math.hypot(chosen.x-cx,chosen.y-cy);
+  marker.classList.toggle('has-map-tether',displacement>10);
+  if(displacement>10&&tethers&&document.createElementNS){
+   const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+   line.setAttribute('x1',String(cx));
+   line.setAttribute('y1',String(cy));
+   line.setAttribute('x2',String(chosen.x));
+   line.setAttribute('y2',String(chosen.y));
+   line.classList.add('title-map-pin-tether');
+   const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+   dot.setAttribute('cx',String(cx));
+   dot.setAttribute('cy',String(cy));
+   dot.setAttribute('r','3.5');
+   dot.classList.add('title-map-pin-anchor');
+   tethers.append(line,dot);
+  }
  }
 }
 function closeTitleMapLocation(){
