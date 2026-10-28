@@ -4,6 +4,14 @@
 
 **Publisher:** Elderred Softworks LLC. © 2026 Derek Sparks. All rights reserved. See [LICENSE](LICENSE).
 
+## Additional 40-pin map update, October 28, 2026
+
+- With both location and origin filters set to All, render every numbered pin (1–40), including previously suppressed unverified pins #4 and #14.
+- Dock out-of-map provisional marker symbols #18, #28, #34 to the printable edge without rewriting real map coordinates. Spread overlapping markers visually, but never alter the original artwork or location registry.
+- Preserve purpose colors: broker and bank commerce red, National Theatre entertainment blue, government gold, etc.
+- Reposition the close-map control as a clearly visible red X at the upper-right of the game window.
+- The IPO scaffold still does not sell shares. Make optional listing a future qualification-based feature, not automatic or necessarily restricted by year.
+
 ## User-visible changes
 - The developer panel starts hidden, can be intentionally toggled via DEV button or Ctrl+Shift+D, and remains visible when opened until closed.
 - Unverified map pins no longer have dotted outline rings. Pin coordinates, names, filtering and original Washington guide artwork are untouched.
