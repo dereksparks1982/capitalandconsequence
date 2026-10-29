@@ -85,14 +85,21 @@ let preview=null;
 function clearPreview(){
  if(preview){preview.svg.remove();preview=null}
 }
+function projectedPoints(points,project){
+ try{
+  const result=points.map(project);
+  return result.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y))?result:null;
+ }catch(error){
+  console.warn('Capital Travel coordinate projection unavailable',error);
+  return null;
+ }
+}
 function showPreview({viewport,points,project}={}){
  if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function'){
   clearPreview();return false;
  }
- const pixels=points.map(project);
- if(pixels.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))){
-  clearPreview();return false;
- }
+ const pixels=projectedPoints(points,project);
+ if(!pixels){clearPreview();return false;}
  if(!preview||preview.viewport!==viewport){
   clearPreview();
   const svg=el('svg',{class:'capital-travel-preview','aria-hidden':'true'});
@@ -196,21 +203,15 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    if(local&&typeof onFrame==='function'){
     try{onFrame(local,progress)}catch(error){console.warn('Capital Travel map follow failed',error)}
    }
-   const raw=points.map(project);
-   if(raw.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))){
-    clear();return;
-   }
+   const raw=projectedPoints(points,project);
+   const traversed=projectedPoints(routePrefix(points,progress),project);
+   const projected=local?projectedPoints([local],project):null;
+   if(!raw||!traversed||!projected){clear();return}
+   const position=projected[0];
    const dims={w:Math.max(1,viewport.clientWidth),h:Math.max(1,viewport.clientHeight)};
    svg.setAttribute('viewBox','0 0 '+dims.w+' '+dims.h);
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
-   completedLine.setAttribute('points',routePrefix(points,progress).map(p=>{
-    const screen=project(p);
-    return screen.x+','+screen.y;
-   }).join(' '));
-   const position=local&&project(local);
-   if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.y)){
-    clear();return;
-   }
+   completedLine.setAttribute('points',traversed.map(p=>p.x+','+p.y).join(' '));
    group.setAttribute('transform','translate('+position.x+' '+position.y+')');
    if(typeof onProgress==='function'){
     try{onProgress(progress)}catch(error){console.warn('Capital Travel progress notice failed',error)}
@@ -222,7 +223,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:6,modes:MODES,route,estimate,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:7,modes:MODES,route,estimate,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
