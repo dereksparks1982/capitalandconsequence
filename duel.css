@@ -1,0 +1,49 @@
+/* Capital & Consequence formal duel. A temporary first-person scene, separate
+ * from the permanent Washington map and approved room/map geometry. */
+#cityRoomDuel[hidden],.capital-duel-overlay[hidden]{display:none!important}
+#cityRoomDuel{margin:1rem 0;padding:1rem;border:1px solid #987953;
+ background:#241e19;color:#e9d5b6;max-width:42rem}
+#cityRoomDuel h4{margin:.1rem 0 .45rem}
+#cityRoomDuel button{padding:.5rem 1rem;border:1px solid #d5b17d;background:#3b2c20;color:#fff3da;cursor:pointer}
+.capital-duel-overlay{position:fixed;inset:0;z-index:9900;padding:2vh 3vw;
+ background:#100d0bfa;color:#f4dfb4;display:grid;place-items:center;overflow:auto}
+.capital-duel-scene{width:min(94vw,1100px);min-height:88vh;padding:1.3rem;
+ border:3px solid #9b7850;background:#201911;box-shadow:0 12px 45px #000;
+ font-family:Georgia,'Times New Roman',serif}
+.capital-duel-scene header{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-bottom:1px solid #937557}
+.capital-duel-scene header small{letter-spacing:.12em}
+.capital-duel-scene h2{font-size:1.8rem;margin:.3rem 0}
+#capitalDuelClose{font-size:1.8rem;background:transparent;color:#e9d5b6;border:0;cursor:pointer}
+#capitalDuelStory{min-height:2em;font-size:1rem}
+.capital-duel-field{position:relative;height:min(52vh,460px);overflow:hidden;cursor:crosshair;
+ border:9px ridge #947453;background:linear-gradient(180deg,#aaa28d 0%,#8a806a 56%,#675c48 57%,#534532 100%)}
+.capital-duel-horizon{position:absolute;bottom:36%;left:0;width:100%;height:11px;opacity:.3;
+ background:repeating-linear-gradient(90deg,#392c20 0 4px,transparent 4px 36px)}
+.capital-duel-opponent{position:absolute;left:50%;bottom:7%;width:110px;height:78%;
+ transform:translateX(-50%);filter:drop-shadow(3px 4px 3px #19130a66)}
+.capital-duel-opponent>*{position:absolute;background:#241c16}
+.capital-duel-hat{width:46px;height:24px;top:0;left:32px;border-radius:3px 3px 0 0;
+ border-bottom:7px solid #362a1d}
+.capital-duel-hat::after{content:'';position:absolute;width:78px;height:5px;left:-16px;bottom:-8px;background:#1b1510}
+.capital-duel-head{top:24px;left:38px;width:34px;height:48px;border-radius:40% 40% 48% 48%}
+.capital-duel-coat{top:68px;left:17px;width:76px;height:47%;border-radius:24px 24px 6px 6px;
+ background:linear-gradient(90deg,#17130f,#32271e 50%,#1a1410)}
+.capital-duel-arm{top:25%;width:22px;height:42%;border-radius:12px}
+.capital-duel-arm.left{left:9px;transform:rotate(7deg)}
+.capital-duel-arm.right{right:9px;transform:rotate(-9deg)}
+.capital-duel-leg{top:70%;width:24px;height:30%}
+.capital-duel-leg.left{left:29px;transform:rotate(4deg)}
+.capital-duel-leg.right{right:29px;transform:rotate(-4deg)}
+.capital-duel-reticle{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+ font:44px/1 'Courier New',monospace;color:#bd3022;text-shadow:1px 1px #200,0 0 8px #250;pointer-events:none}
+.capital-duel-signal{position:absolute;left:50%;top:10%;transform:translateX(-50%);
+ font:bold clamp(1.8rem,5vw,3.2rem) Georgia,serif;letter-spacing:.16em;color:#faf0d9;
+ text-shadow:2px 3px 2px #20140b}
+.capital-duel-controls{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+.capital-duel-controls button{font:600 1rem Georgia,serif;cursor:pointer;
+ border:2px solid #b69366;background:#47301d;color:#fff3df;padding:.7rem 1.2rem}
+.capital-duel-controls button:disabled{opacity:.4;cursor:default}
+#capitalDuelResult{min-height:2.8em;font-size:1.1rem;text-align:center}
+@media(max-width:600px){.capital-duel-scene{padding:.6rem}.capital-duel-field{height:46vh}
+ .capital-duel-opponent{transform:translateX(-50%) scale(.8);transform-origin:bottom}}
+@media(prefers-reduced-motion:reduce){.capital-duel-reticle{transition:none!important}}
