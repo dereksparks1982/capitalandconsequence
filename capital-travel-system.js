@@ -189,6 +189,12 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    if(active!==state)return;
    if(state.started===null)state.started=now;
    const progress=Math.min(1,(now-state.started)/duration);
+   const local=positionAt(points,progress);
+   // Follow the token first so both road lines and token use the SAME
+   // camera transform for this frame, even during an active pan.
+   if(local&&typeof onFrame==='function'){
+    try{onFrame(local,progress)}catch(error){console.warn('Capital Travel map follow failed',error)}
+   }
    const raw=points.map(project);
    if(raw.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))){
     clear();return;
@@ -200,12 +206,6 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
     const screen=project(p);
     return screen.x+','+screen.y;
    }).join(' '));
-   const local=positionAt(points,progress);
-   // Allow a camera-follow callback to pan before drawing the token at its
-   // new position, while preserving journey progress in map coordinates.
-   if(local&&typeof onFrame==='function'){
-    try{onFrame(local,progress)}catch(error){console.warn('Capital Travel map follow failed',error)}
-   }
    const position=local&&project(local);
    if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.y)){
     clear();return;
