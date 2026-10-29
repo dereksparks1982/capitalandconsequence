@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.8-beta (29 October 2026)
+## Current development checkpoint: v0.7.9-beta (29 October 2026)
+
+**Capital Travel failure recovery:** Live previews and moving street-route figurines now validate map-screen projection and cancel gracefully if coordinates become invalid or a projection throws. The travel overlay is removed, the journey does not commit or charge a completed arrival, and the player can retry after the viewport recovers. This builds on road-following travel, live pin recalc, physical horse/carriage requirements, camera following, and the copper traveled-road trail. Original Washington artwork, numbered pin defaults, approved room and map geometry remain unchanged. The modeled roads are still approximate, not pixel-perfect building collision geometry. Focused isolated JavaScript recovery tests passed; full local Node and Electron QA remain pending. No GitHub Actions or executable ZIP. [v0.7.9 Beta notes](docs/RELEASE-NOTES-v0.7.9-beta.md).
+
+### Previous v0.7.8-beta checkpoint (29 October 2026)
+
+### v0.7.8-beta (29 October 2026)
 
 **Capital Travel's animated street trail:** The moving walker, horse or carriage figurine now leaves a temporary copper-colored trace along the road path already traveled. The original dotted itinerary remains visible ahead. Both paths follow the same guide-pixel position through camera zoom/pan and are removed after the trip or cancellation. The pawn now finishes on the exact destination pin without floating-point drift. The original Washington map artwork, all numbered pin defaults, existing room navigation and approved UI geometry remain unchanged. **The first-pass road model still needs precise street tracing and cannot guarantee that every illustrated building is avoided.** Focused animation, route-prefix and zoom tests passed in isolated JavaScript; full local Node and Electron QA pending. No GitHub Actions or installer. [v0.7.8 Beta notes](docs/RELEASE-NOTES-v0.7.8-beta.md).
 
