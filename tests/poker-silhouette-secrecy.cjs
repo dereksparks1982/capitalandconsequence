@@ -29,7 +29,7 @@ function markup(i){
  return html.slice(start,end<0?undefined:end);
 }
 win.__POKER_TEST.render(false);
-assert.equal((elements.pokerSeats.innerHTML.match(/class="poker-portrait/g)||[]).length,4,
+assert.equal((elements.pokerSeats.innerHTML.match(/class="poker-portrait(?: poker-portrait-player)?"/g)||[]).length,4,
  'Each table seat has one temporary silhouette');
 assert.equal((markup(0).match(/class="p-card/g)||[]).length,2,'Player sees both cards');
 assert.equal((markup(0).match(/class="p-card[^"]* back"/g)||[]).length,0,'Player cards are face up');
