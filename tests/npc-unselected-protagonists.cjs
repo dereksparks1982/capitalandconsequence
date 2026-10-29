@@ -89,6 +89,10 @@ function scenario(route){
  assert.ok(arrivals.length>0,'Elapsed time settles NPC departures and arrivals');
  assert.ok(arrivals.every(a=>a.lastArrival.arrivedAt-a.lastArrival.departedAt===30),
   'Every completed journey records thirty game minutes');
+ assert.ok(arrivals.every(a=>Array.isArray(a.journeyHistory)&&a.journeyHistory.length<=16),
+  'Arrivals preserve bounded per-person history');
+ assert.ok(arrivals.every(a=>a.journeyHistory.at(-1).arrivedAt===a.lastArrival.arrivedAt),
+  'Saved journey history matches the latest arrival');
  const starPlan=npc.inspect('madamStar')?.lifePlan;
  assert.ok(starPlan?.goal&&starPlan.history.length<=12,
   'Madam Star retains a bounded, private multi-step goal');
