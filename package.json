@@ -1,8 +1,8 @@
 {
   "name": "capital-consequence",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": true,
-  "description": "Capital & Consequence historical Washington life simulation (development alpha)",
+  "description": "Capital & Consequence historical Washington life simulation (development beta)",
   "main": "desktop/main.cjs",
   "scripts": {
     "prepare:runtime": "node desktop/prepare-runtime-assets.cjs",
