@@ -1,6 +1,6 @@
 # Character Roster · Capital & Consequence
 
-**Status:** Approved story decisions and verified source identities, refreshed October 28, 2026. **Names are not proof of complete AI routines or historical authenticity.** Use this register before naming any NPC. Entries labeled *planned* are not coded yet.
+**Status:** Approved story decisions and verified source identities, refreshed October 29, 2026. **Names are not proof of complete AI routines or historical authenticity.** Use this register before naming any NPC. Entries labeled *planned* are not coded yet.
 
 > **Current source and canon note (v0.6.90-dev):** All four playable characters have separate autosaved **60-skill** profiles, under **Journal → Skills**; roles have different skill baselines. Only a subset of actions currently awards skill. Charlie starts as owner of Federal Electric, and the player can later purchase separate steelworks, railroad and shipping businesses. The original 40-pin Washington map is fixed; its white anchor dots, leader lines and collision shifting were removed after owner rejection. The full Node suite and actual Electron playthrough have not been verified in this checkpoint. Character-specific documentation: [Codex index](CODEX-INDEX.md).
 
@@ -10,6 +10,8 @@
 - **Samuel “Sam” Harlan**: Black rookie patrolman, assigned to Hillsdale/Barry Farm on duty; off-duty free to visit Washington normally.
 - **Elias “Eli” Crowe**: lowly nightclub doorman employed by Lui; not automatically a criminal.
 - **Edmund Wardman**: lowly orderly at fictional **District Asylum**; unnamed older brother runs the institution; no automatic management power.
+
+**October 29 starting-life canon:** Charlie is **widowed**. Sam is **married** and lives in **Hillsdale / Barry Farm**, where he patrols; his spouse is not named in this decision. Eli is **unmarried**, uninterested in marriage and may have self-serving romantic or sexual relationships with consenting adults of either sex; his criminal conduct is determined by gameplay, not his orientation. Edmund is **unmarried**, has little social life away from the asylum, and faces real family pressure. His brother may be trying to manufacture grounds to have him confined, but no conspiracy is automatically proven at the start. All four have **separate private player-only books**: Business Ledger, Casebook, Personal Journal and Duty Journal. See [October 29 missions and story canon](docs/OCT-29-2026-MISSIONS-RECORDS-AND-ASYLUM-CANON.md); the asylum murder, hospital coroner and long-form serial case remain **design only**.
 
 **Source checkpoint, October 25:** Whichever playable character is selected is excluded from NPC control; the other three are now initial scheduled AI residents with their own unique names, professions, locations, ordinary weekday/weekend routines, personality foundations and character-card dialogue. This is a beginning, **not yet** a full independently simulated lifetime, mature career, or canonical personal salary. Routes do not predetermine whether anyone becomes a criminal, investigator, politician or institution head.
 
