@@ -28,7 +28,13 @@ const ACTIONS=Object.freeze({
   text:'After reviewing your prior filed patrol reports, the sergeant authorizes a copy of the hospital finding. This is assistance, not a detective promotion.'},
  medical:{label:'Request the coroner’s authorized finding · 10 minutes',seconds:600,location:'governmentHospital',room:'reception',
   routes:['investigator'],source:'District General Hospital coroner report',
-  text:'A hospital physician documented the physical findings. Medical observations alone cannot identify an assailant.'}
+  text:'A hospital physician documented the physical findings. Medical observations alone cannot identify an assailant.'},
+ wardMemo:{label:'File an orderly incident memorandum · 5 minutes',seconds:300,location:'blackwoodAsylum',room:'orderly-station',
+  routes:['wardman'],source:'signed orderly station memorandum',
+  text:'Filed a factual memorandum summarizing personally observed details. No accusation or patient diagnosis was asserted.'},
+ policeMemo:{label:'File a preliminary police inquiry memo · 10 minutes',seconds:600,location:'metropolitanPolice',room:'station-duty-room',
+  routes:['investigator'],source:'police station preliminary memorandum',
+  text:'Submitted a preliminary report with sources and the coroner’s observations. The case remains unresolved and no arrest was requested.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
@@ -73,6 +79,15 @@ function preview(save,world,id,where){
   return {ok:false,reason:'A written station-sergeant referral is required'};
  if(id==='medical'&&!world?.morgue?.reports?.[BODY_ID])
   return {ok:false,reason:'The coroner has not filed the report'};
+ if(id==='medical'&&iso<world.morgue.reports[BODY_ID].examinedAt)
+  return {ok:false,reason:'The coroner has not yet issued this report'};
+ if(id==='wardMemo'&&(!seen(save,'wardRecord')||!seen(save,'wardCorridor')))
+  return {ok:false,reason:'The memorandum requires both your own ward record and corridor observation'};
+ if(id==='policeMemo'&&(!seen(save,'reception')||!seen(save,'medical')||!permission(save)))
+  return {ok:false,reason:'A sourced reception account, authorized report and referral are required'};
+ if(id==='policeMemo'&&save.patrolDuty?.onDuty)
+  return {ok:false,reason:'Outside-beat inquiry must be filed during your own off-duty time'};
+
  if(!root.FE_WASHINGTON_TIME?.canSpend?.(save,action.seconds) ||
    (save.phase==='day'&&root.FE_WASHINGTON_TIME.phaseSecondsRemaining(save)<=action.seconds))
   return {ok:false,reason:'Insufficient time in this duty window'};
@@ -101,6 +116,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  }
  root.FE_MISSIONS?.start?.(save,{id:'inquiry:'+CASE_ID+':'+save.characterRoute,
   templateId:'asylum-inquiry',date:save.gameDate,locationId:action.location});
+ if(id==='wardMemo'||id==='policeMemo'){
+  const missionId='inquiry:'+CASE_ID+':'+save.characterRoute;
+  root.FE_MISSIONS?.step?.(save,missionId,'file',{eventId:'asylum:'+id+':'+CASE_ID,at:save.gameDate});
+  if(id==='wardMemo'){
+   if(!save.wardmanStanding)save.wardmanStanding={version:1,workplaceTrust:50,familyPressure:20,documentedConcerns:[]};
+   if(!save.wardmanStanding.documentedConcerns.includes(CASE_ID)){
+    save.wardmanStanding.documentedConcerns.push(CASE_ID);
+    save.wardmanStanding.workplaceTrust=Math.min(100,save.wardmanStanding.workplaceTrust+2);
+   }
+  }
+ }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
   source:action.source,text:action.text});
  return {ok:true,actionId:id,observation:record.observation||null};

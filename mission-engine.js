@@ -5,8 +5,8 @@
  */
 (function(root){'use strict';
 const TEMPLATES=Object.freeze({
- 'asylum-inquiry':Object.freeze({label:'District Asylum · Unexplained Death',routes:Object.freeze(['wardman','investigator']),
-  initial:'inquiry',transitions:Object.freeze({inquiry:Object.freeze({})})}),
+ 'asylum-inquiry':Object.freeze({label:'District Asylum · Preliminary Inquiry',routes:Object.freeze(['wardman','investigator']),
+  initial:'inquiry',transitions:Object.freeze({inquiry:Object.freeze({file:'completed'})})}),
  'ward-round':Object.freeze({label:'District Asylum · Ordinary Ward Service',route:'wardman',
   initial:'assigned',transitions:Object.freeze({
    assigned:Object.freeze({attend:'awaiting-report'}),
