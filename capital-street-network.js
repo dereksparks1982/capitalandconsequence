@@ -95,11 +95,11 @@ function nearbyEdges(p,limit=4){
    ((p.y-a.y)*IMG.h)*dy)/(dx*dx+dy*dy)));
   const at={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
   const distance=Math.abs((at.x-p.x)*IMG.w)+Math.abs((at.y-p.y)*IMG.h);
-  const inside=BLOCKED_LANDMARKS.some(box=>pointInBox(p,box));
-  const steps=compact([p,...access(p,at)]);
-  if(!inside&&BLOCKED_LANDMARKS.some(box=>
-    steps.some((v,j)=>j>0&&intersectsBox(steps[j-1],v,box))))continue;
-  candidates.push({edge:i,at,t,distance});
+  // Choose an actual walkable right-angle access bend, not just the
+  // closest geometric projection. Either L-shaped connector may be viable.
+  const approach=access(p,at);
+  if(!approach)continue;
+  candidates.push({edge:i,at,t,distance,approach});
  }
  candidates.sort((a,b)=>a.distance-b.distance||a.edge-b.edge);
  const min=candidates[0]?.distance??Infinity;
@@ -113,15 +113,25 @@ function compact(points){
  return out;
 }
 function access(from,point){
- // The entrance must never be silently represented as a verified road.
- // Use a short turn to the nearest modeled street from the exact pin.
+ // Some buildings/compounds can only be approached around one side. The
+ // first L-shaped access may hit a blocked landmark while the other does not.
+ // Both bends have equal Manhattan distance; prefer the previous orientation
+ // for unchanged routes, but use the alternate when the first is blocked.
  if(pixel(from,point)<.05)return [];
- // Orthogonal doorstep access: favor the axis with the smaller deviation,
- // never a long diagonal directly from a building to the street graph.
  const sideways=Math.abs((from.x-point.x)*IMG.w);
  const vertical=Math.abs((from.y-point.y)*IMG.h);
- const corner=sideways<vertical?{x:point.x,y:from.y}:{x:from.x,y:point.y};
- return compact([corner,point]);
+ const horizontalFirst={x:point.x,y:from.y};
+ const verticalFirst={x:from.x,y:point.y};
+ const preferred=sideways<vertical?horizontalFirst:verticalFirst;
+ const other=sideways<vertical?verticalFirst:horizontalFirst;
+ const inside=BLOCKED_LANDMARKS.some(box=>pointInBox(from,box));
+ for(const corner of [preferred,other]){
+  const path=compact([from,corner,point]);
+  if(inside||!BLOCKED_LANDMARKS.some(box=>
+   path.some((v,j)=>j>0&&intersectsBox(path[j-1],v,box))))
+   return compact([corner,point]);
+ }
+ return null;
 }
 // Road graph is fixed; moving a pin changes only its road access points.
 // Reuse a bounded number of shortest-path trees while the user drags pins.
@@ -254,15 +264,15 @@ function streetRoute(start,end){
  if(!direct&&!path.length)return null;
  const middle=path.map(id=>graph[id]);
  const road=direct?[a.at,b.at]:[a.at,...middle,b.at];
- const body=compact([start,...access(start,a.at),...road,
-  ...access(end,b.at).slice().reverse(),end]);
+ const body=compact([start,...a.approach,...road,
+  ...b.approach.slice().reverse(),end]);
  const accessPixels=Math.round(a.distance+b.distance);
  return {points:body,
   type:accessPixels>65?'provisional-street-access':'provisional-street-network',
   accessPixels,intersections:direct?0:path.length,networkEdges:edges.length,
   turns:routeTurns(body),namedRoads:namedRoads(path,direct?a.edge:null)};
 }
-const api=Object.freeze({version:4,source:'approximate-guide-intersections',image:IMG,
+const api=Object.freeze({version:5,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
