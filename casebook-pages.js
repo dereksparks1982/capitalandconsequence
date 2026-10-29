@@ -76,6 +76,16 @@ function buildPages(save,{publicFile}={}){
  for(const entry of logs.slice(-MAX_REPORTS).reverse())if(entry&&typeof entry==='object')
   pages.push(incidentPage(entry,'filed'));
  for(const raw of cases.slice(-8))pages.push(...publicCasePages(raw,publicFile));
+ const asylumEvidence=Array.isArray(save.incidentObservations?.records)?
+  save.incidentObservations.records.filter(e=>e&&typeof e.eventId==='string'&&e.eventId.startsWith('asylum:')):[];
+ if(asylumEvidence.length)pages.push({id:'asylum-inquiry',section:'Case Files',
+  title:'District Asylum · Preliminary Inquiry',
+  kicker:'Sources actually received or witnessed by Samuel Harlan',
+  paragraphs:['These are preliminary notes only. No homicide warrant, detective rank or proven culprit is implied.'],
+  items:asylumEvidence.map(e=>({
+   heading:text(e.at||'Undated',40)+' · '+text(e.source||'Source unrecorded',100),
+   text:text(e.description||'No statement retained',850)
+  }))});
  const medical=Array.isArray(save.morgueExaminations)?save.morgueExaminations:[];
  pages.push({id:'postmortem',section:'Medical Records',title:'Postmortem Reports',
   kicker:'Records lawfully provided to this officer',

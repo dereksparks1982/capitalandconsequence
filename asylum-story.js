@@ -21,7 +21,7 @@ const ACTIONS=Object.freeze({
   routes:['wardman'],source:'direct observation in authorized ward',
   text:'The ward door was left partly open. By the time you inspected it, the corridor had already been used by other attendants.'},
  reception:{label:'Ask the reception desk about the report · 5 minutes',seconds:300,location:'blackwoodAsylum',room:'reception',
-  routes:['investigator'],source:'hospital reception inquiry',
+  routes:['investigator'],source:'asylum reception inquiry',
   text:'The receiving clerk confirms that an incident report went to the metropolitan police station. Further patient records are restricted.'},
  stationMemo:{label:'Request limited assistance from the duty sergeant · 10 minutes',seconds:600,location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'signed desk-sergeant referral',

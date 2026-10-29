@@ -73,12 +73,19 @@ function syncWard(save,kind,result){
  return {ok:false,reason:'Unknown ward action'};
 }
 function pages(save){
- const store=ensure(save),all=[...Object.values(store.active),...store.history];
- if(!all.length)return [];
- return [{id:'missions',section:'Assignments',title:'Assigned Work & Outcomes',
-  kicker:'Work actually accepted or completed by this character',paragraphs:[],
-  items:all.slice(-60).reverse().map(m=>({heading:m.date+' · '+m.title,
-   text:m.id+' · '+m.status+' · '+m.stage+(m.choices.length?' · '+m.choices.map(c=>c.action+(c.choiceId?' ('+c.choiceId+')':'')).join(', '):'')}))}];
+ const store=ensure(save),all=[...Object.values(store.active),...store.history]
+  .sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.id.localeCompare(b.id));
+ const pages=[];
+ for(let i=0;i<all.length;i+=15){
+  const records=all.slice(i,i+15);
+  pages.push({id:'missions:'+i,section:'Assignments',title:'Assigned Work & Outcomes',
+   kicker:'Confirmed work, filed results, and unfinished inquiries',paragraphs:[],
+   items:records.map(m=>({heading:m.date+' · '+m.title,
+    text:m.id+' · '+m.status+' · '+m.stage+
+     (m.choices.length?' · '+m.choices.map(c=>c.action+(c.choiceId?' ('+c.choiceId+')':'')).join(', '):'')+
+     (m.templateId==='asylum-inquiry'?' · Preliminary paperwork is not a solved murder.':'' )}))});
+ }
+ return pages;
 }
 const api=Object.freeze({TEMPLATES,ensure,find,start,step,abandon,syncWard,pages});
 if(typeof module==='object'&&module.exports)module.exports=api;

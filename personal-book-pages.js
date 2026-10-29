@@ -83,8 +83,17 @@ function wardmanPages(save){
  if(logs.length)pages.push(page('rounds','Asylum Duty','Filed Ward Work','Recorded duties',[],
   logs.slice(-ROWS).reverse().map(e=>item(txt(e?.date||e?.id||'Ward entry',100),
    txt(e?.result||e?.description||'No details entered.',700)))));
+ const findings=Array.isArray(save.incidentObservations?.records)?save.incidentObservations.records:[];
+ if(findings.length)pages.push(page('asylum-observations','Asylum Inquiry','Personally Observed Events',
+  'Sources acquired by Edmund in authorized rooms',
+  ['Rumors and suspicions do not become established case facts merely by writing them down.'],
+  findings.filter(e=>e?.eventId?.startsWith('asylum:')).map(e=>item(e.at+' · '+e.source,e.description))));
+ const standing=save.wardmanStanding?.version===1?save.wardmanStanding:null;
  pages.push(page('family','Personal Matters','Family & Standing',txt(save.gameDate,35),
-  ['Family estrangement is part of Edmund’s established background. Any actual attempt to have him confined must arise from a recorded story event, not automatic family omniscience.']));
+  ['Family estrangement is part of Edmund’s established background. Any actual attempt to have him confined must arise from a recorded story event, not automatic family omniscience.'],
+  standing?[item('Workplace trust',String(standing.workplaceTrust)),
+    item('Family pressure',String(standing.familyPressure)),
+    item('Documented institutional concerns',String(standing.documentedConcerns?.length||0))]:[]));
  return pages;
 }
 function buildPages(save,{publicFile}={}){
