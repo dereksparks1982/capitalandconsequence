@@ -2443,6 +2443,15 @@ function initCityRoomUI(){
    if(!receipt?.applied)return false;
    const record=window.FE_DUELS.settle(S,challenge.id,outcome,{rounds,elapsedMinutes:minutes});
    if(!record)return false;
+   // Social standing responds to the result, separate from the one-time
+   // game-clock charge. Duels can disgrace or impress the city.
+   const reputationShift=outcome.result==='opponent-killed'?-5:
+    outcome.result==='fired-wide'?2:
+    outcome.result==='yielded'?-1:
+    outcome.result==='opponent-wounded'?1:0;
+   if(Number.isFinite(S.reputation))
+    S.reputation=Math.max(0,Math.min(100,S.reputation+reputationShift));
+   record.reputationShift=reputationShift;
    if(outcome.action==='shoot')
     window.FE_SKILLS?.practice?.(S,'marksmanship',{
      event:'duel:'+challenge.id,source:'formal duel',difficulty:challenge.opponentSkill,amount:.35
