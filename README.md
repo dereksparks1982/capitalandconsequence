@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.14-beta (29 October 2026)
+## Current development checkpoint: v0.7.15-beta (29 October 2026)
+
+**Safer Capital Travel entrances:** The street graph now examines both right-angle walking approaches from a destination pin to a modeled road. When one approach crosses restricted landmark grounds, it can use the other; if both are blocked, that particular entrance is not offered. This improves how the traveling game piece avoids the existing White House exclusion without modifying any artwork or pin defaults. Tests verified all 1,560 ordered journeys among the 40 registered locations and 163 edited-pin approaches around restricted grounds. **These roads remain approximate, not a traced street-by-street map or guaranteed building collision model.** Focused JavaScript checks passed; full local Node and Electron gameplay tests are pending. No GitHub Actions, release tag, or executable ZIP. [v0.7.15 Beta notes](docs/RELEASE-NOTES-v0.7.15-beta.md).
+
+### Previous v0.7.14-beta checkpoint (29 October 2026)
+
+### v0.7.14-beta (29 October 2026)
 
 **Capital Travel turning pawn and safe departures:** A small temporary copper direction marker now turns with the walking, horse or carriage game piece through modeled street corners and diagonal avenues. The existing character icon stays upright, and no map artwork or approved pins are changed. Cross-city **Go There** now requires a graph-backed road itinerary; if the map or road graph is unavailable, it refuses travel rather than allowing a direct uncharged teleport. Same-location room entry remains permitted. Focused route, heading and failure-regression checks passed; full offline Node and Ubuntu Electron tests remain pending. No GitHub Actions, executable ZIP or release tag. [v0.7.14 Beta notes](docs/RELEASE-NOTES-v0.7.14-beta.md).
 
