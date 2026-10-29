@@ -126,23 +126,52 @@ function access(from,point){
 // Road graph is fixed; moving a pin changes only its road access points.
 // Reuse a bounded number of shortest-path trees while the user drags pins.
 const treeCache=new Map(),CACHE_LIMIT=48;
+// Binary min-heap keeps live pin edits responsive while the static guide
+// graph grows. Cost ties are resolved by node ID for repeatable paths.
+function comparePriority(a,b){return a.cost-b.cost||a.node-b.node}
+function pushHeap(heap,item){
+ heap.push(item);
+ let i=heap.length-1;
+ while(i>0){
+  const parent=Math.floor((i-1)/2);
+  if(comparePriority(heap[parent],item)<=0)break;
+  heap[i]=heap[parent];i=parent;
+ }
+ heap[i]=item;
+}
+function popHeap(heap){
+ const first=heap[0],last=heap.pop();
+ if(!heap.length)return first;
+ let i=0;
+ while(true){
+  const left=2*i+1,right=left+1;
+  if(left>=heap.length)break;
+  let next=left;
+  if(right<heap.length&&comparePriority(heap[right],heap[left])<0)next=right;
+  if(comparePriority(last,heap[next])<=0)break;
+  heap[i]=heap[next];i=next;
+ }
+ heap[i]=last;
+ return first;
+}
 function treeFrom(start){
  if(treeCache.has(start)){
   const known=treeCache.get(start);
   treeCache.delete(start);treeCache.set(start,known);return known;
  }
  const distance=Array(graph.length).fill(Infinity),prev=Array(graph.length).fill(-1);
- const visited=Array(graph.length).fill(false);
- distance[start]=0;
- for(let count=0;count<graph.length;count++){
-  let node=-1;
-  for(let n=0;n<graph.length;n++)
-   if(!visited[n]&&(node<0||distance[n]<distance[node]))node=n;
-  if(node<0||!Number.isFinite(distance[node]))break;
+ const visited=Array(graph.length).fill(false),heap=[];
+ distance[start]=0;pushHeap(heap,{node:start,cost:0});
+ while(heap.length){
+  const {node,cost}=popHeap(heap);
+  if(visited[node]||cost>distance[node])continue;
   visited[node]=true;
-  for(const e of adj[node]){
-   if(!visited[e.to]&&distance[node]+e.cost<distance[e.to]){
-    distance[e.to]=distance[node]+e.cost;prev[e.to]=node;
+  for(const edge of adj[node]){
+   if(visited[edge.to])continue;
+   const next=distance[node]+edge.cost;
+   if(next<distance[edge.to]){
+    distance[edge.to]=next;prev[edge.to]=node;
+    pushHeap(heap,{node:edge.to,cost:next});
    }
   }
  }
@@ -233,7 +262,7 @@ function streetRoute(start,end){
   accessPixels,intersections:direct?0:path.length,networkEdges:edges.length,
   turns:routeTurns(body),namedRoads:namedRoads(path,direct?a.edge:null)};
 }
-const api=Object.freeze({version:3,source:'approximate-guide-intersections',image:IMG,
+const api=Object.freeze({version:4,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
