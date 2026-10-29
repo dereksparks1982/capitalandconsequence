@@ -61,6 +61,21 @@ function animationDuration(guidePixels,mode='walk'){
  const walkingMs=Math.min(8000,1000+Math.min(guidePixels,4000)*3.6);
  return Math.max(850,Math.round(walkingMs*speed));
 }
+// Preview the saved Washington calendar without advancing it. Travel is
+// still charged exactly once by the authoritative journey ledger on arrival.
+function arrivalEstimate(iso,minutes){
+ if(typeof iso!=='string'||!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$/.test(iso)||
+  !Number.isSafeInteger(minutes)||minutes<0||minutes>1440)return null;
+ const start=Date.parse(iso+':00Z');
+ if(!Number.isFinite(start)||new Date(start).toISOString().slice(0,16)!==iso)return null;
+ const at=new Date(start+minutes*60000);
+ if(!Number.isFinite(+at))return null;
+ const hour=at.getUTCHours(),minute=at.getUTCMinutes();
+ return Object.freeze({iso:at.toISOString().slice(0,16),
+  date:at.toISOString().slice(0,10),
+  time:(hour%12||12)+':'+String(minute).padStart(2,'0')+(hour>=12?' PM':' AM'),
+  nextDay:at.toISOString().slice(0,10)!==iso.slice(0,10)});
+}
 function available(save,from,mode){
  if(!MODES.some(m=>m.id===mode))return {ok:false,reason:'Unrecognized travel method.'};
  if(mode==='walk')return {ok:true,mode:'walk',minutes:30};
@@ -264,7 +279,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:9,modes:MODES,route,estimate,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:10,modes:MODES,route,estimate,arrivalEstimate,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
