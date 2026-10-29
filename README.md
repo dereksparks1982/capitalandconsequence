@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.93-dev (28 October 2026)
+## Current development checkpoint: v0.6.94-dev (28 October 2026)
+
+**Stacked development build 4, NPC daily life and persistent condition records:** Every simulated resident's needs now keep a 14-day save-backed daybook of observed active minutes, night rest, other hours and recognised routine meal periods. The ledger follows only elapsed player-controlled world minutes; no fictional rent, food purchase, private home, salary or second NPC clock is introduced. Multiple short time advances and one equivalent long advance yield the same entries, and reloading/repeating a minute cannot double-count activity. Full offline Node QA and a Linux Electron playthrough remain pending; no new downloadable patch is being requested yet. The approved 40-pin Washington map and UI are unchanged.
+
+### Previous v0.6.93-dev checkpoint (28 October 2026)
 
 **Stacked development build 3, saved NPC travel:** During calendar processing, residents switching between established locations now acquire persisted thirty-minute journeys instead of universally teleporting. An NPC travelling between sites is not present in either room for conversation or social meetings; reached arrivals resolve against the player-controlled calendar and store their actual departure and arrival minutes. Large player time jumps can complete journeys during the jump. A same-routine-signature clock update can finish a pending trip without paying wages, making new NPC plans or replaying social settlements. Each resident now retains a bounded record of the last sixteen completed journeys, including origin, destination, departure and arrival minutes. A journey that completes as a later routine begins can chain to the next destination rather than erasing the intermediate arrival. Regression checks now inspect elapsed journey accounting. This is a provisional city-wide travel duration, **not** historically surveyed distances or road-by-road pathfinding; some long skipped routine periods remain unresolved. The original map and UI geometry are unchanged. Source-only development checkpoint, not a completed Electron playthrough or accepted release.
 
