@@ -269,6 +269,8 @@
     priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
     shoppingTrip,
     preferredDestination:shoppingTrip?'oldChinatown':
+     (action.kind==='personal'&&agent.returnErrand?.from==='oldChinatown'?
+      agent.returnErrand.to:null)||
      window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
  }
  // NPC journeys use the player-driven world clock, never a second timer.
@@ -315,9 +317,12 @@
    }else{a.locationId=null;a.roomId=null;a.activity=null;a.status='off-duty'}
    recordNpcArrival(a,j);
    a.journey=null;a.journeyDestination=null;changed=true;
+   if(a.returnErrand&&j.to===a.returnErrand.to)a.returnErrand=null;
    if(a.status==='present'&&a.activity==='shopping for groceries'){
     const date=window.FE_CALENDAR_BRIDGE?.moment?.(S)?.date||observedDate();
-    shopAtObservedMarket(def,a,date,'arrival|'+j.departedAt+'|'+j.to);
+    const receipt=shopAtObservedMarket(def,a,date,'arrival|'+j.departedAt+'|'+j.to);
+    if(receipt&&j.from&&j.from!==j.to)
+     a.returnErrand={from:j.to,to:j.from,purchaseId:receipt.id};
    }
   }
   return changed;
