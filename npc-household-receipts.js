@@ -15,13 +15,15 @@
   let state=agent.householdReceipts;
   if(!state||state.version!==1){
    state={version:1,lastPurchaseId:0,foodPurchases:0,maintenancePurchases:0,
-    spentCents:0,lastFoodDate:null,history:[],purchasedGoods:{},lastPurchaseDate:null};
+    spentCents:0,lastFoodDate:null,history:[],purchasedGoods:{},lastPurchaseDate:null,provisions:[],consumption:[],lastMealKey:null};
    agent.householdReceipts=state;
   }
   if(!Number.isSafeInteger(state.lastPurchaseId)||state.lastPurchaseId<0)state.lastPurchaseId=0;
   for(const k of ['foodPurchases','maintenancePurchases','spentCents'])
    if(!Number.isSafeInteger(state[k])||state[k]<0)state[k]=0;
   if(!state.purchasedGoods||typeof state.purchasedGoods!=='object'||Array.isArray(state.purchasedGoods))state.purchasedGoods={};
+  if(!Array.isArray(state.provisions))state.provisions=[];
+  if(!Array.isArray(state.consumption))state.consumption=[];
   if(!Array.isArray(state.history))state.history=[];
   if(state.history.length>LIMIT)state.history=state.history.slice(-LIMIT);
   return state;
@@ -55,13 +57,37 @@
    state.spentCents+=receipt.cents;
    state.purchasedGoods[receipt.good]=(Number.isSafeInteger(state.purchasedGoods[receipt.good])?state.purchasedGoods[receipt.good]:0)+1;
    state.lastPurchaseDate=receipt.date;
+   if(category==='food')state.provisions.push({receiptId:receipt.id,good:receipt.good,
+    bought:receipt.date,consumed:false});
    added++;
   }
   state.lastPurchaseId=latest;
   if(state.history.length>LIMIT)state.history.splice(0,state.history.length-LIMIT);
   return {changed:added>0,added};
  }
- const api=Object.freeze({ensure,sync});
+ // Food must be genuinely purchased before it can count as a meal.
+ // This does not deduct money or generate market transactions.
+ function consume(save,id,key,date){
+  if(typeof id!=='string'||!id||id==='player'||typeof key!=='string'||!key||
+    !/^\d{4}-\d{2}-\d{2}$/.test(date||''))return {ok:false,reason:'invalid'};
+  const actor=save?.npcSimulation?.agents?.[id];
+  if(!actor)return {ok:false,reason:'unknown-resident'};
+  const state=ensure(actor);
+  if(state.consumption.some(r=>r.key===key))return {ok:false,reason:'already-settled'};
+  const item=state.provisions.find(r=>!r.consumed&&r.bought<=date);
+  if(!item)return {ok:false,reason:'no-paid-provisions'};
+  item.consumed=true;
+  const result={key,date,good:item.good,receiptId:item.receiptId};
+  state.consumption.push(result);
+  if(state.consumption.length>32)state.consumption.splice(0,state.consumption.length-32);
+  state.lastMealKey=key;
+  return {ok:true,...result};
+ }
+ function available(agent){
+  const state=ensure(agent);
+  return state.provisions.filter(r=>!r.consumed).length;
+ }
+ const api=Object.freeze({ensure,sync,consume,available});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_NPC_HOUSEHOLD_RECEIPTS=api;
 })(typeof window!=='undefined'?window:globalThis);
