@@ -64,7 +64,7 @@ function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous'
  const days=conduct==='rude'?7:3;
  state.cooldownUntil=addDays(today,days);state.lastConduct=conduct;
  const result={status:'cooldown',until:state.cooldownUntil,hospitality:0,message:'The patrons decline membership for now. You may request another trial after '+state.cooldownUntil+'.',trials:state.trials};
- if(sessionId!==null){state.lastSessionId=sessionId;state.lastSessionResult={...result}}
+ if(sessionId!==null){recordSession(state,sessionId,result)}
  return result;
 }
 const api=Object.freeze({version:1,config:CONFIG,ensure,hasCard,access,trial});
