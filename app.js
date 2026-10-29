@@ -1287,11 +1287,15 @@ window.FE_POKER_AUTHORIZE=(token,circle)=>{
  if(!p||p.claimed||p.profileId!==activeProfileId()||p.circle!==circle||p.gameDate!==S.gameDate)return false;
  p.claimed=true;save(true);return true;
 };
+window.FE_POKER_MEMORY_SUMMARY=(circle,name)=>
+ window.FE_POKER_MEMORY?.summary?.(S,circle,name)||null;
+window.FE_POKER_PLAYER_HABITS=circle=>
+ window.FE_POKER_MEMORY?.playerHabits?.(S,circle)||null;
 window.FE_POKER_OPPONENT_STATUS=(circle,name)=>{
  if(!['working','middle','elite'].includes(circle)||typeof name!=='string')return 'unharmed';
  return window.FE_DUEL_AFTERMATH?.opponentStatus?.(S,name,S.gameDate)||'unharmed';
 };
-window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteous')=>{
+window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteous',observed=null)=>{
  const state=pokerSessions(),entry=state.pending.find(p=>p.id===token);
  if(!entry||!entry.claimed||entry.profileId!==activeProfileId()||entry.circle!==circle||state.settled.some(p=>p.id===token))return false;
  if(!Number.isFinite(+rawDelta)||!Number.isFinite(+rawHands))return false;
@@ -1306,6 +1310,11 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteou
  if(S.outcomeEvents.length>512)S.outcomeEvents.splice(0,S.outcomeEvents.length-512);
  window.updateCashHeader?.();
  recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous',token);
+ // Only actual completed, authorized poker hands enter the character's
+ // observed betting memory. Never store hole cards or hidden bot strategy.
+ if(hands>0&&observed&&typeof observed==='object')
+  window.FE_POKER_MEMORY?.remember?.(S,token,circle,observed.patrons,
+   observed.player,hands);
  // A real played card session with deliberately insulting conduct can create
  // an honor dispute. It does not force the player into a duel or invent one
  // when the poker window merely opened and closed without a hand.
