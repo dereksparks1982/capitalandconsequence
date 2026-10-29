@@ -13,7 +13,8 @@ const originalRoute=itinerary.map(p=>({...p}));
 const estimated=travel.estimate(itinerary);
 for(let i=0;i<70;i++){
  const again=travel.route(origin,destination);
- assert.deepEqual(again,originalRoute,'Road search stays deterministic when its memo is warm');
+ assert.deepEqual(again.map(p=>({...p})),originalRoute,
+  'Road search stays deterministic when its memo is warm');
  assert.equal(travel.estimate(again).guidePixels,estimated.guidePixels);
 }
 assert.ok(streets.diagnostic().cachedTrees>0,'Repeated searches use the bounded graph memo');
