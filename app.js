@@ -2484,28 +2484,36 @@ function initCityRoomUI(){
  window.FE_DUEL_AFTERCARE_UI?.bind?.({
   getSave:()=>S,
   getLocation:()=>currentCityLocation()?.locationId,
-  onAction:(duelId,locationId)=>{
+  onAction:(itemId,locationId,kind)=>{
    if(S.paused||!S.gameDate||!['governmentHospital','metropolitanPolice'].includes(locationId)||
       currentCityLocation()?.locationId!==locationId)return false;
+   const action=kind|| (locationId==='governmentHospital'?'treat':'report');
+   if(!['treat','report','review'].includes(action))return false;
    const info=window.FE_DUEL_AFTERMATH?.visible?.(S,locationId,S.gameDate);
-   const target=locationId==='governmentHospital'?info?.injury:info?.reportable;
-   if(!target||target.duelId!==duelId)return false;
-   const minutes=locationId==='governmentHospital'?20:10;
+   const target=action==='treat'&&locationId==='governmentHospital'?info?.injury:
+    action==='report'&&locationId==='metropolitanPolice'?info?.reportable:
+    action==='review'&&locationId==='metropolitanPolice'?
+      window.FE_POLICE_CASEWORK?.due?.(S,S.gameDate):null;
+   if(!target|| (action==='review'?target.id:target.duelId)!==itemId)return false;
+   const minutes=action==='treat'?20:action==='review'?12:10;
    if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,minutes*60))return false;
    let receipt=null;
    try{
     receipt=window.FE_WASHINGTON_TIME.advance(S,minutes*60,'action',
-     (locationId==='governmentHospital'?'duel-treatment:':'duel-report:')+duelId);
+     (action==='treat'?'duel-treatment:':action==='review'?'police-review:':'duel-report:')+itemId);
    }catch(error){console.warn('Aftercare time debit failed',error);return false}
    if(!receipt?.applied)return false;
-   const result=locationId==='governmentHospital'?
-    window.FE_DUEL_AFTERMATH.treat(S,duelId,S.gameDate):
-    window.FE_DUEL_AFTERMATH.report(S,duelId,S.gameDate);
+   const result=action==='treat'?
+    window.FE_DUEL_AFTERMATH.treat(S,itemId,S.gameDate):
+    action==='review'?window.FE_POLICE_CASEWORK.review(S,itemId,S.gameDate,locationId):
+    window.FE_DUEL_AFTERMATH.report(S,itemId,S.gameDate);
    if(!result)return false;
    if(!Array.isArray(S.notes))S.notes=[];
-   S.notes.push({date:S.gameDate,source:'duel aftermath',
-    text:locationId==='governmentHospital'?
+   S.notes.push({date:S.gameDate,source:action==='review'?'police case desk':'duel aftermath',
+    text:action==='treat'?
      'Received treatment for an injury from a formal duel.':
+     action==='review'?
+     'Police reviewed my account. No independent evidence was established. Case awaits corroboration.':
      'Gave police a personal account of a formal duel. No independent witness was established.'});
    save(true);renderWashington();
    window.FE_DUEL_AFTERCARE_UI?.render?.();
