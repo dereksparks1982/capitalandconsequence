@@ -15,6 +15,12 @@ function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){let d=(a[i]||0)
 function card(c,hide=false){return '<span class="p-card '+(hide?'back':((c.s==='♥'||c.s==='♦')?'red':''))+'">'+(hide?'FE':c.r+'<i>'+c.s+'</i>')+'</span>'}
 function clockText(n){n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 function updateClock(){const elapsed=Math.max(0,Math.floor((Date.now()-sessionStarted)/1000));const el=document.querySelector('#pokerBusinessClock');if(el)el.textContent=clockText(elapsed)}
+function patronAvailable(roomKey,name){
+ try{
+  const status=window.opener?.FE_POKER_OPPONENT_STATUS?.(roomKey,name)||'unharmed';
+  return !['injured','deceased'].includes(status);
+ }catch(error){return true} // Offline table must not depend on parent availability.
+}
 function start(roomKey){
  sessionSettled=false;
  sessionStarted=Date.now();
@@ -23,7 +29,7 @@ function start(roomKey){
  const R=rooms[roomKey];if(!R)return;
  G={roomKey,R,etiquette:'courteous',completedHands:0,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
   {name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true},
-  ...R.npcs.map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true}))
+  ...R.npcs.filter(n=>patronAvailable(roomKey,n[0])).map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true}))
  ]};
  document.querySelector('#pokerModal').className='poker-modal open '+R.className;
  document.querySelector('#pokerRoomName').textContent=R.name;
