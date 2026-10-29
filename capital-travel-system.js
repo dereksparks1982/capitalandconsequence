@@ -239,6 +239,26 @@ function headingAt(points,fraction,width=2048,height=1159){
  }
  return null;
 }
+// Turn the miniature smoothly at a junction without ever moving its
+// position off the street graph. Smooth heading is only visual: route
+// distance, guide pixels, time charge and saved pin geometry remain exact.
+function smoothHeadingAt(points,fraction,lookPixels=14,width=2048,height=1159){
+ if(!Array.isArray(points)||points.length<2||!Number.isFinite(fraction)||
+  !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)
+  return null;
+ const length=points.slice(1).reduce((sum,p,i)=>{
+  const a=points[i];
+  return sum+Math.hypot((p.x-a.x)*width,(p.y-a.y)*height);
+ },0);
+ if(!Number.isFinite(length)||length<.001)return null;
+ const delta=Math.max(.5,Math.min(60,Number.isFinite(lookPixels)?lookPixels:14))/length;
+ const a=positionAt(points,Math.max(0,fraction-delta),width,height);
+ const b=positionAt(points,Math.min(1,fraction+delta),width,height);
+ if(!a||!b)return null;
+ const x=(b.x-a.x)*width,y=(b.y-a.y)*height;
+ if(Math.hypot(x,y)<.001)return headingAt(points,fraction,width,height);
+ return Math.atan2(y,x)*180/Math.PI+90;
+}
 function routePrefix(points,fraction,width=2048,height=1159){
  if(!Array.isArray(points)||!points.length||!Number.isFinite(fraction)||
   !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0||
@@ -312,7 +332,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
    completedLine.setAttribute('points',traversed.map(p=>p.x+','+p.y).join(' '));
    group.setAttribute('transform','translate('+position.x+' '+position.y+')');
-   const angle=headingAt(points,progress);
+   const angle=smoothHeadingAt(points,progress);
    if(angle!==null)facing.setAttribute('transform','rotate('+angle+')');
    if(typeof onProgress==='function'){
     try{onProgress(progress)}catch(error){console.warn('Capital Travel progress notice failed',error)}
@@ -324,7 +344,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:12,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:13,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,smoothHeadingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
