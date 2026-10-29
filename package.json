@@ -1,6 +1,6 @@
 {
   "name": "capital-consequence",
-  "version": "0.7.11",
+  "version": "0.7.12",
   "private": true,
   "description": "Capital & Consequence historical Washington life simulation (development beta)",
   "main": "desktop/main.cjs",
