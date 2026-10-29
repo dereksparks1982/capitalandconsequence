@@ -18,6 +18,25 @@ const allowed=(x,y)=>{
  return x>=.55&&x<=.79;
 };
 const pixel=(a,b)=>Math.hypot((a.x-b.x)*IMG.w,(a.y-b.y)*IMG.h);
+// A deliberately conservative building exclusion in the approximate guide.
+// Its box is not a surveyed footprint. The entrance pin may approach the
+// perimeter, but transit through this central landmark is not a roadway.
+const BLOCKED_LANDMARKS=Object.freeze([
+ Object.freeze({name:'White House grounds',x0:.398,x1:.424,y0:.356,y1:.384})
+]);
+function intersectsBox(a,b,box){
+ // Liang-Barsky segment / axis-aligned bounding box clipping.
+ let lo=0,hi=1;
+ const dx=b.x-a.x,dy=b.y-a.y;
+ for(const [p,q] of [[-dx,a.x-box.x0],[dx,box.x1-a.x],
+   [-dy,a.y-box.y0],[dy,box.y1-a.y]]){
+  if(Math.abs(p)<1e-12){if(q<0)return false;continue}
+  const t=q/p;
+  if(p<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);
+  if(lo>hi)return false;
+ }
+ return true;
+}
 const graph=[],adj=[],edges=[],idByGrid=new Map();
 function add(p){
  const id=graph.length;
@@ -27,6 +46,7 @@ function add(p){
 }
 function link(a,b,label){
  if(a===b||a<0||b<0)return;
+ if(BLOCKED_LANDMARKS.some(box=>intersectsBox(graph[a],graph[b],box)))return;
  const length=pixel(graph[a],graph[b]);
  if(length<.01)return;
  const idx=edges.length;
@@ -148,7 +168,7 @@ function streetRoute(start,end){
 }
 const api=Object.freeze({version:1,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
- diagnostic:()=>({nodes:graph.length,edges:edges.length,avenues:diagonals.map(v=>v.name)})});
+ diagnostic:()=>({nodes:graph.length,edges:edges.length,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_STREETS=api;
 })(typeof window!=='undefined'?window:globalThis);
