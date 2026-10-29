@@ -36,7 +36,12 @@ function create(){
  </div>
  <p id="capitalDuelResult" role="status"></p></section>`;
  document.body.appendChild(overlay);
- byId('capitalDuelClose').onclick=()=>{if(session&&!session.finished)return;close()};
+ byId('capitalDuelClose').onclick=()=>{
+  // The player may withdraw before the firing signal without a recorded duel.
+  // Once SHOOT is called, they must make a choice or accept the timeout.
+  if(session&&!session.finished&&session.phase!=='countdown')return;
+  close();
+ };
  byId('capitalDuelShoot').onclick=()=>fire('shoot');
  byId('capitalDuelWide').onclick=()=>fire('wide');
  byId('capitalDuelYield').onclick=()=>fire('yield');
