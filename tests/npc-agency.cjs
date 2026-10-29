@@ -47,4 +47,32 @@ observedOther.knowledge.records.push({actorId:'pavelOrlov',source:'heard-from:ed
 assert.deepEqual(agency.observe(merchant,mind,{},observedOther),isolated,'Other residents knowledge cannot leak into plans');
 assert.throws(()=>agency.observe(null,mind,{},observedOther));
 assert.throws(()=>agency.choose(null,mind,isolated));
+
+const mobility=require('../npc-mobility.js');
+const places=[
+ {id:'factory',name:'Factory',defaultRoom:'floor',category:'industry',rooms:[{id:'floor'}]},
+ {id:'park',name:'Park',defaultRoom:'path',category:'park',rooms:[{id:'path'}]}
+];
+const city={listLocations:()=>places,getLocation:id=>places.find(p=>p.id===id),
+ getRoom:(id,room)=>places.find(p=>p.id===id)?.rooms.find(r=>r.id===room)};
+const wanderer={kind:'npc',id:'quietResident',onDuty:false,permits:[],invitations:[],roomPermits:[]};
+const hash=value=>{let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+let outingKey=null;
+for(let i=0;i<10000;i++){
+ const key='evening-'+i;
+ const roll=hash('7|'+key+'|quietResident|outing')%100;
+ if(roll>=6&&roll<14){outingKey=key;break}
+}
+assert.ok(outingKey,'Found reproducible low-sociability boundary case');
+const evening={date:'1878-01-02',slot:2,seed:7,key:outingKey,defaultLocation:'factory'};
+assert.equal(mobility.visit(city,wanderer,{...evening,sociability:0}).locationId,'factory',
+ 'Zero sociability must not be silently replaced with 50');
+assert.equal(mobility.visit(city,wanderer,{...evening,sociability:50}).locationId,'park',
+ 'Higher sociability permits an accessible discretionary outing');
+assert.deepEqual(mobility.visit(city,wanderer,{...evening,sociability:50}),
+ mobility.visit(city,wanderer,{...evening,sociability:50}),
+ 'Outings are deterministic for the same saved moment');
+assert.equal(mobility.visit(city,{...wanderer,onDuty:true,workplaceId:'factory'},
+ {...evening,sociability:100}).locationId,'factory','Duty comes before leisure');
+
 console.log('PASS NPC utility planner, condition-driven priorities, private knowledge and stable reload');
