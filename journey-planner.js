@@ -60,13 +60,20 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinut
  const accessPixels=guidePixels!==null&&Number.isSafeInteger(routeDetails?.accessPixels)&&
   routeDetails.accessPixels>=0&&routeDetails.accessPixels<=8192?
   routeDetails.accessPixels:null;
+ const turns=guidePixels!==null&&Number.isSafeInteger(routeDetails?.turns)&&
+  routeDetails.turns>=0&&routeDetails.turns<=128?routeDetails.turns:null;
+ const allowedNamedRoads=['Pennsylvania Avenue corridor','Massachusetts Avenue corridor',
+  'New York Avenue corridor'];
+ const namedRoads=guidePixels!==null&&Array.isArray(routeDetails?.namedRoads)?
+  [...new Set(routeDetails.namedRoads.filter(v=>allowedNamedRoads.includes(v)))].slice(0,3):[];
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
  if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode,miles:null,minutes:null,
-  guidePixels,routeType,accessPixels,temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,
+  guidePixels,routeType,accessPixels,turns,namedRoads,temporaryGameMinutes:gameMinutes,
+  departedAt,arrivedAt,
   calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
