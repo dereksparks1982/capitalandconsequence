@@ -36,6 +36,17 @@ needs.settle(partial,worker,minute('1890-01-03T10:00'),weekly);
 needs.settle(partial,worker,minute('1890-01-03T12:00'),weekly);
 needs.settle(partial,worker,minute('1890-01-03T17:00'),weekly);
 assert.deepEqual(partial.needs,full.needs,'The result must not depend on render frequency');
+assert.ok(full.needs.dailyHistory.length>=1,'Daily records persist');
+assert.equal(full.needs.dailyHistory.reduce((sum,r)=>sum+r.activeMinutes+r.restMinutes+r.otherMinutes,0),
+  540,'The recorded day accounts for every elapsed game minute');
+const journalSave=JSON.parse(JSON.stringify(full));
+assert.equal(needs.settle(journalSave,worker,minute('1890-01-03T17:00'),weekly).changed,false);
+assert.deepEqual(journalSave,full,'Reloading cannot duplicate daily activity');
+const history=make();
+needs.settle(history,worker,start,weekly);
+needs.settle(history,worker,start+20*1440,weekly);
+assert.ok(history.needs.dailyHistory.length<=14,'Daily history is bounded after long jumps');
+assert.ok(history.needs.dailyHistory.every(r=>r.activeMinutes+r.restMinutes+r.otherMinutes>0));
 const clockState=clock.create('1890-01-03T08:00'),minuteBefore=clockState.worldMinute;
 needs.settle(a,worker,minute('1890-01-04T12:00'),weekly);
 assert.equal(clockState.worldMinute,minuteBefore,'A resident never advances the world clock');
