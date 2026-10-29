@@ -84,29 +84,26 @@ for(const avenue of diagonals)for(const [i,j,k,l] of avenue.pairs){
 }
 // Visit road endpoints without allowing an invisible long-range teleport:
 // snap a location to an existing EDGE, then walk to a genuine intersection.
-function nearestEdge(p){
- let best=null;
+// Evaluate several plausible nearby road entrances; the closest street
+// in isolation may force a much longer journey than a second nearby road.
+function nearbyEdges(p,limit=4){
+ const candidates=[];
  for(let i=0;i<edges.length;i++){
   const e=edges[i],a=graph[e.a],b=graph[e.b];
-  // Minimize REAL map-image pixels, not warped normalized x/y.
   const dx=(b.x-a.x)*IMG.w,dy=(b.y-a.y)*IMG.h;
-  const t=Math.max(0,Math.min(1,(((p.x-a.x)*IMG.w)*dx+((p.y-a.y)*IMG.h)*dy)/(dx*dx+dy*dy)));
+  const t=Math.max(0,Math.min(1,(((p.x-a.x)*IMG.w)*dx+
+   ((p.y-a.y)*IMG.h)*dy)/(dx*dx+dy*dy)));
   const at={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
-  // Entrances use an orthogonal walk to the modeled road. Rank links
-  // by their ACTUAL visible Manhattan length, not the misleading
-  // straight-line Euclidean distance to that road segment.
   const distance=Math.abs((at.x-p.x)*IMG.w)+Math.abs((at.y-p.y)*IMG.h);
-  // An ordinary address should not connect to a road by walking straight
-  // across a restricted landmark. The landmark's OWN entrance may cross its
-  // approximate footprint because the pin represents the visited building.
   const inside=BLOCKED_LANDMARKS.some(box=>pointInBox(p,box));
   const steps=compact([p,...access(p,at)]);
-  const blocked=!inside&&BLOCKED_LANDMARKS.some(box=>
-   steps.some((v,j)=>j>0&&intersectsBox(steps[j-1],v,box)));
-  if(blocked)continue;
-  if(!best||distance<best.distance)best={edge:i,at,t,distance};
+  if(!inside&&BLOCKED_LANDMARKS.some(box=>
+    steps.some((v,j)=>j>0&&intersectsBox(steps[j-1],v,box))))continue;
+  candidates.push({edge:i,at,t,distance});
  }
- return best;
+ candidates.sort((a,b)=>a.distance-b.distance||a.edge-b.edge);
+ const min=candidates[0]?.distance??Infinity;
+ return candidates.filter(v=>v.distance<=min+95).slice(0,limit);
 }
 function compact(points){
  const out=[];
@@ -195,38 +192,48 @@ function namedRoads(nodePath,sameEdge=null){
 function streetRoute(start,end){
  if(!start||!end||![start.x,start.y,end.x,end.y].every(Number.isFinite))return null;
  if(start.x===end.x&&start.y===end.y)
-  return {points:[{x:start.x,y:start.y}],type:'provisional-street-network',accessPixels:0,intersections:0};
- const a=nearestEdge(start),b=nearestEdge(end);
- if(!a||!b)return null;
- const ae=edges[a.edge],be=edges[b.edge];
- // Two candidate intersections for each snapped entrance.
+  return {points:[{x:start.x,y:start.y}],type:'provisional-street-network',
+   accessPixels:0,intersections:0,turns:0,namedRoads:[]};
+ const origins=nearbyEdges(start),targets=nearbyEdges(end);
+ if(!origins.length||!targets.length)return null;
+ // Minimize total door-to-door distance, not simply graph distance after
+ // snapping each door to its closest road. Every candidate uses real map
+ // image pixel length and remains subject to the landmark exclusion.
  let best=null;
- for(const u of [ae.a,ae.b])for(const v of [be.a,be.b]){
-  const path=shortest(u,v);
-  if(!path.length)continue;
-  const cost=pixel(a.at,graph[u])+path.slice(1).reduce((sum,n,i)=>
-   sum+pixel(graph[path[i]],graph[n]),0)+pixel(graph[v],b.at);
-  if(!best||cost<best.cost)best={cost,path};
+ for(const a of origins)for(const b of targets){
+  const ae=edges[a.edge],be=edges[b.edge];
+  if(a.edge===b.edge){
+   const cost=a.distance+pixel(a.at,b.at)+b.distance;
+   if(!best||cost<best.cost-1e-7)
+    best={cost,a,b,path:[],direct:true};
+  }
+  for(const u of [ae.a,ae.b]){
+   const tree=treeFrom(u);
+   for(const v of [be.a,be.b]){
+    const along=tree.distance[v];
+    if(!Number.isFinite(along))continue;
+    const cost=a.distance+pixel(a.at,graph[u])+along+
+     pixel(graph[v],b.at)+b.distance;
+    if(!best||cost<best.cost-1e-7)
+     best={cost,a,b,from:u,to:v,direct:false};
+   }
+  }
  }
- let middle=best?best.path.map(i=>graph[i]):[];
- let startLine=[a.at,...middle,b.at],usedDirect=false;
- if(a.edge===b.edge){
-  const direct=pixel(a.at,b.at);
-  if(!best||direct<=best.cost){startLine=[a.at,b.at];usedDirect=true;}
- }
- if(!startLine.length)return null;
- const body=compact([start,...access(start,a.at),...startLine,
+ if(!best)return null;
+ const {a,b,direct}=best;
+ const path=direct?[]:shortest(best.from,best.to);
+ if(!direct&&!path.length)return null;
+ const middle=path.map(id=>graph[id]);
+ const road=direct?[a.at,b.at]:[a.at,...middle,b.at];
+ const body=compact([start,...access(start,a.at),...road,
   ...access(end,b.at).slice().reverse(),end]);
- // Complete path starts and ends at the map pins. Long driveway
- // connectors are explicitly flagged: this is not street-perfect art.
  const accessPixels=Math.round(a.distance+b.distance);
- const approximate=accessPixels>65;
- return {points:body,type:approximate?'provisional-street-access':'provisional-street-network',
-  accessPixels,intersections:usedDirect?0:middle.length,networkEdges:edges.length,
-  turns:routeTurns(body),namedRoads:namedRoads(usedDirect?[]:best?.path||[],
-   usedDirect?a.edge:null)};
+ return {points:body,
+  type:accessPixels>65?'provisional-street-access':'provisional-street-network',
+  accessPixels,intersections:direct?0:path.length,networkEdges:edges.length,
+  turns:routeTurns(body),namedRoads:namedRoads(path,direct?a.edge:null)};
 }
-const api=Object.freeze({version:2,source:'approximate-guide-intersections',image:IMG,
+const api=Object.freeze({version:3,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
