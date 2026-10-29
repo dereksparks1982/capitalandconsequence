@@ -26,4 +26,15 @@ assert.equal(loser.personalEffects.items[0].name,'Commerce Club Membership Card'
 const poor={personalEffects:{items:[]}};
 assert.equal(clubs.trial(poor,{tier:'middle',today:'1878-01-30',introduced:true,delta:90,stake:100,hands:4,conduct:'courteous'}).until,'1878-02-02');
 assert.equal(clubs.access(poor,'middle','1878-02-01',true).allowed,false);
+const replayProfile={personalEffects:{items:[]}};
+const one=clubs.trial(replayProfile,{tier:'elite',today:'1878-01-02',
+ introduced:true,delta:10,stake:100,hands:3,conduct:'courteous',sessionId:'game-42'});
+const repeat=clubs.trial(replayProfile,{tier:'elite',today:'1878-01-02',
+ introduced:true,delta:10,stake:100,hands:3,conduct:'courteous',sessionId:'game-42'});
+assert.equal(one.status,'member');
+assert.equal(repeat.repeated,true);
+assert.equal(replayProfile.clubMemberships.elite.trials,1);
+assert.equal(replayProfile.personalEffects.items.length,1);
+assert.throws(()=>clubs.trial({}, {tier:'elite',today:'1878-01-02',
+ introduced:true,delta:0,stake:100,hands:2,sessionId:''}));
 console.log('PASS private club trial, invitation versus card, etiquette, generosity, cooling-off and item persistence');
