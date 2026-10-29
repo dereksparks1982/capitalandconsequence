@@ -8,7 +8,7 @@ global.window={FederalElectricCity:{getLocation:id=>['factory','home','races'].i
 require('../journey-planner.js');
 const travel=window.FE_TRAVEL;
 assert.equal(travel.DEFAULT_TRAVEL_MINUTES,30);
-assert.match(travel.notice('factory','home'),/30 in-game minutes/);
+assert.match(travel.notice('factory','home'),/current pin positions/,'Route time is recomputed from pin placement');
 assert.match(travel.notice('factory','home'),/1 in-game minute/,'Room movement is not free');
 assert.match(travel.notice('factory','factory'),/Already here/);
 assert.equal(travel.recordProvisional('factory','factory'),false);
