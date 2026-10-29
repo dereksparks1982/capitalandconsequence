@@ -10,6 +10,8 @@ async function run(change){
  const current={locationId:'factory'},person={value:'person-1'};
  let save={currentLocation:current},commits=0;
  const dest={id:'star',x:.4,y:.35},origin={id:'factory',x:.6,y:.28};
+ const plannedPoints=[origin,dest];
+ if(change!=='no-road')plannedPoints.routeType='provisional-street-network';
  const viewer={hidden:false},button={disabled:false},mode={value:'walk'};
  const widgets={titleMapViewer:viewer,titleMapLocationTravel:button,
   titleMapImage:{naturalWidth:2048,naturalHeight:1159},
@@ -25,8 +27,10 @@ async function run(change){
   cityLocation:id=>({id,defaultRoom:'salon'}),
   cityRoom:()=>({id:'salon',restricted:false}),
   mapTravelRestriction:()=>'',titleDevUnlockAllRooms:false,
-  capitalTravelMeasurement:()=>({points:[origin,dest],
+  capitalTravelMeasurement:()=>({points:plannedPoints,
    estimate:{guidePixels:450,minutes:{walk:45,horse:30,carriage:38}}}),
+  capitalTravelStreetReady:points=>points?.length>=2&&
+   points.routeType?.startsWith('provisional-street-'),
   renderCapitalTravelPreview:()=>{},
   enterMapDestination:()=>{commits++;return true},
   console:{warn(){},error(){}}
@@ -55,12 +59,12 @@ async function run(change){
 }
 (async()=>{
  assert.equal((await run('none')).commits,1,'Valid journey arrives');
- for(const issue of ['profile','save','origin','destination','mode','pin','close','cancel']){
+ for(const issue of ['profile','save','origin','destination','mode','pin','close','cancel','no-road']){
   const r=await run(issue);
   assert.equal(r.commits,0,issue+' must not charge or move the player');
   assert.equal(r.result,false,issue+' must refuse travel');
   assert.equal(r.busy,false,issue+' busy state restored');
   assert.equal(r.disabled,false,issue+' button restored');
  }
- console.log('PASS no ghost arrivals after interrupted or mutated travel');
+ console.log('PASS no ghost arrivals after interrupted, altered or missing-road travel');
 })().catch(err=>{console.error(err);process.exitCode=1});
