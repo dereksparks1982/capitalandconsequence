@@ -3261,6 +3261,10 @@ function capitalTravelPath(fromId,toId){
 }
 // Rebuild route from the CURRENT in-memory pin placements on every interaction;
 // never cache journey distances across user edits, profiles or trips.
+function capitalTravelStreetReady(points){
+ return Array.isArray(points)&&points.length>=2&&
+  typeof points.routeType==='string'&&points.routeType.startsWith('provisional-street-');
+}
 function capitalTravelMeasurement(id){
  const origin=currentCityLocation()?.locationId;
  const points=capitalTravelPath(origin,id);
@@ -3276,6 +3280,9 @@ function renderCapitalTravelPreview(preferredId=null,dragging=false){
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();return false;
  }
  const {points,estimate}=capitalTravelMeasurement(id);
+ if(!capitalTravelStreetReady(points)){
+  window.FE_CAPITAL_TRAVEL?.clearPreview?.();return false;
+ }
  const show=window.FE_CAPITAL_TRAVEL?.showPreview?.({
   viewport,points,project:point=>({
    x:titleMapState.x+point.x*img.naturalWidth*titleMapState.scale,
@@ -3307,8 +3314,8 @@ function renderCapitalTravelChoice(id){
   notice.textContent='Already here. Entering a room is not a city journey.';
   renderCapitalTravelPreview(id);return;
  }
- if(points.length<2){
-  notice.textContent='Route is not established. Existing provisional travel rules apply.';
+ if(!capitalTravelStreetReady(points)){
+  notice.textContent='Road route unavailable. Wait for the map and street network to load.';
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();return;
  }
  const minutes=length?.minutes?.[modeField.value]||30;
@@ -3527,7 +3534,11 @@ async function travelFromTitleMap(event){
   return false;
  }
  const {points,estimate:measurement}=capitalTravelMeasurement(id);
- if(points.length<2)return enterMapDestination(id,null,null,mode);
+ if(!capitalTravelStreetReady(points)||!measurement){
+  if(travelNote)travelNote.textContent=
+   'Street route unavailable. You have not traveled or been charged.';
+  return false;
+ }
  // An animation is visual only. The same profile and departure must still
  // be active when it finishes; otherwise it may never charge or relocate.
  const departingProfile=activeProfileId(),departingSave=S;
