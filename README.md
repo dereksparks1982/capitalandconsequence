@@ -6,7 +6,12 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.90-dev (28 October 2026)
+## Current development checkpoint: v0.6.91-dev (28 October 2026)
+
+**Travel-time consistency slice:** The player-facing map travel notice now correctly states that moving between different rooms in one location costs **one game minute** (remaining in the same room is free), while journeys between distinct Washington locations remain provisionally **30 minutes**. Travel regression coverage now checks the displayed rules and saved departure/arrival clock timestamps. This is a source change, not an assertion that a real Electron playthrough has passed. The original map artwork, all forty pin coordinates, and approved layout are unchanged. GitHub Actions was not run.
+
+### Previous v0.6.90-dev checkpoint (28 October 2026)
+
 
 **Owner correction for pin #12:** Charlie's residence is now simply **Home** and its map marker is **black, matching his owned Federal Electric factory**. Existing plot coordinates and original guide art were not moved or changed.
 
