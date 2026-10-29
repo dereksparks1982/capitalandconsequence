@@ -26,7 +26,7 @@ function capture(save,prior,profileId=null){
  const world=prior||create(id,save);
  if(!valid(world,id))throw Error('Damaged shared world');
  if(world.clock.worldMinute>save.worldCalendar.worldMinute)throw Error('Refusing to rewind shared Washington');
- const next={...world,clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
+ const next={...world,events:copy(world.events),clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
   npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives)};
  // Public world facts from filed, paid work only. Private words and theories
