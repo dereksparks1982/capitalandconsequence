@@ -27,6 +27,7 @@ async function run(change){
   cityLocation:id=>({id,defaultRoom:'salon'}),
   cityRoom:()=>({id:'salon',restricted:false}),
   mapTravelRestriction:()=>'',titleDevUnlockAllRooms:false,
+  capitalTravelWeather:()=> 'Cold and clear',
   capitalTravelMeasurement:()=>({points:plannedPoints,
    estimate:{guidePixels:450,minutes:{walk:45,horse:30,carriage:38}}}),
   capitalTravelStreetReady:points=>points?.length>=2&&

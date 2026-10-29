@@ -16,12 +16,12 @@ const ctx={window:{opener:{FE_POKER_OPPONENT_STATUS:(tier,name)=>after.opponentS
 vm.runInNewContext(source.replace("window.FE_POKER={start,action:player,newHand,leave,setEtiquette};})();",
  "window.FE_POKER={start,action:player,newHand,leave,setEtiquette};window.__TEST={state:()=>G};})();"),ctx);
 ctx.window.FE_POKER.start('working');
-assert.deepEqual(ctx.window.__TEST.state().players.map(p=>p.name),['You','Frank Bell'],
+assert.deepEqual(Array.from(ctx.window.__TEST.state().players,p=>p.name),['You','Frank Bell'],
  'Injured and dead poker patrons must be absent from the next table');
 assert.equal(elements.pokerSeats.innerHTML.includes('Mickey Dunn'),false);
 assert.equal(elements.pokerSeats.innerHTML.includes('Joe Rourke'),false);
 save.gameDate='1878-05-09';
 ctx.window.FE_POKER.start('working');
-assert.deepEqual(ctx.window.__TEST.state().players.map(p=>p.name),['You','Mickey Dunn','Frank Bell'],
+assert.deepEqual(Array.from(ctx.window.__TEST.state().players,p=>p.name),['You','Mickey Dunn','Frank Bell'],
  'An injured patron may return after healing; a deceased patron never returns');
 console.log('PASS named duel opponents absent or recovered at genuine poker tables');

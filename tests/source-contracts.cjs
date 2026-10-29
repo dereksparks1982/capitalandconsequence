@@ -18,8 +18,8 @@ for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishi
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
-check(pkg.version==='0.6.89','Current package version is v0.6.89');
-check(appSource.includes("APP_VERSION='v0.6.89-dev'"),'Game masthead uses v0.6.89');
+check(/^0\.\d+\.\d+$/.test(pkg.version),'Package has a numeric development version');
+check(appSource.includes("APP_VERSION='v"+pkg.version+"-dev'"),'Game masthead matches package version');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');

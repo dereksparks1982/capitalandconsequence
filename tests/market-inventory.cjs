@@ -17,7 +17,7 @@ assert.equal(market.accounts.bakery,10,'Both buyers credit one till');
 assert.equal(eco.deliveryForCalendar(save,'1878-01-13',0).ok,false,'Sunday does not deliver');
 const del=eco.deliveryForCalendar(save,'1878-01-17',0);assert.equal(del.ok,true);assert.equal(del.repeated,false);
 assert.equal(market.stock.bread,32,'Receipt physically adds ten packs');
-const branchGoods=Object.values(eco.SITES).reduce((sum,goods)=>sum+goods.length,0);
+const branchGoods=Object.values(eco.SITES).reduce((sum,goods)=>sum+goods.size,0);
 assert.equal(market.deliveries['1878-01-17'].manifest.length,eco.GOODS.length+branchGoods,'Delivery includes main market and independently stocked neighborhood shops');
 assert.ok(market.supplierDebts.bakery>=0);
 const paid=market.suppliersPaidCents;

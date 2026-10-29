@@ -19,7 +19,7 @@ for(const id of ids){
 assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1889-01-02').ok,false);
 const app=read('app.js'),html=read('index.html');
 assert.ok(app.includes("sport:'Recreation & Competition',leisure:'Leisure & Outdoors'"));
-assert.ok(app.includes("titleMapCategory!=='all'&&location.category!==titleMapCategory"));
+assert.ok(app.includes("function titleMapMatchesFilters(location)")&&app.includes("(titleMapCategory==='all'||location.category===titleMapCategory)"));
 assert.ok(html.includes('id="titleMapPinName"')&&html.includes('id="titleMapPinRename"')&&html.includes('id="titleMapPinResetName"'));
 assert.ok(app.includes("saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6),...(location.pinLabel?{label:location.pinLabel}:{})}"),'Position and name travel in profile-specific map save');
 assert.ok(app.includes("typeof p.label==='string'"),'Pin labels reload as inert text, not code');
