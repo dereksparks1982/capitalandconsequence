@@ -55,7 +55,7 @@
   if(action==='respond'&&(!pending||pending.status!=='awaiting-response'||pending.locationId!==id)){setText(notice,'There is no open incident here.');return}
   if(action==='report'&&(!pending||pending.status!=='awaiting-report')){setText(notice,'No completed street incident is ready for filing.');return}
   const seconds=action==='walk'?600:300;
-  if(S.dayRemaining<seconds){setText(notice,'Not enough duty time remains today.');return}
+  if(S.dayRemaining<=seconds){setText(notice,'Not enough duty time remains today.');return}
   const spent=window.advanceWorldTime(seconds,true);
   if(spent!==seconds){setText(notice,'Clock charge did not complete. No work was recorded.');return}
   let result;
@@ -63,6 +63,11 @@
   else if(action==='respond')result=logic.respond(S,{locationId:id,choiceId,spentSeconds:spent});
   else result=logic.report(S,{locationId:id,roomId:room(),spentSeconds:spent});
   if(!result.ok){setText(notice,result.reason);save(true);render();refresh();return}
+  if(action==='report'&&result.record){
+   window.FE_LIFE_HISTORY?.record?.(S,{id:'patrol:'+result.record.id+':filed',
+    date:result.record.date,source:'Metropolitan Police patrol report',
+    text:result.record.reportText||result.record.disposition||'Filed ordinary patrol report.'});
+  }
   if(action==='report'&&Array.isArray(S.notes)){
    S.notes.push({date:S.gameDate,source:'patrol duty report',text:result.record.id+' · '+result.record.reportText});
    if(S.notes.length>320)S.notes.shift();
@@ -91,7 +96,7 @@
   }
   const filing=$('patrolFileReport');
   if(filing){
-   filing.disabled=!atStation||!record.onDuty||!pending||pending.status!=='awaiting-report'||S.paused||S.phase==='report'||S.dayRemaining<300;
+   filing.disabled=!atStation||!record.onDuty||!pending||pending.status!=='awaiting-report'||S.paused||S.phase==='report'||S.dayRemaining<=300;
    filing.title=atStation?'File the completed incident in the station duty book.':'Enter the Metropolitan Police patrolmen’s duty room to write reports.';
   }
   const log=$$('patrolFiledReports');if(log){
@@ -115,14 +120,14 @@
     const incident=logic.scene(S);
     summary=(incident?.name||'Street incident')+' · '+(incident?.description||'');
     for(const c of incident?.choices||[]){
-     const b=button(c.label,()=>perform('respond',c.id));b.disabled=blocked||S.dayRemaining<300;choices.appendChild(b);
+     const b=button(c.label,()=>perform('respond',c.id));b.disabled=blocked||S.dayRemaining<=300;choices.appendChild(b);
     }
    }
   }else if(pending?.status==='awaiting-report'){
    summary='This encounter is handled. Return to the Metropolitan Police duty room and use your desk to file '+pending.id+'.';
   }else{
    summary='Walk the assigned street, observe local activity, and attend to an ordinary patrol matter. No horse, car, or detective authority.';
-   const b=button('Walk This Beat · 10 Minutes',()=>perform('walk'));b.disabled=blocked||S.dayRemaining<600;choices.appendChild(b);
+   const b=button('Walk This Beat · 10 Minutes',()=>perform('walk'));b.disabled=blocked||S.dayRemaining<=600;choices.appendChild(b);
   }
   setText('patrolStreetStatus',summary);
  }

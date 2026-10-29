@@ -74,7 +74,7 @@ function preview(save,world,id,where){
  if(id==='medical'&&!world?.morgue?.reports?.[BODY_ID])
   return {ok:false,reason:'The coroner has not filed the report'};
  if(!root.FE_WASHINGTON_TIME?.canSpend?.(save,action.seconds) ||
-   (save.phase==='day'&&root.FE_WASHINGTON_TIME.phaseSecondsRemaining(save)<action.seconds))
+   (save.phase==='day'&&root.FE_WASHINGTON_TIME.phaseSecondsRemaining(save)<=action.seconds))
   return {ok:false,reason:'Insufficient time in this duty window'};
  return {ok:true,id,action,seconds:action.seconds};
 }

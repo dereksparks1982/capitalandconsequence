@@ -36,13 +36,18 @@
    set('doormanDoorNotice','The paid segments for tonight are complete.');return;
   }
   const seconds=type==='begin'?600:300;
-  if(S.dayRemaining<seconds){set('doormanDoorNotice','Too little time remains in this night shift.');return}
+  if(S.dayRemaining<=seconds){set('doormanDoorNotice','Too little time remains in this night shift.');return}
   const spent=window.advanceWorldTime(seconds,true);
   if(spent!==seconds){set('doormanDoorNotice','The game clock did not complete this duty period.');return}
   const result=type==='begin'
    ?work.begin(S,{locationId,roomId,date:S.gameDate,profileId:activeProfileId(),spentSeconds:spent})
    :work.respond(S,{locationId,roomId,choiceId,spentSeconds:spent});
   if(!result.ok){save(true);render();refresh();set('doormanDoorNotice',result.reason);return}
+  if(type==='respond'&&result.log){
+   window.FE_LIFE_HISTORY?.record?.(S,{id:'doorman:'+result.log.id+':paid',
+    date:result.log.date,source:'Le Paon d’Or ordinary employment',
+    text:result.log.result+' · Earned '+result.wageCents+' cents.'});
+  }
   if(type==='respond'&&Array.isArray(S.notes)){
    S.notes.push({date:S.gameDate,source:'nightclub employment',text:result.log.id+' · '+result.log.result});
    if(S.notes.length>320)S.notes.shift();
@@ -76,7 +81,7 @@
    const scene=work.encounter(S);
    set('doormanDoorText',(scene?.title||'Waiting visitor')+' · '+(scene?.description||''));
    for(const c of scene?.choices||[]){
-    const b=button(c.label,()=>action('respond',c.id));b.disabled=disabled||S.dayRemaining<300;choices.appendChild(b);
+    const b=button(c.label,()=>action('respond',c.id));b.disabled=disabled||S.dayRemaining<=300;choices.appendChild(b);
    }
   }else if((book.segmentsByDate[S.gameDate]||0)>=work.MAX_SEGMENTS){
    set('doormanDoorText','You have completed the allotted paid segments tonight. The proprietor still barely knows who you are.');
@@ -85,7 +90,7 @@
     'Watch the entrance, help visitors, and follow the floor manager’s directions. You hold no ownership or special rank.':
     'The nightclub door shift begins at Washington Night. You may spend daytime hours as you please.');
    const b=button('Watch the Door · 10 Minutes',()=>action('begin'));
-   b.disabled=disabled||S.dayRemaining<600;choices.appendChild(b);
+   b.disabled=disabled||S.dayRemaining<=600;choices.appendChild(b);
   }
  }
  window.FE_DOORMAN_UI=Object.freeze({refresh});

@@ -35,7 +35,7 @@
    put('orderlyWardNotice','Today’s allotted rounds are complete.');return;
   }
   const seconds=kind==='attend'?600:300;
-  if(S.dayRemaining<seconds){put('orderlyWardNotice','Not enough game-clock time remains for the task.');return}
+  if(S.dayRemaining<=seconds){put('orderlyWardNotice','Not enough game-clock time remains for the task.');return}
   const spent=window.advanceWorldTime(seconds,true);
   if(spent!==seconds){put('orderlyWardNotice','The duty period did not complete on the game clock.');return}
   const result=kind==='assign'?duty.assign(S,{...pos,date:S.gameDate,profileId:activeProfileId(),spentSeconds:spent}):
@@ -86,11 +86,11 @@
    if(pending?.status==='awaiting-report'){
     put('orderlyWardText','Write a brief care-service report and return the assignment book.');
     const b=button('File Service Entry · 5 Minutes',()=>action('file'));
-    b.disabled=S.paused||S.dayRemaining<300;actions.appendChild(b);
+    b.disabled=S.paused||S.dayRemaining<=300;actions.appendChild(b);
    }else if(!pending){
     put('orderlyWardText','Check the ordinary ward assignment book for your next round.');
     const b=button('Review Assignment · 5 Minutes',()=>action('assign'));
-    b.disabled=S.paused||S.phase!=='day'||S.dayRemaining<300||
+    b.disabled=S.paused||S.phase!=='day'||S.dayRemaining<=300||
      (info.completedByDate[S.gameDate]||0)>=duty.MAX_ASSIGNMENTS;actions.appendChild(b);
    }else put('orderlyWardText','Your assigned work awaits in the patient ward.');
   }else if(pending?.status==='assigned'){
@@ -98,7 +98,7 @@
    put('orderlyWardText',(task?.title||'Routine duty')+' · '+(task?.description||''));
    for(const c of task?.choices||[]){
     const b=button(c.label+' · 10 Minutes',()=>action('attend',c.id));
-    b.disabled=S.paused||S.phase!=='day'||S.dayRemaining<600;actions.appendChild(b);
+    b.disabled=S.paused||S.phase!=='day'||S.dayRemaining<=600;actions.appendChild(b);
    }
   }else put('orderlyWardText',pending?'Return to the orderly station to file the completed service.':
    'There is no active ward assignment. Consult the orderly station first.');
