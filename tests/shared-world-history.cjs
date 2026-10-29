@@ -16,6 +16,13 @@ edmund.orderlyDuty={logs:[{id:'WARD-0001',date:'1878-01-02'}]};
 const withDuty=world.capture(edmund,w,'profile1');
 assert.equal(withDuty.events.length,2,'World fact and confirmed filed duty coexist');
 assert.equal(w.events.length,1,'Capturing does not mutate the preceding world snapshot');
+withDuty.incidents={case1:{id:'case1',observations:[]}};
+const second=world.capture(edmund,withDuty,'profile1');
+second.incidents.case1.observations.push({id:'new'});
+assert.equal(withDuty.incidents.case1.observations.length,0,'Nested incident state remains immutable across snapshots');
+second.events[0].summary='changed in future snapshot';
+assert.notEqual(withDuty.events[0].summary,'changed in future snapshot','Event payload is not aliased');
+
 assert.equal(world.capture(edmund,withDuty,'profile1').events.length,2,'Repeated saving does not duplicate historic fact');
 assert.throws(()=>world.capture(edmund,next),/rewind/);
 assert.equal(history.record(edmund,{id:'round-1',source:'ward',text:'Filed the linen round'}).status,'recorded');
