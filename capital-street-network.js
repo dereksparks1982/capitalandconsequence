@@ -24,6 +24,9 @@ const pixel=(a,b)=>Math.hypot((a.x-b.x)*IMG.w,(a.y-b.y)*IMG.h);
 const BLOCKED_LANDMARKS=Object.freeze([
  Object.freeze({name:'White House grounds',x0:.398,x1:.424,y0:.356,y1:.384})
 ]);
+function pointInBox(p,box){
+ return p.x>=box.x0&&p.x<=box.x1&&p.y>=box.y0&&p.y<=box.y1;
+}
 function intersectsBox(a,b,box){
  // Liang-Barsky segment / axis-aligned bounding box clipping.
  let lo=0,hi=1;
@@ -90,6 +93,14 @@ function nearestEdge(p){
   const t=Math.max(0,Math.min(1,(((p.x-a.x)*IMG.w)*dx+((p.y-a.y)*IMG.h)*dy)/(dx*dx+dy*dy)));
   const at={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
   const distance=pixel(at,p);
+  // An ordinary address should not connect to a road by walking straight
+  // across a restricted landmark. The landmark's OWN entrance may cross its
+  // approximate footprint because the pin represents the visited building.
+  const inside=BLOCKED_LANDMARKS.some(box=>pointInBox(p,box));
+  const steps=compact([p,...access(p,at)]);
+  const blocked=!inside&&BLOCKED_LANDMARKS.some(box=>
+   steps.some((v,j)=>j>0&&intersectsBox(steps[j-1],v,box)));
+  if(blocked)continue;
   if(!best||distance<best.distance)best={edge:i,at,t,distance};
  }
  return best;
@@ -111,8 +122,14 @@ function access(from,point){
   y:Math.abs(from.x-point.x)<Math.abs(from.y-point.y)?from.y:point.y};
  return compact([corner,point]);
 }
-function shortest(start,end){
- if(start===end)return [start];
+// Road graph is fixed; moving a pin changes only its road access points.
+// Reuse a bounded number of shortest-path trees while the user drags pins.
+const treeCache=new Map(),CACHE_LIMIT=48;
+function treeFrom(start){
+ if(treeCache.has(start)){
+  const known=treeCache.get(start);
+  treeCache.delete(start);treeCache.set(start,known);return known;
+ }
  const distance=Array(graph.length).fill(Infinity),prev=Array(graph.length).fill(-1);
  const visited=Array(graph.length).fill(false);
  distance[start]=0;
@@ -121,18 +138,27 @@ function shortest(start,end){
   for(let n=0;n<graph.length;n++)
    if(!visited[n]&&(node<0||distance[n]<distance[node]))node=n;
   if(node<0||!Number.isFinite(distance[node]))break;
-  if(node===end)break;
   visited[node]=true;
   for(const e of adj[node]){
-   if(distance[node]+e.cost<distance[e.to]){
+   if(!visited[e.to]&&distance[node]+e.cost<distance[e.to]){
     distance[e.to]=distance[node]+e.cost;prev[e.to]=node;
    }
   }
  }
- if(!Number.isFinite(distance[end]))return [];
+ const tree={distance,prev};
+ treeCache.set(start,tree);
+ if(treeCache.size>CACHE_LIMIT)treeCache.delete(treeCache.keys().next().value);
+ return tree;
+}
+function shortest(start,end){
+ if(start===end)return [start];
+ const tree=treeFrom(start);
+ if(!Number.isFinite(tree.distance[end]))return [];
  const path=[end];let at=end;
- while(at!==start&&path.length<=graph.length){at=prev[at];if(at<0)return [];path.push(at)}
- return path.reverse();
+ while(at!==start&&path.length<=graph.length){
+  at=tree.prev[at];if(at<0)return [];path.push(at);
+ }
+ return at===start?path.reverse():[];
 }
 function streetRoute(start,end){
  if(!start||!end||![start.x,start.y,end.x,end.y].every(Number.isFinite))return null;
@@ -168,7 +194,7 @@ function streetRoute(start,end){
 }
 const api=Object.freeze({version:1,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
- diagnostic:()=>({nodes:graph.length,edges:edges.length,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
+ diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_STREETS=api;
 })(typeof window!=='undefined'?window:globalThis);
