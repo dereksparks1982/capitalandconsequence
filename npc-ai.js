@@ -386,6 +386,11 @@
    a.roomId=moved.roomId;
    a.activity=moved.activity;
    a.status=moved.status||(destination?'present':'off-duty');
+   // Recorded meals use existing purchased provisions, never free stock.
+   // A travelling or absent resident cannot consume food at a venue.
+   if(a.status==='present'&&
+      /\b(meal|lunch|dinner|supper|breakfast)\b/i.test(String(a.activity||'')))
+    window.FE_NPC_HOUSEHOLD_RECEIPTS?.consume?.(S,def.id,key,c.date);
    // Mid-period routine changes do not mint extra income, purchases or fatigue.
    if(!window.FE_NPC_NEEDS&&!completed.repeated)
     a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
