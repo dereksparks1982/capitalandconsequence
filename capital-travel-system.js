@@ -135,7 +135,7 @@ function positionAt(points,fraction,width=2048,height=1159){
  }
  return {...points.at(-1)};
 }
-function animate({viewport,points,project,mode='walk',durationMs=null,onProgress=null}){
+function animate({viewport,points,project,mode='walk',durationMs=null,onProgress=null,onFrame=null}){
  if(active)clear();
  if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function')
   return Promise.resolve(false);
@@ -167,6 +167,11 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    svg.setAttribute('viewBox','0 0 '+dims.w+' '+dims.h);
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
    const local=positionAt(points,progress);
+   // Allow a camera-follow callback to pan before drawing the token at its
+   // new position, while preserving journey progress in map coordinates.
+   if(local&&typeof onFrame==='function'){
+    try{onFrame(local,progress)}catch(error){console.warn('Capital Travel map follow failed',error)}
+   }
    const position=local&&project(local);
    if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.y)){
     clear();return;
