@@ -47,6 +47,12 @@
   for(const [actor,otherId] of [[left,record.partnerId],[right,record.actorId]]){
    if(actor.needs?.version===1)
     actor.needs.mood=Math.round(clamp(actor.needs.mood+consequence.mood)*100)/100;
+   if(!Array.isArray(actor.socialExperience))actor.socialExperience=[];
+   if(!actor.socialExperience.some(item=>item.meetingId===record.id)){
+    actor.socialExperience.push({meetingId:record.id,date:record.date,
+     otherId,kind:record.kind,locationId:record.locationId});
+    if(actor.socialExperience.length>24)actor.socialExperience.splice(0,actor.socialExperience.length-24);
+   }
    memory?.remember?.(save,actor.id,{
     date:record.date,key:'social|'+record.id+'|'+actor.id,
     kind:consequence.memory,withId:otherId,place:record.locationId,
