@@ -110,7 +110,32 @@ function showPreview({viewport,points,project}={}){
  preview.line.setAttribute('points',str);
  return true;
 }
-function animate({viewport,points,project,mode='walk',durationMs=null}){
+// Sample progress in ORIGINAL guide pixels, not on-screen dimensions.
+// Zoom/pan can change while traveling without changing the journey's progress.
+function positionAt(points,fraction,width=2048,height=1159){
+ if(!Array.isArray(points)||!points.length||!Number.isFinite(fraction)||
+  !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0||
+  points.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))return null;
+ const progress=Math.min(1,Math.max(0,fraction));
+ if(points.length===1)return {x:points[0].x,y:points[0].y};
+ const distances=[],total=points.slice(1).reduce((sum,p,i)=>{
+  const prev=points[i],d=Math.hypot((p.x-prev.x)*width,(p.y-prev.y)*height);
+  distances.push(d);return sum+d;
+ },0);
+ if(total<=1e-9)return {...points[0]};
+ let left=progress*total;
+ for(let i=0;i<distances.length;i++){
+  const d=distances[i];
+  if(left<=d||i===distances.length-1){
+   const t=d?Math.min(1,Math.max(0,left/d)):0;
+   return {x:points[i].x+(points[i+1].x-points[i].x)*t,
+    y:points[i].y+(points[i+1].y-points[i].y)*t};
+  }
+  left-=d;
+ }
+ return {...points.at(-1)};
+}
+function animate({viewport,points,project,mode='walk',durationMs=null,onProgress=null}){
  if(active)clear();
  if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function')
   return Promise.resolve(false);
@@ -141,19 +166,15 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
    const dims={w:Math.max(1,viewport.clientWidth),h:Math.max(1,viewport.clientHeight)};
    svg.setAttribute('viewBox','0 0 '+dims.w+' '+dims.h);
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
-   const distances=[],total=raw.slice(1).reduce((sum,p,i)=>{
-    const prev=raw[i];const d=Math.hypot(p.x-prev.x,p.y-prev.y);
-    distances.push(d);return sum+d;
-   },0);
-   let remaining=total*progress,position=raw[0];
-   for(let i=0;i<distances.length;i++){
-    const d=distances[i],ratio=d?Math.min(1,Math.max(0,remaining/d)):1;
-    position={x:raw[i].x+(raw[i+1].x-raw[i].x)*ratio,
-     y:raw[i].y+(raw[i+1].y-raw[i].y)*ratio};
-    if(remaining<=d)break;
-    remaining-=d;
+   const local=positionAt(points,progress);
+   const position=local&&project(local);
+   if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.y)){
+    clear();return;
    }
    group.setAttribute('transform','translate('+position.x+' '+position.y+')');
+   if(typeof onProgress==='function'){
+    try{onProgress(progress)}catch(error){console.warn('Capital Travel progress notice failed',error)}
+   }
    if(progress>=1){
     active=null;svg.remove();state.resolve(true);
    }else state.frame=requestAnimationFrame(tick);
@@ -161,7 +182,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:3,modes:MODES,route,estimate,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:4,modes:MODES,route,estimate,positionAt,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
