@@ -1,7 +1,7 @@
 /* Capital & Consequence: Capital Travel System.
  * Pure street-style route model + a temporary map-viewport overlay.
  * Never edits the fixed Washington artwork, its pins, or saved coordinates.
- * Until actual road tracing exists, orthogonal routes are APPROXIMATIONS,
+ * The road-network corridors and doorstep access remain APPROXIMATIONS,
  * not surveyed streets or a guarantee that every building is avoided.
  */
 (function(root){
@@ -16,11 +16,21 @@ function route(from,to){
  if(!from||!to||![from.x,from.y,to.x,to.y].every(Number.isFinite))return [];
  const a={x:clamp(from.x),y:clamp(from.y)},b={x:clamp(to.x),y:clamp(to.y)};
  if(a.x===b.x&&a.y===b.y)return [a];
- // A provisional rectangular itinerary. The middle lane falls on the
- // guide's printed rows; no diagonal line through the illustrated city.
+ // Real graph edges first: piece moves down mapped block corridors and
+ // modeled diagonal avenues, not one imaginary shortcut through buildings.
+ const street=root.FE_CAPITAL_STREETS?.streetRoute?.(a,b);
+ if(street?.points?.length>=2){
+  const path=street.points;
+  path.routeType=street.type;
+  path.accessPixels=street.accessPixels;
+  return path;
+ }
+ // Fallback only if the guide network cannot connect the destinations.
+ // This path remains visibly flagged as an unverified approximation.
  const lane=clamp(Math.round(((a.y+b.y)/2)*18)/18);
  const pts=[a,{x:a.x,y:lane},{x:b.x,y:lane},b],out=[];
  for(const p of pts)if(!out.length||out.at(-1).x!==p.x||out.at(-1).y!==p.y)out.push(p);
+ out.routeType='provisional-right-angle';out.accessPixels=null;
  return out;
 }
 function estimate(points,imageWidth=2048,imageHeight=1159){
@@ -106,8 +116,8 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
   return Promise.resolve(false);
  const spec=MODES.find(m=>m.id===mode)||MODES[0];
  const reduce=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
- const duration=reduce?180:Math.max(350,Math.min(8000,
-  Number.isFinite(durationMs)?durationMs:mode==='walk'?2200:mode==='horse'?1550:1800));
+ const duration=reduce?180:Math.max(350,Math.min(8500,
+  Number.isFinite(durationMs)?durationMs:mode==='walk'?2900:mode==='horse'?2050:2350));
  const svg=el('svg',{class:'capital-travel-overlay','aria-hidden':'true'});
  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:hidden';
  const routeLine=el('polyline',{fill:'none',stroke:'#e9c887','stroke-width':3,
@@ -151,7 +161,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:2,modes:MODES,route,estimate,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:3,modes:MODES,route,estimate,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
