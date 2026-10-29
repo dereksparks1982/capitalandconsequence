@@ -1,0 +1,80 @@
+/* Capital & Consequence: reusable period-paper private books.
+   CSS only. Existing game layout, artwork and approved coordinates untouched. */
+.personal-book-backdrop[hidden]{display:none!important}
+.personal-book-backdrop{position:fixed;inset:0;z-index:2600000;display:grid;
+ place-items:center;overflow:auto;padding:1.25rem;background:#120e0ad9;
+ font-family:Georgia,'Times New Roman',serif}
+.personal-book-window{width:min(94vw,1120px);max-height:95vh;display:flex;flex-direction:column;
+ border:8px solid #382719;outline:2px solid #c7a377;
+ background:linear-gradient(145deg,#372719,#1b140e);color:#f1dcc0;
+ box-shadow:0 20px 55px #000c}
+.personal-book-header{display:flex;align-items:center;justify-content:space-between;
+ gap:1rem;padding:.65rem 1rem;border-bottom:1px solid #a18157}
+.personal-book-header small{letter-spacing:.13em;font-size:.72rem;color:#d8bd94}
+.personal-book-header h2{margin:.2rem 0;color:#f1ddb6;font-size:1.35rem;letter-spacing:.1em}
+.personal-book-header button{border:1px solid #ad8b64;background:#3a271c;color:#f7e1be;
+ font-size:1.4rem;padding:.18rem .6rem;cursor:pointer}
+.personal-book-toolbar,.personal-book-controls{display:flex;align-items:center;justify-content:space-between;
+ gap:.8rem;flex-wrap:wrap;padding:.5rem 1rem}
+.personal-book-toolbar label{display:flex;gap:.5rem;align-items:center;font-size:.86rem}
+.personal-book-toolbar select{max-width:min(60vw,340px);padding:.35rem .5rem;
+ border:1px solid #856a44;background:#eadbbd;color:#2c2017;font-family:inherit}
+.personal-book-toolbar output{font-size:.86rem;color:#e0c9a5}
+.personal-book-spread{position:relative;display:grid;grid-template-columns:1fr 1fr;
+ flex:1;min-height:0;perspective:1400px;padding:6px 10px 12px;
+ border-left:13px solid #49301d;border-right:11px solid #49301d;
+ background:linear-gradient(90deg,#b89e76 0%,#eee0c5 3%,#eee0c5 49%,
+ #6d5439 49.85%,#6d5439 50.15%,#eee0c5 51%,#eee0c5 97%,#ae926a 100%);
+ box-shadow:inset 0 0 12px #2e201b}
+.personal-book-page{position:relative;min-width:0;min-height:340px;max-height:64vh;
+ overflow-y:auto;padding:clamp(12px,2.5vw,33px) clamp(12px,2.6vw,35px) 2.6rem;
+ background:linear-gradient(125deg,#f4e8cb,#e9d8b8);color:#30251c;
+ border:1px solid #d0bb95;box-shadow:inset 1px 0 9px #a08a643b}
+.personal-book-page:first-child{border-right:1px solid #b8a27c}
+.personal-book-page:nth-child(2){border-left:1px solid #cfb993}
+.personal-book-section{display:block;color:#775839;text-transform:uppercase;
+ letter-spacing:.13em;font-size:.7rem}
+.personal-book-title{font:small-caps 1.55rem/1.15 Georgia,serif;
+ color:#422e1f;margin:.7rem 0 .4rem;border-bottom:1px double #aa906c;padding-bottom:.5rem}
+.personal-book-kicker{color:#856747;font-size:.78rem;letter-spacing:.07em}
+.personal-book-paragraph{font-size:.97rem;line-height:1.55;margin:.8rem 0;overflow-wrap:anywhere}
+.personal-book-items{margin:.7rem 0}
+.personal-book-item{border-bottom:1px solid #b7a18465;padding:.55rem 0}
+.personal-book-item strong{font-size:.82rem;display:block;line-height:1.4}
+.personal-book-item p{font-size:.87rem;line-height:1.5;margin:.2rem 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.personal-book-note-label{display:block;font-size:.84rem;font-weight:bold;margin:.6rem 0}
+.personal-book-note{display:block;width:100%;min-height:170px;padding:12px;
+ font:1rem/1.6 Georgia,serif;background:#f7efd9;color:#382618;
+ border:1px solid #ad9066;resize:vertical;box-sizing:border-box}
+.personal-book-save{margin:.6rem 0;background:#e4ccaa;border:1px solid #a17e55;
+ color:#382518;padding:.45rem .8rem;cursor:pointer;font:inherit}
+.personal-book-folio{position:absolute;bottom:9px;right:18px;color:#987b59;font-size:.8rem}
+.personal-book-controls button{background:#d6bb93;color:#35271a;border:1px solid #95764c;
+ font:600 .95rem Georgia,serif;padding:.55rem .9rem;cursor:pointer}
+.personal-book-controls button:disabled{opacity:.45;cursor:default}
+.personal-book-controls p{flex:1;text-align:center;margin:.2rem;min-width:140px;font-size:.83rem}
+.personal-book-flip-sheet{position:absolute;z-index:3;top:6px;bottom:12px;width:calc(50% - 10px);
+ backface-visibility:hidden;transform-style:preserve-3d;pointer-events:none;
+ box-shadow:0 0 11px #2b1d1699}
+.personal-book-flip-sheet .personal-book-page{height:100%;max-height:none;overflow:hidden}
+.personal-book-flip-sheet.forward{right:10px;transform-origin:left center;
+ animation:personal-book-forward .43s ease-in-out forwards}
+.personal-book-flip-sheet.backward{left:10px;transform-origin:right center;
+ animation:personal-book-backward .43s ease-in-out forwards}
+@keyframes personal-book-forward{0%{transform:rotateY(0deg)}100%{transform:rotateY(-180deg)}}
+@keyframes personal-book-backward{0%{transform:rotateY(0deg)}100%{transform:rotateY(180deg)}}
+@media(max-width:630px){
+ .personal-book-backdrop{padding:.25rem}
+ .personal-book-window{width:100%;max-height:99vh}
+ .personal-book-spread{grid-template-columns:1fr 1fr;padding:3px}
+ .personal-book-page{min-height:310px;padding:11px 9px 28px;max-height:69vh}
+ .personal-book-title{font-size:1.13rem}
+ .personal-book-paragraph,.personal-book-note{font-size:.78rem}
+ .personal-book-controls{padding:.3rem .5rem;gap:.3rem}
+ .personal-book-controls button{font-size:.72rem;padding:.45rem}
+ .personal-book-flip-sheet.forward{right:3px}
+ .personal-book-flip-sheet.backward{left:3px}
+}
+@media(prefers-reduced-motion:reduce){
+ .personal-book-flip-sheet.forward,.personal-book-flip-sheet.backward{animation-duration:.01ms}
+}
