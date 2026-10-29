@@ -27,7 +27,7 @@ function access(save,tier,today,introduced){
  if(!introduced)return {allowed:false,status:'invitation-required',message:'A personal introduction is required.'};
  return {allowed:true,status:'trial',message:'You have an invitation for a trial game. Membership is not guaranteed.'};
 }
-function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous'}){
+function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous',sessionId=null}){
  if(!CONFIG[tier])return {status:'unrestricted',message:'No membership trial at this table.',hospitality:0};
  if(!['courteous','generous','quiet','rude'].includes(conduct))throw Error('Unknown social conduct');
  const status=access(save,tier,today,introduced);
@@ -35,6 +35,10 @@ function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous'
  if(!Number.isFinite(delta)||!Number.isFinite(stake)||stake<=0||!Number.isInteger(hands)||hands<0)throw Error('Valid session results required');
  if(hands===0)return {status:'trial-pending',message:'No hand was completed, so the trial remains open.',hospitality:0};
  const state=ensure(save)[tier],cfg=CONFIG[tier];
+ if(sessionId!==null){
+  if(typeof sessionId!=='string'||!sessionId||sessionId.length>120)throw Error('Invalid poker session identifier');
+  if(state.lastSessionId===sessionId)return {...state.lastSessionResult,repeated:true};
+ }
  state.trials=(state.trials||0)+1;state.lastTrial=today;
  const excessiveWin=delta>stake*.35;
  const accepted=conduct==='generous'||(conduct==='courteous'&&!excessiveWin)||(conduct==='quiet'&&delta<=stake*.15);
@@ -44,11 +48,15 @@ function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous'
   if(!Array.isArray(save.personalEffects.items))save.personalEffects.items=[];
   if(!hasCard(save,tier))save.personalEffects.items.push({id:cfg.itemId,name:cfg.item,kind:'membership',container:'left-pocket',source:cfg.venue,date:today});
   state.memberSince=today;state.cooldownUntil=null;state.lastConduct=conduct;
-  return {status:'member',item:cfg.item,cardId:cfg.itemId,hospitality,message:'The members present '+cfg.item+' as a gift. You are recognized here.',trials:state.trials};
+  const result={status:'member',item:cfg.item,cardId:cfg.itemId,hospitality,message:'The members present '+cfg.item+' as a gift. You are recognized here.',trials:state.trials};
+  if(sessionId!==null){state.lastSessionId=sessionId;state.lastSessionResult={...result}}
+  return result;
  }
  const days=conduct==='rude'?7:3;
  state.cooldownUntil=addDays(today,days);state.lastConduct=conduct;
- return {status:'cooldown',until:state.cooldownUntil,hospitality:0,message:'The patrons decline membership for now. You may request another trial after '+state.cooldownUntil+'.',trials:state.trials};
+ const result={status:'cooldown',until:state.cooldownUntil,hospitality:0,message:'The patrons decline membership for now. You may request another trial after '+state.cooldownUntil+'.',trials:state.trials};
+ if(sessionId!==null){state.lastSessionId=sessionId;state.lastSessionResult={...result}}
+ return result;
 }
 const api=Object.freeze({version:1,config:CONFIG,ensure,hasCard,access,trial});
 if(typeof module==='object'&&module.exports)module.exports=api;
