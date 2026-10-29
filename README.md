@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.94-dev (28 October 2026)
+## Current development checkpoint: v0.6.95-dev (28 October 2026)
+
+**Stacked development build 5, household purchase provenance:** NPCs now retain a save-backed per-good purchase tally and most recent receipt date alongside the existing bounded household ledger. These are evidence of *paid acquisitions*, not proof of food consumption, stored inventory, wealth, or an independently invented shopping trip. The existing buyer-specific receipt validation, no-duplicate accounting and separation of personal/company money remain in place. Regression assertions now cover the itemized history, repeat processing and save reload. No map, room geometry or story canon was changed. This source checkpoint does not claim a full Node suite or Linux Electron acceptance.
+
+### Previous v0.6.94-dev checkpoint (28 October 2026)
 
 **Stacked development build 4, NPC daily life and persistent condition records:** Every simulated resident's needs now keep a 14-day save-backed daybook of observed active minutes, night rest, other hours and recognised routine meal periods. The ledger follows only elapsed player-controlled world minutes; no fictional rent, food purchase, private home, salary or second NPC clock is introduced. Multiple short time advances and one equivalent long advance yield the same entries, and reloading/repeating a minute cannot double-count activity. Full offline Node QA and a Linux Electron playthrough remain pending; no new downloadable patch is being requested yet. The approved 40-pin Washington map and UI are unchanged.
 
