@@ -1,6 +1,7 @@
-/* Federal Electric v0.6.19: travel route contracts without invented mileages.
-   No route has a verified length yet. Go There costs 30 provisional game minutes,
-   without claiming historic distances or transporting owned vehicles. */
+/* Capital & Consequence: authoritative player travel accounting.
+   Pixel-based trip times remain provisional until the Washington guide is
+   calibrated against verified streets/distances. Successful visits are
+   recorded once; historic game minutes never change after a pin is moved. */
 (function(){
 'use strict';
 const MODES=Object.freeze([
@@ -29,12 +30,13 @@ function plan(from,to,mode='walk'){
 function notice(from,to){
  const status=plan(from,to,'walk').status;
  if(status==='invalid')return 'Already here or no valid destination.';
- return 'Provisional travel: 30 in-game minutes walking, 20 by horse, or 24 by carriage when the actual animal and carriage are present. Room moves cost 1 in-game minute. Street routes and distances are not yet surveyed.';
+ return 'Capital Travel estimates trip time from the current pin positions; times remain provisional until street routes are surveyed. Walking, horseback and carriage require their own travel conditions. Room changes cost 1 in-game minute.';
 }
 // Called as part of the same autosave as an actual player location change.
-// It does not imply measured mileage or a transport mode; only location changes
-// incur 30 provisional minutes. The factory and its executive office share an ID.
-function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinutes=null){
+// Only journeys between two different sites incur city-travel time.
+// The last optional argument is a SNAPSHOT of a provisional map itinerary,
+// never a permanently cached distance for a pair of location identifiers.
+function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinutes=null,routeDetails=null){
  if(!getLocation(from)||!getLocation(to)||from===to||S.paused)return false;
  if(!S.transport||!Array.isArray(S.transport.journeys))return false;
  const custody=S.horseCustody;
@@ -50,13 +52,18 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinut
  if(typeof id!=='string'||!id||id.length>128||S.transport.journeys.some(v=>v.id===id))return false;
  const gameMinutes=Number.isSafeInteger(estimatedMinutes)&&estimatedMinutes>=4&&estimatedMinutes<=120?
   estimatedMinutes:ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
+ const guidePixels=routeDetails&&Number.isSafeInteger(routeDetails.guidePixels)&&
+  routeDetails.guidePixels>=0&&routeDetails.guidePixels<=8192?routeDetails.guidePixels:null;
+ const routeType=guidePixels!==null&&routeDetails.routeType==='provisional-right-angle'?
+  'provisional-right-angle':null;
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
  if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode,miles:null,minutes:null,
-  temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:applied===gameMinutes*60});
+  guidePixels,routeType,temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,
+  calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
 }
