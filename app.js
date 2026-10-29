@@ -3091,6 +3091,7 @@ function saveTitleMapLocationLayout(){
  localStorage.setItem(titleMapStorageKey(),JSON.stringify(saved));
 }
 function resetTitleMapLocationLayout(){
+ if(capitalTravelBusy)return;
  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
@@ -3115,6 +3116,7 @@ function updateTitleMapPinEditor(){
  if(help)help.textContent=titleMapPinEdit?'Drag pin to correct A–R / 1–30 grid position · confirm before saving; cancel restores it':'Mouse wheel to zoom · click and drag to move';
 }
 function toggleTitleMapPinEditor(){
+ if(capitalTravelBusy)return;
  titleMapPinEdit=!titleMapPinEdit;
  titleMapPinDrag=null;
  closeTitleMapLocation();
@@ -3244,7 +3246,10 @@ function capitalTravelPath(fromId,toId){
   const p=titleMapDisplayCoordinate(v,img);
   return {x:p.x/img.naturalWidth,y:p.y/img.naturalHeight};
  });
- return window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
+ const points=window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
+ // Two independently entered places may share the same provisional printed
+ // anchor. They still require a short visit, not a 30-minute fallback.
+ return points.length===1&&fromId!==toId?[points[0],{...points[0]}]:points;
 }
 // Rebuild route from the CURRENT in-memory pin placements on every interaction;
 // never cache journey distances across user edits, profiles or trips.
