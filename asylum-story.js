@@ -39,7 +39,11 @@ const ACTIONS=Object.freeze({
  visitorRegister:{label:"Consult visitor sign-in book · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
  bellStatement:{label:"Speak to the duty porter · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
  passageMark:{label:"Examine the passage threshold · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'patient-ward',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
- clothingAccount:{label:"Ask about the corridor figure · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'}
+ clothingAccount:{label:"Ask about the corridor figure · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ statementFolio:{label:'Read certified suspect statements · 10 minutes',seconds:600,
+  location:'metropolitanPolice',room:'station-duty-room',
+  routes:['investigator'],source:'police-certified witness statement register',
+  text:'Recorded statements supplied by four persons who may have been near the ward.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
@@ -82,16 +86,22 @@ function preview(save,world,id,where){
   return {ok:false,reason:'Finish your assigned Hillsdale shift before requesting outside-beat assistance'};
  if(id==='reception'&&save.patrolDuty?.onDuty)
   return {ok:false,reason:'Off-duty civilian inquiries only outside Hillsdale'};
+ if(id==='statementFolio'&&(!permission(save)||!seen(save,'stationMemo')))
+  return {ok:false,reason:'A signed sergeant referral and station assistance are required'};
+ if(id==='statementFolio'&&save.patrolDuty?.onDuty)
+  return {ok:false,reason:'This inquiry must not interrupt your assigned Hillsdale patrol'};
  if(id==='medical'&&!permission(save))
   return {ok:false,reason:'A written station-sergeant referral is required'};
  if(id==='medical'&&!world?.morgue?.reports?.[BODY_ID])
   return {ok:false,reason:'The coroner has not filed the report'};
  if(id==='medical'&&iso<world.morgue.reports[BODY_ID].examinedAt)
   return {ok:false,reason:'The coroner has not yet issued this report'};
- if(id==='wardMemo'&&(!seen(save,'wardRecord')||!seen(save,'wardCorridor')))
-  return {ok:false,reason:'The memorandum requires both your own ward record and corridor observation'};
- if(id==='policeMemo'&&(!seen(save,'reception')||!seen(save,'medical')||!permission(save)))
-  return {ok:false,reason:'A sourced reception account, authorized report and referral are required'};
+ if(id==='wardMemo'&&(!seen(save,'wardRecord')||!seen(save,'wardCorridor')||
+    !seen(save,'passageMark')||!seen(save,'visitorRegister')))
+  return {ok:false,reason:'File both firsthand ward observations and compare the passage and visitor registers first'};
+ if(id==='policeMemo'&&(!seen(save,'reception')||!seen(save,'medical')||
+    !seen(save,'statementFolio')||!seen(save,'bellStatement')||!permission(save)))
+  return {ok:false,reason:'Collect a reception account, porter testimony, certified statements and authorized medical findings'};
  if(id==='policeMemo'&&save.patrolDuty?.onDuty)
   return {ok:false,reason:'Outside-beat inquiry must be filed during your own off-duty time'};
  if(scene){
@@ -111,8 +121,10 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const result=preview(save,world,id,where);if(!result.ok)return result;
  if(spentSeconds!==result.seconds)return {ok:false,reason:'The full action duration has not been charged'};
  const action=result.action;
- const sceneObservation=root.FE_ASYLUM_EVIDENCE?.EXHIBITS?.[id]?
-  root.FE_ASYLUM_EVIDENCE.describe(world,id,CASE_ID):null;
+ const sceneObservation=id==='statementFolio'?
+  root.FE_ASYLUM_EVIDENCE?.statementFolio?.(world,CASE_ID):
+  root.FE_ASYLUM_EVIDENCE?.EXHIBITS?.[id]?
+   root.FE_ASYLUM_EVIDENCE.describe(world,id,CASE_ID):null;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',

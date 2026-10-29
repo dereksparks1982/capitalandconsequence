@@ -75,13 +75,21 @@
   }
   return {id:key,source:e.source,at:e.time,description};
  }
+ function statementFolio(world,id=CASE){
+  const statements=roster(world,id);
+  if(!statements.length)return null;
+  return {id:'statement-folio',source:'police-certified witness statement register',
+   at:world.incidents[id].at,
+   description:'Four separate statements were filed. '+statements.map(p=>p.name+
+    ' stated: “'+p.alibi+'”').join(' ')+' Each is an uncorroborated account, not verified whereabouts.'};
+ }
  function roster(world,id=CASE){
   const scene=world?.incidentScene?.[id];
   if(!scene)return [];
   return scene.persons.map(p=>({id:p.personId,name:p.publicName,alibi:p.statedAlibi}));
  }
  // A player-facing function MUST NOT export the culprit or positions.
- const api=Object.freeze({CASE,EXHIBITS,ensure,available,describe,roster});
+ const api=Object.freeze({CASE,EXHIBITS,ensure,available,describe,roster,statementFolio});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_ASYLUM_EVIDENCE=api;
 })(typeof window!=='undefined'?window:globalThis);

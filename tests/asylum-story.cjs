@@ -45,11 +45,16 @@ assert.equal(edmund.morgueExaminations,undefined,'Private medical report must no
 assert.equal(story.preview(edmund,later,'wardMemo',{locationId:'blackwoodAsylum',roomId:'orderly-station'}).ok,false,'One clue cannot file an institutional report');
 bridge.start(edmund,'1878-01-05',14*60+10);
 assert.equal(story.apply(edmund,later,'wardCorridor',{locationId:'blackwoodAsylum',roomId:'patient-ward'},{spentSeconds:300}).ok,true);
+assert.equal(story.apply(edmund,later,'wardMemo',{locationId:'blackwoodAsylum',roomId:'orderly-station'},{spentSeconds:300}).ok,false);
+assert.equal(story.apply(edmund,later,'passageMark',{locationId:'blackwoodAsylum',roomId:'patient-ward'},{spentSeconds:300}).ok,true);
+assert.equal(story.apply(edmund,later,'visitorRegister',{locationId:'blackwoodAsylum',roomId:'reception'},{spentSeconds:300}).ok,true);
 assert.equal(story.apply(edmund,later,'wardMemo',{locationId:'blackwoodAsylum',roomId:'orderly-station'},{spentSeconds:300}).ok,true);
 assert.equal(FE_MISSIONS.ensure(edmund).history.length,1,'A filed memorandum concludes only the preliminary mission');
 assert.equal(edmund.wardmanStanding.workplaceTrust,52);
 assert.equal(story.preview(sam,later,'policeMemo',{locationId:'metropolitanPolice',roomId:'station-duty-room'}).ok,false,'Sam must collect real sources before filing');
 assert.equal(story.apply(sam,later,'reception',{locationId:'blackwoodAsylum',roomId:'reception'},{spentSeconds:300}).ok,true);
+assert.equal(story.apply(sam,later,'statementFolio',{locationId:'metropolitanPolice',roomId:'station-duty-room'},{spentSeconds:600}).ok,true);
+assert.equal(story.apply(sam,later,'bellStatement',{locationId:'blackwoodAsylum',roomId:'reception'},{spentSeconds:300}).ok,true);
 assert.equal(story.apply(sam,later,'policeMemo',{locationId:'metropolitanPolice',roomId:'station-duty-room'},{spentSeconds:600}).ok,true);
 assert.equal(FE_MISSIONS.ensure(sam).history.length,1);
 
