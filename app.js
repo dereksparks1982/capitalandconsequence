@@ -3503,6 +3503,8 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  // Never leave developer privileges active on a regular player visit.
  S.currentLocation={locationId:place.id,roomId:room.id};
  cityRoomSession={locationId:place.id,roomId:room.id,dev:false,source:'map'};
+ // A newly arrived player can now see any real challenge tied to this room.
+ window.FE_DUEL_UI?.refresh?.();
  if(overlay.parentNode!==document.body)document.body.appendChild(overlay);
  overlay.hidden=false;
  document.body.classList.add('city-room-open');
