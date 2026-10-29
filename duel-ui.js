@@ -128,7 +128,13 @@ function finalize(){
  const duel=root.FE_DUELS;
  const done=config?.onSettle?.(session.challenge,session.last,session.rounds);
  if(done!==true){
-  byId('capitalDuelResult').textContent='The result could not be recorded. The duel remains open.';
+  // A failed clock/save transaction must never trap the player behind an
+  // unclosable duel. The challenge remains pending for a later fresh attempt.
+  session.finished=true;session.phase='failed';session.awaiting=false;
+  byId('capitalDuelAgain').hidden=true;byId('capitalDuelAccept').hidden=true;
+  byId('capitalDuelSignal').textContent='UNRECORDED';
+  byId('capitalDuelResult').textContent='The result could not be recorded. No duel result was saved. Close and retry later.';
+  byId('capitalDuelClose').textContent='Close';
   return false;
  }
  session.finished=true;session.phase='finished';session.awaiting=false;
