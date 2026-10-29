@@ -58,7 +58,8 @@ function estimate(points,imageWidth=2048,imageHeight=1159){
 function animationDuration(guidePixels,mode='walk'){
  if(!Number.isFinite(guidePixels)||guidePixels<0)return 2200;
  const speed=mode==='horse'?.68:mode==='carriage'?.82:1;
- return Math.max(850,Math.min(8000,Math.round((1000+Math.min(guidePixels,4000)*3.6)*speed)));
+ const walkingMs=Math.min(8000,1000+Math.min(guidePixels,4000)*3.6);
+ return Math.max(850,Math.round(walkingMs*speed));
 }
 function available(save,from,mode){
  if(!MODES.some(m=>m.id===mode))return {ok:false,reason:'Unrecognized travel method.'};
