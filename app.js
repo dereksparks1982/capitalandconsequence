@@ -3584,8 +3584,11 @@ async function travelFromTitleMap(event){
     const milestone=Math.min(4,Math.floor(fraction*4));
     if(milestone!==lastMilestone&&travelNote&&!viewer.hidden){
      lastMilestone=milestone;
+     const remaining=window.FE_CAPITAL_TRAVEL?.remainingMinutes?.(minutes,fraction);
      travelNote.textContent='Traveling by '+availability.mode+' · '+
-      milestone*25+'% of the provisional street itinerary.';
+      milestone*25+'% of the provisional street itinerary'+
+      (remaining===null||remaining===undefined?'':' · about '+remaining+
+       ' in-game minutes remaining')+'.';
     }
    }
   });
