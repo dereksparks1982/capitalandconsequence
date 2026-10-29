@@ -11,7 +11,8 @@
  function ensure(save){
   if(!save?.componentWorks)throw Error('1878 workshop required');
   let ops=save.workshopOperations;
-  if(!ops){ops={version:1,hold:null,repairReceipts:{},lastIncident:null};save.workshopOperations=ops}
+  if(!ops){ops={version:1,hold:null,repairReceipts:{},lastIncident:null,incidentHistory:[]};save.workshopOperations=ops}
+  if(!Array.isArray(ops.incidentHistory))ops.incidentHistory=[];
   if(ops.version!==1||!ops.repairReceipts||typeof ops.repairReceipts!=='object')throw Error('Damaged workshop incidents');
   return ops;
  }
@@ -44,6 +45,8 @@
   const incident={date:day,token:receipt.token,description,
    assistantTried:true,assistantFixed};
   ops.lastIncident=incident;
+  if(!ops.incidentHistory.some(i=>i.token===incident.token))ops.incidentHistory.push(incident);
+  if(ops.incidentHistory.length>32)ops.incidentHistory.splice(0,ops.incidentHistory.length-32);
   if(!assistantFixed)ops.hold={date:day,description,sourceToken:receipt.token};
   return incident;
  }
@@ -69,6 +72,8 @@
   save.lastExpenses=Math.round((save.lastExpenses||0)*100+costCents)/100;
   const receipt={ok:true,kind:'repair',token,elapsedSeconds:seconds,costCents,incident};
   ops.repairReceipts[token]=receipt;
+  ops.lastRepair={token,date:clock.date,costCents,elapsedMinutes:minutes,
+   incidentToken:incident.sourceToken};
   if(atBell&&finishAtBell()!==true)throw Error('Closing bell repair transaction incomplete');
   return {...receipt,repeated:false};
  }
