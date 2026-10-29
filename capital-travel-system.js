@@ -64,7 +64,7 @@ function animationDuration(guidePixels,mode='walk'){
 // Preview the saved Washington calendar without advancing it. Travel is
 // still charged exactly once by the authoritative journey ledger on arrival.
 function arrivalEstimate(iso,minutes){
- if(typeof iso!=='string'||!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$/.test(iso)||
+ if(typeof iso!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(iso)||
   !Number.isSafeInteger(minutes)||minutes<0||minutes>1440)return null;
  const start=Date.parse(iso+':00Z');
  if(!Number.isFinite(start)||new Date(start).toISOString().slice(0,16)!==iso)return null;
