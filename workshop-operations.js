@@ -38,6 +38,10 @@
  }
  function afterAssembly(save,receipt,productId,day){
   const ops=ensure(save);
+  if(!receipt||typeof receipt.token!=='string'||!receipt.token)throw Error('Assembly receipt required');
+  const existing=ops.incidentHistory.find(i=>i.token===receipt.token);
+  if(existing)return {...existing,repeated:true};
+  if(ops.hold)return null; // No new assembly incident while production is stopped.
   const n=hash('workshop-fault|'+(save.npcSimulation?.seed||0)+'|'+receipt.token+'|'+day);
   if(n%9!==0)return null;
   const description=productId==='telegraph-relay'?'Winder gearing seized':'Bench vise or fixture failed';
