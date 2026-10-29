@@ -1,0 +1,26 @@
+'use strict';
+const assert=require('node:assert/strict');
+const travel=require('../capital-travel-system.js');
+const route=[{x:.20,y:.20},{x:.60,y:.20},{x:.60,y:.65}];
+const horizontal=(.4*2048),vertical=(.45*1159);
+const pivot=horizontal/(horizontal+vertical);
+assert.equal(travel.headingAt(route,0),90);
+assert.equal(travel.headingAt(route,1),180);
+assert.ok(Math.abs(travel.smoothHeadingAt(route,0)-90)<.01);
+assert.ok(Math.abs(travel.smoothHeadingAt(route,1)-180)<.01);
+const before=travel.smoothHeadingAt(route,pivot-.003);
+const corner=travel.smoothHeadingAt(route,pivot);
+const after=travel.smoothHeadingAt(route,pivot+.003);
+assert.ok(before>90&&before<180,'Facing should begin turning just before intersection');
+assert.ok(corner>90&&corner<180,'Facing should rotate through intersection');
+assert.ok(after>90&&after<180,'Facing should continue turning just after intersection');
+assert.ok(before<corner&&corner<after,'Rotation should be continuous through turn');
+const exact=travel.positionAt(route,pivot);
+assert.ok(Math.abs(exact.x-.60)<1e-10&&Math.abs(exact.y-.20)<1e-10,
+ 'Moving miniature must still stand exactly on street intersection');
+const original=JSON.stringify(route);
+for(let p=0;p<=100;p++)travel.smoothHeadingAt(route,p/100);
+assert.equal(JSON.stringify(route),original,'Heading animation must not move map road or pins');
+assert.equal(travel.smoothHeadingAt([],0),null);
+assert.equal(travel.smoothHeadingAt([{x:0,y:0}],0),null);
+console.log('PASS smooth facing around street corners, exact on-street pawn position and no pin mutation');
