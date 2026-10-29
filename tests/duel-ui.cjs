@@ -59,4 +59,15 @@ assert.equal(invoked[0].marksmanship,45);
 assert.equal(invoked[0].observation,30);
 nodes.capitalDuelClose.onclick();
 assert.equal(ctx.window.FE_DUEL_UI.active,false);
-console.log('PASS first-person challenge UI, countdown, aiming, second exchange, yield, one settlement and room gating');
+assert.equal(ctx.window.FE_DUEL_UI.launch(challenge,{marksmanship:45}),true);
+nodes.capitalDuelClose.onclick();
+assert.equal(ctx.window.FE_DUEL_UI.active,false,'Withdraw before SHOOT and leave the challenge available');
+assert.equal(settled,1,'A canceled countdown charges and records nothing');
+ctx.window.FE_DUEL_UI.bind({getSave:()=>save,getLocation:()=>location,onSettle:()=>false});
+assert.equal(ctx.window.FE_DUEL_UI.launch(challenge,{marksmanship:45}),true);
+nodes.capitalDuelYield.onclick();
+assert.equal(nodes.capitalDuelSignal.textContent,'UNRECORDED',
+ 'Failed transaction does not claim a duel was completed');
+nodes.capitalDuelClose.onclick();
+assert.equal(ctx.window.FE_DUEL_UI.active,false,'Failed settlement cannot trap a player in a modal');
+console.log('PASS first-person duel countdown, exchanges, yield, canceled challenge and failed-save recovery');
