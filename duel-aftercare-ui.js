@@ -24,12 +24,16 @@ function render(){
  const save=controls.getSave?.(),location=controls.getLocation?.();
  if(!save||!location){panel.hidden=true;return}
  const state=root.FE_DUEL_AFTERMATH.visible(save,location,save.gameDate);
+ const caseDue=location==='metropolitanPolice'?
+  root.FE_POLICE_CASEWORK?.due?.(save,save.gameDate):null;
  const target=state.injury?
-  {id:state.injury.duelId,label:'Request treatment · 20 minutes',
+  {id:state.injury.duelId,kind:'treat',label:'Request treatment · 20 minutes',
    text:'You were injured in a duel. Ask the receiving staff for treatment.'}:
   state.reportable?
-  {id:state.reportable.duelId,label:'Give a statement · 10 minutes',
-   text:'You witnessed your own duel. You may give your account to the police. Reporting does not prove an allegation.'}:null;
+  {id:state.reportable.duelId,kind:'report',label:'Give a statement · 10 minutes',
+   text:'You witnessed your own duel. You may give your account to the police. Reporting does not prove an allegation.'}:
+  caseDue?{id:caseDue.id,kind:'review',label:'Request case update · 12 minutes',
+   text:'Your earlier statement can now be reviewed at the police desk. A report alone does not establish guilt.'}:null;
  if(!target){panel.hidden=true;return}
  panel.hidden=false;
  document.getElementById('cityRoomAftercareNote').textContent=target.text;
@@ -39,7 +43,7 @@ function render(){
  button.onclick=()=>{
   if(!controls||button.disabled)return;
   button.disabled=true;
-  const ok=controls.onAction?.(target.id,location);
+  const ok=controls.onAction?.(target.id,location,target.kind);
   if(!ok){
    document.getElementById('cityRoomAftercareNote').textContent=
     'This request could not be completed. No treatment or statement was recorded.';
