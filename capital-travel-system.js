@@ -23,6 +23,24 @@ function route(from,to){
  for(const p of pts)if(!out.length||out.at(-1).x!==p.x||out.at(-1).y!==p.y)out.push(p);
  return out;
 }
+function estimate(points,imageWidth=2048,imageHeight=1159){
+ if(!Array.isArray(points)||points.length<2||!Number.isFinite(imageWidth)||
+   !Number.isFinite(imageHeight)||imageWidth<=0||imageHeight<=0)
+  return {guidePixels:0,estimatedMiles:null,minutes:{walk:0,horse:0,carriage:0}};
+ let length=0;
+ for(let i=1;i<points.length;i++){
+  const a=points[i-1],b=points[i];
+  if(!a||!b||![a.x,a.y,b.x,b.y].every(Number.isFinite))
+   return {guidePixels:0,estimatedMiles:null,minutes:{walk:0,horse:0,carriage:0}};
+  length+=Math.hypot((a.x-b.x)*imageWidth,(a.y-b.y)*imageHeight);
+ }
+ // 300 pixels per 30 minutes is a *gameplay calibration*, NOT a claim
+ // about physical scale or historic street speed. Surveyed distances later.
+ const walking=Math.max(5,Math.min(120,Math.ceil(length/10)));
+ return {guidePixels:Math.round(length),estimatedMiles:null,calibration:'provisional',
+  minutes:{walk:walking,horse:Math.max(4,Math.ceil(walking*.65)),
+   carriage:Math.max(5,Math.ceil(walking*.8))}};
+}
 function available(save,from,mode){
  if(!MODES.some(m=>m.id===mode))return {ok:false,reason:'Unrecognized travel method.'};
  if(mode==='walk')return {ok:true,mode:'walk',minutes:30};
@@ -101,7 +119,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:1,modes:MODES,route,available,animate,cancel:clear,
+const api=Object.freeze({version:1,modes:MODES,route,estimate,available,animate,cancel:clear,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
