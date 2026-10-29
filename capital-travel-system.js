@@ -53,6 +53,34 @@ function estimate(points,imageWidth=2048,imageHeight=1159){
   minutes:{walk:walking,horse:Math.max(4,Math.ceil(walking*.65)),
    carriage:Math.max(5,Math.ceil(walking*.8))}};
 }
+// Weather modifies provisional game-time travel, never physical mileage.
+// Every adjustment is computed from the saved Washington weather at departure.
+function weatherKind(weather){
+ const value=typeof weather==='string'?weather.toLowerCase():'';
+ if(/ice|sleet|blizzard|heavy snow|snowstorm/.test(value))return 'ice';
+ if(/snow/.test(value))return 'snow';
+ if(/thunder|storm|downpour|heavy rain/.test(value))return 'storm';
+ if(/rain|drizzle|shower/.test(value))return 'rain';
+ if(/fog|mist/.test(value))return 'fog';
+ return 'clear';
+}
+const WEATHER_FACTORS=Object.freeze({
+ clear:Object.freeze({walk:1,horse:1,carriage:1}),
+ rain:Object.freeze({walk:1.12,horse:1.16,carriage:1.08}),
+ storm:Object.freeze({walk:1.24,horse:1.3,carriage:1.2}),
+ snow:Object.freeze({walk:1.22,horse:1.28,carriage:1.2}),
+ ice:Object.freeze({walk:1.36,horse:1.46,carriage:1.44}),
+ fog:Object.freeze({walk:1.06,horse:1.18,carriage:1.18})
+});
+function weatherEstimate(points,weather){
+ const base=estimate(points),kind=weatherKind(weather);
+ const times=Object.fromEntries(Object.entries(base.minutes).map(([mode,n])=>
+  [mode,n===0?0:Math.min(240,Math.max(n,Math.ceil(n*WEATHER_FACTORS[kind][mode])))]));
+ const extra=Object.fromEntries(Object.keys(base.minutes).map(mode=>
+  [mode,times[mode]-base.minutes[mode]]));
+ return {...base,minutes:times,baseMinutes:base.minutes,weather:kind,
+  weatherExtraMinutes:extra,calibration:'provisional-weather'};
+}
 // Screen-time pacing only. The WORLD CLOCK uses estimate(...).minutes;
  // this short animation duration must never become a second game-time debit.
 function animationDuration(guidePixels,mode='walk'){
@@ -344,7 +372,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:13,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,smoothHeadingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:14,modes:MODES,route,estimate,weatherEstimate,weatherKind,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,smoothHeadingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
