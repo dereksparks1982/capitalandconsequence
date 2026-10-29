@@ -3010,6 +3010,15 @@ const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(
 // stored coordinates exactly, but let untouched pins adopt the reviewed map.
 // Old saved map layouts are not migrated. Old saves are disposable.
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
+// NPC routes use the same CURRENT normalized pin coordinates as the player.
+// This does not expose hidden NPC information or modify the map registry.
+window.FE_NPC_MAP_PIN=id=>{
+ const pin=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
+ if(!pin)return null;
+ const img={naturalWidth:2048,naturalHeight:1159};
+ const p=titleMapDisplayCoordinate(pin,img);
+ return {x:p.x/img.naturalWidth,y:p.y/img.naturalHeight};
+};
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
 let capitalTravelBusy=false;
@@ -3228,6 +3237,11 @@ function titleMapApply(){
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
  renderCapitalTravelPreview();
+ const viewport=$('#titleMapViewport'),viewer=$('#titleMapViewer');
+ if(img.naturalWidth&&viewport)
+  window.FE_NPC_STREET_TRAVEL?.render?.(S,viewport,
+   p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
+     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),!viewer?.hidden);
 }
 // Pins stay at their saved map coordinates at every zoom level. Off-print
 // provisional pins remain edge-docked solely to keep their directory entries
@@ -3863,6 +3877,7 @@ function openTitleMap(){
  if(img.complete&&img.naturalWidth)ready();else img.addEventListener('load',ready,{once:true});
 }
 function closeTitleMap(chargeTime=true){
+ window.FE_NPC_STREET_TRAVEL?.clear?.();
  window.FE_CAPITAL_TRAVEL?.cancel?.();
  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  const viewer=$('#titleMapViewer');
