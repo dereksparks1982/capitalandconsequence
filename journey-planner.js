@@ -54,15 +54,19 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinut
   estimatedMinutes:ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
  const guidePixels=routeDetails&&Number.isSafeInteger(routeDetails.guidePixels)&&
   routeDetails.guidePixels>=0&&routeDetails.guidePixels<=8192?routeDetails.guidePixels:null;
- const routeType=guidePixels!==null&&routeDetails.routeType==='provisional-right-angle'?
-  'provisional-right-angle':null;
+ const allowedRoutes=['provisional-right-angle','provisional-street-network','provisional-street-access'];
+ const routeType=guidePixels!==null&&allowedRoutes.includes(routeDetails.routeType)?
+  routeDetails.routeType:null;
+ const accessPixels=guidePixels!==null&&Number.isSafeInteger(routeDetails?.accessPixels)&&
+  routeDetails.accessPixels>=0&&routeDetails.accessPixels<=8192?
+  routeDetails.accessPixels:null;
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
  if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode,miles:null,minutes:null,
-  guidePixels,routeType,temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,
+  guidePixels,routeType,accessPixels,temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,
   calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
