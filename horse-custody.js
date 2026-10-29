@@ -36,6 +36,8 @@
   const journey=journeys[journeys.length-1];
   if(!journey||journey.from!==from||journey.to!==to||journey.calendarApplied!==true)
    return {ok:false,reason:'A real player journey must be recorded first'};
+  if(journey.mode==='walk'||(journey.mode&&journey.mode!==intent.mode))
+   return {ok:false,reason:'Walking or a different vehicle mode cannot relocate a horse or carriage'};
   const horse=present(save,intent.assetId,from,'horse');
   const vehicle=intent.vehicleId?present(save,intent.vehicleId,from,'carriage'):null;
   if(!horse||(intent.vehicleId&&!vehicle))
