@@ -22,7 +22,8 @@ const engine={...real,exchange:opts=>{
    {action:'yield',player:'yielded',opponent:'held-fire',result:'yielded'};
 }};
 const ctx={window:{FE_DUELS:engine,FE_SKILLS:{level:(state,id)=>state.characterSkills.values[id]}},
- document:doc,setTimeout:fn=>(queues.push(fn),queues.length),clearTimeout:()=>{},
+ document:doc,setTimeout:fn=>{const item={fn,canceled:false};queues.push(item);return item},
+ clearTimeout:item=>{if(item)item.canceled=true},
  requestAnimationFrame:fn=>(frames.push(fn),frames.length),cancelAnimationFrame:()=>{},
  performance:{now:()=>10},console:{warn(){}}};
 vm.runInNewContext(src,ctx);
@@ -40,7 +41,10 @@ nodes.cityRoomDuelChallenge.onclick();
 assert.equal(ctx.window.FE_DUEL_UI.active,true,'First-person challenge opens');
 assert.equal(overlayCreated.hidden,false);
 assert.match(overlayCreated.innerHTML,/capital-duel-opponent/,'Full-body first-person silhouette renders');
-function countdown(){for(let i=0;i<5;i++){const fn=queues.shift();assert.ok(fn);fn()}}
+function countdown(){for(let i=0;i<4;i++){
+  let item=queues.shift();while(item?.canceled)item=queues.shift();
+  assert.ok(item);item.fn();
+ }}
 countdown();
 assert.equal(nodes.capitalDuelSignal.textContent,'SHOOT!');
 nodes.capitalDuelShoot.onclick();
