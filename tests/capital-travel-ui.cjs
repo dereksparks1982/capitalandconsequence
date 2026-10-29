@@ -12,9 +12,9 @@ assert.match(css,/\.capital-travel-overlay/);
 assert.match(app,/function capitalTravelPath\(/);
 assert.match(app,/titleMapDisplayCoordinate\(v,img\)/,'Waypoints use actual map pin display anchors');
 assert.match(app,/FE_CAPITAL_TRAVEL\.animate\(/,'Go There animates before committing arrival');
-assert.match(app,/return enterMapDestination\(id,null,null,mode,minutes\)/,
+assert.match(app,/return enterMapDestination\(id,null,null,mode,minutes,\{/,
  'A completed animation enters the existing true destination room');
-assert.match(app,/recordProvisional\(prior\.locationId,place\.id,null,travelMode,provisionalMinutes\)/,
+assert.match(app,/recordProvisional\(prior\.locationId,place\.id,null,travelMode,provisionalMinutes,routeDetails\)/,
  'The authoritative player journey receives the selected mode and duration');
 assert.match(app,/FE_CAPITAL_TRAVEL\?\.cancel\?\.\(\)/,'Closing the map cancels the journey preview');
 assert.match(engine,/estimatedMiles:null/,'No invented historic mileage');
