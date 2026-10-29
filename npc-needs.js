@@ -13,12 +13,15 @@
   let needs=agent.needs;
   if(!needs||needs.version!==1){
    needs={version:1,lastMinute:null,energy:clamp(Number.isFinite(agent.energy)?agent.energy:80),
-    hunger:25,mood:65,restHours:0,activeHours:0,lastMealDay:null,unresolvedMinutes:0};
+    hunger:25,mood:65,restHours:0,activeHours:0,lastMealDay:null,unresolvedMinutes:0,dailyHistory:[]};
    agent.needs=needs;
   }
   for(const key of ['energy','hunger','mood'])needs[key]=clamp(needs[key]);
   for(const key of ['restHours','activeHours','unresolvedMinutes'])
    if(!Number.isFinite(needs[key])||needs[key]<0)needs[key]=0;
+  if(!Array.isArray(needs.dailyHistory))needs.dailyHistory=[];
+  needs.dailyHistory=needs.dailyHistory.filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&
+   Number.isSafeInteger(r.activeMinutes)&&Number.isSafeInteger(r.restMinutes)).slice(-14);
   agent.energy=needs.energy;
   return needs;
  }
@@ -47,8 +50,19 @@
    if(rest)needs.restHours+=hours;
    if(active)needs.activeHours+=hours;
    const today=d.toISOString().slice(0,10);
+   let record=needs.dailyHistory.find(r=>r.date===today);
+   if(!record){
+    record={date:today,activeMinutes:0,restMinutes:0,otherMinutes:0,mealPeriods:0};
+    needs.dailyHistory.push(record);
+    if(needs.dailyHistory.length>14)needs.dailyHistory.shift();
+   }
+   const duration=until-minute;
+   if(rest)record.restMinutes+=duration;
+   else if(active)record.activeMinutes+=duration;
+   else record.otherMinutes+=duration;
    if(/\bmeal\b/i.test(String(plan.activity||''))&&day!==today){
     needs.hunger=clamp(needs.hunger-28);
+    record.mealPeriods++;
     day=today;
    }
    // Private mood reflects exhaustion/comfort, never demographic identity.
