@@ -47,3 +47,12 @@
 @media(max-width:600px){.capital-duel-scene{padding:.6rem}.capital-duel-field{height:46vh}
  .capital-duel-opponent{transform:translateX(-50%) scale(.8);transform-origin:bottom}}
 @media(prefers-reduced-motion:reduce){.capital-duel-reticle{transition:none!important}}
+
+/* Optional medical and police aftermath inside a visited room, not a map pin. */
+.city-room-aftermath[hidden]{display:none!important}
+.city-room-aftermath{margin:.8rem 0;padding:.9rem;border:1px solid #96774e;
+ background:#272019;color:#f1dfbf}
+.city-room-aftermath h4{margin:.2rem 0}
+.city-room-aftermath button{padding:.5rem .9rem;background:#47301d;
+ color:#f7e3bf;border:1px solid #b69366;cursor:pointer}
+.city-room-aftermath button:disabled{opacity:.55;cursor:default}
