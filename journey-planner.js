@@ -28,7 +28,7 @@ function plan(from,to,mode='walk'){
 function notice(from,to){
  const status=plan(from,to,'walk').status;
  if(status==='invalid')return 'Already here or no valid destination.';
- return 'Travel between different locations costs 30 in-game minutes for now. Walking between rooms at the same location is free. Distances are not yet surveyed.';
+ return 'Travel between different locations costs 30 in-game minutes for now. Moving between different rooms at the same location costs 1 in-game minute; staying in the same room costs nothing. Distances are not yet surveyed.';
 }
 // Called as part of the same autosave as an actual player location change.
 // It does not imply measured mileage or a transport mode; only location changes
