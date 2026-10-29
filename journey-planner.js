@@ -50,7 +50,7 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinut
   return false;
  const id=journeyId===null?(window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):journeyId;
  if(typeof id!=='string'||!id||id.length>128||S.transport.journeys.some(v=>v.id===id))return false;
- const gameMinutes=Number.isSafeInteger(estimatedMinutes)&&estimatedMinutes>=4&&estimatedMinutes<=120?
+ const gameMinutes=Number.isSafeInteger(estimatedMinutes)&&estimatedMinutes>=4&&estimatedMinutes<=240?
   estimatedMinutes:ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
  const guidePixels=routeDetails&&Number.isSafeInteger(routeDetails.guidePixels)&&
   routeDetails.guidePixels>=0&&routeDetails.guidePixels<=8192?routeDetails.guidePixels:null;
@@ -66,13 +66,19 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinut
   'New York Avenue corridor'];
  const namedRoads=guidePixels!==null&&Array.isArray(routeDetails?.namedRoads)?
   [...new Set(routeDetails.namedRoads.filter(v=>allowedNamedRoads.includes(v)))].slice(0,3):[];
+ const weather=['clear','rain','storm','snow','ice','fog'].includes(routeDetails?.weather)?
+  routeDetails.weather:null;
+ const weatherExtraMinutes=weather&&Number.isSafeInteger(routeDetails?.weatherExtraMinutes)&&
+  routeDetails.weatherExtraMinutes>=0&&routeDetails.weatherExtraMinutes<=120?
+  routeDetails.weatherExtraMinutes:null;
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
  if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
  S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode,miles:null,minutes:null,
-  guidePixels,routeType,accessPixels,turns,namedRoads,temporaryGameMinutes:gameMinutes,
+  guidePixels,routeType,accessPixels,turns,namedRoads,weather,weatherExtraMinutes,
+  temporaryGameMinutes:gameMinutes,
   departedAt,arrivedAt,
   calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
