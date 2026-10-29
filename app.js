@@ -3249,7 +3249,13 @@ function capitalTravelPath(fromId,toId){
  const points=window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
  // Two independently entered places may share the same provisional printed
  // anchor. They still require a short visit, not a 30-minute fallback.
- return points.length===1&&fromId!==toId?[points[0],{...points[0]}]:points;
+ if(points.length===1&&fromId!==toId){
+  const short=[points[0],{...points[0]}];
+  short.routeType=points.routeType||'provisional-street-network';
+  short.accessPixels=points.accessPixels??null;
+  return short;
+ }
+ return points;
 }
 // Rebuild route from the CURRENT in-memory pin placements on every interaction;
 // never cache journey distances across user edits, profiles or trips.
@@ -3276,7 +3282,7 @@ function renderCapitalTravelPreview(preferredId=null,dragging=false){
  });
  if(dragging&&estimate){
   const help=document.getElementById('titleMapHelp');
-  if(help)help.textContent='LIVE ROUTE · '+estimate.guidePixels+' px · walk '+
+  if(help)help.textContent='LIVE STREET ROUTE (approximate) · '+estimate.guidePixels+' px · walk '+
    estimate.minutes.walk+'m · horse '+estimate.minutes.horse+
    'm · carriage '+estimate.minutes.carriage+'m · confirm pin position to save';
  }
@@ -3304,8 +3310,11 @@ function renderCapitalTravelChoice(id){
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();return;
  }
  const minutes=length?.minutes?.[modeField.value]||30;
+ const roadName=points.routeType==='provisional-right-angle'?'unsurveyed fallback':
+  points.routeType==='provisional-street-access'?'approximate roadway, long entrance link':
+   'street-intersection route (approximate)';
  notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+minutes+
-  ' game minutes · real-world miles not yet verified.';
+  ' game minutes · '+roadName+' · real-world miles not yet verified.';
  renderCapitalTravelPreview(id);
 }
 function openTitleMapLocation(id){
@@ -3526,7 +3535,8 @@ async function travelFromTitleMap(event){
    return false;
   }
   return enterMapDestination(id,null,null,mode,minutes,{
-   guidePixels:measurement.guidePixels,routeType:'provisional-right-angle'
+   guidePixels:measurement.guidePixels,routeType:points.routeType||'provisional-right-angle',
+   accessPixels:Number.isSafeInteger(points.accessPixels)?points.accessPixels:null
   });
  }finally{
   capitalTravelBusy=false;
