@@ -153,6 +153,30 @@ function positionAt(points,fraction,width=2048,height=1159){
  }
  return {...points.at(-1)};
 }
+// Facing is measured from the same native image-pixel path as travel
+// progress, so the pawn's direction never changes merely from zooming.
+function headingAt(points,fraction,width=2048,height=1159){
+ if(!Array.isArray(points)||points.length<2||!Number.isFinite(fraction)||
+  !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return null;
+ const lengths=[],total=points.slice(1).reduce((acc,p,i)=>{
+  const a=points[i];
+  if(!a||!p||![a.x,a.y,p.x,p.y].every(Number.isFinite))return NaN;
+  const d=Math.hypot((p.x-a.x)*width,(p.y-a.y)*height);
+  lengths.push(d);return acc+d;
+ },0);
+ if(!Number.isFinite(total)||total<=.000001)return null;
+ let remaining=Math.min(1,Math.max(0,fraction))*total;
+ for(let i=0;i<lengths.length;i++){
+  if(lengths[i]<=.000001)continue;
+  if(remaining<lengths[i]||i===lengths.length-1){
+   const a=points[i],b=points[i+1];
+   const radians=Math.atan2((b.y-a.y)*height,(b.x-a.x)*width);
+   return radians*180/Math.PI+90;
+  }
+  remaining-=lengths[i];
+ }
+ return null;
+}
 function routePrefix(points,fraction,width=2048,height=1159){
  if(!Array.isArray(points)||!points.length||!Number.isFinite(fraction)||
   !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0||
@@ -194,11 +218,17 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':'3 9'});
  const completedLine=el('polyline',{fill:'none',stroke:'#a96f40','stroke-width':4,
   'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':'4 6'});
+ // Small copper direction wedge belongs only to the moving game piece.
+ // Unlike the old anchor dots, it never persists on the Washington map.
+ const facing=el('g',{'aria-hidden':'true'});
+ const wedge=el('polygon',{points:'0,-25 -5,-15 5,-15',fill:'#d7a663',
+  stroke:'#241c14','stroke-width':2});
+ facing.append(wedge);
  const outline=el('circle',{r:15,fill:'#241c14',stroke:'#f1d7a0','stroke-width':3});
  const token=el('text',{'text-anchor':'middle','dominant-baseline':'central','font-size':21,
   'font-weight':'bold',fill:'#ffe7b9'});
  token.textContent=spec.symbol;
- const group=el('g',{});group.append(outline,token);svg.append(routeLine,completedLine,group);
+ const group=el('g',{});group.append(facing,outline,token);svg.append(routeLine,completedLine,group);
  viewport.appendChild(svg);
  return new Promise(resolve=>{
   const state={svg,frame:null,resolve,started:null};active=state;
@@ -222,6 +252,8 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
    completedLine.setAttribute('points',traversed.map(p=>p.x+','+p.y).join(' '));
    group.setAttribute('transform','translate('+position.x+' '+position.y+')');
+   const angle=headingAt(points,progress);
+   if(angle!==null)facing.setAttribute('transform','rotate('+angle+')');
    if(typeof onProgress==='function'){
     try{onProgress(progress)}catch(error){console.warn('Capital Travel progress notice failed',error)}
    }
@@ -232,7 +264,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:8,modes:MODES,route,estimate,animationDuration,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:9,modes:MODES,route,estimate,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
