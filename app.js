@@ -1312,9 +1312,9 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteou
  recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous',token);
  // Only actual completed, authorized poker hands enter the character's
  // observed betting memory. Never store hole cards or hidden bot strategy.
- if(hands>0&&observed&&typeof observed==='object')
-  window.FE_POKER_MEMORY?.remember?.(S,token,circle,observed.patrons,
-   observed.player,hands);
+ if(hands>0&&observed&&typeof observed==='object'&&
+   window.FE_POKER_MEMORY?.remember?.(S,token,circle,observed.patrons,
+    observed.player,hands))save(true);
  // A real played card session with deliberately insulting conduct can create
  // an honor dispute. It does not force the player into a duel or invent one
  // when the poker window merely opened and closed without a hand.
