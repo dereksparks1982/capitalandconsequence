@@ -1302,6 +1302,18 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteou
  if(S.outcomeEvents.length>512)S.outcomeEvents.splice(0,S.outcomeEvents.length-512);
  window.updateCashHeader?.();
  recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous',token);
+ // A real played card session with deliberately insulting conduct can create
+ // an honor dispute. It does not force the player into a duel or invent one
+ // when the poker window merely opened and closed without a hand.
+ const challenge=window.FE_DUELS?.offer?.(S,{
+  sessionId:token,circle,conduct,hands,gameDate:S.gameDate
+ });
+ if(challenge?.status==='pending'){
+  S.notes.push({date:displayDate(),source:'card-room dispute',
+   text:challenge.opponent+' has issued a formal challenge. You may accept it at the same card room.'});
+  save(true);
+  window.FE_DUEL_UI?.refresh?.();
+ }
  return true;
 };
 function unresolvedPoker(){
@@ -2297,6 +2309,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('place reference',()=>renderPlaceReference(location));
   guardedRoomPanel('pastimes',()=>{setPastimeActivity('legal',null);setPastimeActivity('illicit',null)});
   guardedRoomPanel('local people',()=>renderCityRoomPeople(location));
+  guardedRoomPanel('formal challenge',()=>window.FE_DUEL_UI?.refresh?.());
   guardedRoomPanel('resident visitors',()=>window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('NPC visitors',()=>window.FE_NPC_AI?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('activities',()=>window.FE_VENUES?.renderRoomOpportunities?.(location.id));
@@ -2368,6 +2381,7 @@ function openCityRoom(locationId,roomId,options={}){
  return true;
 }
 function closeCityRoom(){
+ if(window.FE_DUEL_UI?.active)return;
  window.FE_NPC_CARD?.close?.();
  restoreLocalVenueActivity();
  const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}
@@ -2413,6 +2427,35 @@ function openSelectedTitleDevRoom(){
 }
 function initCityRoomUI(){
  const overlay=document.getElementById('cityRoomOverlay');if(!overlay)return;
+ // The duel UI is attached only to a real outstanding poker dispute at this
+ // location. It never creates a new contact or relocates the character.
+ window.FE_DUEL_UI?.bind?.({
+  getSave:()=>S,
+  getLocation:()=>currentCityLocation()?.locationId,
+  onSettle:(challenge,outcome,rounds)=>{
+   const pending=window.FE_DUELS?.pendingAt?.(S,currentCityLocation()?.locationId);
+   if(!pending||pending.id!==challenge.id||S.paused)return false;
+   const minutes=7+rounds*3,seconds=minutes*60;
+   if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds))return false;
+   let receipt=null;
+   try{receipt=window.FE_WASHINGTON_TIME.advance(S,seconds,'action','duel:'+challenge.id)}
+   catch(error){console.warn('Duel time could not be recorded',error);return false}
+   if(!receipt?.applied)return false;
+   const record=window.FE_DUELS.settle(S,challenge.id,outcome,{rounds,elapsedMinutes:minutes});
+   if(!record)return false;
+   if(outcome.action==='shoot')
+    window.FE_SKILLS?.practice?.(S,'marksmanship',{
+     event:'duel:'+challenge.id,source:'formal duel',difficulty:challenge.opponentSkill,amount:.35
+    });
+   if(!Array.isArray(S.notes))S.notes=[];
+   S.notes.push({date:S.gameDate,source:'formal duel',
+    text:'Challenge with '+record.opponent+': '+record.result+'. '+minutes+' minutes elapsed.'});
+   if(S.notes.length>500)S.notes.splice(0,S.notes.length-500);
+   save(true);renderWashington();
+   return true;
+  },
+  refresh:()=>{}
+ });
  const closePlayerRoom=()=>cityRoomSession.dev?closeCityRoom():returnCityRoomToMap();
  document.getElementById('cityRoomClose').onclick=closePlayerRoom;
  document.getElementById('cityRoomReturnMap').onclick=returnCityRoomToMap;
