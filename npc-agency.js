@@ -77,10 +77,19 @@
    social=bounded(social+Math.min(12,assists*3)-Math.min(16,disputes*4));
    risk=bounded(risk+Math.min(18,disputes*4));
   }
+  // Private food pressure draws from the resident's own condition and
+  // verified unconsumed receipts. Missing receipts are not evidence of theft,
+  // poverty or an invented meal, so only recorded hunger drives the pressure.
+  const hunger=Number.isFinite(agent.needs?.hunger)?agent.needs.hunger:25;
+  const provisions=Array.isArray(agent.householdReceipts?.provisions)?
+   agent.householdReceipts.provisions.filter(p=>!p.consumed).length:0;
+  const foodPressure=bounded(Math.max(0,hunger-55)*(provisions?1:1.5));
+  social=bounded(social-Math.round(foodPressure*.20));
   const finance=agent.economy?Math.round((agent.economy.balanceCents<600?(600-agent.economy.balanceCents)/8:0)+(agent.economy.debtCents||0)/30):0;
   return Object.freeze({financialStrain:bounded(finance),workPressure:bounded(workPressure),risk:bounded(risk),
    social:bounded(social),rumors,firstHand:bounded(firstHand*10),
    fatigue:bounded(100-(Number.isFinite(+agent.energy)?+agent.energy:80)),
+   foodPressure,
    weather:environment?.weather||null,daylight:environment?.sunlight??null,eclipse:environment?.eclipse||null});
  }
  function choose(def,agent,situation,period='early-business'){
