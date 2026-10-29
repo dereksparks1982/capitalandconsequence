@@ -2310,6 +2310,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('pastimes',()=>{setPastimeActivity('legal',null);setPastimeActivity('illicit',null)});
   guardedRoomPanel('local people',()=>renderCityRoomPeople(location));
   guardedRoomPanel('formal challenge',()=>window.FE_DUEL_UI?.refresh?.());
+  guardedRoomPanel('duel aftermath',()=>window.FE_DUEL_AFTERCARE_UI?.render?.());
   guardedRoomPanel('resident visitors',()=>window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('NPC visitors',()=>window.FE_NPC_AI?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('activities',()=>window.FE_VENUES?.renderRoomOpportunities?.(location.id));
@@ -2443,6 +2444,7 @@ function initCityRoomUI(){
    if(!receipt?.applied)return false;
    const record=window.FE_DUELS.settle(S,challenge.id,outcome,{rounds,elapsedMinutes:minutes});
    if(!record)return false;
+   window.FE_DUEL_AFTERMATH?.record?.(S,record);
    // Social standing responds to the result, separate from the one-time
    // game-clock charge. Duels can disgrace or impress the city.
    const reputationShift=outcome.result==='opponent-killed'?-5:
@@ -2464,6 +2466,35 @@ function initCityRoomUI(){
    return true;
   },
   refresh:()=>{}
+ });
+ // Hospital treatment and police statements require a genuine player visit.
+ window.FE_DUEL_AFTERCARE_UI?.bind?.({
+  getSave:()=>S,
+  getLocation:()=>currentCityLocation()?.locationId,
+  onAction:(duelId,locationId)=>{
+   if(S.paused||!S.gameDate||!['governmentHospital','metropolitanPolice'].includes(locationId)||
+      currentCityLocation()?.locationId!==locationId)return false;
+   const info=window.FE_DUEL_AFTERMATH?.visible?.(S,locationId,S.gameDate);
+   const target=locationId==='governmentHospital'?info?.injury:info?.reportable;
+   if(!target||target.duelId!==duelId)return false;
+   const minutes=locationId==='governmentHospital'?20:10;
+   if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,minutes*60))return false;
+   const receipt=window.FE_WASHINGTON_TIME.advance(S,minutes*60,'action',
+      (locationId==='governmentHospital'?'duel-treatment:':'duel-report:')+duelId);
+   if(!receipt?.applied)return false;
+   const result=locationId==='governmentHospital'?
+    window.FE_DUEL_AFTERMATH.treat(S,duelId,S.gameDate):
+    window.FE_DUEL_AFTERMATH.report(S,duelId,S.gameDate);
+   if(!result)return false;
+   if(!Array.isArray(S.notes))S.notes=[];
+   S.notes.push({date:S.gameDate,source:'duel aftermath',
+    text:locationId==='governmentHospital'?
+     'Received treatment for an injury from a formal duel.':
+     'Gave police a personal account of a formal duel. No independent witness was established.'});
+   save(true);renderWashington();
+   window.FE_DUEL_AFTERCARE_UI?.render?.();
+   return true;
+  }
  });
  const closePlayerRoom=()=>cityRoomSession.dev?closeCityRoom():returnCityRoomToMap();
  document.getElementById('cityRoomClose').onclick=closePlayerRoom;
