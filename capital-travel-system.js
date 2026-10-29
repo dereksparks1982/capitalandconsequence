@@ -63,6 +63,12 @@ function animationDuration(guidePixels,mode='walk'){
 }
 // Preview the saved Washington calendar without advancing it. Travel is
 // still charged exactly once by the authoritative journey ledger on arrival.
+function remainingMinutes(totalMinutes,fraction){
+ if(!Number.isSafeInteger(totalMinutes)||totalMinutes<0||totalMinutes>1440||
+  !Number.isFinite(fraction))return null;
+ const progress=Math.max(0,Math.min(1,fraction));
+ return Math.max(0,Math.ceil(totalMinutes*(1-progress)-1e-9));
+}
 function arrivalEstimate(iso,minutes){
  if(typeof iso!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(iso)||
   !Number.isSafeInteger(minutes)||minutes<0||minutes>1440)return null;
@@ -279,7 +285,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:10,modes:MODES,route,estimate,arrivalEstimate,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:11,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
