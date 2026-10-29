@@ -1287,6 +1287,10 @@ window.FE_POKER_AUTHORIZE=(token,circle)=>{
  if(!p||p.claimed||p.profileId!==activeProfileId()||p.circle!==circle||p.gameDate!==S.gameDate)return false;
  p.claimed=true;save(true);return true;
 };
+window.FE_POKER_OPPONENT_STATUS=(circle,name)=>{
+ if(!['working','middle','elite'].includes(circle)||typeof name!=='string')return 'unharmed';
+ return window.FE_DUEL_AFTERMATH?.opponentStatus?.(S,name,S.gameDate)||'unharmed';
+};
 window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteous')=>{
  const state=pokerSessions(),entry=state.pending.find(p=>p.id===token);
  if(!entry||!entry.claimed||entry.profileId!==activeProfileId()||entry.circle!==circle||state.settled.some(p=>p.id===token))return false;
