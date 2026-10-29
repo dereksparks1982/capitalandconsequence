@@ -25,7 +25,8 @@
   // reassigned to a random room after the bet was actually settled.
   // Ordinary daytime work and market duty are not random broker visits.
   // Off-duty leisure has personality-dependent odds and real room access.
-  const sociability=Math.max(0,Math.min(100,+context.sociability||50));
+  const sociability=Number.isFinite(Number(context.sociability))&&context.sociability!==null&&context.sociability!==''?
+   Math.max(0,Math.min(100,Number(context.sociability))):50;
   const chance=Math.round(6+sociability*.16);
   const leisure=choices.filter(x=>['social','theatre','sport','culture','park'].includes(x.category));
   const offDuty=context.slot>=2&&!working&&!context.priorityDestination;
