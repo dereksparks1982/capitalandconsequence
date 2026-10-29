@@ -36,6 +36,9 @@ assert.equal(home.history[0].good,'bread');
 assert.equal(home.history[0].category,'food');
 assert.equal(home.history[1].category,'household-maintenance');
 assert.equal(home.lastFoodDate,save.gameDate);
+assert.equal(home.purchasedGoods.bread,1);
+assert.equal(home.purchasedGoods.soap,1);
+assert.equal(home.lastPurchaseDate,save.gameDate);
 assert.equal(home.lastPurchaseId,player.receipt.id,'Unrelated sales advance observed global receipt horizon');
 assert.equal(receipts.sync(save,'liWen').added,1);
 assert.equal(save.npcSimulation.agents.liWen.householdReceipts.foodPurchases,1);
@@ -59,6 +62,7 @@ const secondBread=market.purchase(save,'chenMei','bread',{date:save.gameDate,tok
 assert.equal(secondBread.ok,true);
 assert.equal(receipts.sync(save,'chenMei').added,1);
 assert.equal(home.foodPurchases,2);
+assert.equal(home.purchasedGoods.bread,2);
 const formerly=home.foodPurchases;
 const forged={id:999,date:save.gameDate,buyer:'chenMei',good:'bread',units:1,cents:9999,vendor:'bakery'};
 save.washingtonCommerce.purchases.push(forged);
