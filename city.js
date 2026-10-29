@@ -214,7 +214,8 @@
    rooms:[
     {id:'reception',name:'Reception and Inquiry Desk',description:'Public visitors may request information and ask the receiving attendant about hospital procedures. No confidential patient record is accessible here.'},
     {id:'patient-ward',name:'Patient Ward',restricted:true,description:'A patient-care area. Entry requires specific authorization; clinical and patient information remain confidential.'},
-    {id:'superintendent-office',name:'Superintendent’s Office',restricted:true,description:'Restricted institutional management offices, not available to an uninvited visitor.'}
+    {id:'superintendent-office',name:'Superintendent’s Office',restricted:true,description:'Restricted institutional management offices, not available to an uninvited visitor.'},
+    {id:'morgue',name:'Hospital Morgue',restricted:true,description:'Registered remains are examined by authorized medical staff. Entry and reports require permission; ordinary visitors cannot inspect bodies.'}
    ]
   },
   {"id":"potomacKennelTrack","availableFrom":"1919-01-01","name":"Potomac Kennel Track","area":"Washington region · exact site pending","category":"sport","description":"Dog-racing venue with a placeholder room; site under historical review.","map":null,"defaultRoom":"track-office","rooms":[{"id":"track-office","name":"Kennel Track","description":"An undecorated dog-racing location."}]},
