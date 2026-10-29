@@ -119,7 +119,8 @@ function positionAt(points,fraction,width=2048,height=1159){
   !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0||
   points.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))return null;
  const progress=Math.min(1,Math.max(0,fraction));
- if(points.length===1)return {x:points[0].x,y:points[0].y};
+ if(progress===0||points.length===1)return {x:points[0].x,y:points[0].y};
+ if(progress===1)return {...points.at(-1)};
  const distances=[],total=points.slice(1).reduce((sum,p,i)=>{
   const prev=points[i],d=Math.hypot((p.x-prev.x)*width,(p.y-prev.y)*height);
   distances.push(d);return sum+d;
