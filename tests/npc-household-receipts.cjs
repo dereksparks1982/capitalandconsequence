@@ -63,6 +63,26 @@ assert.equal(secondBread.ok,true);
 assert.equal(receipts.sync(save,'chenMei').added,1);
 assert.equal(home.foodPurchases,2);
 assert.equal(home.purchasedGoods.bread,2);
+assert.equal(receipts.available(save.npcSimulation.agents.chenMei),2,
+ 'Two actual bread purchases are available as provisions');
+const meal1=receipts.consume(save,'chenMei','1878-01-12|lunch','1878-01-12');
+assert.equal(meal1.ok,true);
+assert.equal(meal1.good,'bread');
+assert.equal(receipts.available(save.npcSimulation.agents.chenMei),1);
+assert.equal(receipts.consume(save,'chenMei','1878-01-12|lunch','1878-01-12').ok,false,
+ 'One meal cannot consume the same or another purchase twice');
+assert.equal(receipts.consume(save,'chenMei','1878-01-11|supper','1878-01-11').ok,false,
+ 'Cannot consume food before its receipt date');
+const meal2=receipts.consume(save,'chenMei','1878-01-12|supper','1878-01-12');
+assert.equal(meal2.ok,true);
+assert.equal(receipts.available(save.npcSimulation.agents.chenMei),0);
+assert.equal(receipts.consume(save,'chenMei','1878-01-13|breakfast','1878-01-13').ok,false,
+ 'No free meal is minted after provisions run out');
+const mealSnapshot=JSON.stringify(save.npcSimulation.agents.chenMei.householdReceipts);
+const copy=JSON.parse(JSON.stringify(save));
+assert.equal(receipts.consume(copy,'chenMei','1878-01-12|lunch','1878-01-12').ok,false);
+assert.equal(JSON.stringify(save.npcSimulation.agents.chenMei.householdReceipts),mealSnapshot,
+ 'Consumption cannot change the original during a save replay');
 const formerly=home.foodPurchases;
 const forged={id:999,date:save.gameDate,buyer:'chenMei',good:'bread',units:1,cents:9999,vendor:'bakery'};
 save.washingtonCommerce.purchases.push(forged);
