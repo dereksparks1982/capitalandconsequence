@@ -36,6 +36,12 @@ assert.equal((markup(0).match(/class="p-card[^"]* back"/g)||[]).length,0,'Player
 for(const i of [1,2,3])
  assert.equal((markup(i).match(/class="p-card[^"]* back"/g)||[]).length,2,
   'Opponents must be concealed before showdown');
+for(const i of [1,2,3]){
+ assert.equal(markup(i).includes('p-card red back'),false,
+  'Concealed suits must not leak through the card face CSS class');
+ assert.equal(markup(i).includes('<i>'),false,
+  'Concealed suits must not leak through displayed card markup');
+}
 win.__POKER_TEST.render(true);
 for(const i of [1,3])
  assert.equal((markup(i).match(/class="p-card[^"]* back"/g)||[]).length,0,
