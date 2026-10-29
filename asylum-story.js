@@ -34,13 +34,19 @@ const ACTIONS=Object.freeze({
   text:'Filed a factual memorandum summarizing personally observed details. No accusation or patient diagnosis was asserted.'},
  policeMemo:{label:'File a preliminary police inquiry memo · 10 minutes',seconds:600,location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'police station preliminary memorandum',
-  text:'Submitted a preliminary report with sources and the coroner’s observations. The case remains unresolved and no arrest was requested.'}
+  text:'Submitted a preliminary report with sources and the coroner’s observations. The case remains unresolved and no arrest was requested.'},
+ wardRoster:{label:"Consult ward staffing book · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'orderly-station',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
+ visitorRegister:{label:"Consult visitor sign-in book · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ bellStatement:{label:"Speak to the duty porter · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ passageMark:{label:"Examine the passage threshold · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'patient-ward',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
+ clothingAccount:{label:"Ask about the corridor figure · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
  if(!root.FE_SHARED_WORLD?.valid?.(world,world?.id))return {ok:false};
  const at=now(world);if(!at||at<TIME)return {ok:true,status:'not-due'};
  if(!world.incidents?.[CASE_ID])root.FE_ASYLUM_INCIDENT.start(world,{id:CASE_ID,at:TIME,victimId:'unnamed-asylum-resident'});
+ root.FE_ASYLUM_EVIDENCE?.ensure?.(world,CASE_ID);
  if(at>=ARRIVAL&&!world.morgue?.bodies?.[BODY_ID])
   root.FE_MORGUE_REGISTRY.admit(world,{bodyId:BODY_ID,incidentId:CASE_ID,arrivedAt:ARRIVAL});
  if(at>=EXAM&&!world.morgue?.reports?.[BODY_ID]){
@@ -56,6 +62,7 @@ function permission(save){return save?.casePermissions?.[CASE_ID]||null}
 function seen(save,id){return !!save?.incidentObservations?.records?.some(e=>e.incidentId===CASE_ID&&e.eventId==='asylum:'+id)}
 function preview(save,world,id,where){
  const action=ACTIONS[id],record=visible(world);
+ const scene=root.FE_ASYLUM_EVIDENCE?.EXHIBITS?.[id]||null;
  if(!record||!action)return {ok:false,reason:'No verified inquiry is available'};
  if(!action.routes.includes(save?.characterRoute))return {ok:false,reason:'Not available to this career'};
  if(save.paused||save.phase==='report')return {ok:false,reason:'The game clock is not active'};
@@ -87,6 +94,13 @@ function preview(save,world,id,where){
   return {ok:false,reason:'A sourced reception account, authorized report and referral are required'};
  if(id==='policeMemo'&&save.patrolDuty?.onDuty)
   return {ok:false,reason:'Outside-beat inquiry must be filed during your own off-duty time'};
+ if(scene){
+  const observed=root.FE_ASYLUM_EVIDENCE?.describe?.(world,id,CASE_ID);
+  if(!observed)return {ok:false,reason:'Scene evidence is not available'};
+  if(iso<observed.at)return {ok:false,reason:'This evidence has not yet appeared'};
+  if(save.characterRoute==='investigator'&&save.patrolDuty?.onDuty)
+   return {ok:false,reason:'This work is outside your assigned Hillsdale patrol'};
+ }
 
  if(!root.FE_WASHINGTON_TIME?.canSpend?.(save,action.seconds) ||
    (save.phase==='day'&&root.FE_WASHINGTON_TIME.phaseSecondsRemaining(save)<=action.seconds))
@@ -97,13 +111,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const result=preview(save,world,id,where);if(!result.ok)return result;
  if(spentSeconds!==result.seconds)return {ok:false,reason:'The full action duration has not been charged'};
  const action=result.action;
+ const sceneObservation=root.FE_ASYLUM_EVIDENCE?.EXHIBITS?.[id]?
+  root.FE_ASYLUM_EVIDENCE.describe(world,id,CASE_ID):null;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:action.source,description:action.text,at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate});
+  source:sceneObservation?.source||action.source,
+  description:sceneObservation?.description||action.text,
+  at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate});
  if(!record.ok)return record;
  if(id==='medical'){
   const allowed=root.FE_MORGUE_REGISTRY.requestReport(world,BODY_ID,{
@@ -128,7 +146,8 @@ function apply(save,world,id,where,{spentSeconds}={}){
   }
  }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
-  source:action.source,text:action.text});
+  source:sceneObservation?.source||action.source,
+  text:sceneObservation?.description||action.text});
  return {ok:true,actionId:id,observation:record.observation||null};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
