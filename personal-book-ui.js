@@ -44,6 +44,8 @@ function create(){
   if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
   if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();turn(1)}
   if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();turn(-1)}
+  if(e.key==='Home'){e.preventDefault();jump(0)}
+  if(e.key==='End'){e.preventDefault();jump(pages.length-1)}
  });
  return overlay;
 }
