@@ -1810,3 +1810,7 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .p-seat.is-turn .poker-portrait{box-shadow:inset 0 0 0 2px #20170f,
  0 0 0 2px #d6b77c,0 0 12px #e7c07899}
 .p-seat.is-turn>b{color:#f2d5a0;text-decoration:underline;text-underline-offset:4px}
+
+/* A remembered public betting pattern, never hidden hole-card knowledge. */
+.p-seat .poker-table-read{display:block;margin:.15rem auto 0;max-width:130px;
+ font:italic .7rem/1.25 Georgia,serif;color:#e0c495;opacity:.9}
