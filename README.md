@@ -8,7 +8,7 @@ Choose from different lives, including a businessman building **Federal Electric
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
 
-**Development status:** Beta. Features and gameplay systems are still being developed.
+**Development status:** Beta. The `v0.7.24-dev` working branch includes experimental save recovery, shared Washington history and preliminary asylum inquiries. These features require local testing and owner acceptance.
 
 ## Legal: All Rights Reserved
 
