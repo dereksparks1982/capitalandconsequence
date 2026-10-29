@@ -1,0 +1,10 @@
+# Capital & Consequence v0.7.11 Beta | Better Road Entrance Choices
+**Source checkpoint, 29 October 2026. Not an accepted game release.**
+
+The Capital Travel System now compares **up to four nearby viable modeled road segments at each endpoint** before selecting its shortest full door-to-door itinerary. Previously, it snapped each location to only its nearest street, sometimes taking an unnecessary detour. The new choice minimizes original-image pixel distance: from the originating pin to its road, along connected intersections and modeled diagonal avenues, and back from the road to the destination pin. Provisional restricted-ground connectors remain excluded. Alternative entrances are considered only within a 95-guide-pixel envelope of the nearest eligible one, avoiding long, unrealistic entrance walks.
+
+**Observed comparison:** Among 195 representative directed trips tested against the previous v0.7.10 routing engine, 81 became shorter, 114 were unchanged, and none became longer. An independent pairwise regression on all **1,560 directed journeys between 40 registered locations** found no missing routes or forward/reverse distance mismatches. `tests/capital-street-door-to-door.cjs` locks in three concrete optimized journeys and verifies that changing the itinerary never moves registered pin coordinates. Existing `tests/capital-travel-all-pairs.cjs` remains the full offline regression.
+
+**Limitations:** The 1938 Washington map artwork remains **unaltered**, and original pin defaults stay in place. The street graph is an approximation, not a surveyed road network or guarantee against visually crossing every illustrated building. Real-world distances are unverified and remain null. Guide pixels only provide provisional game-time scaling.
+
+**Verification:** Targeted JS tests and pairwise route calculations were run directly against current GitHub source in an isolated V8 environment. Full offline Node suite and Ubuntu Electron gameplay remain untested here. No GitHub Actions, agents, SSH, installer or downloadable executable ZIP. New-game autosave still applies; no old-save migration required.
