@@ -92,7 +92,10 @@ function nearestEdge(p){
   const dx=(b.x-a.x)*IMG.w,dy=(b.y-a.y)*IMG.h;
   const t=Math.max(0,Math.min(1,(((p.x-a.x)*IMG.w)*dx+((p.y-a.y)*IMG.h)*dy)/(dx*dx+dy*dy)));
   const at={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
-  const distance=pixel(at,p);
+  // Entrances use an orthogonal walk to the modeled road. Rank links
+  // by their ACTUAL visible Manhattan length, not the misleading
+  // straight-line Euclidean distance to that road segment.
+  const distance=Math.abs((at.x-p.x)*IMG.w)+Math.abs((at.y-p.y)*IMG.h);
   // An ordinary address should not connect to a road by walking straight
   // across a restricted landmark. The landmark's OWN entrance may cross its
   // approximate footprint because the pin represents the visited building.
@@ -118,8 +121,9 @@ function access(from,point){
  if(pixel(from,point)<.05)return [];
  // Orthogonal doorstep access: favor the axis with the smaller deviation,
  // never a long diagonal directly from a building to the street graph.
- const corner={x:Math.abs(from.x-point.x)<Math.abs(from.y-point.y)?point.x:from.x,
-  y:Math.abs(from.x-point.x)<Math.abs(from.y-point.y)?from.y:point.y};
+ const sideways=Math.abs((from.x-point.x)*IMG.w);
+ const vertical=Math.abs((from.y-point.y)*IMG.h);
+ const corner=sideways<vertical?{x:point.x,y:from.y}:{x:from.x,y:point.y};
  return compact([corner,point]);
 }
 // Road graph is fixed; moving a pin changes only its road access points.
