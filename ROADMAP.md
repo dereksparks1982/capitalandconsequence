@@ -1,3 +1,13 @@
+## October 28, 2026 · stacked source checkpoint v0.6.93-dev (owner-approved build continuation)
+- [x] Player-visible provisional inter-location travel and room movement remain unchanged; the approved 40-pin map and artwork are immutable.
+- [x] NPC calendar transitions can create thirty-minute saved in-transit journeys rather than always switching location instantly.
+- [x] In-transit residents are absent from room-based conversation, rumors and meetings, while arrivals use only the existing player-controlled world clock.
+- [x] A pending trip can complete within the same routine period; no new wage, encounter or independent NPC clock is created merely by finishing arrival.
+- [x] Arrival records preserve last sixteen completed trips and support sequential destinations across a long time jump.
+- [x] Dedicated travel-state regressions added. No current full offline Node suite or Ubuntu Electron playthrough has been claimed.
+- [ ] Travel durations remain provisional, not measured routes. Future: historical route network, intermediate stops, true pathfinding, overnight itineraries and deeper economic timing.
+- [ ] Continue stacked builds before the owner's next installation/test request; use the existing local Python changed-files patch workflow.
+
 - [x] **October 28 final owner map correction:** Pin **#12 Home** (not “Our Home”) is **black for Charlie**, identical to Federal Electric's black owned pin. Its original x/y and `home` ID remain unchanged. Added regression assertion and refreshed JS cache links.
 [Current handoff: v0.6.90-dev, 28 Oct 2026](HANDOFF-2026-10-28-v0.6.90-dev.md) · [Canonical owner decisions](DECISIONS.md) · [Character Codex](CODEX-INDEX.md). **Read newest headings first: older completed source slices are archival and may describe superseded UI behaviors.**
 
