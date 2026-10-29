@@ -2386,6 +2386,7 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
   guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
+  guardedRoomPanel('asylum inquiry',()=>window.FE_ASYLUM_CASE_UI?.refresh?.());
   guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
   guardedRoomPanel('developer controls',()=>updateTitleDevCityControls());
  }catch(err){
@@ -2428,6 +2429,7 @@ function openCityRoom(locationId,roomId,options={}){
   }
   guardedRoomPanel('visit event',()=>window.FE_MAP_LEADS?.visit?.(S,location.id));
   guardedRoomPanel('arrival autosave',()=>save(true));
+  guardedRoomPanel('asylum inquiry refresh',()=>window.FE_ASYLUM_CASE_UI?.refresh?.());
   guardedRoomPanel('NPC sync',()=>window.FE_NPC_AI?.syncClock?.());
   guardedRoomPanel('encounter',()=>{
    const encounter=document.getElementById('cityRoomEncounter');

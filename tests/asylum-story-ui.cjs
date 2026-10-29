@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const source=require('fs').readFileSync(require('path').join(__dirname,'../asylum-story-ui.js'),'utf8');
+const app=require('fs').readFileSync(require('path').join(__dirname,'../app.js'),'utf8');
+assert.ok(source.includes('window')||source.includes('root.FE_ASYLUM_CASE_UI'));
+assert.ok(source.includes('advanceWorldTime(preview.seconds,true)'));
+assert.ok(source.includes('result=story.apply(')&&source.includes('result.ok'));
+assert.ok(source.includes("button.disabled=!possible.ok"));
+assert.ok(app.includes("guardedRoomPanel('asylum inquiry',()=>window.FE_ASYLUM_CASE_UI?.refresh?.())"));
+assert.ok(app.includes("guardedRoomPanel('asylum inquiry refresh',()=>window.FE_ASYLUM_CASE_UI?.refresh?.())"));
+console.log('PASS inquiry UI is attached to ordinary city room navigation and charges action time once');

@@ -56,10 +56,12 @@ function preview(save,world,id,where){
  if(where?.locationId!==action.location||where?.roomId!==action.room)return {ok:false,reason:'Visit the named room to do this'};
  if(where.dev)return {ok:false,reason:'Developer rooms cannot produce case evidence'};
  if(seen(save,id))return {ok:false,reason:'This observation is already recorded'};
+ if((id==='wardRecord'||id==='wardCorridor')&&save.phase!=='day')
+  return {ok:false,reason:'Regular ward rounds have ended for the day'};
  const iso=root.FE_WASHINGTON_TIME?.now?.(save)?.iso;
  if(!iso||iso<record.at)return {ok:false,reason:'The incident has not occurred yet'};
  const minute=+(iso.slice(11,13))*60+(+iso.slice(14,16));
- if(['notice','reception','stationMemo','medical'].includes(id)&&(minute<8*60||minute>=17*60))
+ if(['notice','reception','stationMemo','medical'].includes(id)&&(minute<8*60||minute*60+(save.worldCalendarRemainder||0)+action.seconds>=17*3600))
   return {ok:false,reason:'Reception and station staff are available between 8 AM and 5 PM'};
  if(id==='stationMemo'&&(+save?.patrolDuty?.reportsFiled||0)<2)
   return {ok:false,reason:'Your sergeant has not yet assigned you case assistance. First file two ordinary patrol reports'};
