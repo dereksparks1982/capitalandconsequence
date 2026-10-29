@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.96-dev (28 October 2026)
+## Current development checkpoint: v0.6.97-dev (28 October 2026)
+
+**Stacked development build 7, resident shopping integration:** Residents with real hunger and no currently unconsumed paid food may purchase groceries with their own money while genuinely present at an established Chinatown or Hillsdale market activity. Purchases use the existing finite shared stock, credited merchant tills, and unique saved transaction tokens, then flow into the established household provision records. Travel, absence, poor funds, inadequate hunger or a non-market location cannot create a sale. A dedicated offline source regression checks affordability, sold-out substitutions, physical presence and replay. This does not yet simulate arbitrary journeys to a grocery store or invent a new shop or historical address. Full Node suite and Ubuntu playthrough remain pending. The original map artwork, all 40 pins and UI geometry stay unchanged.
+
+### Previous v0.6.96-dev checkpoint (28 October 2026)
 
 **Stacked multi-system NPC build:** Paid market receipts now create individual edible provisions, which residents can consume once during a verified present meal routine. No off-site or travelling meals, duplicate grocery charges, or free food when stock runs out. Paid meals modestly affect hunger and mood, record confirmed meals in personal needs/daybook state, and leave proof in bounded receipt-backed meal history. Individual food pressure now influences NPC social planning without inventing groceries or earnings. Targeted household and NPC agency source regressions passed in a V8 test harness; full Node QA and a Linux Electron playthrough are still pending. No Washington map/UI modifications, no installation ZIP.
 
