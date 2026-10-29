@@ -465,6 +465,12 @@
      w.lastObservedMinute=S.worldCalendar.worldMinute;
      if(!arrived)return false;
     }else{
+     // An NPC may complete a 30-minute journey exactly when the player's
+     // clock enters a new schedule period. Resolve the saved destination
+     // FIRST, including any paid arrival-time errand, before issuing new
+     // activity intentions. Otherwise the new routine silently cancels a
+     // real arrival and its market receipt.
+     finishJourneys(w,S.worldCalendar.worldMinute);
      calendarOnce(w,c,key);w.lastCalendarSlot=key;
     }
     w.lastObservedMinute=S.worldCalendar.worldMinute;
