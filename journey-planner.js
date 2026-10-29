@@ -29,7 +29,7 @@ function plan(from,to,mode='walk'){
 function notice(from,to){
  const status=plan(from,to,'walk').status;
  if(status==='invalid')return 'Already here or no valid destination.';
- return 'Provisional travel: 30 minutes walking, 20 by horse, or 24 by carriage when the actual animal and carriage are present. Room moves cost 1 minute. Street routes and distances are not yet surveyed.';
+ return 'Provisional travel: 30 in-game minutes walking, 20 by horse, or 24 by carriage when the actual animal and carriage are present. Room moves cost 1 in-game minute. Street routes and distances are not yet surveyed.';
 }
 // Called as part of the same autosave as an actual player location change.
 // It does not imply measured mileage or a transport mode; only location changes
