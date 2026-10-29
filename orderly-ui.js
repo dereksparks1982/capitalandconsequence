@@ -41,6 +41,12 @@
   const result=kind==='assign'?duty.assign(S,{...pos,date:S.gameDate,profileId:activeProfileId(),spentSeconds:spent}):
    kind==='attend'?duty.attend(S,{...pos,choiceId,spentSeconds:spent}):
    duty.file(S,{...pos,spentSeconds:spent});
+  if(result.ok){
+   window.FE_MISSIONS?.syncWard?.(S,kind,result);
+   if(kind==='file'&&result.log)
+    window.FE_LIFE_HISTORY?.record?.(S,{id:'ward:'+result.log.id+':file',
+     date:result.log.date,source:'District Asylum duty',text:result.log.result});
+  }
   if(result.ok&&kind==='file'&&Array.isArray(S.notes)){
    S.notes.push({date:S.gameDate,source:'asylum orderly duty',text:result.log.id+' · '+result.log.result});
    if(S.notes.length>320)S.notes.shift();
