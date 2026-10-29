@@ -8,6 +8,7 @@
  const market=typeof module==='object'&&module.exports?require('./washington-commerce.js'):root.FE_WASHINGTON_COMMERCE;
  const FOOD=Object.freeze(new Set(['bread','milk','eggs','bacon','stew-beef','potatoes',
   'onions','beans-grains','produce','tea-sugar','seasoning']));
+ const MEAL_FOOD=Object.freeze(new Set(['bread','milk','eggs','bacon','stew-beef','potatoes','beans-grains','produce']));
  const MAINTENANCE=Object.freeze(new Set(['soap','lamp-fuel','cobbler','clothing']));
  const LIMIT=32;
  function ensure(agent){
@@ -57,7 +58,7 @@
    state.spentCents+=receipt.cents;
    state.purchasedGoods[receipt.good]=(Number.isSafeInteger(state.purchasedGoods[receipt.good])?state.purchasedGoods[receipt.good]:0)+1;
    state.lastPurchaseDate=receipt.date;
-   if(category==='food')state.provisions.push({receiptId:receipt.id,good:receipt.good,
+   if(MEAL_FOOD.has(receipt.good))state.provisions.push({receiptId:receipt.id,good:receipt.good,
     bought:receipt.date,consumed:false});
    added++;
   }
@@ -73,13 +74,26 @@
   const actor=save?.npcSimulation?.agents?.[id];
   if(!actor)return {ok:false,reason:'unknown-resident'};
   const state=ensure(actor);
-  if(state.consumption.some(r=>r.key===key))return {ok:false,reason:'already-settled'};
+  if(state.consumption.some(r=>r.key===key)||state.provisions.some(r=>r.consumedKey===key))
+   return {ok:false,reason:'already-settled'};
   const item=state.provisions.find(r=>!r.consumed&&r.bought<=date);
   if(!item)return {ok:false,reason:'no-paid-provisions'};
-  item.consumed=true;
+  item.consumed=true;item.consumedKey=key;
+  // Paid food supplies a small extra benefit beyond the ordinary scheduled
+  // meal/routine model; no invented purchase and no money changes.
+  if(actor.needs?.version===1){
+   if(Number.isFinite(actor.needs.hunger))actor.needs.hunger=Math.max(0,actor.needs.hunger-8);
+   if(Number.isFinite(actor.needs.mood))actor.needs.mood=Math.min(100,actor.needs.mood+1);
+  }
   const result={key,date,good:item.good,receiptId:item.receiptId};
   state.consumption.push(result);
   if(state.consumption.length>32)state.consumption.splice(0,state.consumption.length-32);
+  // Retain unsettled provisions and bounded evidence for completed meals.
+  const used=state.provisions.filter(r=>r.consumed);
+  if(used.length>64){
+   const discard=new Set(used.slice(0,used.length-64).map(r=>r.receiptId));
+   state.provisions=state.provisions.filter(r=>!r.consumed||!discard.has(r.receiptId));
+  }
   state.lastMealKey=key;
   return {ok:true,...result};
  }
