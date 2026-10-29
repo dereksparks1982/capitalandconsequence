@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.95-dev (28 October 2026)
+## Current development checkpoint: v0.6.96-dev (28 October 2026)
+
+**Stacked multi-system NPC build:** Paid market receipts now create individual edible provisions, which residents can consume once during a verified present meal routine. No off-site or travelling meals, duplicate grocery charges, or free food when stock runs out. Paid meals modestly affect hunger and mood, record confirmed meals in personal needs/daybook state, and leave proof in bounded receipt-backed meal history. Individual food pressure now influences NPC social planning without inventing groceries or earnings. Targeted household and NPC agency source regressions passed in a V8 test harness; full Node QA and a Linux Electron playthrough are still pending. No Washington map/UI modifications, no installation ZIP.
+
+[Development notes for v0.6.96](docs/RELEASE-NOTES-v0.6.96-dev.md).
+
+### Previous v0.6.95-dev checkpoint (28 October 2026)
 
 **Stacked development build 5, household purchase provenance:** NPCs now retain a save-backed per-good purchase tally and most recent receipt date alongside the existing bounded household ledger. These are evidence of *paid acquisitions*, not proof of food consumption, stored inventory, wealth, or an independently invented shopping trip. The existing buyer-specific receipt validation, no-duplicate accounting and separation of personal/company money remain in place. Regression assertions now cover the itemized history, repeat processing and save reload. No map, room geometry or story canon was changed. This source checkpoint does not claim a full Node suite or Linux Electron acceptance.
 
