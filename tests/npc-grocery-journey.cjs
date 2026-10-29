@@ -29,4 +29,10 @@ assert.match(ai,/agent\.economy\.balanceCents>=5/,'Trip requires buyer funds');
 assert.match(ai,/shopAtObservedMarket\(def,a,date,'arrival\|'/,
  'Arrival resolves real purchase');
 assert.match(ai,/agent\.status!=='present'/,'No purchase during transit');
+assert.match(ai,/returnErrand=\{from:j\.to,to:j\.from,purchaseId:receipt\.id\}/,
+ 'Successful arrival purchases record the known origin for return travel');
+assert.match(ai,/agent\.returnErrand\?\.from==='oldChinatown'/,
+ 'Return only during an ordinary personal period');
+assert.match(ai,/j\.to===a\.returnErrand\.to\)a\.returnErrand=null/,
+ 'Completed return clears the saved errand');
 console.log('PASS goal-directed grocery journey, duty priority, and paid arrival gate');
