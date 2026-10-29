@@ -1,0 +1,45 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const code=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
+const begin=code.indexOf(' function recordNpcArrival('),end=code.indexOf(' function stepOnce(',begin);
+assert.ok(begin>=0&&end>begin,'Production journey state functions must exist');
+const simulated={autonomous:()=>[{id:'person'}],w:{agents:{person:{locationId:'factory',roomId:'floor'}}}};
+const api=vm.runInNewContext('(function(){'+code.slice(begin,end)+
+ 'return {journeyArrival,finishJourneys};})()',simulated);
+const a=simulated.w.agents.person,at={locationId:'star',roomId:'salon',activity:'visiting the Star Club'};
+const first=api.journeyArrival(a,at,1000,990);
+assert.equal(first.status,'travelling');
+assert.equal(a.journey.departedAt,990);
+assert.equal(a.journey.arrivesAt,1020);
+assert.equal(api.journeyArrival(a,at,1005,990).status,'travelling');
+assert.equal(a.journeyHistory,undefined,'A departure is not a completed journey');
+assert.equal(api.finishJourneys(simulated.w,1019),false);
+assert.equal(api.finishJourneys(simulated.w,1020),true);
+assert.equal(a.locationId,'star');assert.equal(a.roomId,'salon');
+assert.equal(a.journey,null);
+assert.equal(a.lastArrival.arrivedAt,1020);
+assert.equal(a.journeyHistory.length,1);
+assert.equal(api.finishJourneys(simulated.w,1020),false,'Repeat arrival must not duplicate');
+const next={locationId:'races',roomId:'grandstand',activity:'attending the races'};
+const second=api.journeyArrival(a,next,1025,1020);
+assert.equal(second.status,'travelling');
+assert.equal(a.journey.to,'races');
+assert.equal(api.journeyArrival(a,next,1030,1020).status,'travelling');
+assert.equal(api.finishJourneys(simulated.w,1050),true);
+assert.equal(a.locationId,'races');
+assert.equal(a.journeyHistory.length,2);
+assert.equal(a.journeyHistory[1].from,'star');
+assert.equal(a.journeyHistory[1].to,'races');
+const same=api.journeyArrival(a,next,1100,1050);
+assert.equal(same.locationId,'races');
+assert.equal(a.journeyHistory.length,2,'Staying does not invent travel');
+for(let i=0;i<20;i++){
+ const wanted={locationId:'venue-'+i,roomId:'public-room',activity:'visiting'};
+ const moved=api.journeyArrival(a,wanted,1200+i*40,1100+i*40);
+ assert.equal(moved.locationId,wanted.locationId,'Long time jumps can finish a journey');
+ a.locationId=moved.locationId;a.roomId=moved.roomId;
+}
+assert.equal(a.journeyHistory.length,16,'Saved arrival history is bounded');
+assert.equal(a.journeyHistory.at(-1).to,'venue-19');
+console.log('PASS NPC transit, arrival, replay, multi-leg travel and bounded saved history');
