@@ -2,11 +2,15 @@
 
 **One city. Countless lives. Every choice has consequences.**
 
-*Capital & Consequence* is an in-development single-player life simulation in an alternate-history **Washington, D.C., beginning January 2, 1878**. Work, earn a living, go shopping, travel, encounter strangers, form friendships and rivalries, visit clubs, gamble, compete, and discover the consequences of choices years later.
+*Capital & Consequence* is an in-development **Beta** single-player life simulation in an alternate-history **Washington, D.C., beginning January 2, 1878**. Work, earn a living, go shopping, travel, encounter strangers, form friendships and rivalries, visit clubs, gamble, compete, and discover the consequences of choices years later.
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.02-dev (29 October 2026)
+## Current development checkpoint: v0.7.3-beta (29 October 2026)
+
+**Beta development checkpoint, aligned with the owner's milestone definitions:** The partially playable game is in Beta while core activities are expanded and stabilized; version 1.0 will be the initial release when the creative director authorizes it. This slice connects real poker settlement IDs to earned club membership trials, prevents financial-bookkeeping routines from silently purchasing off-site groceries, and completes saved NPC journeys before new calendar-period instructions replace their destination. Focused source regression runs passed for poker integration, economy, market accounting, and arrival across period boundaries. **Full offline Node suite, Electron gameplay QA, and user playtest are still pending.** No map, pin, room, or approved UI changes. No installation ZIP. Read [v0.7.3 Beta development notes](docs/RELEASE-NOTES-v0.7.3-beta.md).
+
+### Previous v0.7.02-dev checkpoint (29 October 2026)
 
 **Ongoing five-system hardening:** Private poker clubs retain a bounded ledger of 64 completed trials keyed by saved game-session IDs, preventing an old trial from settling again even after newer sessions. Federal Electric workshop incidents reject duplicate assembly receipts and refuse to create new breakdowns during an existing production hold. Added an old-session replay regression and preserved the existing club trial regression. These changes build on the earlier NPC journey, economy, and relationship slices; those systems remain ongoing and are not represented as finished. Focused club suite passed in a JavaScript harness prior to the additional replay assertion; full Node suite and Ubuntu Electron playthrough still pending. Original Washington map and owner-approved geometry unchanged.
 
