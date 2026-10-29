@@ -37,4 +37,17 @@ assert.equal(replayProfile.clubMemberships.elite.trials,1);
 assert.equal(replayProfile.personalEffects.items.length,1);
 assert.throws(()=>clubs.trial({}, {tier:'elite',today:'1878-01-02',
  introduced:true,delta:0,stake:100,hands:2,sessionId:''}));
+const remembered={personalEffects:{items:[]}};
+const rejected=clubs.trial(remembered,{tier:'middle',today:'1878-01-02',introduced:true,
+ delta:200,stake:100,hands:3,conduct:'rude',sessionId:'first'});
+assert.equal(rejected.status,'cooldown');
+const later=clubs.trial(remembered,{tier:'middle',today:'1878-01-09',introduced:true,
+ delta:0,stake:100,hands:3,conduct:'generous',sessionId:'second'});
+assert.equal(later.status,'member');
+const replayFirst=clubs.trial(remembered,{tier:'middle',today:'1878-01-02',introduced:true,
+ delta:200,stake:100,hands:3,conduct:'rude',sessionId:'first'});
+assert.equal(replayFirst.repeated,true);
+assert.equal(replayFirst.status,'cooldown');
+assert.equal(remembered.clubMemberships.middle.trials,2);
+assert.equal(remembered.personalEffects.items.length,1);
 console.log('PASS private club trial, invitation versus card, etiquette, generosity, cooling-off and item persistence');
