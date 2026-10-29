@@ -411,7 +411,11 @@
   if(c&&window.FE_NPC_CALENDAR){
    const key=window.FE_NPC_CALENDAR.signature(c);
    if(key===w.lastCalendarSlot){
-     if(!finishJourneys(w,S.worldCalendar.worldMinute))return false;
+     const arrived=finishJourneys(w,S.worldCalendar.worldMinute);
+     // Sampling the authoritative clock does not settle another NPC period.
+     // It does provide the departure anchor for the NEXT schedule change.
+     w.lastObservedMinute=S.worldCalendar.worldMinute;
+     if(!arrived)return false;
     }else{
      calendarOnce(w,c,key);w.lastCalendarSlot=key;
     }
