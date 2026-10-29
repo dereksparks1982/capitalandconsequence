@@ -215,7 +215,9 @@
   // and Sullivan's Saturday groceries. Never advance world time for NPC actions.
   let purchased=null;
   const market=context.save&&root.FE_WASHINGTON_COMMERCE;
-  if(market&&cfg.monetary!==false&&context.slot===1&&!context.rest&&ec.balanceCents>=4){
+  if(market&&cfg.monetary!==false&&context.slot===1&&!context.rest&&ec.balanceCents>=4&&
+   ['oldChinatown','hillsdale'].includes(locationId)&&
+   /market|shopping|supplies|grocer/i.test(String(activity||''))){
    const shopping=['bread','soap','onions','milk','potatoes','eggs','produce','bacon'];
    const start=hash(tag+'|shop')%shopping.length;
    for(let i=0;i<shopping.length;i++){
