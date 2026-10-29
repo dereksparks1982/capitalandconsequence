@@ -11,3 +11,14 @@
 `tests/capital-travel-remaining-time.cjs` checks monotonic progress, 0–100% endpoints, invalid data, no mutation of the saved world calendar, and the real map's binding to single-arrival time accounting. Focused JavaScript regression passed. Full local Node and Ubuntu Electron playthrough remain pending.
 
 No map artwork, numbered pin defaults, approved UI geometry, or street-network settings changed in this checkpoint. The roads remain provisional, not pixel-perfect validated against every 1878 building. No GitHub Actions, installer ZIP, password prompts or executable build were used.
+
+## Additional v0.7.17 gameplay slice: illustrated figurines and poker silhouettes
+- The three temporary Capital Travel chess-symbol placeholders are replaced by locally drawn SVG miniatures for **walking**, **horseback**, and **carriage**. The existing direction wedge still turns with the road while the figure stays upright.
+- All miniatures are generated at runtime, with no new images, fonts, permanent map decorations, or changes to approved artwork and pin geometry. Finished and canceled journeys clean up their figures.
+- The established **top-down poker table** now displays sepia silhouette portraits in its existing four seats. Individual character portraits can replace these later without rebuilding the underlying game.
+- Private hole cards stay hidden from the player until a contested showdown. Folded opponents' cards never reveal, including after all opponents fold to the winner.
+- Concealed poker cards no longer retain a suit-color CSS class, reducing unintended suit information in rendered markup.
+- The private poker window is labeled **Capital & Consequence**, with fresh style and engine cache keys. Underlying Texas Hold'em rules, wagers, time accounting and table etiquette were not changed.
+- `tests/capital-travel-figurines.cjs` and `tests/poker-silhouette-secrecy.cjs` passed focused isolated JavaScript checks. Full local Node and Electron QA remain pending.
+
+**README:** No development log was added to the short README. The game's proprietary license and legal notices remain as published.
