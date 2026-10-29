@@ -265,6 +265,44 @@
     priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
     preferredDestination:window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
  }
+ // NPC journeys use the player-driven world clock, never a second timer.
+ function journeyArrival(a,desired,minute,previous){
+  if(!desired.locationId)return desired;
+  if(a.journey?.version===1){
+   if(minute<a.journey.arrivesAt)return {locationId:null,roomId:null,
+    activity:'travelling to '+a.journey.to,reason:'in-transit',status:'travelling'};
+   const j=a.journey;
+   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+   a.journey=null;a.journeyDestination=null;
+   if(j.to===desired.locationId)return desired;
+  }
+  if(!a.locationId||a.locationId===desired.locationId)return desired;
+  const departure=Number.isSafeInteger(previous)&&previous<=minute?previous:minute;
+  const j={version:1,from:a.locationId,to:desired.locationId,
+   departedAt:departure,arrivesAt:departure+30};
+  if(minute>=j.arrivesAt){
+   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+   return desired;
+  }
+  a.journey=j;a.journeyDestination={...desired};
+  return {locationId:null,roomId:null,activity:'travelling to '+j.to,
+   reason:'in-transit',status:'travelling'};
+ }
+ function finishJourneys(w,minute){
+  let changed=false;
+  for(const def of autonomous()){
+   const a=w.agents[def.id],j=a?.journey;
+   if(!j||j.version!==1||minute<j.arrivesAt)continue;
+   const destination=a.journeyDestination;
+   if(destination?.locationId===j.to){
+    a.locationId=destination.locationId;a.roomId=destination.roomId;
+    a.activity=destination.activity;a.status='present';
+   }else{a.locationId=null;a.roomId=null;a.activity=null;a.status='off-duty'}
+   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+   a.journey=null;a.journeyDestination=null;changed=true;
+  }
+  return changed;
+ }
  function stepOnce(w,absolute){
   if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
   const slot=absolute%4,turn=Math.floor(absolute/4)+1;
@@ -332,11 +370,13 @@
    const movementAction={...action,key,date:period.day,slot:period.slot,
     activity:action.locationId===period.locationId?period.activity:action.activity};
    const lodging=window.FE_NPC_RESIDENCES?.nightStay?.(def,c,window.FederalElectricCity);
-   const moved=lodging||pickRoom(def,a,movementAction,w),destination=moved.locationId;
+   const intended=lodging||pickRoom(def,a,movementAction,w);
+   const moved=journeyArrival(a,intended,S.worldCalendar.worldMinute,w.lastObservedMinute);
+   const destination=moved.locationId;
    a.locationId=destination;
    a.roomId=moved.roomId;
    a.activity=moved.activity;
-   a.status=destination?'present':'off-duty';
+   a.status=moved.status||(destination?'present':'off-duty');
    // Mid-period routine changes do not mint extra income, purchases or fatigue.
    if(!window.FE_NPC_NEEDS&&!completed.repeated)
     a.energy=Math.max(15,Math.min(100,a.energy+(destination?-11:18)));
@@ -361,8 +401,12 @@
   const c=S.worldCalendarStatus==='ready'?window.FE_CALENDAR_BRIDGE?.moment?.(S):null;
   if(c&&window.FE_NPC_CALENDAR){
    const key=window.FE_NPC_CALENDAR.signature(c);
-   if(key===w.lastCalendarSlot)return false;
-   calendarOnce(w,c,key);w.lastCalendarSlot=key;
+   if(key===w.lastCalendarSlot){
+     if(!finishJourneys(w,S.worldCalendar.worldMinute))return false;
+    }else{
+     calendarOnce(w,c,key);w.lastCalendarSlot=key;
+    }
+    w.lastObservedMinute=S.worldCalendar.worldMinute;
   }else{
    const target=stepForState();
    if(target===null||target<=w.lastStep)return false;
