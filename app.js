@@ -3324,8 +3324,17 @@ function renderCapitalTravelChoice(id){
    'street-intersection route (approximate)';
  const avenue=points.namedRoads?.[0]||'';
  const turns=Number.isSafeInteger(points.turns)?' · '+points.turns+' turns':'';
- notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+minutes+
-  ' game minutes'+turns+(avenue?' · via '+avenue:'')+
+ const modeNames={walk:'Walk',horse:'Horseback',carriage:'Carriage'};
+ const comparative=Object.entries(length.minutes).map(([travelMode,gameMinutes])=>{
+  const ready=window.FE_CAPITAL_TRAVEL?.available?.(S,origin,travelMode)?.ok;
+  return modeNames[travelMode]+' '+(ready?gameMinutes+'m':'unavailable');
+ }).join(' / ');
+ const nowIso=window.FE_WASHINGTON_TIME?.now?.(S)?.iso||null;
+ const arrival=window.FE_CAPITAL_TRAVEL?.arrivalEstimate?.(nowIso,minutes);
+ const when=arrival?' · Travel ends about '+arrival.time+
+  (arrival.nextDay?' next day':''):'';
+ notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+
+  comparative+when+turns+(avenue?' · via '+avenue:'')+
   ' · '+roadName+' · real-world miles not yet verified.';
  renderCapitalTravelPreview(id);
 }
