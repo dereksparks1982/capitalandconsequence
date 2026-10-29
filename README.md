@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.9-beta (29 October 2026)
+## Current development checkpoint: v0.7.10-beta (29 October 2026)
+
+**Washington street-entrance accuracy:** The Capital Travel System now compares approach paths using the actual right-angle distance traveled in native guide pixels rather than a straight-line distance that can pick the wrong street. Entrance turns also respect the original 2048×1159 map's unequal pixel axes. An exhaustive source QA pass covered **1,560 directed journeys** between all 40 registered locations; every route remained connected and reverse-distance estimates agreed, with original pins unchanged. These are still **modeled, approximate roads**, not a fully traced, collision-free historic Washington street map. Focused regressions passed; full local Node and Electron QA remain pending. No GitHub Actions or executable ZIP. [v0.7.10 Beta notes](docs/RELEASE-NOTES-v0.7.10-beta.md).
+
+### Previous v0.7.9-beta checkpoint (29 October 2026)
+
+### v0.7.9-beta (29 October 2026)
 
 **Capital Travel failure recovery:** Live previews and moving street-route figurines now validate map-screen projection and cancel gracefully if coordinates become invalid or a projection throws. The travel overlay is removed, the journey does not commit or charge a completed arrival, and the player can retry after the viewport recovers. This builds on road-following travel, live pin recalc, physical horse/carriage requirements, camera following, and the copper traveled-road trail. Original Washington artwork, numbered pin defaults, approved room and map geometry remain unchanged. The modeled roads are still approximate, not pixel-perfect building collision geometry. Focused isolated JavaScript recovery tests passed; full local Node and Electron QA remain pending. No GitHub Actions or executable ZIP. [v0.7.9 Beta notes](docs/RELEASE-NOTES-v0.7.9-beta.md).
 
