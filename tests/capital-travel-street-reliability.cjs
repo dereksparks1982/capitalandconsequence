@@ -38,6 +38,6 @@ assert.equal(travel.estimate(itinerary).guidePixels,estimated.guidePixels);
 const beforeZoom=projected(.40,0,0),afterZoom=projected(.90,-140,-70);
 assert.notDeepEqual(beforeZoom,afterZoom,'Camera changes screen pixels only');
 assert.deepEqual(travel.positionAt(itinerary,.5),halfway,
- 'The player's route progress is stable under zoom/pan');
+ 'Route progress remains stable under zoom/pan');
 assert.match(itinerary.routeType,/provisional-street/);
 console.log('PASS cached road graph, stable itinerary, map-space travel progress, zoom invariants and pin safety');
