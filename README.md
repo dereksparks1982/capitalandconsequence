@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.91-dev (28 October 2026)
+## Current development checkpoint: v0.6.92-dev (28 October 2026)
+
+**Stacked development build 2, NPC temperament:** Off-duty outing selection now preserves an explicit zero sociability score instead of mistakenly converting it to the default of 50. The same saved seed, time and resident produce the same choice; work obligations still override discretionary trips. Added source regression assertions for quiet and sociable outings and on-duty priority. No player-facing UI or Washington map changes; the complete QA suite and Linux playthrough have not yet run. The owner requested stacking at least three builds before another installation/test pass.
+
+### Previous v0.6.91-dev checkpoint (28 October 2026)
 
 **Travel-time consistency slice:** The player-facing map travel notice now correctly states that moving between different rooms in one location costs **one game minute** (remaining in the same room is free), while journeys between distinct Washington locations remain provisionally **30 minutes**. Travel regression coverage now checks the displayed rules and saved departure/arrival clock timestamps. This is a source change, not an assertion that a real Electron playthrough has passed. The original map artwork, all forty pin coordinates, and approved layout are unchanged. GitHub Actions was not run.
 
