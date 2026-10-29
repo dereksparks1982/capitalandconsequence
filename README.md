@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.99-dev (28 October 2026)
+## Current development checkpoint: v0.7.00-dev (28 October 2026)
+
+**Multi-system continuation:** Poker club trials now optionally accept a saved session identifier and refuse duplicate settlement or duplicate presentation of an earned membership card. Federal Electric logs a bounded workshop incident history and the latest paid repair cost/time against an actual breakdown. NPC finance routines no longer buy goods in generic calendar slots without being located at an existing market and performing a shopping activity; this closes a hidden source of off-site purchases. Existing NPC journeys, appetite, purchasing, relationship memory and club access remain connected but are not yet complete autonomous careers or full street routing. Targeted poker regression passed in a V8 harness; full Node suite and actual Ubuntu Electron gameplay remain pending. Original Washington artwork, all forty map pins and approved geometry remain untouched.
+
+### Previous v0.6.99-dev checkpoint (28 October 2026)
 
 **Stacked slice 9, correct shopping intent:** The city mobility engine now uses an explicit food-motivated shopping-trip flag, so genuine grocery expeditions receive a shopping activity but ordinary business and social visitors to Chinatown do not. That distinction prevents unrelated visits from triggering meal shopping. The on-duty priority, room access gates, and existing saved-clock travel remain unchanged. Targeted source regression confirms the distinction. A full Node suite and actual Ubuntu gameplay check remain pending. No Washington artwork or layout changes.
 
