@@ -118,6 +118,7 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 async function runSmokeTest(win) {
   try {
+    await win.webContents.executeJavaScript('window.FE_BOOTSTRAP_READY');
     const structure=await win.webContents.executeJavaScript(`(() => ({
       title:document.title,
       city:!!window.FederalElectricCity,
@@ -147,6 +148,7 @@ async function runSmokeTest(win) {
     const loaded=waitForLoad(win);
     win.reload();
     await loaded;
+    await win.webContents.executeJavaScript('window.FE_BOOTSTRAP_READY');
     const persisted=await win.webContents.executeJavaScript(`localStorage.getItem('__federalElectricSmokePersistence')`);
     if(persisted!=='ok') throw new Error('localStorage did not survive a full renderer reload');
     // Regress the real four-career UI and profile autosave inside packaged Electron.
@@ -548,6 +550,7 @@ app.whenReady().then(()=>{
   const fromGame=event=>{if(event.senderFrame?.url!==new URL('file://'+path.join(APP_ROOT,'index.html')).href)throw new Error('Not a Federal Electric game window');};
   ipcMain.handle('fe:saves:write',(event,{profileId,json})=>{fromGame(event);return fileSaves.atomicSave(saveDirectory,profileId,json)});
   ipcMain.handle('fe:saves:read',(event,{profileId})=>{fromGame(event);return fileSaves.readSave(saveDirectory,profileId)});
+  ipcMain.handle('fe:saves:list',event=>{fromGame(event);return fileSaves.listSaves(saveDirectory)});
   ipcMain.handle('fe:saves:remove',(event,{profileId})=>{fromGame(event);return fileSaves.deleteSave(saveDirectory,profileId)});
   // The renderer can send validated dialogue only. It cannot choose host, URL or process commands.
   let conversationBusy=false;

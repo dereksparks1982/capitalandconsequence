@@ -22,7 +22,11 @@ function atomicSave(root,id,json){
  try{
   fs.writeFileSync(temp,json,{encoding:'utf8',flag:'wx',mode:0o600});
   // Recovery copy is not selectable as an in-game rewind slot.
-  if(fs.existsSync(target))fs.copyFileSync(target,target+'.recovery');
+  // Never overwrite a known-good recovery with a corrupted current file.
+  if(fs.existsSync(target)){
+   try{validateJson(fs.readFileSync(target,'utf8'));fs.copyFileSync(target,target+'.recovery')}
+   catch(_err){/* Preserve the previous usable recovery, if any. */}
+  }
   fs.renameSync(temp,target);
  }finally{
   if(fs.existsSync(temp))fs.unlinkSync(temp);
@@ -31,13 +35,30 @@ function atomicSave(root,id,json){
 }
 function readSave(root,id){
  const target=fileFor(root,id);
- if(!fs.existsSync(target))return {ok:false,reason:'missing'};
- const json=fs.readFileSync(target,'utf8');
- try{validateJson(json);return {ok:true,json}}catch(_err){return {ok:false,reason:'corrupt'}}
+ let found=false;
+ for(const file of [target,target+'.recovery']){
+  if(!fs.existsSync(file))continue;
+  found=true;
+  try{
+   const json=fs.readFileSync(file,'utf8');
+   validateJson(json);
+   return {ok:true,json,recovered:file!==target};
+  }catch(_err){/* Try the prior valid generation before reporting corruption. */}
+ }
+ return {ok:false,reason:found?'corrupt':'missing'};
+}
+function listSaves(root){
+ if(!fs.existsSync(root))return {ok:true,ids:[]};
+ const ids=new Set();
+ for(const entry of fs.readdirSync(root)){
+  const match=/^([a-zA-Z0-9_-]{1,64})\.json(?:\.recovery)?$/.exec(entry);
+  if(match&&readSave(root,match[1]).ok)ids.add(match[1]);
+ }
+ return {ok:true,ids:[...ids].sort()};
 }
 function deleteSave(root,id){
  const target=fileFor(root,id);
  for(const name of [target,target+'.recovery'])if(fs.existsSync(name))fs.unlinkSync(name);
  return {ok:true};
 }
-module.exports={validateId,validateJson,atomicSave,readSave,deleteSave};
+module.exports={validateId,validateJson,atomicSave,readSave,listSaves,deleteSave};

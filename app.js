@@ -4113,12 +4113,25 @@ function initTitleScreen(){
  screen.addEventListener('click',e=>{if(e.target.id==='titleDialog')closeTitleDialog()});
  document.addEventListener('click',e=>{if(e.target?.id==='optionsClose')closeTitleDialog()});
 }
-bootstrapProfiles();
-loadInitial();render();initTitleScreen();
+// Restore missing or damaged local profile data from the atomic Electron mirror
+// before any render, autosave or user action can replace it.
+let bootstrapReady=false;
+window.FE_BOOTSTRAP_READY=(async()=>{
+ try{
+  if(window.FE_DISK_SAVES&&window.FE_PROFILE_DISK_RECOVERY)
+   await window.FE_PROFILE_DISK_RECOVERY.restore(localStorage,window.FE_DISK_SAVES,{
+    indexKey:PROFILE_INDEX_KEY,activeKey:ACTIVE_PROFILE_KEY,
+    keyFor:profileSaveKey,limit:PROFILE_LIMIT
+   });
+ }catch(err){console.warn('Disk autosave recovery was unavailable; existing local data left untouched.',err)}
+ bootstrapProfiles();loadInitial();render();initTitleScreen();
+ bootstrapReady=true;
+ return true;
+})();
 $('#skillFilter')?.addEventListener('change',()=>window.FE_SKILLS?.render?.(S));
-marketTimer=setInterval(()=>{if(!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn()},1000);
-autosaveTimer=setInterval(()=>save(true),5000);
+marketTimer=setInterval(()=>{if(bootstrapReady&&!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
+clockTimer=setInterval(()=>{if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn()},1000);
+autosaveTimer=setInterval(()=>{if(bootstrapReady)save(true)},5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
  else{
