@@ -95,7 +95,7 @@ function visible(save,locationId,date){
  return {available:true,
   injury:locationId==='governmentHospital'?untreated(save):null,
   reportable:locationId==='metropolitanPolice'?
-   state.events.find(e=>!e.reportId):null,
+   (state.events.find(e=>!e.reportId)||null):null,
   pendingReportCount:state.reports.filter(r=>r.status==='intake').length,
   people:Object.keys(state.people).length};
 }
