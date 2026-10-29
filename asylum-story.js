@@ -37,9 +37,9 @@ const ACTIONS=Object.freeze({
   text:'Submitted a preliminary report with sources and the coroner’s observations. The case remains unresolved and no arrest was requested.'},
  wardRoster:{label:"Consult ward staffing book · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'orderly-station',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
  visitorRegister:{label:"Consult visitor sign-in book · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
- bellStatement:{label:"Speak to the duty porter · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ bellStatement:{label:"Review duty porter's statement · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
  passageMark:{label:"Examine the passage threshold · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'patient-ward',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
- clothingAccount:{label:"Ask about the corridor figure · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ clothingAccount:{label:"Read corridor witness account · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
  statementFolio:{label:'Read certified suspect statements · 10 minutes',seconds:600,
   location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'police-certified witness statement register',
@@ -93,6 +93,10 @@ function preview(save,world,id,where){
   const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
   if(!decision.ok)return decision;
  }
+ if(save.characterRoute==='investigator'&&
+    ['visitorRegister','bellStatement','clothingAccount'].includes(id)&&
+    (!permission(save)||!seen(save,'stationMemo')))
+  return {ok:false,reason:'Station-sergeant authorization is required for copies of asylum statements'};
  if(id==='stationMemo'&&(+save?.patrolDuty?.reportsFiled||0)<2)
   return {ok:false,reason:'Your sergeant has not yet assigned you case assistance. First file two ordinary patrol reports'};
  if(id==='stationMemo'&&save.patrolDuty?.onDuty)
@@ -145,7 +149,7 @@ function apply(save,world,id,where,{spentSeconds}={}){
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
-   scope:'copy-only',date:save.gameDate,rank:'patrolman'};
+   scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
   source:sceneObservation?.source||action.source,

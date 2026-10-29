@@ -49,7 +49,12 @@ assert.ok(later.morgue.reports[story.BODY_ID]);
 const station=ash('metropolitanPolice','station-duty-room');
 const hospital=ash('governmentHospital','reception');
 assert.equal(story.preview(sam,later,'medical',hospital).ok,false);
+assert.equal(story.preview(sam,later,'visitorRegister',reception).ok,false,'Police must obtain written access to asylum records');
+assert.equal(story.preview(sam,later,'bellStatement',reception).ok,false,'Porter records are not public by default');
+
 perform(sam,'stationMemo',station,later);
+assert.equal(story.preview(sam,later,'visitorRegister',reception).ok,true,'Authorized copies may now be requested');
+
 perform(sam,'statementFolio',station,later);
 perform(sam,'reception',reception,later);
 perform(sam,'bellStatement',reception,later);
