@@ -3523,6 +3523,9 @@ async function travelFromTitleMap(event){
  }
  const {points,estimate:measurement}=capitalTravelMeasurement(id);
  if(points.length<2)return enterMapDestination(id,null,null,mode);
+ // An animation is visual only. The same profile and departure must still
+ // be active when it finishes; otherwise it may never charge or relocate.
+ const departingProfile=activeProfileId(),departingSave=S;
  const snapshot=[from,id].map(key=>{
   const pin=TITLE_MAP_LOCATIONS.find(v=>v.id===key);
   return pin?{x:pin.x,y:pin.y}:null;
@@ -3562,6 +3565,12 @@ async function travelFromTitleMap(event){
    }
   });
   if(!finished||viewer.hidden)return false;
+  if(activeProfileId()!==departingProfile||S!==departingSave||
+   currentCityLocation()?.locationId!==from||titleMapSelectedLocationId!==id||
+   (document.getElementById('capitalTravelMode')?.value||'walk')!==mode){
+   if(travelNote)travelNote.textContent='Travel was interrupted. No journey was recorded.';
+   return false;
+  }
   if(!samePins()){
    if(travelNote)travelNote.textContent='A pin moved during the journey. Re-select the destination to calculate the new travel time.';
    return false;
