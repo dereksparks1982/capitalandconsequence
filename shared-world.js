@@ -37,6 +37,7 @@ function capture(save,prior,profileId=null){
     recordEvent(next,{id:'ward-file:'+profileId+':'+log.id,type:'asylum-work',
      at:log.date,summary:'An orderly filed a routine care-service entry.',
      actorId:'edmundWardman',locationId:'blackwoodAsylum'});
+ root.FE_ASYLUM_STORY?.advanceWorld?.(next);
  return next;
 }
 function recordEvent(world,{id,type,at,summary,actorId,locationId}={}){

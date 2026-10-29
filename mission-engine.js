@@ -5,6 +5,8 @@
  */
 (function(root){'use strict';
 const TEMPLATES=Object.freeze({
+ 'asylum-inquiry':Object.freeze({label:'District Asylum · Unexplained Death',routes:Object.freeze(['wardman','investigator']),
+  initial:'inquiry',transitions:Object.freeze({inquiry:Object.freeze({})})}),
  'ward-round':Object.freeze({label:'District Asylum · Ordinary Ward Service',route:'wardman',
   initial:'assigned',transitions:Object.freeze({
    assigned:Object.freeze({attend:'awaiting-report'}),
@@ -20,7 +22,7 @@ function ensure(save){
 function find(save,id){const m=ensure(save);return m.active[id]||m.history.find(x=>x.id===id)||null}
 function start(save,{id,templateId,date,locationId}={}){
  const spec=TEMPLATES[templateId];
- if(!spec||save?.characterRoute!==spec.route)return {ok:false,reason:'Mission not available to this career'};
+ if(!spec||(spec.routes?!spec.routes.includes(save?.characterRoute):save?.characterRoute!==spec.route))return {ok:false,reason:'Mission not available to this career'};
  if(typeof id!=='string'||!/^[-\w:]{3,100}$/.test(id))return {ok:false,reason:'Invalid mission identity'};
  const store=ensure(save),old=find(save,id);
  if(old)return {ok:true,status:'existing',mission:{...old}};
@@ -36,7 +38,7 @@ function step(save,id,action,{eventId,at,choiceId}={}){
   const completed=store.history.find(m=>m.id===id);
   return completed?{ok:true,status:'duplicate',mission:{...completed}}:{ok:false,reason:'Unknown or completed mission'};
  }
- if(save.characterRoute!==spec?.route)return {ok:false,reason:'Wrong career'};
+ if(!spec||(spec.routes?!spec.routes.includes(save.characterRoute):save.characterRoute!==spec.route))return {ok:false,reason:'Wrong career'};
  const next=spec.transitions[mission.stage]?.[action];
  if(!next)return {ok:false,reason:'This mission action is unavailable at the present stage'};
  if(typeof eventId!=='string'||!eventId||eventId.length>120)return {ok:false,reason:'Verified source event ID required'};
