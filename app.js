@@ -3355,10 +3355,15 @@ function capitalTravelStreetReady(points){
  return Array.isArray(points)&&points.length>=2&&
   typeof points.routeType==='string'&&points.routeType.startsWith('provisional-street-');
 }
+function capitalTravelWeather(){
+ // Saved game weather, never wall-clock or a network forecast.
+ return S.turnConditions?.weather||'clear';
+}
 function capitalTravelMeasurement(id){
  const origin=currentCityLocation()?.locationId;
  const points=capitalTravelPath(origin,id);
- return {points,estimate:points.length>=2?window.FE_CAPITAL_TRAVEL?.estimate?.(points):null};
+ return {points,estimate:points.length>=2?
+  window.FE_CAPITAL_TRAVEL?.weatherEstimate?.(points,capitalTravelWeather()):null};
 }
 function renderCapitalTravelPreview(preferredId=null,dragging=false){
  const id=preferredId||titleMapPinDrag?.id||titleMapSelectedLocationId;
@@ -3424,7 +3429,8 @@ function renderCapitalTravelChoice(id){
  const when=arrival?' · Travel ends about '+arrival.time+
   (arrival.nextDay?' next day':''):'';
  notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+
-  comparative+when+turns+(avenue?' · via '+avenue:'')+
+  comparative+(length.weather==='clear'?'':' · '+length.weather+' weather slows travel')+
+  when+turns+(avenue?' · via '+avenue:'')+
   ' · '+roadName+' · real-world miles not yet verified.';
  renderCapitalTravelPreview(id);
 }
@@ -3643,6 +3649,7 @@ async function travelFromTitleMap(event){
  // An animation is visual only. The same profile and departure must still
  // be active when it finishes; otherwise it may never charge or relocate.
  const departingProfile=activeProfileId(),departingSave=S;
+ const departingWeather=capitalTravelWeather();
  const snapshot=[from,id].map(key=>{
   const pin=TITLE_MAP_LOCATIONS.find(v=>v.id===key);
   return pin?{x:pin.x,y:pin.y}:null;
@@ -3695,11 +3702,17 @@ async function travelFromTitleMap(event){
    if(travelNote)travelNote.textContent='A pin moved during the journey. Re-select the destination to calculate the new travel time.';
    return false;
   }
+  if(capitalTravelWeather()!==departingWeather){
+   if(travelNote)travelNote.textContent='The weather changed during travel preparation. Recalculate the route and time.';
+   return false;
+  }
   return enterMapDestination(id,null,null,mode,minutes,{
    guidePixels:measurement.guidePixels,routeType:points.routeType||'provisional-right-angle',
    accessPixels:Number.isSafeInteger(points.accessPixels)?points.accessPixels:null,
    turns:Number.isSafeInteger(points.turns)?points.turns:null,
-   namedRoads:Array.isArray(points.namedRoads)?points.namedRoads:[]
+   namedRoads:Array.isArray(points.namedRoads)?points.namedRoads:[],
+   weather:measurement.weather,
+   weatherExtraMinutes:measurement.weatherExtraMinutes?.[mode]||0
   });
  }finally{
   capitalTravelBusy=false;
