@@ -45,6 +45,17 @@ assert.equal(isolated.rumors,12,'Own hearsay is visible to the planner');
 assert.equal(isolated.firstHand,10,'Own direct observations are counted');
 observedOther.knowledge.records.push({actorId:'pavelOrlov',source:'heard-from:eddieDoyle',confidence:1});
 assert.deepEqual(agency.observe(merchant,mind,{},observedOther),isolated,'Other residents knowledge cannot leak into plans');
+const hungry={...mind,needs:{version:1,hunger:95},
+ householdReceipts:{provisions:[]}};
+const fed={...mind,needs:{version:1,hunger:25},
+ householdReceipts:{provisions:[{good:'bread',consumed:false}]}};
+const hungrySituation=agency.observe(merchant,hungry,{},observedOther);
+const fedSituation=agency.observe(merchant,fed,{},observedOther);
+assert.ok(hungrySituation.foodPressure>fedSituation.foodPressure);
+assert.ok(hungrySituation.social<fedSituation.social,
+ 'Hunger discourages casual networking without inventing a purchase');
+assert.equal(agency.observe(merchant,fed,{},observedOther).foodPressure,0,
+ 'An adequately fed resident has no synthetic food pressure');
 assert.throws(()=>agency.observe(null,mind,{},observedOther));
 assert.throws(()=>agency.choose(null,mind,isolated));
 
