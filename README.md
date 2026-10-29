@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.10-beta (29 October 2026)
+## Current development checkpoint: v0.7.11-beta (29 October 2026)
+
+**Capital Travel road optimization:** Routes now evaluate multiple nearby street entrances at the origin and destination, choosing the shortest **complete** door-to-door itinerary instead of snapping to one nearest road and accepting an unnecessary detour. In 195 old-versus-new comparisons, 81 routes shortened, 114 were unchanged, and none lengthened. All 1,560 ordered journeys among the game's 40 registered sites passed route presence and reverse-distance consistency checks. The printed Washington artwork, all approved pin defaults, and existing room layouts remain untouched. The roads are still provisional, not precision-traced from the artwork; full Ubuntu Node/Electron QA is pending. No GitHub Actions or executable ZIP. [v0.7.11 Beta notes](docs/RELEASE-NOTES-v0.7.11-beta.md).
+
+### Previous v0.7.10-beta checkpoint (29 October 2026)
+
+### v0.7.10-beta (29 October 2026)
 
 **Washington street-entrance accuracy:** The Capital Travel System now compares approach paths using the actual right-angle distance traveled in native guide pixels rather than a straight-line distance that can pick the wrong street. Entrance turns also respect the original 2048×1159 map's unequal pixel axes. An exhaustive source QA pass covered **1,560 directed journeys** between all 40 registered locations; every route remained connected and reverse-distance estimates agreed, with original pins unchanged. These are still **modeled, approximate roads**, not a fully traced, collision-free historic Washington street map. Focused regressions passed; full local Node and Electron QA remain pending. No GitHub Actions or executable ZIP. [v0.7.10 Beta notes](docs/RELEASE-NOTES-v0.7.10-beta.md).
 
