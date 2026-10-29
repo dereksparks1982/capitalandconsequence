@@ -255,6 +255,10 @@
  }
  function pickRoom(def,agent,action,w){
   if(!window.FE_NPC_MOBILITY||!window.FederalElectricCity)throw Error('NPC city mobility module required');
+  const shoppingTrip=action.kind==='personal'&&action.slot>=1&&action.slot<=2&&
+   Number(agent.needs?.hunger)>=75&&
+   window.FE_NPC_HOUSEHOLD_RECEIPTS?.available?.(agent)===0&&
+   Number.isSafeInteger(agent.economy?.balanceCents)&&agent.economy.balanceCents>=5;
   return window.FE_NPC_MOBILITY.visit(window.FederalElectricCity,
    {kind:'npc',id:def.id,route:def.route||null,job:def.id==='edmundWardman'?'orderly':null,
     residences:def.id==='charlieWhitcomb'?['home']:[],
@@ -263,11 +267,9 @@
     sociability:def.traits?.sociability,
     defaultLocation:action.locationId,defaultActivity:action.activity,
     priorityDestination:action.kind==='wager-win'||action.kind==='wager-loss',
-    preferredDestination:(action.kind==='personal'&&action.slot>=1&&action.slot<=2&&
-     Number(agent.needs?.hunger)>=75&&
-     window.FE_NPC_HOUSEHOLD_RECEIPTS?.available?.(agent)===0&&
-     Number.isSafeInteger(agent.economy?.balanceCents)&&agent.economy.balanceCents>=5)?
-     'oldChinatown':window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
+    shoppingTrip,
+    preferredDestination:shoppingTrip?'oldChinatown':
+     window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
  }
  // NPC journeys use the player-driven world clock, never a second timer.
  function recordNpcArrival(a,j){
