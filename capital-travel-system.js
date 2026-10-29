@@ -23,6 +23,8 @@ function route(from,to){
   const path=street.points;
   path.routeType=street.type;
   path.accessPixels=street.accessPixels;
+  path.turns=street.turns;
+  path.namedRoads=street.namedRoads;
   return path;
  }
  // Fallback only if the guide network cannot connect the destinations.
@@ -187,7 +189,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:4,modes:MODES,route,estimate,positionAt,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:5,modes:MODES,route,estimate,positionAt,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
