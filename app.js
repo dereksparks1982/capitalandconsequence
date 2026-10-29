@@ -3476,6 +3476,27 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  overlay.focus?.();
  return true;
 }
+// Keep the moving pawn in view when the player starts a trip zoomed in.
+// This pans the map CAMERA only; the guide pixels and numbered pins do not move.
+function capitalTravelFollow(point){
+ const viewport=document.getElementById('titleMapViewport');
+ const img=document.getElementById('titleMapImage');
+ if(!capitalTravelBusy||!viewport||!img?.naturalWidth||
+  titleMapState.pointerId!==null||titleMapState.scale<=titleMapState.minScale*1.05)return;
+ const vw=viewport.clientWidth,vh=viewport.clientHeight;
+ if(vw<120||vh<120)return;
+ const marginX=Math.min(120,vw*.22),marginY=Math.min(90,vh*.22);
+ const x=titleMapState.x+point.x*img.naturalWidth*titleMapState.scale;
+ const y=titleMapState.y+point.y*img.naturalHeight*titleMapState.scale;
+ const previousX=titleMapState.x,previousY=titleMapState.y;
+ if(x<marginX)titleMapState.x+=marginX-x;
+ else if(x>vw-marginX)titleMapState.x+=vw-marginX-x;
+ if(y<marginY)titleMapState.y+=marginY-y;
+ else if(y>vh-marginY)titleMapState.y+=vh-marginY-y;
+ titleMapClamp();
+ if(Math.abs(titleMapState.x-previousX)>.2||Math.abs(titleMapState.y-previousY)>.2)
+  titleMapApply();
+}
 async function travelFromTitleMap(event){
  event?.preventDefault?.();event?.stopPropagation?.();
  if(capitalTravelBusy||titleMapPinEdit)return false;
@@ -3527,6 +3548,7 @@ async function travelFromTitleMap(event){
   let lastMilestone=-1;
   const finished=await window.FE_CAPITAL_TRAVEL.animate({
    viewport,points,mode,
+   onFrame:point=>capitalTravelFollow(point),
    project:p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
      y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),
    // Keep status changes occasional, not sixty accessibility updates/second.
