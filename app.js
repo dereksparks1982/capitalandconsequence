@@ -3524,10 +3524,20 @@ async function travelFromTitleMap(event){
  try{
   if(travelNote)travelNote.textContent='Traveling by '+availability.mode+
    ' · approximately '+measurement.guidePixels+' map pixels (provisional).';
+  let lastMilestone=-1;
   const finished=await window.FE_CAPITAL_TRAVEL.animate({
    viewport,points,mode,
    project:p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
-     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale})
+     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),
+   // Keep status changes occasional, not sixty accessibility updates/second.
+   onProgress:fraction=>{
+    const milestone=Math.min(4,Math.floor(fraction*4));
+    if(milestone!==lastMilestone&&travelNote&&!viewer.hidden){
+     lastMilestone=milestone;
+     travelNote.textContent='Traveling by '+availability.mode+' · '+
+      milestone*25+'% of the provisional street itinerary.';
+    }
+   }
   });
   if(!finished||viewer.hidden)return false;
   if(!samePins()){
