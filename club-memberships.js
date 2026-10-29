@@ -30,15 +30,16 @@ function access(save,tier,today,introduced){
 function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous',sessionId=null}){
  if(!CONFIG[tier])return {status:'unrestricted',message:'No membership trial at this table.',hospitality:0};
  if(!['courteous','generous','quiet','rude'].includes(conduct))throw Error('Unknown social conduct');
+ if(sessionId!==null){
+  if(typeof sessionId!=='string'||!sessionId||sessionId.length>120)throw Error('Invalid poker session identifier');
+  const previous=ensure(save)[tier];
+  if(previous.lastSessionId===sessionId)return {...previous.lastSessionResult,repeated:true};
+ }
  const status=access(save,tier,today,introduced);
  if(!status.allowed||status.status==='member')return {status:status.status,message:status.message,hospitality:0};
  if(!Number.isFinite(delta)||!Number.isFinite(stake)||stake<=0||!Number.isInteger(hands)||hands<0)throw Error('Valid session results required');
  if(hands===0)return {status:'trial-pending',message:'No hand was completed, so the trial remains open.',hospitality:0};
  const state=ensure(save)[tier],cfg=CONFIG[tier];
- if(sessionId!==null){
-  if(typeof sessionId!=='string'||!sessionId||sessionId.length>120)throw Error('Invalid poker session identifier');
-  if(state.lastSessionId===sessionId)return {...state.lastSessionResult,repeated:true};
- }
  state.trials=(state.trials||0)+1;state.lastTrial=today;
  const excessiveWin=delta>stake*.35;
  const accepted=conduct==='generous'||(conduct==='courteous'&&!excessiveWin)||(conduct==='quiet'&&delta<=stake*.15);
