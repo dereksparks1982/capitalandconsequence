@@ -3091,6 +3091,7 @@ function saveTitleMapLocationLayout(){
  localStorage.setItem(titleMapStorageKey(),JSON.stringify(saved));
 }
 function resetTitleMapLocationLayout(){
+ window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  TITLE_MAP_LOCATIONS.forEach((location,i)=>{
   location.x=TITLE_MAP_LOCATION_DEFAULTS[i].x;
   location.y=TITLE_MAP_LOCATION_DEFAULTS[i].y;
@@ -3125,6 +3126,7 @@ function titleMapApply(){
  const img=$('#titleMapImage');if(!img)return;
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
+ renderCapitalTravelPreview();
 }
 // Pins stay at their saved map coordinates at every zoom level. Off-print
 // provisional pins remain edge-docked solely to keep their directory entries
@@ -3161,6 +3163,7 @@ function titleMapPositionMarkers(){
 function closeTitleMapLocation(){
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
  titleMapSelectedLocationId=null;
+ window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  syncTitleMapFilters();
  titleMapPositionMarkers();
 }
@@ -3243,6 +3246,37 @@ function capitalTravelPath(fromId,toId){
  });
  return window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
 }
+// Rebuild route from the CURRENT in-memory pin placements on every interaction;
+// never cache journey distances across user edits, profiles or trips.
+function capitalTravelMeasurement(id){
+ const origin=currentCityLocation()?.locationId;
+ const points=capitalTravelPath(origin,id);
+ return {points,estimate:points.length>=2?window.FE_CAPITAL_TRAVEL?.estimate?.(points):null};
+}
+function renderCapitalTravelPreview(preferredId=null,dragging=false){
+ const id=preferredId||titleMapPinDrag?.id||titleMapSelectedLocationId;
+ const from=currentCityLocation()?.locationId;
+ const viewer=document.getElementById('titleMapViewer');
+ const img=document.getElementById('titleMapImage');
+ const viewport=document.getElementById('titleMapViewport');
+ if(capitalTravelBusy||!id||!from||id===from||!img?.naturalWidth||!viewport||viewer?.hidden){
+  window.FE_CAPITAL_TRAVEL?.clearPreview?.();return false;
+ }
+ const {points,estimate}=capitalTravelMeasurement(id);
+ const show=window.FE_CAPITAL_TRAVEL?.showPreview?.({
+  viewport,points,project:point=>({
+   x:titleMapState.x+point.x*img.naturalWidth*titleMapState.scale,
+   y:titleMapState.y+point.y*img.naturalHeight*titleMapState.scale
+  })
+ });
+ if(dragging&&estimate){
+  const help=document.getElementById('titleMapHelp');
+  if(help)help.textContent='LIVE ROUTE · '+estimate.guidePixels+' px · walk '+
+   estimate.minutes.walk+'m · horse '+estimate.minutes.horse+
+   'm · carriage '+estimate.minutes.carriage+'m · confirm pin position to save';
+ }
+ return !!show;
+}
 function renderCapitalTravelChoice(id){
  const modeField=document.getElementById('capitalTravelMode');
  const notice=document.getElementById('capitalTravelEstimate');
@@ -3255,16 +3289,19 @@ function renderCapitalTravelChoice(id){
   option.title=check?.reason||'';
  }
  if(modeField.selectedOptions?.[0]?.disabled)modeField.value='walk';
- const points=capitalTravelPath(origin,id);
- if(same){notice.textContent='Already here. Entering a room is not a city journey.';return}
+ const {points,estimate:length}=capitalTravelMeasurement(id);
+ if(same){
+  notice.textContent='Already here. Entering a room is not a city journey.';
+  renderCapitalTravelPreview(id);return;
+ }
  if(points.length<2){
   notice.textContent='Route is not established. Existing provisional travel rules apply.';
-  return;
+  window.FE_CAPITAL_TRAVEL?.clearPreview?.();return;
  }
- const length=window.FE_CAPITAL_TRAVEL?.estimate?.(points);
  const minutes=length?.minutes?.[modeField.value]||30;
  notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+minutes+
   ' game minutes · real-world miles not yet verified.';
+ renderCapitalTravelPreview(id);
 }
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
@@ -3318,7 +3355,7 @@ function renameSelectedTitleMapPin(reset=false){
 // Route all map travel and normal room changes through the renderer that
 // already works in the developer panel. Apply regular player access rules
 // before rendering and commit the visit only after the room is visible.
-function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisionalMinutes=null){
+function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisionalMinutes=null,routeDetails=null){
  event?.preventDefault?.();
  event?.stopPropagation?.();
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id)||cityLocation(id);
@@ -3369,7 +3406,7 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
   }
   try{
    recorded=!!(changesLocation
-    ?window.FE_TRAVEL.recordProvisional(prior.locationId,place.id,null,travelMode,provisionalMinutes)
+    ?window.FE_TRAVEL.recordProvisional(prior.locationId,place.id,null,travelMode,provisionalMinutes,routeDetails)
     :window.FE_TRAVEL.recordRoomMove(place.id,prior.roomId,room.id));
   }catch(error){console.error('Go There travel ledger failed:',id,error)}
   if(!recorded){
@@ -3380,6 +3417,10 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
    if(map)map.hidden=false;
    return fail('The journey could not be recorded. No relocation was completed.');
   }
+  // A completed walking journey must not leave a stale prepared animal
+  // behind that could be carried implicitly on a future unrelated trip.
+  if(changesLocation&&travelMode==='walk'&&S.horseCustody?.from===prior.locationId)
+   delete S.horseCustody;
  }
  // Never leave developer privileges active on a regular player visit.
  S.currentLocation={locationId:place.id,roomId:room.id};
@@ -3423,7 +3464,7 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
 }
 async function travelFromTitleMap(event){
  event?.preventDefault?.();event?.stopPropagation?.();
- if(capitalTravelBusy)return false;
+ if(capitalTravelBusy||titleMapPinEdit)return false;
  const id=titleMapSelectedLocationId||
   document.getElementById('titleMapLocationTravel')?.dataset.locationId;
  const from=currentCityLocation()?.locationId;
@@ -3445,9 +3486,16 @@ async function travelFromTitleMap(event){
   if(travelNote)travelNote.textContent=availability?.reason||'Selected transportation is unavailable.';
   return false;
  }
- const points=capitalTravelPath(from,id);
+ const {points,estimate:measurement}=capitalTravelMeasurement(id);
  if(points.length<2)return enterMapDestination(id,null,null,mode);
- const measurement=window.FE_CAPITAL_TRAVEL.estimate(points);
+ const snapshot=[from,id].map(key=>{
+  const pin=TITLE_MAP_LOCATIONS.find(v=>v.id===key);
+  return pin?{x:pin.x,y:pin.y}:null;
+ });
+ const samePins=()=>[from,id].every((key,i)=>{
+  const pin=TITLE_MAP_LOCATIONS.find(v=>v.id===key),prior=snapshot[i];
+  return !!pin&&!!prior&&pin.x===prior.x&&pin.y===prior.y;
+ });
  const minutes=measurement.minutes[mode];
  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,minutes*60)){
   if(travelNote)travelNote.textContent='There is not enough game time for this journey.';
@@ -3458,6 +3506,7 @@ async function travelFromTitleMap(event){
  const button=document.getElementById('titleMapLocationTravel');
  if(!img?.naturalWidth||!viewport||!viewer||viewer.hidden)return false;
  capitalTravelBusy=true;if(button)button.disabled=true;
+ window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  try{
   if(travelNote)travelNote.textContent='Traveling by '+availability.mode+
    ' · approximately '+measurement.guidePixels+' map pixels (provisional).';
@@ -3467,10 +3516,17 @@ async function travelFromTitleMap(event){
      y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale})
   });
   if(!finished||viewer.hidden)return false;
-  return enterMapDestination(id,null,null,mode,minutes);
+  if(!samePins()){
+   if(travelNote)travelNote.textContent='A pin moved during the journey. Re-select the destination to calculate the new travel time.';
+   return false;
+  }
+  return enterMapDestination(id,null,null,mode,minutes,{
+   guidePixels:measurement.guidePixels,routeType:'provisional-right-angle'
+  });
  }finally{
   capitalTravelBusy=false;
   if(button)button.disabled=false;
+  if(!viewer.hidden)renderCapitalTravelPreview();
  }
 }
 function buildTitleMapMarkers(){
@@ -3491,7 +3547,7 @@ function buildTitleMapMarkers(){
  marker.querySelector('.title-map-marker-label').textContent=pinDisplayName(location);
   marker.addEventListener('pointerdown',e=>{
    e.stopPropagation();
-   if(!titleMapPinEdit||e.button!==0)return;
+   if(capitalTravelBusy||!titleMapPinEdit||e.button!==0)return;
    titleMapPinDrag={id:location.id,pointerId:e.pointerId,
     before:{x:location.x,y:location.y,userPlaced:!!location.userPlaced}};
    marker.setPointerCapture(e.pointerId);
@@ -3508,6 +3564,7 @@ function buildTitleMapMarkers(){
    location.y=Math.max(0,Math.min(1,(localY-titleMapState.y)/(img.naturalHeight*titleMapState.scale)));
    location.userPlaced=true;
    titleMapPositionMarkers();
+   renderCapitalTravelPreview(location.id,true);
    e.preventDefault();
   });
   const finish=e=>{
@@ -3533,6 +3590,8 @@ function buildTitleMapMarkers(){
     saveTitleMapLocationLayout();
    }
    titleMapPositionMarkers();
+   renderCapitalTravelPreview();
+   updateTitleMapPinEditor();
    syncTitleMapFilters();
    e.stopPropagation();
   };
@@ -3605,6 +3664,7 @@ function openTitleMap(){
 }
 function closeTitleMap(chargeTime=true){
  window.FE_CAPITAL_TRAVEL?.cancel?.();
+ window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  const viewer=$('#titleMapViewer');
  // Exactly one minute for an actual visible map closing. Internal cleanup
  // on title/profile transitions explicitly opts out.
