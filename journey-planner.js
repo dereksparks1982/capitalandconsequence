@@ -34,7 +34,7 @@ function notice(from,to){
 // Called as part of the same autosave as an actual player location change.
 // It does not imply measured mileage or a transport mode; only location changes
 // incur 30 provisional minutes. The factory and its executive office share an ID.
-function recordProvisional(from,to,journeyId=null,chosenMode=null){
+function recordProvisional(from,to,journeyId=null,chosenMode=null,estimatedMinutes=null){
  if(!getLocation(from)||!getLocation(to)||from===to||S.paused)return false;
  if(!S.transport||!Array.isArray(S.transport.journeys))return false;
  const custody=S.horseCustody;
@@ -48,7 +48,8 @@ function recordProvisional(from,to,journeyId=null,chosenMode=null){
   return false;
  const id=journeyId===null?(window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):journeyId;
  if(typeof id!=='string'||!id||id.length>128||S.transport.journeys.some(v=>v.id===id))return false;
- const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
+ const gameMinutes=Number.isSafeInteger(estimatedMinutes)&&estimatedMinutes>=4&&estimatedMinutes<=120?
+  estimatedMinutes:ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
