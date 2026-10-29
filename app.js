@@ -2913,6 +2913,7 @@ const TITLE_MAP_LOCATION_DEFAULTS=window.FederalElectricCity.mapLocations().map(
 const TITLE_MAP_LOCATIONS=TITLE_MAP_LOCATION_DEFAULTS.map(v=>Object.assign({},v));
 let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
 let titleMapOpenedFromGame=false;
+let capitalTravelBusy=false;
 let titleMapShowNames=false,titleMapCategory='all',titleMapOrigin='all',titleMapSearchQuery='';
 const TITLE_MAP_CATEGORY_LABELS=Object.freeze({
  company:'Company & Industry',neighborhood:'Neighborhoods',social:'Clubs & Society',
@@ -3231,6 +3232,40 @@ function renderPlaceReference(location,mapCard=false){
  panel.appendChild(details);
 }
 
+// Capital Travel System: pin coordinates remain untouched; routes are overlays.
+function capitalTravelPath(fromId,toId){
+ const img=document.getElementById('titleMapImage');
+ const locations=[fromId,toId].map(id=>TITLE_MAP_LOCATIONS.find(v=>v.id===id));
+ if(!img?.naturalWidth||locations.some(v=>!v))return [];
+ const [from,to]=locations.map(v=>{
+  const p=titleMapDisplayCoordinate(v,img);
+  return {x:p.x/img.naturalWidth,y:p.y/img.naturalHeight};
+ });
+ return window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
+}
+function renderCapitalTravelChoice(id){
+ const modeField=document.getElementById('capitalTravelMode');
+ const notice=document.getElementById('capitalTravelEstimate');
+ if(!modeField||!notice)return;
+ const origin=currentCityLocation()?.locationId;
+ const same=origin===id;
+ for(const option of modeField.options){
+  const check=window.FE_CAPITAL_TRAVEL?.available?.(S,origin,option.value);
+  option.disabled=!same&&check?.ok!==true;
+  option.title=check?.reason||'';
+ }
+ if(modeField.selectedOptions?.[0]?.disabled)modeField.value='walk';
+ const points=capitalTravelPath(origin,id);
+ if(same){notice.textContent='Already here. Entering a room is not a city journey.';return}
+ if(points.length<2){
+  notice.textContent='Route is not established. Existing provisional travel rules apply.';
+  return;
+ }
+ const length=window.FE_CAPITAL_TRAVEL?.estimate?.(points);
+ const minutes=length?.minutes?.[modeField.value]||30;
+ notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+minutes+
+  ' game minutes · real-world miles not yet verified.';
+}
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
  titleMapSelectedLocationId=id;
@@ -3249,6 +3284,9 @@ function openTitleMapLocation(id){
  const reason=mapTravelRestriction(location);
  const journeyNotice=document.getElementById('titleMapTravelNote');
  if(journeyNotice)journeyNotice.textContent=(location.provisional?'PROVISIONAL PIN · historical placement pending. ':'')+(reason||window.FE_TRAVEL?.notice?.(currentCityLocation().locationId,id)||'Travel times not yet surveyed; direct movement is provisional.');
+ const modePicker=document.getElementById('capitalTravelMode');
+ if(modePicker)modePicker.onchange=()=>renderCapitalTravelChoice(id);
+ renderCapitalTravelChoice(id);
  const travel=$('#titleMapLocationTravel');
  if(travel){
   const alreadyHere=!!activeProfileId()&&currentCityLocation()?.locationId===id;
@@ -3280,7 +3318,7 @@ function renameSelectedTitleMapPin(reset=false){
 // Route all map travel and normal room changes through the renderer that
 // already works in the developer panel. Apply regular player access rules
 // before rendering and commit the visit only after the room is visible.
-function enterMapDestination(id,event,requestedRoomId){
+function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisionalMinutes=null){
  event?.preventDefault?.();
  event?.stopPropagation?.();
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id)||cityLocation(id);
@@ -3300,6 +3338,9 @@ function enterMapDestination(id,event,requestedRoomId){
  const changesRoom=!changesLocation&&prior.roomId!==room.id;
  // Preflight before previewing the destination: missing travel accounting must
  // never become a free teleport, even if secondary room panels throw.
+ if(changesLocation&&Number.isSafeInteger(provisionalMinutes)&&
+    !window.FE_WASHINGTON_TIME?.canSpend?.(S,provisionalMinutes*60))
+  return fail('The game clock cannot accommodate this journey right now.');
  if(changesLocation&&!window.FE_TRAVEL?.recordProvisional)
   return fail('Travel service is unavailable. You have not left your current location.');
  if(changesRoom&&!window.FE_TRAVEL?.recordRoomMove)
@@ -3315,12 +3356,24 @@ function enterMapDestination(id,event,requestedRoomId){
  // map. Failed accounting leaves the player at the origin and map available.
  if(changesLocation||changesRoom){
   let recorded=false;
+  const custodyBefore=S.horseCustody?{...S.horseCustody}:null;
+  if(changesLocation&&travelMode&&travelMode!=='walk'){
+   const selection=window.FE_CAPITAL_TRAVEL?.available?.(S,prior.locationId,travelMode);
+   const prepared=selection?.ok&&window.FE_HORSE_CUSTODY?.prepare?.(
+    S,selection.horseId,prior.locationId,selection.carriageId||null);
+   if(!prepared?.ok){
+    overlay.hidden=true;document.body.classList.remove('city-room-open');
+    const map=document.getElementById('titleMapViewer');if(map)map.hidden=false;
+    return fail(prepared?.reason||selection?.reason||'Selected travel equipment is unavailable.');
+   }
+  }
   try{
    recorded=!!(changesLocation
-    ?window.FE_TRAVEL.recordProvisional(prior.locationId,place.id)
+    ?window.FE_TRAVEL.recordProvisional(prior.locationId,place.id,null,travelMode,provisionalMinutes)
     :window.FE_TRAVEL.recordRoomMove(place.id,prior.roomId,room.id));
   }catch(error){console.error('Go There travel ledger failed:',id,error)}
   if(!recorded){
+   if(custodyBefore)S.horseCustody=custodyBefore;else delete S.horseCustody;
    overlay.hidden=true;
    document.body.classList.remove('city-room-open');
    const map=document.getElementById('titleMapViewer');
@@ -3368,9 +3421,57 @@ function enterMapDestination(id,event,requestedRoomId){
  overlay.focus?.();
  return true;
 }
-function travelFromTitleMap(event){
- return enterMapDestination(titleMapSelectedLocationId||
-  document.getElementById('titleMapLocationTravel')?.dataset.locationId,event);
+async function travelFromTitleMap(event){
+ event?.preventDefault?.();event?.stopPropagation?.();
+ if(capitalTravelBusy)return false;
+ const id=titleMapSelectedLocationId||
+  document.getElementById('titleMapLocationTravel')?.dataset.locationId;
+ const from=currentCityLocation()?.locationId;
+ if(!id||!from||id===from)return enterMapDestination(id,null);
+ const place=TITLE_MAP_LOCATIONS.find(v=>v.id===id)||cityLocation(id);
+ const travelNote=document.getElementById('titleMapTravelNote');
+ const restriction=mapTravelRestriction(place);
+ if(restriction){if(travelNote)travelNote.textContent=restriction;return false}
+ const room=cityLocation(id);
+ const targetRoom=room&&cityRoom(id,room.defaultRoom);
+ if(!targetRoom){if(travelNote)travelNote.textContent='No accessible destination room.';return false}
+ if(targetRoom.restricted&&!titleDevUnlockAllRooms&&
+  window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},id,targetRoom.id,S.gameDate)?.ok!==true){
+  if(travelNote)travelNote.textContent='This room requires authorization.';return false;
+ }
+ const mode=document.getElementById('capitalTravelMode')?.value||'walk';
+ const availability=window.FE_CAPITAL_TRAVEL?.available?.(S,from,mode);
+ if(!availability?.ok){
+  if(travelNote)travelNote.textContent=availability?.reason||'Selected transportation is unavailable.';
+  return false;
+ }
+ const points=capitalTravelPath(from,id);
+ if(points.length<2)return enterMapDestination(id,null,null,mode);
+ const measurement=window.FE_CAPITAL_TRAVEL.estimate(points);
+ const minutes=measurement.minutes[mode];
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,minutes*60)){
+  if(travelNote)travelNote.textContent='There is not enough game time for this journey.';
+  return false;
+ }
+ const img=document.getElementById('titleMapImage'),viewport=document.getElementById('titleMapViewport');
+ const viewer=document.getElementById('titleMapViewer');
+ const button=document.getElementById('titleMapLocationTravel');
+ if(!img?.naturalWidth||!viewport||!viewer||viewer.hidden)return false;
+ capitalTravelBusy=true;if(button)button.disabled=true;
+ try{
+  if(travelNote)travelNote.textContent='Traveling by '+availability.mode+
+   ' · approximately '+measurement.guidePixels+' map pixels (provisional).';
+  const finished=await window.FE_CAPITAL_TRAVEL.animate({
+   viewport,points,mode,
+   project:p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
+     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale})
+  });
+  if(!finished||viewer.hidden)return false;
+  return enterMapDestination(id,null,null,mode,minutes);
+ }finally{
+  capitalTravelBusy=false;
+  if(button)button.disabled=false;
+ }
 }
 function buildTitleMapMarkers(){
  const layer=$('#titleMapMarkers');if(!layer)return;
@@ -3503,6 +3604,7 @@ function openTitleMap(){
  if(img.complete&&img.naturalWidth)ready();else img.addEventListener('load',ready,{once:true});
 }
 function closeTitleMap(chargeTime=true){
+ window.FE_CAPITAL_TRAVEL?.cancel?.();
  const viewer=$('#titleMapViewer');
  // Exactly one minute for an actual visible map closing. Internal cleanup
  // on title/profile transitions explicitly opts out.
