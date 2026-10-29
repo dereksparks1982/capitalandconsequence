@@ -1228,7 +1228,7 @@ function pokerAccess(circle){return pokerClubStatus(circle).allowed}
 function pokerLimit(circle){return {working:5,middle:3,elite:1}[circle]||0}
 function pokerCircleName(circle){return circle==='working'?'Neighborhood Game':circle==='middle'?'Commerce Club':'Embassy Room'}
 function maybePokerProgress(circle){if(circle==='middle'&&window.FE_CLUB_MEMBERSHIPS?.hasCard(S,'middle')&&!S.elitePokerUnlocked){const vale=S.contacts.vale;if(!vale.met&&Math.random()<.22){vale.met=true;vale.trust=1;S.notes.push({date:displayDate(),text:'Met Harrison Vale at the Commerce Club. The industrialist mentioned that he sometimes attends a much more private Washington table.',source:'card-table conversation'});return ' You met Harrison Vale, an industrialist with access to more private games.'}if(vale.met&&Math.random()<.28){vale.trust++;if(vale.trust>=2){S.elitePokerUnlocked=true;window.FE_MAP_LEADS?.flag?.(S,'embassyPoker','vale-invitation');S.notes.push({date:displayDate(),text:'Harrison Vale offered to put my name forward for the Embassy Room, an invitation-only private society poker game.',source:'card-table conversation'});return ' Harrison Vale has secured you an invitation to the Embassy Room.'}return ' Harrison Vale spent more time at your table. The acquaintance is becoming useful.'}}return ''}
-function recordPokerResult(circle,delta,hands,simulated,timeSeconds,creditMoney=true,conduct='courteous'){
+function recordPokerResult(circle,delta,hands,simulated,timeSeconds,creditMoney=true,conduct='courteous',sessionId=null){
  const lawClassification=window.FE_GAMBLING_LAW?.classify({venueId:{working:"working-poker",middle:"commerce-poker",elite:"embassy-poker"}[circle],game:"texas-holdem",eventKind:"regular",date:S.gameDate});
  if(!lawClassification||lawClassification.legal)throw Error("Private poker must remain unauthorized");
 if(creditMoney)S.personalCash+=delta;
@@ -1236,12 +1236,12 @@ const trialCost=window.FE_CLUB_MEMBERSHIPS?.config?.[circle]?.hospitality||0;
 const behavior=conduct==='generous'&&S.personalCash<trialCost?'courteous':conduct;
 const trialResult=window.FE_CLUB_MEMBERSHIPS?.trial(S,{
  tier:circle,today:S.gameDate,introduced:circle==='middle'?!!S.middlePokerUnlocked:!!S.elitePokerUnlocked,
- delta,stake:({middle:100,elite:500}[circle]||25),hands,conduct:behavior
+ delta,stake:({middle:100,elite:500}[circle]||25),hands,conduct:behavior,sessionId
 });
-if(trialResult?.hospitality){S.personalCash-=trialResult.hospitality;
+if(trialResult?.hospitality&&!trialResult.repeated){S.personalCash-=trialResult.hospitality;
  S.notes.push({date:displayDate(),text:'Paid '+cash(trialResult.hospitality)+' for discreet hospitality at '+pokerCircleName(circle)+'.',source:'personal club expenses'});
 }
-if(trialResult&&(trialResult.status==='member'||trialResult.status==='cooldown'))
+if(trialResult&&!trialResult.repeated&&(trialResult.status==='member'||trialResult.status==='cooldown'))
  S.notes.push({date:displayDate(),text:trialResult.message,source:'private club meeting'});
 if(delta>0)S.pokerWins[circle]=(S.pokerWins[circle]||0)+1;if(simulated)S.pokerSimulated[circle]=(S.pokerSimulated[circle]||0)+1;if(timeSeconds>0)window.advanceWorldTime(timeSeconds,true);let extra=maybePokerProgress(circle),raid=false;if(trialResult?.message)extra+=' '+trialResult.message;if(isRaidToday()&&Math.random()<pokerRisk(circle)){raid=true;S.lastRaidOutcome='caught';S.reputation=clamp(S.reputation-(circle==='elite'?7:3),0,100);S.notes.push({date:displayDate(),text:'Police raided the card game while I was present. I was caught in the sweep.',source:'personal recollection'})}const verb=simulated?'Simulated':'Played';S.notes.push({date:displayDate(),text:verb+' '+hands+' hand'+(hands===1?'':'s')+' at '+pokerCircleName(circle)+' and left '+(delta>=0?'ahead ':'down ')+cash(Math.abs(delta))+'.'+(simulated?' '+Math.round(timeSeconds/60)+' business minutes elapsed.':''),source:simulated?'game simulation':'personal recollection'});$('#pokerNote').textContent=raid?'The game was caught in a rare police sweep.':verb+' session: '+hands+' hands · '+(delta>=0?'won ':'lost ')+cash(Math.abs(delta))+' · '+(simulated?Math.round(timeSeconds/60)+' minutes elapsed.':'session recorded.')+extra;save();render()}
 function pokerSessions(){
@@ -1301,7 +1301,7 @@ window.FE_POKER_SETTLE=(token,circle,rawDelta,rawHands,elapsed,conduct='courteou
  S.outcomeEvents.push({id:'poker:'+token,type:'poker-result',delta,turn:S.turnSerial});
  if(S.outcomeEvents.length>512)S.outcomeEvents.splice(0,S.outcomeEvents.length-512);
  window.updateCashHeader?.();
- recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous');
+ recordPokerResult(circle,delta,hands,false,0,false,['courteous','generous','quiet','rude'].includes(conduct)?conduct:'courteous',token);
  return true;
 };
 function unresolvedPoker(){
