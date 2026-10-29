@@ -2139,7 +2139,8 @@ function deleteProfileById(id){
  const profiles=readProfiles(),p=profiles.find(v=>v.id===id);if(!p)return;
  if(!confirm('Delete profile "'+p.name+'" and all of its saved Federal Electric progress?'))return;
  localStorage.removeItem(profileSaveKey(id));
- enqueueDiskDelete(id);
+ localStorage.removeItem(TITLE_MAP_LAYOUT_KEY+':'+id);
+ enqueueDiskDelete(id);enqueueDiskDelete('map_'+id);
  const next=profiles.filter(v=>v.id!==id);writeProfiles(next);
  let warning='';
  if(activeProfileId()===id){
@@ -3249,6 +3250,9 @@ function saveTitleMapLocationLayout(){
  const saved={};
  for(const location of TITLE_MAP_LOCATIONS)saved[location.id]={x:+location.x.toFixed(6),y:+location.y.toFixed(6),...(location.pinLabel?{label:location.pinLabel}:{})};
  localStorage.setItem(titleMapStorageKey(),JSON.stringify(saved));
+ const id=activeProfileId();
+ if(id&&window.FE_DISK_SAVES)
+  enqueueDiskWrite('map_'+id,JSON.stringify({version:1,profileId:id,positions:saved}));
 }
 function resetTitleMapLocationLayout(){
  if(capitalTravelBusy)return;
@@ -4177,7 +4181,20 @@ window.FE_BOOTSTRAP_READY=(async()=>{
    }catch(err){console.warn('Shared campaign recovery unavailable',err)}
   }
  }
- bootstrapProfiles();loadInitial();render();initTitleScreen();
+ bootstrapProfiles();
+ if(window.FE_DISK_SAVES){
+  for(const profile of readProfiles()){
+   try{
+    const name=TITLE_MAP_LAYOUT_KEY+':'+profile.id;
+    if(localStorage.getItem(name)!==null)continue;
+    const receipt=await window.FE_DISK_SAVES.read('map_'+profile.id);
+    const data=receipt?.ok?JSON.parse(receipt.json):null;
+    if(data?.version===1&&data.profileId===profile.id&&data.positions&&typeof data.positions==='object')
+     localStorage.setItem(name,JSON.stringify(data.positions));
+   }catch(error){console.warn('Map layout recovery unavailable',error)}
+  }
+ }
+ loadInitial();render();initTitleScreen();
  bootstrapReady=true;
  return true;
 })();

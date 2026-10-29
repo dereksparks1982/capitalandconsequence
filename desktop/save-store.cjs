@@ -14,9 +14,19 @@ function validateJson(json){
  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Save must contain a state object');
  return json;
 }
+function validateRecord(id,json){
+ validateId(id);validateJson(json);
+ const obj=JSON.parse(json);
+ if(id.startsWith('world_')){
+  if(obj.version!==1||!obj.id||!Number.isSafeInteger(obj.clock?.worldMinute)||!Array.isArray(obj.events))throw Error('Incomplete world record');
+ }else if(id.startsWith('map_')){
+  if(obj.version!==1||obj.profileId!==id.slice(4)||!obj.positions||typeof obj.positions!=='object')throw Error('Incomplete map layout');
+ }else if(!Number.isInteger(obj.version)||typeof obj.gameDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(obj.gameDate))throw Error('Incomplete character save');
+ return json;
+}
 function fileFor(root,id){return path.join(root,validateId(id)+'.json')}
 function atomicSave(root,id,json){
- validateJson(json);
+ validateRecord(id,json);
  fs.mkdirSync(root,{recursive:true,mode:0o700});
  const target=fileFor(root,id),temp=target+'.tmp-'+process.pid+'-'+(++serial);
  try{
@@ -24,7 +34,7 @@ function atomicSave(root,id,json){
   // Recovery copy is not selectable as an in-game rewind slot.
   // Never overwrite a known-good recovery with a corrupted current file.
   if(fs.existsSync(target)){
-   try{validateJson(fs.readFileSync(target,'utf8'));fs.copyFileSync(target,target+'.recovery')}
+   try{validateRecord(id,fs.readFileSync(target,'utf8'));fs.copyFileSync(target,target+'.recovery')}
    catch(_err){/* Preserve the previous usable recovery, if any. */}
   }
   fs.renameSync(temp,target);
@@ -41,7 +51,7 @@ function readSave(root,id){
   found=true;
   try{
    const json=fs.readFileSync(file,'utf8');
-   validateJson(json);
+   validateRecord(id,json);
    return {ok:true,json,recovered:file!==target};
   }catch(_err){/* Try the prior valid generation before reporting corruption. */}
  }
@@ -61,4 +71,4 @@ function deleteSave(root,id){
  for(const name of [target,target+'.recovery'])if(fs.existsSync(name))fs.unlinkSync(name);
  return {ok:true};
 }
-module.exports={validateId,validateJson,atomicSave,readSave,listSaves,deleteSave};
+module.exports={validateId,validateJson,validateRecord,atomicSave,readSave,listSaves,deleteSave};

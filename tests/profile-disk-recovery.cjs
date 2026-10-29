@@ -17,6 +17,14 @@ async function run(){
   fs.writeFileSync(path.join(root,'p1.json'),'{bad-again');
   assert.equal(JSON.parse(disk.readSave(root,'p1').json).gameDate,'1878-01-02','Never replace a healthy backup with corrupt current bytes');
   assert.deepEqual(disk.listSaves(root).ids,['p1']);
+  assert.throws(()=>disk.atomicSave(root,'bad',{a:1}),/payload/i);
+  assert.throws(()=>disk.atomicSave(root,'p2','{"a":1}'),/Incomplete character/);
+  disk.atomicSave(root,'map_p1',JSON.stringify({version:1,profileId:'p1',positions:{home:{x:.4,y:.6}}}));
+  disk.atomicSave(root,'world_w1',JSON.stringify({version:1,id:'w1',clock:{worldMinute:1200},events:[]}));
+  assert.deepEqual(disk.listSaves(root).ids,['map_p1','p1','world_w1']);
+  fs.writeFileSync(path.join(root,'p1.json'),'{"a":1}');
+  assert.equal(disk.readSave(root,'p1').recovered,true,'Valid JSON with incomplete schema uses recovery');
+
   const data=new Map();
   const storage={getItem:k=>data.has(k)?data.get(k):null,setItem:(k,v)=>data.set(k,String(v))};
   const bridge={list:async()=>disk.listSaves(root),read:async id=>disk.readSave(root,id)};
@@ -34,6 +42,7 @@ async function run(){
   assert.deepEqual(result.restored,['p1']);
   assert([...data.keys()].some(k=>k.startsWith('profile_p1-corrupt-')));
   disk.deleteSave(root,'p1');
+  disk.deleteSave(root,'map_p1');disk.deleteSave(root,'world_w1');
   assert.deepEqual(disk.listSaves(root).ids,[]);
   console.log('PASS Electron disk recovery, corrupt-primary fallback, prior-good backup preservation and profile restoration');
  }finally{fs.rmSync(root,{recursive:true,force:true})}

@@ -20,7 +20,7 @@
   try{const parsed=JSON.parse(storage.getItem(indexKey)||'[]');if(Array.isArray(parsed))profiles=parsed.filter(p=>idValid(p?.id)).slice(0,limit)}
   catch(_err){/* A damaged profile directory can be reconstructed from mirrors. */}
   const listed=await bridge.list();
-  const diskIds=Array.isArray(listed?.ids)?listed.ids.filter(idValid):[];
+  const diskIds=Array.isArray(listed?.ids)?listed.ids.filter(id=>idValid(id)&&!id.startsWith('world_')&&!id.startsWith('map_')):[];
   const candidates=[...new Set([...profiles.map(p=>p.id),...diskIds])].slice(0,limit);
   const restored=[];
   for(const id of candidates){
