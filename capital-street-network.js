@@ -228,6 +228,23 @@ function namedRoads(nodePath,sameEdge=null){
  }
  return names;
 }
+// Safety check for the obstacles we have actually modeled. This does NOT
+// claim that the guide's other painted buildings have been traced.
+function validateItinerary(points){
+ if(!Array.isArray(points)||points.length<2||points.some(p=>
+  !p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))
+  return {ok:false,reason:'invalid-waypoints'};
+ for(const blocked of BLOCKED_LANDMARKS){
+  // Visiting the building itself is allowed; traversing its grounds as a
+  // shortcut between two unrelated street addresses is never allowed.
+  if(pointInBox(points[0],blocked)||pointInBox(points.at(-1),blocked))continue;
+  for(let i=1;i<points.length;i++){
+   if(intersectsBox(points[i-1],points[i],blocked))
+    return {ok:false,reason:'restricted-crossing',landmark:blocked.name,segment:i-1};
+  }
+ }
+ return {ok:true,reason:null};
+}
 function streetRoute(start,end){
  if(!start||!end||![start.x,start.y,end.x,end.y].every(Number.isFinite))return null;
  if(start.x===end.x&&start.y===end.y)
@@ -267,13 +284,16 @@ function streetRoute(start,end){
  const body=compact([start,...a.approach,...road,
   ...b.approach.slice().reverse(),end]);
  const accessPixels=Math.round(a.distance+b.distance);
+ // Never accept a route across an explicitly excluded compound when both
+ // destination pins are outside it. Better to refuse than fake street access.
+ if(!validateItinerary(body).ok)return null;
  return {points:body,
   type:accessPixels>65?'provisional-street-access':'provisional-street-network',
   accessPixels,intersections:direct?0:path.length,networkEdges:edges.length,
   turns:routeTurns(body),namedRoads:namedRoads(path,direct?a.edge:null)};
 }
-const api=Object.freeze({version:5,source:'approximate-guide-intersections',image:IMG,
- nodeCount:graph.length,edgeCount:edges.length,streetRoute,
+const api=Object.freeze({version:6,source:'approximate-guide-intersections',image:IMG,
+ nodeCount:graph.length,edgeCount:edges.length,streetRoute,validateItinerary,
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_STREETS=api;
