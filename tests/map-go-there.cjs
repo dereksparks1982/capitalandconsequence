@@ -23,7 +23,10 @@ function scenario({denied=false,restricted=false,destinationRoom=null,failedJour
   reviewCashOnArrival(){},save(){saved++},closeTitleDialog(){},closeTitleMap(){map.hidden=true},console:{warn(){},error(){}}
  };
  vm.createContext(context);vm.runInContext(source,context);
- const result=destinationRoom?context.enterMapDestination('star',null,destinationRoom):context.travelFromTitleMap({preventDefault(){},stopPropagation(){}});
+ // The asynchronous map animation is verified by capital-travel-animation.cjs.
+ // This fixture targets the synchronous, authoritative room-arrival transaction
+ // after the animated route has finished.
+ const result=context.enterMapDestination('star',null,destinationRoom);
  return {result,map,overlay,S,notice,rendered,saved,menus,journeys,session:context.cityRoomSession,body};
 }
 const salon=scenario();
