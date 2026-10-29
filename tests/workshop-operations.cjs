@@ -29,6 +29,8 @@ for(let n=0;n<150;n++){
 assert.ok(holding,'Some breakdowns exceed the assistant ability');
 assert.equal(holding.assistantTried,true);
 assert.ok(s.workshopOperations.hold);
+assert.ok(s.workshopOperations.incidentHistory.length>=1);
+assert.ok(s.workshopOperations.incidentHistory.length<=32);
 assert.equal(ops.availability(s,{date:'1878-01-02',minuteOfDay:600}).ok,false);
 const snapshot=JSON.stringify(s);
 const close=ops.repair(s,'repair:one',{date:'1878-01-02',minuteOfDay:1010},()=>{throw Error('No overtime')});
@@ -39,6 +41,8 @@ const fix=ops.repair(s,'repair:one',{date:'1878-01-02',minuteOfDay:600},(seconds
  actions.push({seconds,away,atBell});return seconds;
 });
 assert.equal(fix.ok,true);assert.equal(fix.costCents,30);
+assert.equal(s.workshopOperations.lastRepair.costCents,30);
+assert.equal(s.workshopOperations.lastRepair.elapsedMinutes,45);
 assert.equal(s.companyCash,99.70);
 assert.equal(s.lastExpenses,.3);
 assert.equal(s.workshopOperations.hold,null);
