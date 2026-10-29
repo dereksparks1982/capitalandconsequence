@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.97-dev (28 October 2026)
+## Current development checkpoint: v0.6.98-dev (28 October 2026)
+
+**Stacked NPC grocery journey slice:** Eligible off-duty residents with genuine hunger, available personal cash and no unconsumed provisions can prioritize an existing Chinatown market over leisure. The ordinary city-access checks and the already implemented saved NPC 30-minute journey system apply. Arrival is required before making a finite-stock, personally paid market purchase. The existing actual-room market shopping routine and historical map placement are unchanged. Added source regression assertions for market-directed excursions, on-duty priority and payment-at-arrival gate; the targeted V8 mock run passed. No full Node suite or Electron gameplay test has yet been performed. The original map art, 40 pins and UI geometry remain fixed.
+
+### Previous v0.6.97-dev checkpoint (28 October 2026)
 
 **Stacked development build 7, resident shopping integration:** Residents with real hunger and no currently unconsumed paid food may purchase groceries with their own money while genuinely present at an established Chinatown or Hillsdale market activity. Purchases use the existing finite shared stock, credited merchant tills, and unique saved transaction tokens, then flow into the established household provision records. Travel, absence, poor funds, inadequate hunger or a non-market location cannot create a sale. A dedicated offline source regression checks affordability, sold-out substitutions, physical presence and replay. This does not yet simulate arbitrary journeys to a grocery store or invent a new shop or historical address. Full Node suite and Ubuntu playthrough remain pending. The original map artwork, all 40 pins and UI geometry stay unchanged.
 
