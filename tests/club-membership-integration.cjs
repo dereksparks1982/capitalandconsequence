@@ -6,6 +6,13 @@ assert.match(poker,/completedHands:0/);
 assert.match(poker,/G\.completedHands\+\+/);
 assert.match(poker,/G\.roomKey,delta,G\.completedHands,elapsed,G\.etiquette/);
 assert.match(app,/FE_CLUB_MEMBERSHIPS\?\.trial/);
+assert.match(app,/hands,conduct:behavior,sessionId/,'Membership trials must receive the actual settled session identifier');
+assert.match(app,/recordPokerResult\(circle,delta,hands,false,0,false,\[[^\n]+,token\)/,
+ 'Popup settlement must forward the authorized poker ticket into club trials');
+assert.match(app,/trialResult\?\.hospitality&&!trialResult\.repeated/,
+ 'Replayed club results cannot double-charge hospitality');
+assert.match(app,/state\.settled\.some\(p=>p\.id===token\)/,
+ 'Real poker custody settlement must block duplicate payouts');
 assert.match(app,/clubMemberships:\{version:1,middle:\{\},elite:\{\}\}/);
 assert.match(app,/pokerClubStatus\(circle\)\.allowed/);
 assert.match(venues,/FE_CLUB_MEMBERSHIPS\?\.access\(S,tier,S\.gameDate,introduced\)/);
