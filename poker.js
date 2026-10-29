@@ -251,7 +251,16 @@ function render(done=false){
  document.querySelector('#pokerPot').textContent='$'+G.pot;
  document.querySelector('#pokerBoard').innerHTML=G.board.map(c=>card(c)).join('')||'<span class="board-empty">PRE-FLOP</span>';
  const seats=document.querySelector('#pokerSeats');
- seats.innerHTML=G.players.map((p,i)=>'<div class="p-seat seat-'+i+(p.fold?' folded':'')+(p.allIn?' all-in':'')+'">'+pokerPortrait(i)+'<b>'+p.name+'</b><div class="cards">'+p.hole.map(c=>card(c,i!==0&&!revealOpponentCards(p,done))).join('')+'</div><small>$'+p.chips+' · '+(i===0?'Federal Electric':p.style)+(p.allIn&&!p.fold?' · ALL-IN':'')+'</small></div>').join('');
+ seats.innerHTML=G.players.map((p,i)=>{
+  const acting=!done&&G.turnIndex===i&&needsAction(p);
+  const dealer=i===G.dealer?'<span class="poker-dealer" title="Dealer button" aria-label="Dealer button">D</span>':'';
+  const status=p.fold?'FOLDED':p.allIn?'ALL-IN':acting?'TO ACT':'';
+  return '<div class="p-seat seat-'+i+(p.fold?' folded':'')+(p.allIn?' all-in':'')+
+   (acting?' is-turn':'')+'">'+dealer+pokerPortrait(i)+'<b>'+p.name+
+   '</b><div class="cards">'+p.hole.map(c=>card(c,i!==0&&!revealOpponentCards(p,done))).join('')+
+   '</div><small>$'+p.chips+' · '+(i===0?'Your seat':p.style)+
+   (status?' · '+status:'')+'</small></div>';
+ }).join('');
  document.querySelector('#pokerLog').innerHTML=G.log.map(x=>'<div>'+x+'</div>').join('');
  const p=G.players[0],need=Math.max(0,G.currentBet-p.bet),humanTurn=!done&&G.turnIndex===0&&needsAction(p);
  const call=document.querySelector('#pokerCall');
