@@ -266,24 +266,33 @@
     preferredDestination:window.FE_NPC_INTENTIONS?.plan?.(def,agent,action)||null});
  }
  // NPC journeys use the player-driven world clock, never a second timer.
+ function recordNpcArrival(a,j){
+  const arrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+  a.lastArrival=arrival;
+  if(!Array.isArray(a.journeyHistory))a.journeyHistory=[];
+  if(!a.journeyHistory.some(x=>x.from===arrival.from&&x.to===arrival.to&&
+    x.departedAt===arrival.departedAt)){
+   a.journeyHistory.push(arrival);
+   if(a.journeyHistory.length>16)a.journeyHistory.splice(0,a.journeyHistory.length-16);
+  }
+ }
+ // Transit depends exclusively on the player's saved clock.
  function journeyArrival(a,desired,minute,previous){
-  if(!desired.locationId)return desired;
+  if(!Number.isSafeInteger(minute))return desired;
+  let origin=a.locationId,departed=previous;
   if(a.journey?.version===1){
-   if(minute<a.journey.arrivesAt)return {locationId:null,roomId:null,
-    activity:'travelling to '+a.journey.to,reason:'in-transit',status:'travelling'};
    const j=a.journey;
-   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+   if(minute<j.arrivesAt)return {locationId:null,roomId:null,
+    activity:'travelling to '+j.to,reason:'in-transit',status:'travelling'};
+   recordNpcArrival(a,j);
+   origin=j.to;departed=j.arrivesAt;
    a.journey=null;a.journeyDestination=null;
-   if(j.to===desired.locationId)return desired;
   }
-  if(!a.locationId||a.locationId===desired.locationId)return desired;
-  const departure=Number.isSafeInteger(previous)&&previous<=minute?previous:minute;
-  const j={version:1,from:a.locationId,to:desired.locationId,
-   departedAt:departure,arrivesAt:departure+30};
-  if(minute>=j.arrivesAt){
-   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
-   return desired;
-  }
+  if(!desired.locationId||!origin||origin===desired.locationId)return desired;
+  const fromMinute=Number.isSafeInteger(departed)&&departed<=minute?departed:minute;
+  const j={version:1,from:origin,to:desired.locationId,
+   departedAt:fromMinute,arrivesAt:fromMinute+30};
+  if(minute>=j.arrivesAt){recordNpcArrival(a,j);return desired}
   a.journey=j;a.journeyDestination={...desired};
   return {locationId:null,roomId:null,activity:'travelling to '+j.to,
    reason:'in-transit',status:'travelling'};
@@ -298,7 +307,7 @@
     a.locationId=destination.locationId;a.roomId=destination.roomId;
     a.activity=destination.activity;a.status='present';
    }else{a.locationId=null;a.roomId=null;a.activity=null;a.status='off-duty'}
-   a.lastArrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+   recordNpcArrival(a,j);
    a.journey=null;a.journeyDestination=null;changed=true;
   }
   return changed;
