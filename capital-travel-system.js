@@ -137,6 +137,32 @@ function positionAt(points,fraction,width=2048,height=1159){
  }
  return {...points.at(-1)};
 }
+function routePrefix(points,fraction,width=2048,height=1159){
+ if(!Array.isArray(points)||!points.length||!Number.isFinite(fraction)||
+  !Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0||
+  points.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))return [];
+ const cut=Math.max(0,Math.min(1,fraction));
+ if(cut===0||points.length===1)return [{...points[0]}];
+ if(cut===1)return points.map(p=>({...p}));
+ const lengths=[],total=points.slice(1).reduce((sum,p,i)=>{
+  const q=points[i],d=Math.hypot((p.x-q.x)*width,(p.y-q.y)*height);
+  lengths.push(d);return sum+d;
+ },0);
+ if(total<=1e-9)return [{...points[0]}];
+ let left=cut*total;
+ const out=[{...points[0]}];
+ for(let i=0;i<lengths.length;i++){
+  const segment=lengths[i];
+  if(left>=segment&&i<lengths.length-1){
+   out.push({...points[i+1]});left-=segment;continue;
+  }
+  const r=segment?Math.max(0,Math.min(1,left/segment)):0;
+  out.push({x:points[i].x+(points[i+1].x-points[i].x)*r,
+   y:points[i].y+(points[i+1].y-points[i].y)*r});
+  break;
+ }
+ return out;
+}
 function animate({viewport,points,project,mode='walk',durationMs=null,onProgress=null,onFrame=null}){
  if(active)clear();
  if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function')
@@ -149,11 +175,13 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:hidden';
  const routeLine=el('polyline',{fill:'none',stroke:'#e9c887','stroke-width':3,
   'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':'3 9'});
+ const completedLine=el('polyline',{fill:'none',stroke:'#a96f40','stroke-width':4,
+  'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':'4 6'});
  const outline=el('circle',{r:15,fill:'#241c14',stroke:'#f1d7a0','stroke-width':3});
  const token=el('text',{'text-anchor':'middle','dominant-baseline':'central','font-size':21,
   'font-weight':'bold',fill:'#ffe7b9'});
  token.textContent=spec.symbol;
- const group=el('g',{});group.append(outline,token);svg.append(routeLine,group);
+ const group=el('g',{});group.append(outline,token);svg.append(routeLine,completedLine,group);
  viewport.appendChild(svg);
  return new Promise(resolve=>{
   const state={svg,frame:null,resolve,started:null};active=state;
@@ -168,6 +196,10 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
    const dims={w:Math.max(1,viewport.clientWidth),h:Math.max(1,viewport.clientHeight)};
    svg.setAttribute('viewBox','0 0 '+dims.w+' '+dims.h);
    routeLine.setAttribute('points',raw.map(p=>p.x+','+p.y).join(' '));
+   completedLine.setAttribute('points',routePrefix(points,progress).map(p=>{
+    const screen=project(p);
+    return screen.x+','+screen.y;
+   }).join(' '));
    const local=positionAt(points,progress);
    // Allow a camera-follow callback to pan before drawing the token at its
    // new position, while preserving journey progress in map coordinates.
@@ -189,7 +221,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:5,modes:MODES,route,estimate,positionAt,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:6,modes:MODES,route,estimate,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
