@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.7-beta (29 October 2026)
+## Current development checkpoint: v0.7.8-beta (29 October 2026)
+
+**Capital Travel's animated street trail:** The moving walker, horse or carriage figurine now leaves a temporary copper-colored trace along the road path already traveled. The original dotted itinerary remains visible ahead. Both paths follow the same guide-pixel position through camera zoom/pan and are removed after the trip or cancellation. The pawn now finishes on the exact destination pin without floating-point drift. The original Washington map artwork, all numbered pin defaults, existing room navigation and approved UI geometry remain unchanged. **The first-pass road model still needs precise street tracing and cannot guarantee that every illustrated building is avoided.** Focused animation, route-prefix and zoom tests passed in isolated JavaScript; full local Node and Electron QA pending. No GitHub Actions or installer. [v0.7.8 Beta notes](docs/RELEASE-NOTES-v0.7.8-beta.md).
+
+### Previous v0.7.7-beta checkpoint (29 October 2026)
+
+### v0.7.7-beta (29 October 2026)
 
 **Capital Travel wayfinding:** Street-network routes now supply approximate road-turn counts and named avenue corridors, shown in the existing travel-time display without modifying any approved map artwork or pin positions. The game saves each completed trip's turn count and recognized Pennsylvania, Massachusetts and New York Avenue corridor labels alongside its previously recorded pixel distance, transport method and time spent. Repositioning a pin recalculates subsequent routes and road descriptions but never rewrites journey history. Avenue names are retained only when the provisional road graph actually uses those edges. **This remains an approximate street network, not a surveyed street-by-street reproduction.** Focused source regression passed; full local Node/Electron playthrough pending. No GitHub Actions or compiled ZIP. [v0.7.7 Beta notes](docs/RELEASE-NOTES-v0.7.7-beta.md).
 
