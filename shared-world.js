@@ -20,15 +20,24 @@ function attach(save,world){
  save.dayRemaining=root.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(save)??save.dayRemaining;
  return save;
 }
-function capture(save,prior){
+function capture(save,prior,profileId=null){
  const id=save?.sharedWorldId;
  if(!validId(id)||!save?.worldCalendar||!Number.isSafeInteger(save.worldCalendar.worldMinute))throw Error('Invalid shared campaign state');
  const world=prior||create(id,save);
  if(!valid(world,id))throw Error('Damaged shared world');
  if(world.clock.worldMinute>save.worldCalendar.worldMinute)throw Error('Refusing to rewind shared Washington');
- return {...world,clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
+ const next={...world,clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
   npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives)};
+ // Public world facts from filed, paid work only. Private words and theories
+ // never flow into another protagonist's knowledge or NPC memories.
+ if(profileId&&save.characterRoute==='wardman')
+  for(const log of Array.isArray(save.orderlyDuty?.logs)?save.orderlyDuty.logs:[])
+   if(log&&typeof log.id==='string'&&typeof log.date==='string')
+    recordEvent(next,{id:'ward-file:'+profileId+':'+log.id,type:'asylum-work',
+     at:log.date,summary:'An orderly filed a routine care-service entry.',
+     actorId:'edmundWardman',locationId:'blackwoodAsylum'});
+ return next;
 }
 function recordEvent(world,{id,type,at,summary,actorId,locationId}={}){
  if(!valid(world,world?.id)||typeof id!=='string'||!id||id.length>120)throw Error('Valid world event ID required');

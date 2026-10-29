@@ -247,7 +247,7 @@ function save(silent=true){
   if(payload.sharedWorldId&&window.FE_SHARED_WORLD){
    const service=window.FE_SHARED_WORLD;
    worldKey=service.key(payload.sharedWorldId);
-   worldJson=JSON.stringify(service.capture(payload,service.read(localStorage,payload.sharedWorldId)));
+   worldJson=JSON.stringify(service.capture(payload,service.read(localStorage,payload.sharedWorldId),profileId));
   }
   const oldProfile=localStorage.getItem(SAVE_KEY);
   const oldWorld=worldKey?localStorage.getItem(worldKey):null;
@@ -2083,6 +2083,12 @@ function showNewProfileForm(){
 }
 function createProfile(name,routeId='industrialist'){
  const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Four profiles already exist. Delete one before creating another.');return}
+ const linked=profiles.map(p=>{try{return JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')?.sharedWorldId}catch(_e){return null}})
+  .find(id=>window.FE_SHARED_WORLD?.validId?.(id));
+ if(linked&&!window.FE_SHARED_WORLD.read(localStorage,linked)){
+  renderProfileManager('The shared Washington record is missing. No new character has been created or any existing history overwritten.');
+  return;
+ }
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
  profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';
  // Only newly created characters join a shared campaign. Existing separate

@@ -119,7 +119,7 @@ assert.ok(app.includes('if(isReal){'), 'Only real places expose external histori
 assert.ok(css.includes('.historical-reading.is-fiction-story'), 'Fictional history is visibly distinguished in blue');
 assert.ok(app.includes("badge.textContent=isReal?'Non-Fiction':'Fiction'"),
  'Player sees literal Non-Fiction / Fiction, not just pin color');
-assert.ok(app.includes('renderPlaceReference(location,true)')&&app.includes('renderPlaceReference(location)'),
+assert.ok(app.includes('renderPlaceReference(location,true)')&&app.includes("guardedRoomPanel('place reference',()=>renderPlaceReference(location))"),
  'Real-world reading appears on both map card and destination page');
 assert.ok(app.includes("readingLink('Library of Congress archives"),'Each real place offers additional archive research');
 assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&
