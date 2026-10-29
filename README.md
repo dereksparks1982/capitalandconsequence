@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.3-beta (29 October 2026)
+## Current development checkpoint: v0.7.4-beta (29 October 2026)
+
+**Capital Travel System:** The original, permanently fixed Washington map now doubles as an animated travel overworld. Choose walking, horseback, or carriage, watch a temporary dotted route and moving game-piece token, and arrive inside the selected destination room. Trip time now uses the **current origin and destination pin coordinates**: moving a pin in the map editor instantly recalculates the approximate guide-pixel route and all three transportation-time estimates. Confirm/cancel still governs pin placement. The saved travel ledger records actual provisional time, transportation mode, and a per-trip distance snapshot, so later pin changes affect **future** journeys only. Horse and carriage travel requires the actual assets at the departure location. The rectilinear route is a **gameplay approximation**, not a surveyed street network or real-world mileage. Original map art, numbered pin defaults, pin layout, poker and other approved geometry remain unchanged. Focused source and isolated JavaScript regression checks passed; complete local Node suite, Electron QA and owner playtest remain pending. No GitHub Actions, hosted artifacts, or installer ZIP. Read [v0.7.4 Beta notes](docs/RELEASE-NOTES-v0.7.4-beta.md).
+
+### Previous v0.7.3-beta checkpoint (29 October 2026)
+
+### v0.7.3-beta (29 October 2026)
 
 **Beta development checkpoint, aligned with the owner's milestone definitions:** The partially playable game is in Beta while core activities are expanded and stabilized; version 1.0 will be the initial release when the creative director authorizes it. This slice connects real poker settlement IDs to earned club membership trials, prevents financial-bookkeeping routines from silently purchasing off-site groceries, and completes saved NPC journeys before new calendar-period instructions replace their destination. Focused source regression runs passed for poker integration, economy, market accounting, and arrival across period boundaries. **Full offline Node suite, Electron gameplay QA, and user playtest are still pending.** No map, pin, room, or approved UI changes. No installation ZIP. Read [v0.7.3 Beta development notes](docs/RELEASE-NOTES-v0.7.3-beta.md).
 
