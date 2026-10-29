@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
+const npc=fs.readFileSync(path.join(__dirname,'../npc-ai.js'),'utf8');
+const index=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+assert.match(app,/window\.FE_NPC_MAP_PIN=id=>\{/);
+assert.match(app,/TITLE_MAP_LOCATIONS\.find\(v=>v\.id===id\)/);
+assert.match(app,/titleMapDisplayCoordinate\(pin,img\)/);
+assert.match(app,/window\.FE_NPC_STREET_TRAVEL\?\.render\?\.\(/);
+assert.match(app,/window\.FE_NPC_STREET_TRAVEL\?\.clear\?\.\(\)/);
+assert.match(npc,/window\.FE_NPC_STREET_TRAVEL\?\.plan\?\.\(/);
+assert.match(npc,/arrivesAt:fromMinute\+minutes/);
+assert.match(npc,/routePoints:route\?\.routePoints\|\|null/);
+assert.ok(index.indexOf('capital-travel-system.js')<index.indexOf('npc-street-travel.js'));
+assert.ok(index.indexOf('npc-street-travel.js')<index.indexOf('npc-ai.js'));
+const forbidden=['assets/artwork/maps/title-map-1938.jpg'];
+for(const file of forbidden)assert.equal(app.includes('writeFileSync('+file),false);
+console.log('PASS live edited pin lookup, authoritative NPC journey clock, temporary map projection and load order');
