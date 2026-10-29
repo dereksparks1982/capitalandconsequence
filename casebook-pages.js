@@ -83,7 +83,9 @@ function buildPages(save,{publicFile}={}){
   kicker:'Sources actually received or witnessed by Samuel Harlan',
   paragraphs:['These are preliminary notes only. No homicide warrant, detective rank or proven culprit is implied.'],
   items:asylumEvidence.map(e=>({
-   heading:text(e.at||'Undated',40)+' · '+text(e.source||'Source unrecorded',100),
+   heading:text(e.at||'Undated',40)+' · '+text(e.source||'Source unrecorded',100)+
+    (e.locationId?' · '+text(e.locationId,60)+(e.roomId?'/'+text(e.roomId,60):''):''),
+
    text:text(e.description||'No statement retained',850)
   }))});
  const medical=Array.isArray(save.morgueExaminations)?save.morgueExaminations:[];

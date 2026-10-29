@@ -47,7 +47,10 @@ function action(id){
  const persisted=save(true);
  if(!persisted){show('Autosave failed. Keep the game open and retry after freeing storage.');return false}
  render();refresh();
- show('Filed in your private records. No suspect has been declared guilty.');
+ const standing=S.characterRoute==='wardman'&&id.startsWith('family')?S.wardmanStanding:null;
+ show(standing?'Response recorded. Workplace trust: '+standing.workplaceTrust+
+  '/100 · Family pressure: '+standing.familyPressure+'/100. No commitment order has been issued.':
+  'Filed in your private records. No suspect has been declared guilty.');
  return true;
 }
 function refresh(){

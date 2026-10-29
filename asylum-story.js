@@ -150,7 +150,8 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
   source:sceneObservation?.source||action.source,
   description:sceneObservation?.description||action.text,
-  at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate});
+  at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
+  locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
  if(id==='medical'){
   const allowed=root.FE_MORGUE_REGISTRY.requestReport(world,BODY_ID,{

@@ -30,7 +30,7 @@ function publicFile(world,id){
  return {id:v.id,at:v.at,victimId:v.victimId,locationId:v.locationId,
   status:v.status,evidenceIds:[...(v.evidenceIds||[])]};
 }
-function observe(save,{incidentId,eventId,source,description,at}={}){
+function observe(save,{incidentId,eventId,source,description,at,locationId,roomId}={}){
  if(!save?.sharedWorldId||typeof eventId!=='string'||!eventId||
   typeof source!=='string'||!source||typeof description!=='string'||!description)
   return {ok:false,reason:'A sourced, witnessed observation is required'};
@@ -39,7 +39,8 @@ function observe(save,{incidentId,eventId,source,description,at}={}){
  const records=save.incidentObservations.records;
  if(records.some(x=>x.eventId===eventId))return {ok:true,status:'duplicate'};
  const row={incidentId,eventId,source:source.slice(0,120),description:description.slice(0,600),
-  at:String(at||save.gameDate)};
+  at:String(at||save.gameDate),locationId:typeof locationId==='string'?locationId:null,
+  roomId:typeof roomId==='string'?roomId:null};
  records.push(row);return {ok:true,status:'recorded',observation:{...row}};
 }
 const api=Object.freeze({start,publicFile,observe});
