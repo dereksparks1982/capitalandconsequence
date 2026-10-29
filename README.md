@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.92-dev (28 October 2026)
+## Current development checkpoint: v0.6.93-dev (28 October 2026)
+
+**Stacked development build 3, saved NPC travel:** During calendar processing, residents switching between established locations now acquire persisted thirty-minute journeys instead of universally teleporting. An NPC travelling between sites is not present in either room for conversation or social meetings; reached arrivals resolve against the player-controlled calendar and store their actual departure and arrival minutes. Large player time jumps can complete journeys during the jump. A same-routine-signature clock update can finish a pending trip without paying wages, making new NPC plans or replaying social settlements. Regression checks now inspect elapsed journey accounting. This is a provisional city-wide travel duration, **not** historically surveyed distances or road-by-road pathfinding; some long skipped routine periods remain unresolved. The original map and UI geometry are unchanged. Source-only development checkpoint, not a completed Electron playthrough or accepted release.
+
+### Previous v0.6.92-dev checkpoint (28 October 2026)
 
 **Stacked development build 2, NPC temperament:** Off-duty outing selection now preserves an explicit zero sociability score instead of mistakenly converting it to the default of 50. The same saved seed, time and resident produce the same choice; work obligations still override discretionary trips. Added source regression assertions for quiet and sociable outings and on-duty priority. No player-facing UI or Washington map changes; the complete QA suite and Linux playthrough have not yet run. The owner requested stacking at least three builds before another installation/test pass.
 
