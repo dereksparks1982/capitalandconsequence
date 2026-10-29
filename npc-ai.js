@@ -350,6 +350,33 @@
   recordWitnessedMeetings(meetings);
   if(w.events.length>224)w.events.splice(0,w.events.length-224);
  }
+ // Paid, witnessed NPC grocery decisions. No invisible store visits:
+ // only a resident physically at an existing public market may buy.
+ function shopAtObservedMarket(def,agent,date,key){
+  const market=window.FE_WASHINGTON_COMMERCE;
+  const receipts=window.FE_NPC_HOUSEHOLD_RECEIPTS;
+  if(!market?.purchase||!receipts?.available||agent.status!=='present'||
+    !['oldChinatown','hillsdale'].includes(agent.locationId)||
+    !/market|shopping|supplies|grocer/i.test(String(agent.activity||''))||
+    !Number.isFinite(agent.needs?.hunger)||agent.needs.hunger<65||
+    receipts.available(agent)>0)return null;
+  const wallet=agent.economy?.balanceCents;
+  if(!Number.isSafeInteger(wallet)||wallet<5)return null;
+  const siteId=agent.locationId==='hillsdale'?'hillsdale-market':null;
+  // A finite, deliberately modest real food purchase; the normal market
+  // engine decides stock, affordability and the merchant's credited funds.
+  const alternatives=['bread','potatoes','eggs'];
+  for(const good of alternatives){
+   const outcome=market.purchase(S,def.id,good,{date,token:'npc-grocery|'+def.id+'|'+key,
+    ...(siteId?{siteId}:{})});
+   if(outcome.ok){
+    receipts.sync(S,def.id);
+    return outcome.receipt;
+   }
+   if(outcome.repeated)return null;
+  }
+  return null;
+ }
  function calendarOnce(w,c,key){
   if(!window.FE_NPC_ECONOMY)throw Error('NPC economic actions must load before scheduling');
   // Resolve the reached period once, never manufacture missed encounters
@@ -386,6 +413,7 @@
    a.roomId=moved.roomId;
    a.activity=moved.activity;
    a.status=moved.status||(destination?'present':'off-duty');
+   shopAtObservedMarket(def,a,c.date,key);
    // Recorded meals use existing purchased provisions, never free stock.
    // A travelling or absent resident cannot consume food at a venue.
    if(a.status==='present'&&
