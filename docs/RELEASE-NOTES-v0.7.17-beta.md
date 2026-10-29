@@ -19,6 +19,6 @@ No map artwork, numbered pin defaults, approved UI geometry, or street-network s
 - Private hole cards stay hidden from the player until a contested showdown. Folded opponents' cards never reveal, including after all opponents fold to the winner.
 - Concealed poker cards no longer retain a suit-color CSS class, reducing unintended suit information in rendered markup.
 - The private poker window is labeled **Capital & Consequence**, with fresh style and engine cache keys. Underlying Texas Hold'em rules, wagers, time accounting and table etiquette were not changed.
-- `tests/capital-travel-figurines.cjs` and `tests/poker-silhouette-secrecy.cjs` passed focused isolated JavaScript checks. Full local Node and Electron QA remain pending.
+- `tests/capital-travel-figurines.cjs`, `tests/poker-silhouette-secrecy.cjs`, and `tests/poker-portrait-gameplay.cjs` passed focused isolated JavaScript checks. The gameplay test drives a real poker hand through betting, showdown, next-hand dealing and session settlement. Full local Node and Electron QA remain pending.
 
 **README:** No development log was added to the short README. The game's proprietary license and legal notices remain as published.
