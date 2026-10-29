@@ -11,11 +11,17 @@ const city={listLocations:()=>sites,getLocation:id=>sites.find(s=>s.id===id),
 const resident={kind:'npc',id:'visitor',onDuty:false,workplaceId:'factory'};
 const visit=(action={})=>mobility.visit(city,{...resident,...action},{date:'1878-01-03',
  key:'food-trip',seed:4,slot:2,defaultLocation:'factory',defaultActivity:'leisure',
- preferredDestination:'oldChinatown',sociability:0});
+ preferredDestination:'oldChinatown',shoppingTrip:true,sociability:0});
 const shopping=visit();
 assert.equal(shopping.locationId,'oldChinatown');
 assert.equal(shopping.activity,'shopping for groceries');
 assert.equal(shopping.reason,'goal-directed');
+const ordinary=mobility.visit(city,resident,{date:'1878-01-03',key:'trade-visit',
+ seed:4,slot:2,defaultLocation:'factory',defaultActivity:'leisure',
+ preferredDestination:'oldChinatown',shoppingTrip:false,sociability:0});
+assert.equal(ordinary.locationId,'oldChinatown');
+assert.notEqual(ordinary.activity,'shopping for groceries',
+ 'Business trips must never create a food-purchase activity');
 assert.equal(visit({onDuty:true}).locationId,'factory','Duty overrides shopping');
 assert.equal(access.canRoom(city,resident,'home',null,'1878-01-03').ok,false);
 assert.match(ai,/Number\(agent\.needs\?\.hunger\)>=75/,'Trip requires actual hunger');
