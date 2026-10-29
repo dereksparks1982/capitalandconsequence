@@ -85,6 +85,10 @@ function scenario(route){
  // selected protagonist or grant restricted-door permissions.
  bridge.spend(S,10*3600);
  assert.equal(npc.syncClock(),true);
+ const arrivals=Object.values(S.npcSimulation.agents).filter(a=>a.lastArrival);
+ assert.ok(arrivals.length>0,'Elapsed time settles NPC departures and arrivals');
+ assert.ok(arrivals.every(a=>a.lastArrival.arrivedAt-a.lastArrival.departedAt===30),
+  'Every completed journey records thirty game minutes');
  const starPlan=npc.inspect('madamStar')?.lifePlan;
  assert.ok(starPlan?.goal&&starPlan.history.length<=12,
   'Madam Star retains a bounded, private multi-step goal');
