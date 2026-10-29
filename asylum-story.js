@@ -43,7 +43,16 @@ const ACTIONS=Object.freeze({
  statementFolio:{label:'Read certified suspect statements · 10 minutes',seconds:600,
   location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'police-certified witness statement register',
-  text:'Recorded statements supplied by four persons who may have been near the ward.'}
+  text:'Recorded statements supplied by four persons who may have been near the ward.'},
+ familyPublic:{label:'Request witnessed family meeting · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'witnessed family meeting',
+  text:'Requested the presence of an independent staff member during the meeting.'},
+ familyPrivate:{label:'Meet your brother privately · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'private family meeting',
+  text:'Met the director without a witness; the official case record was not altered.'},
+ familyDecline:{label:'Decline family meeting and retain records · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'formal refusal of family meeting',
+  text:'Declined the meeting and recorded a request to keep the institutional file available.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
@@ -80,6 +89,10 @@ function preview(save,world,id,where){
  const minute=+(iso.slice(11,13))*60+(+iso.slice(14,16));
  if(['notice','reception','stationMemo','medical'].includes(id)&&(minute<8*60||minute*60+(save.worldCalendarRemainder||0)+action.seconds>=17*3600))
   return {ok:false,reason:'Reception and station staff are available between 8 AM and 5 PM'};
+ if(root.FE_WARDMAN_POLITICS?.CHOICES?.[id]){
+  const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
+  if(!decision.ok)return decision;
+ }
  if(id==='stationMemo'&&(+save?.patrolDuty?.reportsFiled||0)<2)
   return {ok:false,reason:'Your sergeant has not yet assigned you case assistance. First file two ordinary patrol reports'};
  if(id==='stationMemo'&&save.patrolDuty?.onDuty)
@@ -125,6 +138,10 @@ function apply(save,world,id,where,{spentSeconds}={}){
   root.FE_ASYLUM_EVIDENCE?.statementFolio?.(world,CASE_ID):
   root.FE_ASYLUM_EVIDENCE?.EXHIBITS?.[id]?
    root.FE_ASYLUM_EVIDENCE.describe(world,id,CASE_ID):null;
+ if(root.FE_WARDMAN_POLITICS?.CHOICES?.[id]){
+  const decided=root.FE_WARDMAN_POLITICS.decide(save,id,CASE_ID);
+  if(!decided.ok)return decided;
+ }
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
