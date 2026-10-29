@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.5-beta (29 October 2026)
+## Current development checkpoint: v0.7.6-beta (29 October 2026)
+
+**Capital Travel reliability:** Washington routes now reuse a bounded cache of street-intersection searches during pin dragging; the character's game piece keeps its exact progress on the map through mid-journey zoom/pan; a zoomed camera gently follows the traveler but never overrides manual map dragging. Ordinary road-access connectors avoid the modeled White House restricted footprint. The travel card reports progress at quarter-journey intervals, and a canceled or interrupted trip cannot commit after a change of active character, saved game, origin, destination, mode, or pin placement. Original fixed map artwork, all 40 numbered pin defaults, approved UI geometry and the fictional setting are untouched. **Routes are still a provisional street graph, not an accurately traced set of building-free roads.** Focused JavaScript regression checks passed; full offline Node and Electron testing remain pending. No GitHub Actions or executable ZIP. See [v0.7.6 Beta notes](docs/RELEASE-NOTES-v0.7.6-beta.md).
+
+### Previous v0.7.5-beta checkpoint (29 October 2026)
+
+### v0.7.5-beta (29 October 2026)
 
 **Capital Travel now follows modeled streets.** The walking, horseback, or carriage game piece travels through connected Washington map-road intersections, using approximate neighborhood blocks and named diagonal avenue corridors instead of the old all-purpose rectangular shortcut. The engine chooses a shortest street-network path, makes brief doorway-to-road connections from the **current pins**, routes around an approximate White House exclusion, and calculates travel time from the resulting full route. Pin edits automatically change future journey routes and timings; completed trips remain frozen in the saved travel ledger. The original map image, all 40 registered pin defaults, existing rooms, and other approved UI geometry remain untouched. **The first-pass roads are a provisional graphical approximation, not a precise trace of every printed street or a guarantee against all building crossings.** Focused isolated travel/route checks passed; the complete Ubuntu Node and Electron suites are still pending. No GitHub Actions or installer ZIP. See [v0.7.5 Beta notes](docs/RELEASE-NOTES-v0.7.5-beta.md) and [Capital Travel street-network design contract](docs/CAPITAL-TRAVEL-STREET-NETWORK.md).
 
