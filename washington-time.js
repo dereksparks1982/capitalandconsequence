@@ -21,6 +21,15 @@
   return tx.advance(save,seconds,kind,token);
  }
  function remainder(save){const r=save?.worldCalendarRemainder;return Number.isSafeInteger(r)&&r>=0&&r<60?r:0}
+ function phaseSecondsRemaining(save){
+  const c=now(save);
+  if(!c)return Number.isSafeInteger(save?.dayRemaining)?Math.max(0,save.dayRemaining):0;
+  if(save.phase==='report')return 0;
+  const elapsed=remainder(save);
+  if(save.phase==='day')return Math.max(0,(1020-c.minuteOfDay)*60-elapsed);
+  if(save.phase==='night')return Math.max(0,secondsUntilMorning(save));
+  return 0;
+ }
  function secondsToBoundary(save){
   const c=now(save);if(!c)return null;
   const next=[480,720,1020,1320,1440].find(m=>m>c.minuteOfDay)||1440;
@@ -58,7 +67,7 @@
    sunlight:s?.sunlight??null,moonPhase:s?.moonPhase??null,eclipse:s?.eclipse??null,
    sunrise:s?.sunrise??null,sunset:s?.sunset??null});
  }
- const api=Object.freeze({now,rate,available,canSpend,debit,advance,secondsToBoundary,secondsUntilLunch,secondsUntilBusinessClose,secondsUntilMorning,nextCivilDay,environment});
+ const api=Object.freeze({now,rate,available,canSpend,debit,advance,secondsToBoundary,secondsUntilLunch,secondsUntilBusinessClose,secondsUntilMorning,nextCivilDay,environment,phaseSecondsRemaining});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_WASHINGTON_TIME=api;
 })(typeof window!=='undefined'?window:globalThis);
