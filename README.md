@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.00-dev (28 October 2026)
+## Current development checkpoint: v0.7.01-dev (28 October 2026)
+
+**Five-system source batch continuation:** NPCs completing actual grocery-trip purchases now remember their last verified departure location and can choose it as an off-duty return destination, using the existing city access and saved journey logic. Individual NPC social encounters now preserve up to 24 witnessed personal experience records, without creating a second reputation reward. Previously implemented poker trial session replay guards, workshop repair history, and the off-site NPC finance purchasing fix remain included. The target grocery return and poker membership regressions passed in focused V8 checks. The full Node regression suite, real Ubuntu Electron testing, and deep poker/industrial gameplay are still pending. Original Washington map artwork, 40 pins and approved UI geometry unchanged.
+
+### Previous v0.7.00-dev checkpoint (28 October 2026)
 
 **Multi-system continuation:** Poker club trials now optionally accept a saved session identifier and refuse duplicate settlement or duplicate presentation of an earned membership card. Federal Electric logs a bounded workshop incident history and the latest paid repair cost/time against an actual breakdown. NPC finance routines no longer buy goods in generic calendar slots without being located at an existing market and performing a shopping activity; this closes a hidden source of off-site purchases. Existing NPC journeys, appetite, purchasing, relationship memory and club access remain connected but are not yet complete autonomous careers or full street routing. Targeted poker regression passed in a V8 harness; full Node suite and actual Ubuntu Electron gameplay remain pending. Original Washington artwork, all forty map pins and approved geometry remain untouched.
 
