@@ -3253,6 +3253,8 @@ function capitalTravelPath(fromId,toId){
   const short=[points[0],{...points[0]}];
   short.routeType=points.routeType||'provisional-street-network';
   short.accessPixels=points.accessPixels??null;
+  short.turns=points.turns||0;
+  short.namedRoads=points.namedRoads||[];
   return short;
  }
  return points;
@@ -3313,8 +3315,11 @@ function renderCapitalTravelChoice(id){
  const roadName=points.routeType==='provisional-right-angle'?'unsurveyed fallback':
   points.routeType==='provisional-street-access'?'approximate roadway, long entrance link':
    'street-intersection route (approximate)';
+ const avenue=points.namedRoads?.[0]||'';
+ const turns=Number.isSafeInteger(points.turns)?' · '+points.turns+' turns':'';
  notice.textContent='Approx. '+length.guidePixels+' guide pixels · '+minutes+
-  ' game minutes · '+roadName+' · real-world miles not yet verified.';
+  ' game minutes'+turns+(avenue?' · via '+avenue:'')+
+  ' · '+roadName+' · real-world miles not yet verified.';
  renderCapitalTravelPreview(id);
 }
 function openTitleMapLocation(id){
@@ -3577,7 +3582,9 @@ async function travelFromTitleMap(event){
   }
   return enterMapDestination(id,null,null,mode,minutes,{
    guidePixels:measurement.guidePixels,routeType:points.routeType||'provisional-right-angle',
-   accessPixels:Number.isSafeInteger(points.accessPixels)?points.accessPixels:null
+   accessPixels:Number.isSafeInteger(points.accessPixels)?points.accessPixels:null,
+   turns:Number.isSafeInteger(points.turns)?points.turns:null,
+   namedRoads:Array.isArray(points.namedRoads)?points.namedRoads:[]
   });
  }finally{
   capitalTravelBusy=false;
