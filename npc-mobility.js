@@ -55,7 +55,8 @@
   if(actor.id==='samHarlan'&&loc.id==='metropolitanPolice'&&allowed.includes('station-duty-room'))
    room='station-duty-room';
   if(!allowed.includes(room))room=allowed[hash(prefix+'|room')%allowed.length];
-  return {locationId:loc.id,roomId:room,activity:loc.id===initial?
+  return {locationId:loc.id,roomId:room,activity:preferred?.ok&&context.preferredDestination==='oldChinatown'&&loc.id==='oldChinatown'?
+   'shopping for groceries':loc.id===initial?
    (context.defaultActivity||'attending to personal business'):'visiting '+loc.name,
    reason:working?'work':preferred?.ok?'goal-directed':loc.id===initial?'routine':'errand'};
  }
