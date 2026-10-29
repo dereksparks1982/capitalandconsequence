@@ -37,5 +37,5 @@ assert.equal(elements.pokerNext.style.display,'inline-block');
 win.FE_POKER.newHand();
 assert.equal(win.__POKER_TEST.snapshot().handNo,2,'Deal Next Hand still works');
 win.FE_POKER.leave();
-assert.ok(settlement&&settlement.length===5,'Existing session settlement is preserved');
+assert.ok(settlement&&settlement.length===6,'Session settlement preserves original five arguments plus public action summary');
 console.log('PASS real poker hand, silhouette seating, existing betting, next hand and session settlement');
