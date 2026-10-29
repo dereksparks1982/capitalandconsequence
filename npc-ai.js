@@ -313,6 +313,10 @@
    }else{a.locationId=null;a.roomId=null;a.activity=null;a.status='off-duty'}
    recordNpcArrival(a,j);
    a.journey=null;a.journeyDestination=null;changed=true;
+   if(a.status==='present'&&a.activity==='shopping for groceries'){
+    const date=window.FE_CALENDAR_BRIDGE?.moment?.(S)?.date||observedDate();
+    shopAtObservedMarket(def,a,date,'arrival|'+j.departedAt+'|'+j.to);
+   }
   }
   return changed;
  }
