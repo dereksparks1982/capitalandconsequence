@@ -21,6 +21,10 @@ win.FE_POKER.start('working');
 assert.match(elements.pokerRoomName.textContent,/Boiler Room/);
 assert.ok(elements.pokerSeats.innerHTML.includes('poker-portrait'));
 assert.equal(win.__POKER_TEST.snapshot().players.length,4);
+assert.equal((elements.pokerSeats.innerHTML.match(/class="poker-dealer"/g)||[]).length,1,
+ 'Exactly one real dealer button is displayed at the poker table');
+assert.equal((elements.pokerSeats.innerHTML.match(/ is-turn/g)||[]).length,1,
+ 'The current acting seat is highlighted without moving any seat');
 let moves=0;
 while(!win.__POKER_TEST.snapshot().done&&moves++<100){
  const g=win.__POKER_TEST.snapshot();
