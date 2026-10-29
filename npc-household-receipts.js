@@ -84,6 +84,11 @@
   if(actor.needs?.version===1){
    if(Number.isFinite(actor.needs.hunger))actor.needs.hunger=Math.max(0,actor.needs.hunger-8);
    if(Number.isFinite(actor.needs.mood))actor.needs.mood=Math.min(100,actor.needs.mood+1);
+   actor.needs.verifiedMeals=(Number.isSafeInteger(actor.needs.verifiedMeals)?
+    actor.needs.verifiedMeals:0)+1;
+   const day=Array.isArray(actor.needs.dailyHistory)?
+    actor.needs.dailyHistory.find(r=>r.date===date):null;
+   if(day)day.paidMeals=(Number.isSafeInteger(day.paidMeals)?day.paidMeals:0)+1;
   }
   const result={key,date,good:item.good,receiptId:item.receiptId};
   state.consumption.push(result);
