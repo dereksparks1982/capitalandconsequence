@@ -6,7 +6,11 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.6.98-dev (28 October 2026)
+## Current development checkpoint: v0.6.99-dev (28 October 2026)
+
+**Stacked slice 9, correct shopping intent:** The city mobility engine now uses an explicit food-motivated shopping-trip flag, so genuine grocery expeditions receive a shopping activity but ordinary business and social visitors to Chinatown do not. That distinction prevents unrelated visits from triggering meal shopping. The on-duty priority, room access gates, and existing saved-clock travel remain unchanged. Targeted source regression confirms the distinction. A full Node suite and actual Ubuntu gameplay check remain pending. No Washington artwork or layout changes.
+
+### Previous v0.6.98-dev checkpoint (28 October 2026)
 
 **Stacked NPC grocery journey slice:** Eligible off-duty residents with genuine hunger, available personal cash and no unconsumed provisions can prioritize an existing Chinatown market over leisure. The ordinary city-access checks and the already implemented saved NPC 30-minute journey system apply. Arrival is required before making a finite-stock, personally paid market purchase. The existing actual-room market shopping routine and historical map placement are unchanged. Added source regression assertions for market-directed excursions, on-duty priority and payment-at-arrival gate; the targeted V8 mock run passed. No full Node suite or Electron gameplay test has yet been performed. The original map art, 40 pins and UI geometry remain fixed.
 
