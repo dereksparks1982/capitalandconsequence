@@ -10,6 +10,7 @@ const MODES=Object.freeze([
  Object.freeze({id:'hired-carriage',name:'Hired Carriage',requires:'hire-service'})
 ]);
 const DEFAULT_TRAVEL_MINUTES=30;
+const MODE_GAME_MINUTES=Object.freeze({walk:30,horse:20,carriage:24});
 const ROUTE_MINUTES=Object.freeze({}); // Override by sorted location IDs after map design.
 function getLocation(id){return window.FederalElectricCity?.getLocation?.(id)||null}
 function plan(from,to,mode='walk'){
@@ -28,23 +29,32 @@ function plan(from,to,mode='walk'){
 function notice(from,to){
  const status=plan(from,to,'walk').status;
  if(status==='invalid')return 'Already here or no valid destination.';
- return 'Travel between different locations costs 30 in-game minutes for now. Moving between different rooms at the same location costs 1 in-game minute; staying in the same room costs nothing. Distances are not yet surveyed.';
+ return 'Provisional travel: 30 minutes walking, 20 by horse, or 24 by carriage when the actual animal and carriage are present. Room moves cost 1 minute. Street routes and distances are not yet surveyed.';
 }
 // Called as part of the same autosave as an actual player location change.
 // It does not imply measured mileage or a transport mode; only location changes
 // incur 30 provisional minutes. The factory and its executive office share an ID.
-function recordProvisional(from,to,journeyId=null){
+function recordProvisional(from,to,journeyId=null,chosenMode=null){
  if(!getLocation(from)||!getLocation(to)||from===to||S.paused)return false;
  if(!S.transport||!Array.isArray(S.transport.journeys))return false;
+ const custody=S.horseCustody;
+ const mode=chosenMode||((custody?.from===from&&custody?.mode)||'walk');
+ if(!Object.hasOwn(MODE_GAME_MINUTES,mode))return false;
+ // A faster itinerary requires the same physically prepared animal/vehicle
+ // later transferred by horse-custody.js after the paid player arrival.
+ if(mode!=='walk'&&(!custody||custody.from!==from||custody.mode!==mode||
+   !S.transport.assets?.some(a=>a.id===custody.assetId&&a.locationId===from&&a.kind==='horse')||
+   (mode==='carriage'&&!S.transport.assets?.some(a=>a.id===custody.vehicleId&&a.locationId===from&&a.kind==='carriage'))))
+  return false;
  const id=journeyId===null?(window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):journeyId;
  if(typeof id!=='string'||!id||id.length>128||S.transport.journeys.some(v=>v.id===id))return false;
- const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||DEFAULT_TRAVEL_MINUTES;
+ const gameMinutes=ROUTE_MINUTES[[from,to].sort().join('|')]||MODE_GAME_MINUTES[mode];
  const bridge=window.FE_CALENDAR_BRIDGE;
  const departedAt=bridge?.moment?.(S)?.iso||null;
  const applied=window.advanceWorldTime?.(gameMinutes*60,true)||0;
  if(applied!==gameMinutes*60)return false;
  const arrivedAt=bridge?.moment?.(S)?.iso||null;
- S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode:null,miles:null,minutes:null,
+ S.transport.journeys.push({id,from,to,turn:S.turnSerial,provisional:true,mode,miles:null,minutes:null,
   temporaryGameMinutes:gameMinutes,departedAt,arrivedAt,calendarApplied:applied===gameMinutes*60});
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
@@ -68,5 +78,5 @@ function recordRoomMove(locationId,fromRoom,toRoom,journeyId=null){
  if(S.transport.journeys.length>256)S.transport.journeys.splice(0,S.transport.journeys.length-256);
  return true;
 }
-window.FE_TRAVEL=Object.freeze({DEFAULT_TRAVEL_MINUTES,ROUTE_MINUTES,modes:MODES,plan,notice,recordProvisional,recordRoomMove});
+window.FE_TRAVEL=Object.freeze({DEFAULT_TRAVEL_MINUTES,MODE_GAME_MINUTES,ROUTE_MINUTES,modes:MODES,plan,notice,recordProvisional,recordRoomMove});
 })();
