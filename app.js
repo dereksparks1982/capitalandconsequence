@@ -122,7 +122,7 @@ function makeContractOffer(){
 const initial=()=>({version:15,campaignStartYear:CAMPAIGN_START_YEAR,gameDate:CAMPAIGN_START_DATE,turnSerial:1,campaignCompleted:false,campaignEndPending:false,endlessMode:true,phase:'day',dayRemaining:9*3600,phaseBudgetRemainder:0,paused:false,worldCalendar:window.FE_CALENDAR_BRIDGE?.start?.({},CAMPAIGN_START_DATE)||null,worldCalendarRemainder:0,worldCalendarStatus:'ready',dayStartCompanyCash:2500,dayStartPersonalCash:600,dailyReport:null,currentLocation:{locationId:'factory',roomId:'executive-office'},personalEffects:{version:1,items:[]},fishing:{version:1,gear:false,attempts:0,session:null,catches:[],history:[]},housing:{version:1,primaryResidenceId:'capitol-hill-rowhouse',tenure:'undetermined',properties:[],staff:[],improvements:[]},institutionInterests:{version:1,investments:[],appointments:[]},characterRoute:'industrialist',otherLives:{version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]},npcSimulation:{version:1,seed:null,lastStep:null,agents:{},events:[]},transport:{version:2,assets:[],events:[],journeys:[]},pokerSessions:{version:1,pending:[],settled:[]},clubMemberships:{version:1,middle:{},elite:{}},brokerage:{version:1,visits:0,lastVisitDate:null},mapLeads:{version:1,pending:[],history:[]},outcomeEvents:[],companyCash:2500,personalCash:600,ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0,debt:0,reputation:55,workers:1,machinery:92,workforce:{present:1,late:0,absent:0,skill:68,morale:73,discipline:81,efficiency:1,quality:92},turnConditions:{weather:'Cold and clear',summary:'Cold, clear Washington weather. Roads and utility service are normal.',productionFactor:1,powerOutageSeconds:0},personnelIssue:null,delegation:{foremanAutoStart:false,alerts:[],managementNeglect:0,lastNeglectTurn:0,generalManager:{hired:false,name:'General Manager',competence:72,reliability:70,dailyWage:GENERAL_MANAGER_DAILY_WAGE}},lineHoldReason:null,inventory:0,inventoryByGrade:{economy:0,standard:0,long:0},finishedLots:[],pendingQualityClaims:[],lastProductionQuality:null,materials:{copper:6000,glass:6000,carbon:3500,tungsten:0},standingSalesTotal:0,cityOpportunities:[],lastRevenue:0,lastExpenses:0,workshopPayroll:{version:1,owedCents:0,entries:{}},ledger:[],stocks:makeStocks(),portfolio:makePortfolio(),transactions:[],marketWire:'The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.',headline:'TELEGRAPH APPARATUS IN DEMAND',story:'Washington instrument makers supply telegraph companies and the electrical trade.',societyStory:'Washington begins another business day of meetings, dinners, private clubs and quiet conversations.',sportsStory:'Capital Race Grounds and licensed boxing results will appear here as the sporting calendar develops.',lastRaceResult:null,lastBoxingResult:null,newsArchive:[],titleNewspaperPurchases:[],titleNewspaperArchive:{},collectibleCards:[],notes:[],componentWorks:window.FE_COMPONENT_WORKS?.createOpeningOrders?.(window.FE_COMPONENT_WORKS?.createState?.(CAMPAIGN_START_DATE))||null,componentTransactionSequence:0,contacts:{madamStar:{name:'Madam Star',trust:0,met:false},bookie:{name:'Eddie Doyle, bookmaker',trust:0,met:false},hayes:{name:'Inspector Arthur Hayes',trust:0,resentment:0,met:false},vale:{name:'Harrison Vale',trust:0,met:false},promoter:{name:'Marty Kane, fight promoter',trust:0,met:false}},raidMonth:'1878-01',raidDays:rollRaidDays(CAMPAIGN_START_DATE),starNextRaidTurnSerial:rollStarRaidTurn(1),starNextRaidDate:null,starVisitedTonight:false,starRaidOccurred:false,bookieKnown:false,middlePokerUnlocked:false,elitePokerUnlocked:false,pokerWins:{working:0,middle:0,elite:0},pokerSimulated:{working:0,middle:0,elite:0},pokerDay:CAMPAIGN_START_DATE,pokerPlayed:{working:0,middle:0,elite:0},lastRaidOutcome:null,contracts:[],contractOffers:[],productionQueue:[],activeContractId:null,lineStatus:'idle',lineMessage:'No production order is running.',customerHistory:{'Capital Hardware & Supply Co.':{completed:0,rejected:0,late:0}}});
 let S=initial(), marketTimer=null, clockTimer=null, autosaveTimer=null, selectedStockTicker=null;
 const stockTradeQuantityDrafts=Object.create(null);
-function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:15});fresh.campaignStartYear=Number.isInteger(+x.campaignStartYear)?+x.campaignStartYear:(String(x.gameDate||'')>='1938-01-01'?1938:String(x.gameDate||'')>='1890-01-01'?1890:CAMPAIGN_START_YEAR);fresh.materials=Object.assign({copper:6000,glass:6000,carbon:3500,tungsten:0},x.materials||{});fresh.cityOpportunities=Array.isArray(x.cityOpportunities)?x.cityOpportunities:[];if(!x.gameDate){fresh.gameDate=CAMPAIGN_START_DATE;fresh.dayRemaining=9*3600}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.phaseBudgetRemainder=Number.isSafeInteger(x.phaseBudgetRemainder)&&x.phaseBudgetRemainder>=0&&x.phaseBudgetRemainder<(fresh.phase==='day'?9:fresh.phase==='night'?15:1)?x.phaseBudgetRemainder:0;fresh.paused=!!x.paused;window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x);fresh.dayRemaining=window.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(fresh)??fresh.dayRemaining;fresh.mapLeads=window.FE_MAP_LEADS?.migrate?.(x.mapLeads)||initial().mapLeads;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks(fresh.campaignStartYear===1938?'1938-01-03':fresh.campaignStartYear>=1890?'1890-01-02':CAMPAIGN_START_DATE,fresh.campaignStartYear);for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history).filter(h=>stockAvailableInYear(k,fresh.stocks[k].sector,+h.date.slice(0,4))),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio(fresh.campaignStartYear);for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial,fresh.campaignStartYear);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
+function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh,x,{version:15});fresh.campaignStartYear=Number.isInteger(+x.campaignStartYear)?+x.campaignStartYear:(String(x.gameDate||'')>='1938-01-01'?1938:String(x.gameDate||'')>='1890-01-01'?1890:CAMPAIGN_START_YEAR);fresh.materials=Object.assign({copper:6000,glass:6000,carbon:3500,tungsten:0},x.materials||{});fresh.cityOpportunities=Array.isArray(x.cityOpportunities)?x.cityOpportunities:[];if(!x.gameDate){fresh.gameDate=CAMPAIGN_START_DATE;fresh.dayRemaining=9*3600}fresh.phase=['day','night','report'].includes(x.phase)?x.phase:'day';fresh.phaseBudgetRemainder=Number.isSafeInteger(x.phaseBudgetRemainder)&&x.phaseBudgetRemainder>=0&&x.phaseBudgetRemainder<(fresh.phase==='day'?9:fresh.phase==='night'?15:1)?x.phaseBudgetRemainder:0;fresh.paused=!!x.paused;fresh.sharedWorldId=window.FE_SHARED_WORLD?.validId?.(x.sharedWorldId)?x.sharedWorldId:null;window.FE_CALENDAR_BRIDGE?.migrate?.(fresh,x);fresh.dayRemaining=window.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(fresh)??fresh.dayRemaining;fresh.mapLeads=window.FE_MAP_LEADS?.migrate?.(x.mapLeads)||initial().mapLeads;fresh.dayStartCompanyCash=Number.isFinite(+x.dayStartCompanyCash)?+x.dayStartCompanyCash:+fresh.companyCash;fresh.dayStartPersonalCash=Number.isFinite(+x.dayStartPersonalCash)?+x.dayStartPersonalCash:+fresh.personalCash;fresh.dailyReport=x.dailyReport||null;fresh.stocks=makeStocks(fresh.campaignStartYear===1938?'1938-01-03':fresh.campaignStartYear>=1890?'1890-01-02':CAMPAIGN_START_DATE,fresh.campaignStartYear);for(const [k,v] of Object.entries(x.stocks||{})){if(fresh.stocks[k]){const opening=+v.open||+v.price||fresh.stocks[k].open,visible=+v.price||opening,hidden=+v.hiddenPrice||visible||opening,history=mergeStockHistory(fresh.stocks[k].history,v.history).filter(h=>stockAvailableInYear(k,fresh.stocks[k].sector,+h.date.slice(0,4))),syntheticPrev=Math.max(1,Math.round(opening/(1+openingGapFor(k,fresh.gameDate,fresh.stocks[k].vol))*100)/100),prevClose=Number.isFinite(+v.prevClose)&&+v.prevClose>0?+v.prevClose:syntheticPrev;Object.assign(fresh.stocks[k],v,{open:opening,price:fresh.phase==='day'?opening:visible,hiddenPrice:hidden,prev:prevClose,prevClose,history})}}fresh.portfolio=makePortfolio(fresh.campaignStartYear);for(const [k,v] of Object.entries(x.portfolio||{})){if(!fresh.portfolio[k])continue;fresh.portfolio[k]=typeof v==='number'?{shares:v,cost:v*(fresh.stocks[k]?.price||0),realized:0}:{shares:+v.shares||0,cost:+v.cost||0,realized:+v.realized||0}}fresh.transactions=x.transactions||[];fresh.newsArchive=x.newsArchive||[];fresh.titleNewspaperPurchases=Array.isArray(x.titleNewspaperPurchases)?x.titleNewspaperPurchases:[];fresh.titleNewspaperArchive=x.titleNewspaperArchive&&typeof x.titleNewspaperArchive==='object'?x.titleNewspaperArchive:{};fresh.collectibleCards=Array.isArray(x.collectibleCards)?x.collectibleCards.filter(v=>v&&typeof v==='object').map(v=>Object.assign({},v)):[];fresh.notes=x.notes||[];fresh.contacts=Object.assign(initial().contacts,x.contacts||{});if(fresh.contacts.hayes?.name==='Commissioner Arthur Hayes')fresh.contacts.hayes.name='Inspector Arthur Hayes';fresh.raidMonth=x.raidMonth||monthKey(fresh.gameDate);fresh.raidDays=x.raidDays||rollRaidDays(fresh.gameDate);fresh.starNextRaidTurnSerial=Number.isFinite(+x.starNextRaidTurnSerial)&&+x.starNextRaidTurnSerial>fresh.turnSerial?Math.floor(+x.starNextRaidTurnSerial):rollStarRaidTurn(fresh.turnSerial);fresh.starNextRaidDate=starRaidDateForTurn(fresh.starNextRaidTurnSerial,fresh.campaignStartYear);fresh.starVisitedTonight=!!x.starVisitedTonight;fresh.starRaidOccurred=!!x.starRaidOccurred;fresh.bookieKnown=!!(x.bookieKnown||fresh.contacts.bookie?.met);fresh.pokerWins=Object.assign({working:0,middle:0,elite:0},x.pokerWins||{});fresh.pokerSimulated=Object.assign({working:0,middle:0,elite:0},x.pokerSimulated||{});fresh.middlePokerUnlocked=!!x.middlePokerUnlocked||!!x.bookieKnown||!!fresh.contacts.bookie?.met;fresh.elitePokerUnlocked=!!x.elitePokerUnlocked;fresh.pokerDay=x.pokerDay||fresh.gameDate;fresh.pokerPlayed=x.pokerPlayed||{working:0,middle:0,elite:0};fresh.contracts=x.contracts||[starterContract()];fresh.contractOffers=x.contractOffers||[];
  fresh.componentWorks=x.componentWorks?window.FE_COMPONENT_WORKS.verify(x.componentWorks):null;
  fresh.workshopPayroll=x.workshopPayroll&&x.workshopPayroll.version===1?x.workshopPayroll:{version:1,owedCents:0,entries:{}};
  fresh.componentTransactionSequence=Number.isSafeInteger(x.componentTransactionSequence)&&x.componentTransactionSequence>=0?x.componentTransactionSequence:0;
@@ -243,8 +243,26 @@ function save(silent=true){
  // A failed write is never represented as a successful autosave.
  try{
   const serialized=JSON.stringify(payload);
-  localStorage.setItem(SAVE_KEY,serialized);
+  let worldKey=null,worldJson=null;
+  if(payload.sharedWorldId&&window.FE_SHARED_WORLD){
+   const service=window.FE_SHARED_WORLD;
+   worldKey=service.key(payload.sharedWorldId);
+   worldJson=JSON.stringify(service.capture(payload,service.read(localStorage,payload.sharedWorldId)));
+  }
+  const oldProfile=localStorage.getItem(SAVE_KEY);
+  const oldWorld=worldKey?localStorage.getItem(worldKey):null;
+  try{
+   localStorage.setItem(SAVE_KEY,serialized);
+   if(worldKey)localStorage.setItem(worldKey,worldJson);
+  }catch(error){
+   try{
+    if(oldProfile===null)localStorage.removeItem(SAVE_KEY);else localStorage.setItem(SAVE_KEY,oldProfile);
+    if(worldKey){if(oldWorld===null)localStorage.removeItem(worldKey);else localStorage.setItem(worldKey,oldWorld)}
+   }catch(_rollback){/* Continue to report failed saving, never overwrite backups. */}
+   throw error;
+  }
   enqueueDiskWrite(profileId,serialized);
+  if(worldKey)enqueueDiskWrite(window.FE_SHARED_WORLD.diskId(payload.sharedWorldId),worldJson);
  }catch(err){
   const message='AUTOSAVE FAILED. Your latest progress is not on disk. Free up storage space and keep Federal Electric open, then try again.';
   if(profileSaveWriteError!==message)console.error('Federal Electric autosave failure',err);
@@ -296,7 +314,9 @@ function loadInitial(){
  if(!id){profileSaveReadBlocked=false;return}
  const raw=localStorage.getItem(profileSaveKey(id));
  if(!raw){profileSaveReadBlocked=true;S=initial();return}
- try{const migrated=migrate(JSON.parse(raw));S=migrated;profileSaveReadBlocked=false;save(true)}
+ try{const migrated=migrate(JSON.parse(raw));
+ if(migrated.sharedWorldId)window.FE_SHARED_WORLD.attach(migrated,window.FE_SHARED_WORLD.read(localStorage,migrated.sharedWorldId));
+ S=migrated;profileSaveReadBlocked=false;save(true)}
  catch(e){profileSaveReadBlocked=true;S=initial()}
 }
 function displayDate(){return new Date(S.gameDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
@@ -2065,6 +2085,19 @@ function createProfile(name,routeId='industrialist'){
  const profiles=readProfiles();if(profiles.length>=PROFILE_LIMIT){renderProfileManager('Four profiles already exist. Delete one before creating another.');return}
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
  profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';
+ // Only newly created characters join a shared campaign. Existing separate
+ // profiles remain untouched unless they explicitly contain a world link.
+ if(window.FE_SHARED_WORLD){
+  const existingWorld=readProfiles().map(profile=>{
+   try{return JSON.parse(localStorage.getItem(profileSaveKey(profile.id))||'null')?.sharedWorldId}
+   catch(_err){return null}
+  }).find(worldId=>window.FE_SHARED_WORLD.validId(worldId));
+  S.sharedWorldId=existingWorld||('w'+Date.now().toString(36));
+  if(existingWorld){
+   const record=window.FE_SHARED_WORLD.read(localStorage,existingWorld);
+   if(record)window.FE_SHARED_WORLD.attach(S,record);
+  }
+ }
  const start=window.FE_CHARACTERS?.get?.(S.characterRoute)?.startingLocationId;
  if(start){const loc=window.FederalElectricCity?.getLocation?.(start);if(loc)S.currentLocation={locationId:start,roomId:window.FE_CHARACTERS.get(S.characterRoute)?.startingRoomId||(S.characterRoute==='wardman'?'orderly-station':loc.defaultRoom)}}
  profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
@@ -2087,6 +2120,10 @@ function loadProfileById(id){
   if(activeProfileId()===id)profileSaveReadBlocked=true;
   renderProfileManager('The selected profile autosave cannot be read. Its original bytes are preserved, and autosaving into that profile is blocked. Choose another valid profile or recover your save.');
   return false;
+ }
+ if(candidate.sharedWorldId){
+  try{window.FE_SHARED_WORLD.attach(candidate,window.FE_SHARED_WORLD.read(localStorage,candidate.sharedWorldId))}
+  catch(err){renderProfileManager('The shared Washington record is unavailable. Your saved character has not been overwritten.');return false}
  }
  setActiveProfileId(id);S=candidate;profileSaveReadBlocked=false;
  selectedStockTicker=null;save(true);render();closeTitleScreen();showSavedCityLocation();
@@ -4125,6 +4162,15 @@ window.FE_BOOTSTRAP_READY=(async()=>{
     keyFor:profileSaveKey,limit:PROFILE_LIMIT
    });
  }catch(err){console.warn('Disk autosave recovery was unavailable; existing local data left untouched.',err)}
+ if(window.FE_SHARED_WORLD&&window.FE_DISK_SAVES){
+  for(const p of readProfiles()){
+   try{
+    const candidate=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null');
+    if(candidate?.sharedWorldId)
+     await window.FE_SHARED_WORLD.recoverDisk(localStorage,window.FE_DISK_SAVES,candidate.sharedWorldId);
+   }catch(err){console.warn('Shared campaign recovery unavailable',err)}
+  }
+ }
  bootstrapProfiles();loadInitial();render();initTitleScreen();
  bootstrapReady=true;
  return true;

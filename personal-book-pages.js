@@ -97,6 +97,7 @@ function buildPages(save,{publicFile}={}){
  }else if(save.characterRoute==='industrialist')pages.push(...industrialistPages(save));
  else if(save.characterRoute==='criminal')pages.push(...criminalPages(save));
  else pages.push(...wardmanPages(save));
+ pages.push(...(root.FE_LIFE_HISTORY?.pages?.(save)||[]));
  pages.push(...fromNotes(save));
  pages.push({id:'notes',section:'Private Writing',title:'My Own Words',
   kicker:'Handwritten notes · saved only with this playable life',
