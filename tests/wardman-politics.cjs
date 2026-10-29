@@ -19,4 +19,21 @@ for(const [choice,trust,pressure] of [['familyPublic',57,28],['familyPrivate',48
  assert.equal(p.decide(s,choice).ok,false,'No repeated family meeting rewards');
  assert.equal(p.canDecide(JSON.parse(JSON.stringify(s)),'familyPublic').ok,false);
 }
-console.log('PASS family choices persist, one meeting per case, no automatic confinement');
+const waiting=prepared();p.decide(waiting,'familyPrivate');
+waiting.gameDate='1878-01-07';
+assert.equal(p.advance(waiting).events.length,1);
+assert.equal(p.advance(waiting).events.length,0,'Same-day saves do not double-apply pressure');
+assert.equal(waiting.wardmanStanding.familyPressure,47);
+waiting.gameDate='1878-01-12';
+assert.equal(p.advance(waiting).events.length,1);
+assert.equal(waiting.wardmanStanding.workplaceTrust,37);
+assert.equal(waiting.wardmanStanding.familyPressure,72);
+assert.equal(waiting.wardmanStanding.petition.status,'threatened','Confinement remains a threat, not an automatic sentence');
+assert.equal(p.canReview(waiting).ok,true);
+assert.equal(p.requestReview(waiting).ok,true);
+assert.equal(waiting.wardmanStanding.petition.status,'review-requested');
+assert.equal(p.requestReview(waiting).ok,false);
+const protectedOne=prepared();p.decide(protectedOne,'familyPublic');
+protectedOne.gameDate='1878-01-12';p.advance(protectedOne);
+assert.equal(protectedOne.wardmanStanding.petition,undefined,'Witnessed meeting prevents unsupported automatic petition');
+console.log('PASS family choices, dated consequences, petition safeguards and independent review');

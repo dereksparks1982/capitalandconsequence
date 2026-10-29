@@ -239,6 +239,8 @@ function save(silent=true){
  }
  // Never persist the temporary player-absent simulation scope.
  if(S.npcOffscreenCatchup)payload=Object.assign({},payload,{npcOffscreenCatchup:false});
+ // Age documented family consequences on actual saved Washington dates only.
+ window.FE_WARDMAN_POLITICS?.advance?.(S);
  // Archive only actual completed accounts/transactions, never projections.
  window.FE_LIFE_HISTORY?.syncBusiness?.(S);
  // localStorage writes can throw QuotaExceededError or security exceptions.

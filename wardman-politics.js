@@ -23,6 +23,7 @@
   const p=save.wardmanStanding;
   if(!Array.isArray(p.documentedConcerns))p.documentedConcerns=[];
   if(!Array.isArray(p.familyMeetings))p.familyMeetings=[];
+  if(!Array.isArray(p.familyEvents))p.familyEvents=[];
   if(typeof p.workplaceTrust!=='number')p.workplaceTrust=50;
   if(typeof p.familyPressure!=='number')p.familyPressure=20;
   if(!p.status)p.status='employed';
@@ -54,7 +55,55 @@
   return {ok:true,meeting:{...meeting},workplaceTrust:p.workplaceTrust,
    familyPressure:p.familyPressure,petition:p.petition?{...p.petition}:null};
  }
- const api=Object.freeze({CHOICES,ensure,isReady,canDecide,decide});
+ function advance(save){
+  if(save?.characterRoute!=='wardman')return {events:[]};
+  const p=ensure(save),created=[];
+  const today=Date.parse(String(save.gameDate||'')+'T00:00:00Z');
+  if(!Number.isFinite(today))return {events:[]};
+  for(const meeting of p.familyMeetings){
+   if(!meeting?.incidentId||!CHOICES[meeting.choice])continue;
+   const started=Date.parse(String(meeting.date)+'T00:00:00Z');
+   if(!Number.isFinite(started)||today<started)continue;
+   const days=Math.floor((today-started)/86400000);
+   const scheduled=meeting.choice==='familyPrivate'?
+    [{day:2,trust:-3,pressure:12,text:'A private family letter questions Edmund’s reliability.'},
+     {day:7,trust:-8,pressure:25,text:'An allegation has been drafted for institutional review.'}]:
+    meeting.choice==='familyDecline'?
+    [{day:2,trust:-1,pressure:7,text:'The family renews its request for a private meeting.'},
+     {day:7,trust:-3,pressure:12,text:'A family complaint is recorded, without any medical finding.'}]:
+    [{day:2,trust:1,pressure:3,text:'An independent observer confirms that a witnessed meeting occurred.'}];
+   for(const item of scheduled){
+    const id='family:'+meeting.incidentId+':'+item.day+'d';
+    if(days<item.day||p.familyEvents.some(v=>v.id===id))continue;
+    p.workplaceTrust=clamp(p.workplaceTrust+item.trust,0,100);
+    p.familyPressure=clamp(p.familyPressure+item.pressure,0,100);
+    const event={id,at:save.gameDate,summary:item.text,trustDelta:item.trust,pressureDelta:item.pressure};
+    p.familyEvents.push(event);created.push({...event});
+    root.FE_LIFE_HISTORY?.record?.(save,{id,date:save.gameDate,source:'Wardman family correspondence',text:item.text});
+   }
+  }
+  if(p.familyPressure>=60&&p.workplaceTrust<=40&&!p.petition)
+   p.petition={status:'threatened',date:save.gameDate,incidentId:CASE,
+    reason:'Disputed family allegations; no medical or judicial conclusion'};
+  return {events:created,petition:p.petition?{...p.petition}:null};
+ }
+ function canReview(save){
+  if(save?.characterRoute!=='wardman')return {ok:false,reason:'Only Edmund may contest his family petition'};
+  const p=ensure(save);
+  if(p.petition?.status!=='threatened')return {ok:false,reason:'No threatened commitment petition requires a review'};
+  return {ok:true};
+ }
+ function requestReview(save){
+  const allow=canReview(save);if(!allow.ok)return allow;
+  const p=ensure(save);
+  p.petition.status='review-requested';p.petition.reviewRequestedAt=save.gameDate;
+  p.petition.reviewBasis='Independent examination requested; family opinion is not a medical diagnosis';
+  p.workplaceTrust=clamp(p.workplaceTrust+3,0,100);
+  p.familyPressure=clamp(p.familyPressure-5,0,100);
+  return {ok:true,petition:{...p.petition},workplaceTrust:p.workplaceTrust,
+   familyPressure:p.familyPressure};
+ }
+ const api=Object.freeze({CHOICES,ensure,isReady,canDecide,decide,advance,canReview,requestReview});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_WARDMAN_POLITICS=api;
 })(typeof window!=='undefined'?window:globalThis);

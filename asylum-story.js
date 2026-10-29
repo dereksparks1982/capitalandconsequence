@@ -52,7 +52,10 @@ const ACTIONS=Object.freeze({
   text:'Met the director without a witness; the official case record was not altered.'},
  familyDecline:{label:'Decline family meeting and retain records · 10 minutes',seconds:600,
   location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'formal refusal of family meeting',
-  text:'Declined the meeting and recorded a request to keep the institutional file available.'}
+  text:'Declined the meeting and recorded a request to keep the institutional file available.'},
+ familyReview:{label:'Request independent review of family petition · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'recorded petition review request',
+  text:'Requested outside review of a disputed family petition; no confinement was authorized.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
@@ -92,6 +95,10 @@ function preview(save,world,id,where){
  if(root.FE_WARDMAN_POLITICS?.CHOICES?.[id]){
   const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
   if(!decision.ok)return decision;
+ }
+ if(id==='familyReview'){
+  const request=root.FE_WARDMAN_POLITICS?.canReview?.(save);
+  if(!request?.ok)return request||{ok:false,reason:'No family petition review is possible'};
  }
  if(save.characterRoute==='investigator'&&
     ['visitorRegister','bellStatement','clothingAccount'].includes(id)&&
@@ -145,6 +152,10 @@ function apply(save,world,id,where,{spentSeconds}={}){
  if(root.FE_WARDMAN_POLITICS?.CHOICES?.[id]){
   const decided=root.FE_WARDMAN_POLITICS.decide(save,id,CASE_ID);
   if(!decided.ok)return decided;
+ }
+ if(id==='familyReview'){
+  const outcome=root.FE_WARDMAN_POLITICS.requestReview(save);
+  if(!outcome.ok)return outcome;
  }
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
