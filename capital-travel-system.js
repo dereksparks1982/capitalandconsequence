@@ -102,6 +102,47 @@ function el(name,attrs){
  for(const [k,v] of Object.entries(attrs||{}))n.setAttribute(k,String(v));
  return n;
 }
+// Mode-specific miniature silhouettes are local SVG shapes, not extra
+// map artwork, pin anchors, images, fonts or persistent decorations.
+function travelFigurine(mode='walk'){
+ const id=MODES.some(item=>item.id===mode)?mode:'walk';
+ const g=el('g',{'class':'capital-travel-figurine capital-travel-'+id,
+  'aria-hidden':'true'});
+ const ink='#241b12',metal='#d6b77c',shadow='#65472d';
+ function shape(tag,attrs){const item=el(tag,attrs);g.append(item);return item;}
+ if(id==='walk'){
+  // Top-hatted pedestrian, walking coat and separated legs.
+  shape('path',{d:'M -5 -8 H 5 L 4 -13 H -4 Z',fill:ink,stroke:metal,'stroke-width':.8});
+  shape('rect',{x:-6,y:-8,width:12,height:2,rx:.3,fill:metal});
+  shape('circle',{cx:0,cy:-4,r:3,fill:ink,stroke:metal,'stroke-width':.7});
+  shape('path',{d:'M -3 -1 Q 0 -2 3 -1 L 5 7 H -5 Z',fill:ink,stroke:metal,'stroke-width':.8});
+  shape('path',{d:'M -3 6 L -6 12 M 3 6 L 6 12 M -4 1 L -8 6 M 4 1 L 8 5',
+   fill:'none',stroke:metal,'stroke-width':2.1,'stroke-linecap':'round'});
+ }else if(id==='horse'){
+  // Horse's head/neck, standing legs and a rider on the saddle.
+  shape('path',{d:'M -11 1 Q -9 -6 -2 -5 L 6 -5 L 10 -10 L 14 -9 L 13 -1 L 9 2 L 8 5 L -7 5 Z',
+   fill:ink,stroke:metal,'stroke-width':1});
+  shape('path',{d:'M -9 4 L -11 11 M -2 5 L -3 12 M 6 5 L 5 12 M 9 5 L 11 11',
+   fill:'none',stroke:metal,'stroke-width':2,'stroke-linecap':'round'});
+  shape('path',{d:'M -10 -1 L -15 -6',fill:'none',stroke:shadow,'stroke-width':2.5});
+  shape('circle',{cx:-1,cy:-10,r:2.5,fill:metal});
+  shape('path',{d:'M -3 -7 L 1 -7 L 4 1 L -6 1 Z',fill:shadow,stroke:metal,'stroke-width':.7});
+  shape('path',{d:'M 0 -3 L 6 -2',fill:'none',stroke:metal,'stroke-width':1});
+ }else{
+  // Compact covered carriage with two spoked wheels and shafts.
+  shape('path',{d:'M -13 -6 Q -8 -13 3 -12 Q 10 -10 11 -6 Z',fill:shadow,
+   stroke:metal,'stroke-width':1});
+  shape('path',{d:'M -12 -6 H 12 V 5 H -12 Z',fill:ink,stroke:metal,'stroke-width':1});
+  shape('path',{d:'M -7 -5 H -2 V 0 H -7 Z M 2 -5 H 7 V 0 H 2 Z',fill:metal,opacity:.75});
+  for(const x of [-8,8]){
+   shape('circle',{cx:x,cy:8,r:4,fill:ink,stroke:metal,'stroke-width':1.2});
+   shape('path',{d:'M '+(x-3)+' 8 H '+(x+3)+' M '+x+' 5 V 11',
+    stroke:metal,'stroke-width':.7,fill:'none'});
+  }
+  shape('path',{d:'M 12 1 H 16',stroke:metal,'stroke-width':2,fill:'none'});
+ }
+ return g;
+}
 function clear(){
  if(!active)return;
  const a=active;active=null;
@@ -246,9 +287,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   stroke:'#241c14','stroke-width':2});
  facing.append(wedge);
  const outline=el('circle',{r:15,fill:'#241c14',stroke:'#f1d7a0','stroke-width':3});
- const token=el('text',{'text-anchor':'middle','dominant-baseline':'central','font-size':21,
-  'font-weight':'bold',fill:'#ffe7b9'});
- token.textContent=spec.symbol;
+ const token=travelFigurine(spec.id);
  const group=el('g',{});group.append(facing,outline,token);svg.append(routeLine,completedLine,group);
  viewport.appendChild(svg);
  return new Promise(resolve=>{
@@ -285,7 +324,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:11,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:12,modes:MODES,route,estimate,arrivalEstimate,remainingMinutes,animationDuration,positionAt,headingAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
