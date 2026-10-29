@@ -53,6 +53,13 @@ function estimate(points,imageWidth=2048,imageHeight=1159){
   minutes:{walk:walking,horse:Math.max(4,Math.ceil(walking*.65)),
    carriage:Math.max(5,Math.ceil(walking*.8))}};
 }
+// Screen-time pacing only. The WORLD CLOCK uses estimate(...).minutes;
+ // this short animation duration must never become a second game-time debit.
+function animationDuration(guidePixels,mode='walk'){
+ if(!Number.isFinite(guidePixels)||guidePixels<0)return 2200;
+ const speed=mode==='horse'?.68:mode==='carriage'?.82:1;
+ return Math.max(850,Math.min(8000,Math.round((1000+Math.min(guidePixels,4000)*3.6)*speed)));
+}
 function available(save,from,mode){
  if(!MODES.some(m=>m.id===mode))return {ok:false,reason:'Unrecognized travel method.'};
  if(mode==='walk')return {ok:true,mode:'walk',minutes:30};
@@ -178,7 +185,8 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
  const spec=MODES.find(m=>m.id===mode)||MODES[0];
  const reduce=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const duration=reduce?180:Math.max(350,Math.min(8500,
-  Number.isFinite(durationMs)?durationMs:mode==='walk'?2900:mode==='horse'?2050:2350));
+  Number.isFinite(durationMs)?durationMs:
+   animationDuration(estimate(points).guidePixels,mode)));
  const svg=el('svg',{class:'capital-travel-overlay','aria-hidden':'true'});
  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:hidden';
  const routeLine=el('polyline',{fill:'none',stroke:'#e9c887','stroke-width':3,
@@ -223,7 +231,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:7,modes:MODES,route,estimate,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
+const api=Object.freeze({version:8,modes:MODES,route,estimate,animationDuration,positionAt,routePrefix,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
