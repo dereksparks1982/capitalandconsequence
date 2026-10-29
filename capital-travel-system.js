@@ -68,6 +68,38 @@ function clear(){
  a.svg.remove();
  a.resolve(false);
 }
+// A preview has no destination markers: only a temporary amber dashed route.
+let preview=null;
+function clearPreview(){
+ if(preview){preview.svg.remove();preview=null}
+}
+function showPreview({viewport,points,project}={}){
+ if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function'){
+  clearPreview();return false;
+ }
+ const pixels=points.map(project);
+ if(pixels.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))){
+  clearPreview();return false;
+ }
+ if(!preview||preview.viewport!==viewport){
+  clearPreview();
+  const svg=el('svg',{class:'capital-travel-preview','aria-hidden':'true'});
+  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:hidden';
+  const border=el('polyline',{fill:'none',stroke:'#2c2010','stroke-width':6,
+   'stroke-linejoin':'round','stroke-linecap':'round'});
+  const line=el('polyline',{fill:'none',stroke:'#e7bd71','stroke-width':3,
+   'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':'5 8'});
+  svg.append(border,line);
+  viewport.appendChild(svg);
+  preview={viewport,svg,border,line};
+ }
+ const str=pixels.map(p=>p.x+','+p.y).join(' ');
+ const bounds='0 0 '+Math.max(1,viewport.clientWidth)+' '+Math.max(1,viewport.clientHeight);
+ preview.svg.setAttribute('viewBox',bounds);
+ preview.border.setAttribute('points',str);
+ preview.line.setAttribute('points',str);
+ return true;
+}
 function animate({viewport,points,project,mode='walk',durationMs=null}){
  if(active)clear();
  if(!viewport||!Array.isArray(points)||points.length<2||typeof project!=='function')
@@ -119,7 +151,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null}){
   state.frame=requestAnimationFrame(tick);
  });
 }
-const api=Object.freeze({version:1,modes:MODES,route,estimate,available,animate,cancel:clear,
+const api=Object.freeze({version:2,modes:MODES,route,estimate,available,animate,cancel:clear,showPreview,clearPreview,
  get active(){return !!active}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_TRAVEL=api;
