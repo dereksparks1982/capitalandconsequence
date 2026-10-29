@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.6-beta (29 October 2026)
+## Current development checkpoint: v0.7.7-beta (29 October 2026)
+
+**Capital Travel wayfinding:** Street-network routes now supply approximate road-turn counts and named avenue corridors, shown in the existing travel-time display without modifying any approved map artwork or pin positions. The game saves each completed trip's turn count and recognized Pennsylvania, Massachusetts and New York Avenue corridor labels alongside its previously recorded pixel distance, transport method and time spent. Repositioning a pin recalculates subsequent routes and road descriptions but never rewrites journey history. Avenue names are retained only when the provisional road graph actually uses those edges. **This remains an approximate street network, not a surveyed street-by-street reproduction.** Focused source regression passed; full local Node/Electron playthrough pending. No GitHub Actions or compiled ZIP. [v0.7.7 Beta notes](docs/RELEASE-NOTES-v0.7.7-beta.md).
+
+### Previous v0.7.6-beta checkpoint (29 October 2026)
+
+### v0.7.6-beta (29 October 2026)
 
 **Capital Travel reliability:** Washington routes now reuse a bounded cache of street-intersection searches during pin dragging; the character's game piece keeps its exact progress on the map through mid-journey zoom/pan; a zoomed camera gently follows the traveler but never overrides manual map dragging. Ordinary road-access connectors avoid the modeled White House restricted footprint. The travel card reports progress at quarter-journey intervals, and a canceled or interrupted trip cannot commit after a change of active character, saved game, origin, destination, mode, or pin placement. Original fixed map artwork, all 40 numbered pin defaults, approved UI geometry and the fictional setting are untouched. **Routes are still a provisional street graph, not an accurately traced set of building-free roads.** Focused JavaScript regression checks passed; full offline Node and Electron testing remain pending. No GitHub Actions or executable ZIP. See [v0.7.6 Beta notes](docs/RELEASE-NOTES-v0.7.6-beta.md).
 
