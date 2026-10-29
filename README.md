@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.12-beta (29 October 2026)
+## Current development checkpoint: v0.7.13-beta (29 October 2026)
+
+**Distance-paced Capital Travel:** The moving overworld game piece now takes more time to cross long provisional street routes and less time for short journeys; horseback and carriage animations move more quickly than walking. Visual duration remains bounded and respects reduced-motion preferences. The **game clock is not charged by the animation**: the existing paid journey ledger still advances it once only on a successful destination-room arrival. All 40 approved map pins and the original Washington artwork remain untouched. Focused source tests passed; full Node and Ubuntu Electron QA remain pending. No GitHub Actions or executable ZIP. [v0.7.13 Beta notes](docs/RELEASE-NOTES-v0.7.13-beta.md).
+
+### Previous v0.7.12-beta checkpoint (29 October 2026)
+
+### v0.7.12-beta (29 October 2026)
 
 **Faster Capital Travel street searches:** The first-pass Washington street model now finds routes using a deterministic binary-heap shortest-path search, retaining the bounded road cache and live pin-based cost calculation. In source benchmarks, a representative 195-route batch was about 11% faster, with the same aggregate guide-pixel distances; all 1,560 ordered city routes still passed connectivity and symmetric-distance checks. Original Washington map artwork, all 40 pin defaults, and approved UI geometry remain untouched. These remain **approximate** map corridors, not verified pixel-perfect 1878 road centerlines. Focused JS regressions passed; full Ubuntu Node and Electron tests remain pending. No GitHub Actions or executable ZIP. [v0.7.12 Beta notes](docs/RELEASE-NOTES-v0.7.12-beta.md).
 
