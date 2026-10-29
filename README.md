@@ -6,7 +6,13 @@
 
 **Federal Electric is the company you own. Washington is the world you inhabit.**
 
-## Current development checkpoint: v0.7.4-beta (29 October 2026)
+## Current development checkpoint: v0.7.5-beta (29 October 2026)
+
+**Capital Travel now follows modeled streets.** The walking, horseback, or carriage game piece travels through connected Washington map-road intersections, using approximate neighborhood blocks and named diagonal avenue corridors instead of the old all-purpose rectangular shortcut. The engine chooses a shortest street-network path, makes brief doorway-to-road connections from the **current pins**, routes around an approximate White House exclusion, and calculates travel time from the resulting full route. Pin edits automatically change future journey routes and timings; completed trips remain frozen in the saved travel ledger. The original map image, all 40 registered pin defaults, existing rooms, and other approved UI geometry remain untouched. **The first-pass roads are a provisional graphical approximation, not a precise trace of every printed street or a guarantee against all building crossings.** Focused isolated travel/route checks passed; the complete Ubuntu Node and Electron suites are still pending. No GitHub Actions or installer ZIP. See [v0.7.5 Beta notes](docs/RELEASE-NOTES-v0.7.5-beta.md) and [Capital Travel street-network design contract](docs/CAPITAL-TRAVEL-STREET-NETWORK.md).
+
+### Previous v0.7.4-beta checkpoint (29 October 2026)
+
+### v0.7.4-beta (29 October 2026)
 
 **Capital Travel System:** The original, permanently fixed Washington map now doubles as an animated travel overworld. Choose walking, horseback, or carriage, watch a temporary dotted route and moving game-piece token, and arrive inside the selected destination room. Trip time now uses the **current origin and destination pin coordinates**: moving a pin in the map editor instantly recalculates the approximate guide-pixel route and all three transportation-time estimates. Confirm/cancel still governs pin placement. The saved travel ledger records actual provisional time, transportation mode, and a per-trip distance snapshot, so later pin changes affect **future** journeys only. Horse and carriage travel requires the actual assets at the departure location. The rectilinear route is a **gameplay approximation**, not a surveyed street network or real-world mileage. Original map art, numbered pin defaults, pin layout, poker and other approved geometry remain unchanged. Focused source and isolated JavaScript regression checks passed; complete local Node suite, Electron QA and owner playtest remain pending. No GitHub Actions, hosted artifacts, or installer ZIP. Read [v0.7.4 Beta notes](docs/RELEASE-NOTES-v0.7.4-beta.md).
 
