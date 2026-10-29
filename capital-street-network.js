@@ -160,6 +160,34 @@ function shortest(start,end){
  }
  return at===start?path.reverse():[];
 }
+function routeTurns(points){
+ let count=0,last=null;
+ for(let i=1;i<points.length;i++){
+  const dx=(points[i].x-points[i-1].x)*IMG.w;
+  const dy=(points[i].y-points[i-1].y)*IMG.h;
+  const magnitude=Math.hypot(dx,dy);
+  if(magnitude<=.1)continue;
+  const next={x:dx/magnitude,y:dy/magnitude};
+  if(last&&Math.abs(Math.atan2(last.x*next.y-last.y*next.x,
+    last.x*next.x+last.y*next.y))>.30)count++;
+  last=next;
+ }
+ return count;
+}
+function namedRoads(nodePath,sameEdge=null){
+ const names=[];
+ const include=id=>{
+  const label=edges[id]?.label||'';
+  if(/^(Pennsylvania|Massachusetts|New York) Avenue corridor$/.test(label)&&
+     !names.includes(label))names.push(label);
+ };
+ if(sameEdge!==null)include(sameEdge);
+ for(let i=1;i<nodePath.length;i++){
+  const edge=adj[nodePath[i-1]].find(e=>e.to===nodePath[i]);
+  if(edge)include(edge.edge);
+ }
+ return names;
+}
 function streetRoute(start,end){
  if(!start||!end||![start.x,start.y,end.x,end.y].every(Number.isFinite))return null;
  if(start.x===end.x&&start.y===end.y)
@@ -177,10 +205,10 @@ function streetRoute(start,end){
   if(!best||cost<best.cost)best={cost,path};
  }
  let middle=best?best.path.map(i=>graph[i]):[];
- let startLine=[a.at,...middle,b.at];
+ let startLine=[a.at,...middle,b.at],usedDirect=false;
  if(a.edge===b.edge){
   const direct=pixel(a.at,b.at);
-  if(!best||direct<=best.cost)startLine=[a.at,b.at];
+  if(!best||direct<=best.cost){startLine=[a.at,b.at];usedDirect=true;}
  }
  if(!startLine.length)return null;
  const body=compact([start,...access(start,a.at),...startLine,
@@ -190,9 +218,11 @@ function streetRoute(start,end){
  const accessPixels=Math.round(a.distance+b.distance);
  const approximate=accessPixels>65;
  return {points:body,type:approximate?'provisional-street-access':'provisional-street-network',
-  accessPixels,intersections:middle.length,networkEdges:edges.length};
+  accessPixels,intersections:usedDirect?0:middle.length,networkEdges:edges.length,
+  turns:routeTurns(body),namedRoads:namedRoads(usedDirect?[]:best?.path||[],
+   usedDirect?a.edge:null)};
 }
-const api=Object.freeze({version:1,source:'approximate-guide-intersections',image:IMG,
+const api=Object.freeze({version:2,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
