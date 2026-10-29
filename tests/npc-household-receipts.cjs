@@ -65,9 +65,16 @@ assert.equal(home.foodPurchases,2);
 assert.equal(home.purchasedGoods.bread,2);
 assert.equal(receipts.available(save.npcSimulation.agents.chenMei),2,
  'Two actual bread purchases are available as provisions');
+save.npcSimulation.agents.chenMei.needs.mood=60;
+save.npcSimulation.agents.chenMei.needs.dailyHistory=[{date:'1878-01-12',activeMinutes:120,restMinutes:0,paidMeals:0}];
 const meal1=receipts.consume(save,'chenMei','1878-01-12|lunch','1878-01-12');
 assert.equal(meal1.ok,true);
 assert.equal(meal1.good,'bread');
+assert.equal(save.npcSimulation.agents.chenMei.needs.hunger,64,
+ 'A paid meal provides a small real hunger benefit');
+assert.equal(save.npcSimulation.agents.chenMei.needs.mood,61);
+assert.equal(save.npcSimulation.agents.chenMei.needs.verifiedMeals,1);
+assert.equal(save.npcSimulation.agents.chenMei.needs.dailyHistory[0].paidMeals,1);
 assert.equal(receipts.available(save.npcSimulation.agents.chenMei),1);
 assert.equal(receipts.consume(save,'chenMei','1878-01-12|lunch','1878-01-12').ok,false,
  'One meal cannot consume the same or another purchase twice');
@@ -75,6 +82,7 @@ assert.equal(receipts.consume(save,'chenMei','1878-01-11|supper','1878-01-11').o
  'Cannot consume food before its receipt date');
 const meal2=receipts.consume(save,'chenMei','1878-01-12|supper','1878-01-12');
 assert.equal(meal2.ok,true);
+assert.equal(save.npcSimulation.agents.chenMei.needs.verifiedMeals,2);
 assert.equal(receipts.available(save.npcSimulation.agents.chenMei),0);
 assert.equal(receipts.consume(save,'chenMei','1878-01-13|breakfast','1878-01-13').ok,false,
  'No free meal is minted after provisions run out');
