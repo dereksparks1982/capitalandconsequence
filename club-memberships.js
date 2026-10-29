@@ -27,12 +27,20 @@ function access(save,tier,today,introduced){
  if(!introduced)return {allowed:false,status:'invitation-required',message:'A personal introduction is required.'};
  return {allowed:true,status:'trial',message:'You have an invitation for a trial game. Membership is not guaranteed.'};
 }
+function recordSession(state,id,result){
+ if(!Array.isArray(state.sessionHistory))state.sessionHistory=[];
+ state.sessionHistory.push({id,result:{...result}});
+ if(state.sessionHistory.length>64)state.sessionHistory.splice(0,state.sessionHistory.length-64);
+ state.lastSessionId=id;state.lastSessionResult={...result};
+}
 function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous',sessionId=null}){
  if(!CONFIG[tier])return {status:'unrestricted',message:'No membership trial at this table.',hospitality:0};
  if(!['courteous','generous','quiet','rude'].includes(conduct))throw Error('Unknown social conduct');
  if(sessionId!==null){
   if(typeof sessionId!=='string'||!sessionId||sessionId.length>120)throw Error('Invalid poker session identifier');
   const previous=ensure(save)[tier];
+  const settled=Array.isArray(previous.sessionHistory)?previous.sessionHistory.find(x=>x.id===sessionId):null;
+  if(settled)return {...settled.result,repeated:true};
   if(previous.lastSessionId===sessionId)return {...previous.lastSessionResult,repeated:true};
  }
  const status=access(save,tier,today,introduced);
@@ -50,7 +58,7 @@ function trial(save,{tier,today,introduced,delta,stake,hands,conduct='courteous'
   if(!hasCard(save,tier))save.personalEffects.items.push({id:cfg.itemId,name:cfg.item,kind:'membership',container:'left-pocket',source:cfg.venue,date:today});
   state.memberSince=today;state.cooldownUntil=null;state.lastConduct=conduct;
   const result={status:'member',item:cfg.item,cardId:cfg.itemId,hospitality,message:'The members present '+cfg.item+' as a gift. You are recognized here.',trials:state.trials};
-  if(sessionId!==null){state.lastSessionId=sessionId;state.lastSessionResult={...result}}
+  if(sessionId!==null){recordSession(state,sessionId,result)}
   return result;
  }
  const days=conduct==='rude'?7:3;
