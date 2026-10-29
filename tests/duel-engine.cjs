@@ -1,0 +1,33 @@
+'use strict';
+const assert=require('node:assert/strict'),duels=require('../duel-engine.js');
+const save={characterRoute:'industrialist',gameDate:'1878-05-03',
+ characterSkills:{version:1,values:{marksmanship:15,observation:25}}};
+assert.equal(duels.offer(save,{sessionId:'A',circle:'working',conduct:'courteous',hands:4}),null);
+assert.equal(duels.offer(save,{sessionId:'A',circle:'working',conduct:'rude',hands:0}),null);
+const invite=duels.offer(save,{sessionId:'A',circle:'working',conduct:'rude',hands:3});
+assert.equal(invite.locationId,'workingPoker');
+assert.equal(invite.opponent,'Mickey Dunn');
+assert.equal(duels.pendingAt(save,'workingPoker').id,invite.id);
+assert.equal(duels.pendingAt(save,'embassyPoker'),null);
+assert.equal(duels.offer(save,{sessionId:'A',circle:'working',conduct:'rude',hands:5}).id,invite.id);
+assert.equal(save.duels.pending.length,1,'Repeated settlements must not create duplicate challenges');
+assert.equal(duels.exchange({action:'yield'}).result,'yielded');
+assert.equal(duels.exchange({action:'wide',opponentSkill:0,rolls:[0,.99]}).result,'fired-wide');
+const low=duels.exchange({action:'shoot',marksmanship:0,observation:0,aim:0,rolls:[.4,.99,.99,.99]});
+const high=duels.exchange({action:'shoot',marksmanship:100,observation:100,aim:1,rolls:[.4,.99,.99,.99]});
+assert.equal(low.player,'missed');
+assert.equal(high.player,'wounded','Skilled shot should be more likely but never guaranteed');
+assert.ok(high.playerChance>low.playerChance);
+const opponentHit=duels.exchange({action:'shoot',marksmanship:100,aim:1,
+ opponentSkill:100,rolls:[.01,.01,.99,.99]});
+assert.equal(opponentHit.result,'player-wounded');
+const r=duels.settle(save,invite.id,opponentHit,{rounds:2,elapsedMinutes:13});
+assert.equal(r.result,'player-wounded');
+assert.equal(save.duels.history.length,1);
+assert.equal(save.duels.injuries.length,1);
+assert.equal(save.duels.pending.length,0);
+assert.equal(duels.settle(save,invite.id,opponentHit),null,'No duplicate settlement');
+assert.equal(duels.offer(save,{sessionId:'A',circle:'working',conduct:'rude',hands:1}).id,r.id);
+const other=duels.offer(save,{sessionId:'B',circle:'elite',conduct:'rude',hands:2});
+assert.equal(other.opponent,'Harrison Vale');
+console.log('PASS earned duel invitations, skills/aim, voluntary wide shot, wounds, saved results and duplicate guards');
