@@ -210,27 +210,11 @@
    kind='personal';
    description='Visited '+locationId+' on personal business.';
   }
-  // Independent household shopping at the observed daytime market period.
-  // Real goods, finite stocks and merchant tills are shared with player orders
-  // and Sullivan's Saturday groceries. Never advance world time for NPC actions.
-  let purchased=null;
-  const market=context.save&&root.FE_WASHINGTON_COMMERCE;
-  if(market&&cfg.monetary!==false&&context.slot===1&&!context.rest&&ec.balanceCents>=4&&
-   ['oldChinatown','hillsdale'].includes(locationId)&&
-   /market|shopping|supplies|grocer/i.test(String(activity||''))){
-   const shopping=['bread','soap','onions','milk','potatoes','eggs','produce','bacon'];
-   const start=hash(tag+'|shop')%shopping.length;
-   for(let i=0;i<shopping.length;i++){
-    const goodId=shopping[(start+i)%shopping.length];
-    const result=market.purchase(context.save,def.id,goodId,
-     {date:context.date,token:'npc|'+context.key+'|'+def.id+'|'+goodId});
-    if(!result.ok)continue;
-    purchased=result.receipt;
-    amount-=purchased.cents;
-    description+=' Bought '+purchased.label+' from a local merchant.';
-    break;
-   }
-  }
+  // The financial period cannot itself authorize a physical market sale.
+  // The resident's actual arrival/room state is resolved later by npc-ai.js;
+  // only shopAtObservedMarket() may buy from finite shared stock once present.
+  // This prevents phantom purchases while working, traveling, or off-screen.
+  const purchased=null;
   ec.balanceCents=clamp(ec.balanceCents,0,10000000);
   ec.lastKey=context.key;
   const action={key:context.key,date:context.date,slot:context.slot,kind,
