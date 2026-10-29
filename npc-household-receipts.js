@@ -15,12 +15,13 @@
   let state=agent.householdReceipts;
   if(!state||state.version!==1){
    state={version:1,lastPurchaseId:0,foodPurchases:0,maintenancePurchases:0,
-    spentCents:0,lastFoodDate:null,history:[]};
+    spentCents:0,lastFoodDate:null,history:[],purchasedGoods:{},lastPurchaseDate:null};
    agent.householdReceipts=state;
   }
   if(!Number.isSafeInteger(state.lastPurchaseId)||state.lastPurchaseId<0)state.lastPurchaseId=0;
   for(const k of ['foodPurchases','maintenancePurchases','spentCents'])
    if(!Number.isSafeInteger(state[k])||state[k]<0)state[k]=0;
+  if(!state.purchasedGoods||typeof state.purchasedGoods!=='object'||Array.isArray(state.purchasedGoods))state.purchasedGoods={};
   if(!Array.isArray(state.history))state.history=[];
   if(state.history.length>LIMIT)state.history=state.history.slice(-LIMIT);
   return state;
@@ -51,7 +52,10 @@
     state.foodPurchases++;
     state.lastFoodDate=receipt.date;
    }else state.maintenancePurchases++;
-   state.spentCents+=receipt.cents;added++;
+   state.spentCents+=receipt.cents;
+   state.purchasedGoods[receipt.good]=(Number.isSafeInteger(state.purchasedGoods[receipt.good])?state.purchasedGoods[receipt.good]:0)+1;
+   state.lastPurchaseDate=receipt.date;
+   added++;
   }
   state.lastPurchaseId=latest;
   if(state.history.length>LIMIT)state.history.splice(0,state.history.length-LIMIT);
