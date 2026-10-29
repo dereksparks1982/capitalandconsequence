@@ -70,6 +70,9 @@
  if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true');legacy.inert=true;}
  const desk=document.createElement('section');
  desk.id='careerDesk';desk.className='career-desk';desk.setAttribute('aria-label','Personal career desk');
+ // Private player-only records. No NPC may inspect this interface or learn
+ // any facts from the text of the player's private pages.
+ window.FE_PERSONAL_BOOK?.bind?.({getSave:()=>S,save:()=>save(true)});
  const first=document.querySelector('#desk > h2');
  if(first)first.before(desk);
  function dateLabel(profile){
@@ -137,11 +140,11 @@
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
     ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
-    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">Personal Journal</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
+    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">${route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal'}</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskEnterLocation').onclick=()=>window.FE_CITY?.openRoom?.(S.currentLocation.locationId,S.currentLocation.roomId);
-   desk.querySelector('#careerDeskJournal').onclick=()=>showTab('notebook');
+   desk.querySelector('#careerDeskJournal').onclick=()=>window.FE_PERSONAL_BOOK?.open?.();
    desk.querySelector('#careerDeskMenu').onclick=open;
    desk.querySelector('#careerDeskWait').onclick=()=>{
     if(S.paused)return;
