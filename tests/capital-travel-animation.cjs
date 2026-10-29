@@ -25,7 +25,9 @@ while(frames.length&&iterations++<40){const fn=frames.shift();fn(time+=50);}
  assert.equal(travel.active,false);
  const svg=viewport.children[0];
  assert.equal(svg.removed,true,'Finished travel overlay is removed');
- const [line,token]=svg.children;
+ const [line,completed,token]=svg.children;
+ assert.equal(completed.tag,'polyline','Traversed section is a temporary road polyline');
+ assert.equal(completed.attrs.points,line.attrs.points,'Completed trip reaches full drawn route');
  assert.equal(line.tag,'polyline');
  assert.match(line.attrs.points,/160,150/,'Route starts at the actual pin');
  assert.match(line.attrs.points,/560,300/,'Route finishes at the destination pin');
