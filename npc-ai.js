@@ -275,7 +275,9 @@
  }
  // NPC journeys use the player-driven world clock, never a second timer.
  function recordNpcArrival(a,j){
-  const arrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt};
+  const arrival={from:j.from,to:j.to,departedAt:j.departedAt,arrivedAt:j.arrivesAt,
+   routeType:j.routeType||null,guidePixels:j.guidePixels??null,
+   weather:j.weather||null,gameMinutes:j.arrivesAt-j.departedAt};
   a.lastArrival=arrival;
   if(!Array.isArray(a.journeyHistory))a.journeyHistory=[];
   if(!a.journeyHistory.some(x=>x.from===arrival.from&&x.to===arrival.to&&
@@ -298,8 +300,14 @@
   }
   if(!desired.locationId||!origin||origin===desired.locationId)return desired;
   const fromMinute=Number.isSafeInteger(departed)&&departed<=minute?departed:minute;
+  const route=typeof window==='undefined'?null:
+   window.FE_NPC_STREET_TRAVEL?.plan?.(origin,desired.locationId,typeof S==='undefined'?null:S);
+  const minutes=Number.isSafeInteger(route?.minutes)&&route.minutes>=5&&route.minutes<=240?
+   route.minutes:30;
   const j={version:1,from:origin,to:desired.locationId,
-   departedAt:fromMinute,arrivesAt:fromMinute+30};
+   departedAt:fromMinute,arrivesAt:fromMinute+minutes,
+   routeType:route?.routeType||null,guidePixels:route?.guidePixels??null,
+   weather:route?.weather||null,routePoints:route?.routePoints||null};
   if(minute>=j.arrivesAt){recordNpcArrival(a,j);return desired}
   a.journey=j;a.journeyDestination={...desired};
   return {locationId:null,roomId:null,activity:'travelling to '+j.to,
