@@ -27,11 +27,14 @@ const promise=travel.animate({
 });
 assert.equal(travel.active,true);
 assert.equal(viewport.children.length,1);
-const svg=viewport.children[0],pawn=svg.children[1];
+const svg=viewport.children[0],completed=svg.children[1],pawn=svg.children[2];
 frames.shift()(0);
 assert.match(pawn.attrs.transform,/translate\(/);
 frames.shift()(300);
 assert.ok(atHalf,'A halfway road location was emitted before projection');
+ const trail=completed.attrs.points.split(' ').at(-1).split(',');
+ assert.ok(Math.abs(+trail[0]-(panX+atHalf.x*2048*zoom))<.01,
+  'Completed trail uses current camera transform, not stale zoom');
 const screen=pawn.attrs.transform.match(/translate\(([-\d.]+) ([-\d.]+)\)/);
 assert.ok(screen,'Current pawn position is projected at the new camera offset');
 assert.ok(Math.abs(+screen[1]-(panX+atHalf.x*2048*zoom))<.01);
