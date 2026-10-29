@@ -55,6 +55,6 @@ for(const i of [1,2,3])
   'A winner by folds has no reason to reveal opponents cards');
 assert.match(style,/\.p-seat \.poker-portrait\{/);
 assert.match(style,/\.p-seat \.poker-portrait-head\{/);
-assert.match(page,/poker\.js\?v=20261029-v0717-silhouettes/);
-assert.match(page,/styles\.css\?v=20261029-v0717-poker/);
+assert.match(page,/poker\.js\?v=20261029-v0718-seats/);
+assert.match(page,/styles\.css\?v=20261029-v0718-dealer/);
 console.log('PASS poker patron silhouettes, private cards, live showdown, folded secrecy and table styles');
