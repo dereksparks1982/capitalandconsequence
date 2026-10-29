@@ -2483,8 +2483,11 @@ function initCityRoomUI(){
    if(!target||target.duelId!==duelId)return false;
    const minutes=locationId==='governmentHospital'?20:10;
    if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,minutes*60))return false;
-   const receipt=window.FE_WASHINGTON_TIME.advance(S,minutes*60,'action',
-      (locationId==='governmentHospital'?'duel-treatment:':'duel-report:')+duelId);
+   let receipt=null;
+   try{
+    receipt=window.FE_WASHINGTON_TIME.advance(S,minutes*60,'action',
+     (locationId==='governmentHospital'?'duel-treatment:':'duel-report:')+duelId);
+   }catch(error){console.warn('Aftercare time debit failed',error);return false}
    if(!receipt?.applied)return false;
    const result=locationId==='governmentHospital'?
     window.FE_DUEL_AFTERMATH.treat(S,duelId,S.gameDate):
