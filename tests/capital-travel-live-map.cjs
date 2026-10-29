@@ -30,7 +30,8 @@ assert.match(apply,/renderCapitalTravelPreview\(\)/,'Zooming and panning refresh
 const action=cut('async function travelFromTitleMap(event){','function buildTitleMapMarkers(){');
 assert.match(action,/const \{points,estimate:measurement\}=capitalTravelMeasurement\(id\)/);
 assert.match(action,/samePins\(\)/,'Changes to source pins cancel stale in-flight journey');
-assert.match(action,/routeType:'provisional-right-angle'/);
+assert.match(action,/routeType:points\.routeType\|\|'provisional-right-angle'/,
+ 'Saved trips preserve the actual road-network method or a declared fallback');
 assert.match(engine,/function showPreview\(/);
 assert.match(engine,/function clearPreview\(/);
 assert.match(engine,/pointer-events:none/,'Route artwork never blocks map interactions');
