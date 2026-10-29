@@ -21,15 +21,30 @@ function patronAvailable(roomKey,name){
   return !['injured','deceased'].includes(status);
  }catch(error){return true} // Offline table must not depend on parent availability.
 }
+function publicStats(){return {folds:0,calls:0,checks:0,raises:0,hands:0}}
+function priorTable(roomKey,opponents){
+ const memories={};let player=publicStats();
+ try{
+  for(const name of opponents){
+   const past=window.opener?.FE_POKER_MEMORY_SUMMARY?.(roomKey,name);
+   if(past&&past.name===name)memories[name]=past;
+  }
+  const x=window.opener?.FE_POKER_PLAYER_HABITS?.(roomKey);
+  if(x&&typeof x==='object')player=x;
+ }catch(error){/* A standalone private table remains playable. */}
+ return {memories,player};
+}
 function start(roomKey){
  sessionSettled=false;
  sessionStarted=Date.now();
  // No artificial remaining business-day timer; time at the table counts upward.
  clearInterval(clockTimer);clockTimer=setInterval(updateClock,250);updateClock();
  const R=rooms[roomKey];if(!R)return;
- G={roomKey,R,etiquette:'courteous',completedHands:0,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
-  {name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true},
-  ...R.npcs.filter(n=>patronAvailable(roomKey,n[0])).map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true}))
+ const present=R.npcs.filter(n=>patronAvailable(roomKey,n[0]));
+ const past=priorTable(roomKey,present.map(n=>n[0]));
+ G={roomKey,R,pastPatrons:past.memories,pastPlayer:past.player,etiquette:'courteous',completedHands:0,deck:deck(),board:[],pot:0,street:0,currentBet:0,minRaise:R.blind*2,handNo:0,dealer:-1,turnIndex:0,done:false,log:[],players:[
+  {name:'You',style:'human',chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true,observed:publicStats()},
+  ...present.map(n=>({name:n[0],style:n[1],chips:R.stake,hole:[],fold:false,bet:0,committed:0,allIn:false,acted:false,raiseOpen:true,observed:publicStats()}))
  ]};
  document.querySelector('#pokerModal').className='poker-modal open '+R.className;
  document.querySelector('#pokerRoomName').textContent=R.name;
@@ -57,7 +72,7 @@ function newHand(){
  G.deck=deck();G.board=[];G.pot=0;G.street=0;G.currentBet=0;G.minRaise=G.R.blind*2;G.handNo++;G.done=false;G.log=[];
  G.players.forEach(p=>{
   p.fold=p.chips<=0;p.bet=0;p.committed=0;p.allIn=p.chips<=0;p.acted=false;p.raiseOpen=!p.fold;p.hole=[];
-  if(!p.fold)p.hole=[G.deck.pop(),G.deck.pop()];
+  if(!p.fold){p.hole=[G.deck.pop(),G.deck.pop()];p.observed.hands++}
  });
  const live=liveIndexes();
  if(live.length<2){log('The table cannot continue with fewer than two funded players.');G.done=true;render(true);return}
@@ -93,12 +108,14 @@ function callOrCheck(i){
  const p=G.players[i],need=Math.max(0,G.currentBet-p.bet);
  const paid=post(i,need);
  p.acted=true;p.raiseOpen=false;
+ p.observed[need===0?'checks':'calls']++;
  if(need===0)log(p.name+(i===0?' check.':' checks.'));
  else if(p.allIn)log(p.name+(i===0?' call all-in for $':' calls all-in for $')+paid+'.');
  else log(p.name+(i===0?' call $':' calls $')+paid+'.');
 }
 function foldPlayer(i){
  const p=G.players[i];p.fold=true;p.acted=true;p.raiseOpen=false;
+ p.observed.folds++;
  log(p.name+(i===0?' fold.':' folds.'));
 }
 function raisePlayer(i,desiredRaise){
@@ -108,12 +125,14 @@ function raisePlayer(i,desiredRaise){
  const newBet=p.bet;
  p.acted=true;p.raiseOpen=false;
  if(newBet<=oldBet){
+  p.observed[need===0?'checks':'calls']++;
   if(need===0)log(p.name+(i===0?' check.':' checks.'));
   else if(p.allIn)log(p.name+(i===0?' call all-in for $':' calls all-in for $')+paid+'.');
   else log(p.name+(i===0?' call $':' calls $')+paid+'.');
   return;
  }
  const raiseSize=newBet-oldBet;
+ p.observed.raises++;
  G.currentBet=newBet;
  if(raiseSize>=G.minRaise){
   markFullRaise(i,raiseSize);
@@ -126,7 +145,9 @@ function raisePlayer(i,desiredRaise){
 function botAct(i){
  const p=G.players[i];if(!needsAction(p))return;
  const need=Math.max(0,G.currentBet-p.bet),s=strength(p),noise=Math.random(),agg={tight:-.1,steady:0,loose:.08,bluff:.02,aggressive:.14}[p.style]||0;
- if(need>0&&s+agg+noise*.22<.38){foldPlayer(i);return}
+ const past=G.pastPlayer||{},total=(past.folds||0)+(past.calls||0)+(past.raises||0)+(past.checks||0);
+ const pressure=total>=12&&past.raises/total>.40?.04:0;
+ if(need>0&&s+agg+noise*.22<.38+pressure){foldPlayer(i);return}
  const wantsRaise=p.raiseOpen&&p.chips>need&&((s+agg>.72&&Math.random()<.45)||(p.style==='bluff'&&Math.random()<.14));
  if(wantsRaise){
   const raise=Math.max(G.minRaise,Math.round(G.pot*.3),G.R.blind*2);
@@ -261,11 +282,13 @@ function render(done=false){
   const acting=!done&&G.turnIndex===i&&needsAction(p);
   const dealer=i===G.dealer?'<span class="poker-dealer" title="Dealer button" aria-label="Dealer button">D</span>':'';
   const status=p.fold?'FOLDED':p.allIn?'ALL-IN':acting?'TO ACT':'';
+  const memory=i>0?G.pastPatrons?.[p.name]:null;
+  const tell=memory&&memory.hands>=4?'<em class="poker-table-read">Past play: '+memory.trait+'</em>':'';
   return '<div class="p-seat seat-'+i+(p.fold?' folded':'')+(p.allIn?' all-in':'')+
    (acting?' is-turn':'')+'">'+dealer+pokerPortrait(i)+'<b>'+p.name+
    '</b><div class="cards">'+p.hole.map(c=>card(c,i!==0&&!revealOpponentCards(p,done))).join('')+
    '</div><small>$'+p.chips+' · '+(i===0?'Your seat':p.style)+
-   (status?' · '+status:'')+'</small></div>';
+   (status?' · '+status:'')+'</small>'+tell+'</div>';
  }).join('');
  document.querySelector('#pokerLog').innerHTML=G.log.map(x=>'<div>'+x+'</div>').join('');
  const p=G.players[0],need=Math.max(0,G.currentBet-p.bet),humanTurn=!done&&G.turnIndex===0&&needsAction(p);
@@ -283,7 +306,10 @@ function settleSession(){
  clearInterval(clockTimer);
  const delta=G.players[0].chips-G.R.stake;
  const elapsed=Math.max(1,Math.floor((Date.now()-sessionStarted)/1000));
- if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.completedHands,elapsed,G.etiquette);
+ if(window.FE_POKER_EXIT)window.FE_POKER_EXIT(G.roomKey,delta,G.completedHands,elapsed,G.etiquette,{
+  player:{...G.players[0].observed},
+  patrons:G.players.slice(1).map(p=>({name:p.name,...p.observed}))
+ });
  return true;
 }
 function leave(){
