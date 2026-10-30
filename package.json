@@ -21,7 +21,8 @@
     "qa:linux": "npm run test:source && npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
     "verify:linux:artifacts": "node scripts/verify-linux-distributions.cjs",
     "qa:linux:release": "npm run qa:linux && npm run verify:linux:artifacts",
-    "consolidate:linux:output": "node scripts/consolidate-linux-output.cjs"
+    "consolidate:linux:output": "node scripts/consolidate-linux-output.cjs",
+    "smoke:linux:source": "electron . --smoke-test"
   },
   "devDependencies": {
     "electron": "44.5.1",

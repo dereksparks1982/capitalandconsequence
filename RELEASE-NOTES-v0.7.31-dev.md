@@ -38,3 +38,8 @@ Development source on `main`, not an accepted Linux binary release.
 - Updated the Electron smoke travel sequence to wait for actual async animated journeys, using the engine's supported reduced-motion animation for efficient verification.
 - The initial portable `.tar.gz` was truncated (`gzip: unexpected end of file`). The portable build now assembles a complete archive from a fresh `linux-unpacked` game folder, checks gzip and tar integrity and the game executable, then atomically replaces the previous tarball.
 - Added source regressions for HTML script integrity and portable archive integrity. **Both new executable formats still need owner-side rebuild and smoke rerun.** No Actions or second branch.
+
+## Electron source smoke diagnostics, October 30
+- Surface Pro 8 owner test: 157/157 source regressions and all asset audits passed. Both Linux executables start successfully; the verified portable tar archive extracts correctly.
+- Only the first automated map visit (Commerce Club) fails its arrival assertion, while Star Club and Chinatown pass. Added explicit initial Washington image decode readiness, animation-start confirmation, and precise first-visit refusal diagnostics.
+- `npm run smoke:linux:source` runs the identical Electron smoke test directly from the checked-out source, avoiding repeated AppImage/portable rebuilds during diagnosis. The new test instrumentation is **not yet verified on the Surface**; do not claim the executable test has passed.

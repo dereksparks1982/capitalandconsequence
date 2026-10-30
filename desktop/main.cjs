@@ -318,8 +318,10 @@ async function runSmokeTest(win) {
       const oldMatchMedia=window.matchMedia;
       const goAndWait=async()=>{
         go.click();
+        const began=capitalTravelBusy;
         for(let i=0;i<120&&capitalTravelBusy;i++)await new Promise(resolve=>setTimeout(resolve,60));
         if(capitalTravelBusy)throw new Error('Map travel animation failed to finish');
+        return began;
       };
       try{
         // The engine's real reduced-motion animation is quick and deterministic.
@@ -329,10 +331,39 @@ async function runSmokeTest(win) {
         localStorage.setItem('federalElectricActiveProfile','__smoke-city-travel');
         S.gameDate='1890-01-02';S.currentLocation={locationId:'factory',roomId:'executive-office'};
         closeTitleMap();closeCityRoom();openTitleMap();
+        // A cold AppImage may still be decoding the 5 MB Washington guide.
+        // Travel measurement must use an actual loaded image, not zero width.
+        const guide=document.getElementById('titleMapImage');
+        if(!guide)throw new Error('Washington map image element missing');
+        if(!guide.naturalWidth){
+          await Promise.race([
+            guide.decode(),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error('Washington map image decode timed out')),10000))
+          ]);
+        }
+        if(!guide.naturalWidth)throw new Error('Washington map image could not decode in packaged Electron');
         openTitleMapLocation('commercePoker');
         out.commerceEnabled=!go.disabled&&!go.hidden;
-        await goAndWait();
+        out.commerceTravelStarted=await goAndWait();
         out.commerceEntered=!room.hidden&&map.hidden&&S.currentLocation.locationId==='commercePoker';
+        if(!out.commerceEntered||!out.commerceTravelStarted){
+          const route=capitalTravelMeasurement('commercePoker');
+          out.commerceDiagnostic={
+            started:out.commerceTravelStarted,
+            reason:notice?.textContent,
+            selected:titleMapSelectedLocationId,
+            actual:S.currentLocation?.locationId,
+            imageWidth:guide.naturalWidth,
+            routePoints:route.points.length,
+            routeType:route.points.routeType||null,
+            paused:!!S.paused,
+            phase:S.phase,
+            gameTime:window.FE_WASHINGTON_TIME?.now?.(S)?.time||null,
+            mapHidden:map.hidden,
+            roomHidden:room.hidden,
+            roomLocation:room.dataset.locationId||null
+          };
+        }
         out.singleRoomVisible=!document.getElementById('cityRoomDirectory').hidden;
         // A Go There click must reveal Star Club's actual room menu,
         // hiding BOTH the map and the personal executive desk.
