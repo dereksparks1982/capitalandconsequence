@@ -59,6 +59,7 @@ function settle(save,why,at){
  const board=reconstruct(g.moves);
  let winner=null,reason=why||'completed';
  if(reason==='forfeit')winner=g.opponentId;
+ else if(reason==='opponent-left')winner=g.playerId;
  else if(board.in_checkmate())winner=board.turn()==='w'?g.opponentId:g.playerId;
  else if(board.in_draw()||board.in_stalemate())reason='draw';
  else if(reason!=='agreed-draw')return null;
@@ -87,7 +88,7 @@ function play(save,from,to,{locationId,roomId,present,at}={}){
  const s=state(save),g=s.active;
  if(!g||g.locationId!==locationId||g.roomId!==roomId)return {ok:false,reason:'No chess game at this table.'};
  if(!present?.some(x=>x.id===g.opponentId&&x.roomId===roomId)){
-  const receipt=settle(save,'forfeit',at);
+  const receipt=settle(save,'opponent-left',at);
   return {ok:false,reason:'Your opponent left the table. This game is recorded as forfeited.',receipt};
  }
  const board=reconstruct(g.moves);
@@ -104,6 +105,10 @@ function play(save,from,to,{locationId,roomId,present,at}={}){
 function abandon(save,at){
  if(!state(save).active)return null;
  return settle(save,'forfeit',at);
+}
+function departed(save,at){
+ if(!state(save).active)return null;
+ return settle(save,'opponent-left',at);
 }
 function npcGame(id,a,b,place,room,at){
  const board=new Chess(),moves=[];
@@ -145,7 +150,7 @@ function tick(save,{now,presentAt}={}){
  }
  return {started,settled};
 }
-const api=Object.freeze({VENUES,venue,state,reconstruct,legal,pick,start,play,abandon,tick,npcGame});
+const api=Object.freeze({VENUES,venue,state,reconstruct,legal,pick,start,play,abandon,departed,tick,npcGame});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_CHESS=api;
 })(typeof window!=='undefined'?window:globalThis);
