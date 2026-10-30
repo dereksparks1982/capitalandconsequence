@@ -407,7 +407,7 @@ function renderTreasury(){
  const atWorks=currentCityLocation().locationId==='factory'&&!cityRoomSession.dev;
  const draw=$('#ownerDrawsToday'),diverted=$('#divertedToday'),missing=$('#unaccountedFunds'),exposure=$('#accountingExposure'),distribution=$('#ownerDistribution'),divert=$('#divertCompanyFunds');
  if(draw)draw.textContent=money(S.ownerDistributionsToday||0);if(diverted)diverted.textContent=money(S.divertedToday||0);if(missing)missing.textContent=money(S.unaccountedFunds||0);if(exposure)exposure.textContent=accountingExposure();
- if(distribution)distribution.disabled=!businessOpen()||S.paused||!atWorks;if(divert)divert.disabled=S.phase==='report'||S.paused||!atWorks;
+ if(distribution){distribution.disabled=!businessOpen()||S.paused||!atWorks||S.corporateGovernance?.status==='public';distribution.title=S.corporateGovernance?.status==='public'?'Public company distributions require a board-approved dividend.':'';}if(divert)divert.disabled=S.phase==='report'||S.paused||!atWorks;
 }
 let ipoScaffoldOpen=false;
 function companyValueEstimate(){
@@ -1194,7 +1194,7 @@ function treasuryHandlingTime(out){
 const exploreIpo=$('#exploreIpo');if(exploreIpo)exploreIpo.onclick=()=>{ipoScaffoldOpen=!ipoScaffoldOpen;renderOwnership()};
 const closeIpoScaffold=$('#closeIpoScaffold');if(closeIpoScaffold)closeIpoScaffold.onclick=()=>{ipoScaffoldOpen=false;renderOwnership()};
 const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistribution.onclick=()=>{
- const amount=treasuryAmount(),out=$('#treasuryNote');if(!window.FE_CORPORATE?.canManage?.(S))return out.textContent='A dismissed president cannot authorize company distributions.';if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
+ const amount=treasuryAmount(),out=$('#treasuryNote');if(!window.FE_CORPORATE?.canManage?.(S))return out.textContent='A dismissed president cannot authorize company distributions.';if(S.corporateGovernance?.status==='public')return out.textContent='Public-company cash payments to shareholders require a board-approved dividend.';if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
  if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'ownerDistribution',amount,currentCityLocation().locationId,S.characterRoute);
