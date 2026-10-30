@@ -35,7 +35,10 @@
       "desktop/main.cjs",
       "desktop/preload.cjs",
       "desktop/save-store.cjs",
-      "desktop/npc-llm.cjs"
+      "desktop/npc-llm.cjs",
+      "LICENSE",
+      "LEGAL.md",
+      "THIRD-PARTY-NOTICES.md"
     ],
     "asarUnpack": [
       "assets/audio/**/*"
