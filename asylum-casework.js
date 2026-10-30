@@ -56,6 +56,10 @@ function dossier(save,world){
   status:place.incident.status,route:save.characterRoute,suspects,leads,
   ready,remaining:leads.filter(l=>!l.available).map(l=>l.sourceAction),
   intersection:ready?[...options]:[],
+  supplements:['drainSurvey','drainReport','motiveLedger','motiveDocket']
+   .filter(id=>observed(save,id))
+   .map(id=>root.FE_ASYLUM_EVIDENCE?.describe?.(world,id,CASE))
+   .filter(Boolean).map(x=>({source:x.source,description:x.description})),
   filed:copy(save.asylumCasebook?.referrals||[]),
   concern:copy(save.asylumCasebook?.concerns||[]),
   // Only publicly recorded submissions/reviews, never secret world truth.

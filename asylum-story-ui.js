@@ -96,6 +96,10 @@ function casebook(){
    lead.label+': Unverified. Examine '+lead.sourceAction+' through your own authorized work.';
   list.append(row);
  }
+ for(const record of file.supplements||[]){
+  const line=document.createElement('p');line.textContent='Additional evidence · '+record.source+': '+record.description;
+  list.append(line);
+ }
  const result=document.createElement('p');
  result.textContent=file.ready?
   'All three independent accounts now overlap on one possible suspect. This is sufficient to file a reasoned allegation, NOT a conviction.':

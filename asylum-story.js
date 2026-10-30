@@ -40,6 +40,18 @@ const ACTIONS=Object.freeze({
  bellStatement:{label:"Review duty porter's statement · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["wardman","investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
  passageMark:{label:"Examine the passage threshold · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'patient-ward',routes:["wardman"],source:'scene evidence',text:'Observation of scene evidence.'},
  clothingAccount:{label:"Read corridor witness account · 5 minutes",seconds:300,location:'blackwoodAsylum',room:'reception',routes:["investigator"],source:'scene evidence',text:'Observation of scene evidence.'},
+ drainSurvey:{label:'Survey service culvert and outfall · 5 minutes',seconds:300,
+  location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],
+  source:'scene evidence',text:'Examined actual culvert access without claiming it identifies an intruder.'},
+ drainReport:{label:'Read certified culvert survey · 10 minutes',seconds:600,
+  location:'metropolitanPolice',room:'station-duty-room',routes:['investigator'],
+  source:'scene evidence',text:'Reviewed the service passage inspection through the station desk.'},
+ motiveLedger:{label:'Read staff grievance ledger · 5 minutes',seconds:300,
+  location:'blackwoodAsylum',room:'orderly-station',routes:['wardman'],
+  source:'scene evidence',text:'Read unresolved institutional complaints and family grievances.'},
+ motiveDocket:{label:'Compare certified motive docket · 10 minutes',seconds:600,
+  location:'metropolitanPolice',room:'station-duty-room',routes:['investigator'],
+  source:'scene evidence',text:'Compared conflicting motives, without treating one accusation as proven.'},
  statementFolio:{label:'Read certified suspect statements · 10 minutes',seconds:600,
   location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'police-certified witness statement register',
@@ -102,7 +114,7 @@ function preview(save,world,id,where){
   if(!request?.ok)return request||{ok:false,reason:'No family petition review is possible'};
  }
  if(save.characterRoute==='investigator'&&
-    ['visitorRegister','bellStatement','clothingAccount'].includes(id)&&
+    ['visitorRegister','bellStatement','clothingAccount','drainReport','motiveDocket'].includes(id)&&
     (!permission(save)||!seen(save,'stationMemo')))
   return {ok:false,reason:'Station-sergeant authorization is required for copies of asylum statements'};
  if(id==='stationMemo'&&(+save?.patrolDuty?.reportsFiled||0)<2)
