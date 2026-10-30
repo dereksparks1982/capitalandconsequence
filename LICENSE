@@ -40,16 +40,28 @@ reuse, asset extraction for other projects, redistribution, resale,
 modification, or creation of derivative works. It may be withdrawn for
 future distributions, subject to applicable law.
 
-4. THIRD-PARTY MATERIAL
+4. THIRD-PARTY MATERIAL AND SEPARATE LICENSES
 
-This notice applies only to material owned by the named copyright holder.
-Third-party libraries, open-source dependencies, historic works,
-licensed audio, images, maps, fonts, and other material not owned by the
-copyright holder remain subject to their respective licenses and legal
-rights. Nothing in this notice overrides those rights or licenses.
-See LEGAL.md, notices within vendor/ and other applicable attribution
-files. The copyright holder does not claim ownership of third-party
-material merely because it is included in the repository or game.
+This notice applies only to original material owned by the named copyright
+holder. Third-party libraries, game engines, open-source dependencies,
+historic works, licensed audio, images, maps, fonts, and other material not
+owned by the copyright holder are NOT claimed as the Project author's
+property merely because they appear in this repository or a game build.
+
+Third-party components remain the property of their respective owners and
+are governed by their own applicable copyright and license terms. Those
+licenses may differ between components. Nothing in this proprietary
+license overrides, narrows, sublicenses, or cancels the independent rights
+granted to recipients by the third-party copyright holder(s), including
+permission to use, copy, modify or redistribute such components where
+allowed by their actual licenses. Project ownership does not transfer
+third-party ownership or imply affiliation or endorsement.
+
+See THIRD-PARTY-NOTICES.md, LEGAL.md, the preserved original notices
+within vendor/ or installed packages, and any separate asset attribution
+or license files. Unadopted research candidates are not claimed as
+bundled components. Any future third-party incorporation must preserve
+the applicable copyright notices, license text and required attribution.
 
 5. STATUTORY RIGHTS AND GITHUB TERMS
 
