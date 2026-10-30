@@ -30,7 +30,11 @@ function scene(world){
 function dossier(save,world){
  const place=scene(world),route=ROUTES[save?.characterRoute];
  if(!place||!route)return null;
- const suspects=place.people.map(p=>({id:p.personId,name:p.publicName,statement:p.statedAlibi}));
+ // A public roster is not permission to read private sworn alibis.
+ // Sam needs a certified statement folio; Edmund needs his authorized ward book.
+ const statementsAvailable=observed(save,route.access);
+ const suspects=place.people.map(p=>({id:p.personId,name:p.publicName,
+  statement:statementsAvailable?p.statedAlibi:null}));
  const leadSpecs=[
   ['access',place.others[0]],['trace',place.others[1]],['time',place.others[2]]
  ];

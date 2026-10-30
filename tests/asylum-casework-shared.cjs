@@ -22,7 +22,7 @@ function make(route,id,date,minute){
 function source(save,name){
  return FE_ASYLUM_INCIDENT.observe(save,{incidentId:story.CASE_ID,
   eventId:'asylum:'+name,source:'authorized '+name+' record',
-  description:'A physically obtained case document.',at:save.gameDate+'T15:00',
+  description:'A physically obtained case document.',at:FE_WASHINGTON_TIME.now(save).iso,
   locationId:save.characterRoute==='investigator'?'metropolitanPolice':'blackwoodAsylum',
   roomId:save.characterRoute==='investigator'?'station-duty-room':'orderly-station'});
 }
@@ -42,10 +42,19 @@ for(let seed=0;seed<72;seed++){
  sam.casePermissions={[story.CASE_ID]:{issuedBy:'station-sergeant',incidentId:story.CASE_ID}};
  assert.equal(casework.dossier(sam,world).ready,false);
  assert.equal(casework.dossier(sam,world).intersection.length,0,'No omniscient culprit before investigating');
+ assert.equal(casework.dossier(sam,world).suspects.every(s=>s.statement===null),true,
+  'Police cannot read sealed suspect statements before checking the station folio');
+ assert.equal(casework.dossier(edmund,world).suspects.every(s=>s.statement===null),true,
+  'Ward staff cannot read testimony before opening their register');
+
  assert.equal(casework.canFile(sam,world,atStation,culprit.personId).ok,false);
  for(const action of ['statementFolio','clothingAccount']){
   assert.equal(source(sam,action).ok,true);
  }
+ assert.equal(casework.dossier(sam,world).suspects.every(s=>typeof s.statement==='string'),true,
+  'Authenticated folio unlocks the testimony but not the solution');
+ assert.equal(casework.dossier(sam,world).ready,false);
+
  assert.equal(casework.dossier(sam,world).ready,false,'Two independent sources still insufficient');
  for(const action of ['bellStatement','policeMemo','medical'])assert.equal(source(sam,action).ok,true);
  for(const action of ['wardRoster','passageMark','visitorRegister','wardMemo'])assert.equal(source(edmund,action).ok,true);

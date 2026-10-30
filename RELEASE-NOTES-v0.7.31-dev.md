@@ -86,3 +86,7 @@ Development source on `main`, not an accepted Linux binary release.
 
 ## Offline script-load contract
 - The renderer regression now enforces the shared-world → incident → asylum scene → casework → story → game → in-room inquiry load order and requires the new local casework module to ship with the bundle.
+
+## Restricted casebook testimony
+- Opening a casebook now shows the four listed persons but **not** their unearned alibis. Sam must read the certified statement folio; Edmund must inspect the ward staffing book. Neither gains the other character's private findings.
+- Shared-world test fixtures now timestamp observations using each protagonist's actual game clock, not a later synthetic timestamp.

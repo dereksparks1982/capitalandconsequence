@@ -109,7 +109,7 @@ function casebook(){
  choices.replaceChildren();
  for(const person of file.suspects){
   const option=document.createElement('option');option.value=person.id;
-  option.textContent=person.name+' · '+person.statement;choices.append(option);
+  option.textContent=person.name+(person.statement?' · '+person.statement:' · Statement not yet obtained');choices.append(option);
  }
  if(file.suspects.some(x=>x.id===previous))choices.value=previous;
  const submit=$('asylumCasebookFile');submit.textContent=S.characterRoute==='investigator'?
