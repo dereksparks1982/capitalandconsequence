@@ -18,7 +18,9 @@
     "prepack:linux": "npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
     "dist:linux:portable": "electron-builder --linux tar.gz --x64 --publish never",
     "predist:linux:portable": "npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
-    "qa:linux": "npm run test:source && npm run audit:bundle && npm run audit:offline && npm run audit:artwork"
+    "qa:linux": "npm run test:source && npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
+    "verify:linux:artifacts": "node scripts/verify-linux-distributions.cjs",
+    "qa:linux:release": "npm run qa:linux && npm run verify:linux:artifacts"
   },
   "devDependencies": {
     "electron": "44.5.1",

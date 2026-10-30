@@ -13,3 +13,10 @@ Development source on `main`, not an accepted Linux binary release.
 ## Verification
 - Source-level regression files for custom road graph and editor hooks added, not executed here.
 - Full Node suite and Ubuntu Electron visual walkthrough are still pending; GitHub Actions were not invoked.
+
+## October 30 Linux distribution hardening (source only)
+- FUSE-free AppImage toolset 1.0.3, portable Linux tar archive, and offline dependency audits committed to main.
+- A bundled, project-generated WAV replaces the old external daytime ambience preview. The original Washington map remains unchanged.
+- One Business Ledger entry in the Executive Office; no map geometry changes.
+- Added `npm run verify:linux:artifacts` to run the actual AppImage and extracted portable executable with isolated save data and Electron smoke tests.
+- Full source tests, actual new binary tests, audio approval and third-party distribution audit are **pending**. No new public release, tagged snapshot or GitHub Actions.

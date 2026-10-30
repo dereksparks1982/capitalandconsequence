@@ -17,7 +17,7 @@ Images and visual resources belong under `assets/artwork/`, while sounds remain 
 - `objects/pockets/`
 - `interfaces/`
 
-The 16 root artwork assets have been moved without altering their original binary SHA. Their earlier/alternate approved files are retained. The original Washington map is a generated runtime download at `assets/artwork/maps/title-map-1938.jpg`; run `npm run prepare:runtime` before `npm run audit:artwork`.
+The 16 root artwork assets have been moved without altering their original binary SHA. Their earlier/alternate approved files are retained. The original Washington map is now tracked in Git at `assets/artwork/maps/title-map-1938.jpg`. Its approved artwork must never change. `npm run audit:bundle` checks its Git blob identity and local media paths; no network download is required.
 
 The approved paper-doll picture belongs under `characters/paperdolls/` once its exact bytes are supplied; no art has been regenerated in this housekeeping slice.
 
