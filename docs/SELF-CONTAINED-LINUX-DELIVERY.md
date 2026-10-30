@@ -18,6 +18,10 @@ Players download the official Linux AppImage from the repository's **Releases**,
 ## Known boundary
 A Linux executable cannot be completely independent of the host kernel, core graphics/drivers, and every distro-specific library. Test supported distributions and document them; do not claim universal compatibility.
 
+## One project folder; build products in the existing project root
+
+Electron Builder now writes output to the project's **existing root** (`build.directories.output: "."`) instead of generating a `dist/` directory. Both Linux binaries, any builder YAML files, and the intermediate `linux-unpacked/` output are in `Capital&Consequence/` directly. They are ignored by Git and are not a second checkout or branch. The old `dist/` directory can be flattened and removed once with `npm run consolidate:linux:output`; the script refuses to overwrite existing names. The QA worktree directory is not part of the build and should not be created again.
+
 ## Two developer-generated Linux release targets
 
 - \`npm run dist:linux\` generates the FUSE-free single-file AppImage.
@@ -35,7 +39,7 @@ All three Linux packaging commands now automatically run `audit:bundle`, `audit:
 Run `npm run qa:linux` for the complete offline source regression suite and asset checks before considering an acceptance snapshot. Those checks are **not equivalent** to testing a downloaded AppImage or portable archive on a clean machine with networking disabled.
 
 ## Packaged executable regression test
-After locally creating **both** Linux outputs, run `npm run verify:linux:artifacts`. It starts the FUSE-free AppImage directly, extracts the portable tar.gz to a temporary folder, launches its included executable, and checks for Electron's real `FEDERAL_ELECTRIC_SMOKE_OK` token. Both run with isolated temporary HOME/XDG profile directories, which are removed afterward. The verification command uses developer-side `tar`; end users do not need tar after extraction. This does not replace testing without network access or on other Linux distributions.
+After locally creating **both** Linux outputs in the project root, run `npm run verify:linux:artifacts`. It starts the FUSE-free AppImage directly, extracts the portable tar.gz to a temporary folder, launches its included executable, and checks for Electron's real `FEDERAL_ELECTRIC_SMOKE_OK` token. Both run with isolated temporary HOME/XDG profile directories, which are removed afterward. The verification command uses developer-side `tar`; end users do not need tar after extraction. This does not replace testing without network access or on other Linux distributions.
 
 ## Optional research hyperlinks
 Historical reading links (for example, Wikipedia and the Library of Congress) are optional and may open in a web browser only on player action. They are **not** bundled gameplay dependencies. The offline audit blocks remote script, media, stylesheet loading and selected network APIs instead of rejecting historical URLs embedded as data. The asset manifest still verifies local image, audio, script and stylesheet paths separately. This static check does not replace a live offline launch test.

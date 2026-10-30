@@ -1,7 +1,7 @@
 'use strict';
 // Developer-only: verify two built executables in isolated profile folders.
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process');
-const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist'),version=require('../package.json').version;
+const root=path.resolve(__dirname,'..'),dist=root,version=require('../package.json').version;
 const prefix='Capital-and-Consequence-'+version+'-';
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'capital-linux-qa-'));
 let failed=0;

@@ -1,5 +1,9 @@
 node_modules/
-dist/
 *.AppImage
+*.tar.gz
+linux-unpacked/
+builder-debug.yml
+builder-effective-config.yaml
+latest-linux.yml
 npm-debug.log*
 assets/title-map-1938.jpg

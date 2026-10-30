@@ -26,3 +26,9 @@ Development source on `main`, not an accepted Linux binary release.
 - The next audit incorrectly rejected historical Wikipedia / Library of Congress reference hyperlinks in `app.js` and `city.js`, even though they do not load automatically or support game startup.
 - Replaced the blanket URL scanner with a check for actual network APIs, remote media/style/script loads and remote renderer resources. Historical research links remain optional and are not required to play offline.
 - Added executable negative and positive source regressions for this distinction. **The new audit has not yet been re-run on the user's Surface.** No release, tag, GUI validation, or GitHub Actions.
+
+## Single-folder build output, October 30
+- Removed the Electron Builder `dist/` output directory setting. Both Linux formats now build into the existing main project root only.
+- Added safe one-time consolidation of pre-existing `dist/` contents; files are moved, never overwritten, and the empty folder is removed.
+- Packaged-executable verification and artifact tests now read the project root, and generated files remain Git-ignored.
+- No QA project copy, secondary branch, GitHub Actions, or release tag.
