@@ -1,0 +1,19 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),html=read('index.html');
+assert.equal([...html.matchAll(/<script\b[^>]*>/gi)].length,[...html.matchAll(/<\/script\s*>/gi)].length,'Every renderer script must close');
+const external=[...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["'][^"']+["'][^>]*>/gi)].length;
+const complete=[...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["'][^"']+["'][^>]*>\s*<\/script\s*>/gi)].length;
+assert.equal(external,complete,'External scripts close before the next script tag');
+const order=['vendor/pathfinding/pathfinding-browser.min.js','vendor/konva/konva.min.js','vendor/yuka/yuka.min.js','road-layout.js','capital-travel-system.js','app.js','road-editor.js'];
+let at=-1;
+for(const name of order){const next=html.indexOf('src="'+name+'?');assert.ok(next>at,'Missing or misordered script: '+name);at=next;}
+const ctx={window:{},document:{getElementById:()=>null}};
+vm.createContext(ctx);vm.runInContext(read('road-layout.js'),ctx);vm.runInContext(read('road-editor.js'),ctx);
+assert.equal(typeof ctx.window.FE_ROAD_LAYOUT.sanitize,'function');
+ctx.window.FE_ROAD_EDITOR.mount({getSave:()=>({}),persist(){},refresh(){}});
+assert.equal(ctx.window.FE_ROAD_LAYOUT.sanitize(null).active,false);
+const smoke=read('desktop/main.cjs');
+assert.ok(smoke.includes('const cityTravelTest=await win.webContents.executeJavaScript(' + String.fromCharCode(96) + '(async () => {'));
+assert.equal((smoke.match(/await goAndWait\(\);/g)||[]).length,3,'Three completed animated journeys checked');
+console.log('Renderer script integrity and asynchronous travel smoke: passed.');

@@ -308,26 +308,37 @@ async function runSmokeTest(win) {
     }
 
     // Real renderer navigation regression, including destination restrictions.
-    const cityTravelTest=await win.webContents.executeJavaScript(`(() => {
+    const cityTravelTest=await win.webContents.executeJavaScript(`(async () => {
       const oldProfile=localStorage.getItem('federalElectricActiveProfile');
       const oldPlace=S.currentLocation?{...S.currentLocation}:null;
       const oldDate=S.gameDate,oldBreak=titleScreenDeskBreak,oldScreenHidden=document.getElementById('titleScreen').hidden;
       const room=document.getElementById('cityRoomOverlay'),map=document.getElementById('titleMapViewer');
       const go=document.getElementById('titleMapLocationTravel'),notice=document.getElementById('titleMapTravelNote'),out={};
+      // Exercise real Go There clicks and let each journey animation finish.
+      const oldMatchMedia=window.matchMedia;
+      const goAndWait=async()=>{
+        go.click();
+        for(let i=0;i<120&&capitalTravelBusy;i++)await new Promise(resolve=>setTimeout(resolve,60));
+        if(capitalTravelBusy)throw new Error('Map travel animation failed to finish');
+      };
       try{
+        // The engine's real reduced-motion animation is quick and deterministic.
+        window.matchMedia=function(query){
+          return query==='(prefers-reduced-motion: reduce)'?{matches:true}:oldMatchMedia.call(window,query);
+        };
         localStorage.setItem('federalElectricActiveProfile','__smoke-city-travel');
         S.gameDate='1890-01-02';S.currentLocation={locationId:'factory',roomId:'executive-office'};
         closeTitleMap();closeCityRoom();openTitleMap();
         openTitleMapLocation('commercePoker');
         out.commerceEnabled=!go.disabled&&!go.hidden;
-        go.click();
+        await goAndWait();
         out.commerceEntered=!room.hidden&&map.hidden&&S.currentLocation.locationId==='commercePoker';
         out.singleRoomVisible=!document.getElementById('cityRoomDirectory').hidden;
         // A Go There click must reveal Star Club's actual room menu,
         // hiding BOTH the map and the personal executive desk.
         openTitleMap();openTitleMapLocation('star');
         out.starGoEnabled=!go.disabled&&!go.hidden;
-        go.click();
+        await goAndWait();
         const clubMenu=document.getElementById('cityRoomDirectory');
         out.starEntered=!room.hidden&&map.hidden&&room.dataset.locationId==='star'
          &&document.body.classList.contains('city-room-open');
@@ -336,13 +347,14 @@ async function runSmokeTest(win) {
         out.starNoDesk=getComputedStyle(document.getElementById('careerDesk')).visibility==='hidden';
         openTitleMap();openTitleMapLocation('oldChinatown');
         out.chinatownEnabled=!go.disabled;
-        go.click();
+        await goAndWait();
         out.chinatownEntered=!room.hidden&&S.currentLocation.locationId==='oldChinatown';
         openTitleMap();openTitleMapLocation('washingtonFairgrounds');
         out.fairLocked=go.disabled&&notice.textContent.includes('1893');
         out.fairNotVisited=S.currentLocation.locationId==='oldChinatown';
         return out;
       }finally{
+        window.matchMedia=oldMatchMedia;
         closeTitleMap();closeCityRoom();
         S.currentLocation=oldPlace||{locationId:'factory',roomId:'executive-office'};
         S.gameDate=oldDate;titleScreenDeskBreak=oldBreak;
