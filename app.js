@@ -38,7 +38,7 @@ const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federal
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
 function periodRadioAvailable(){return S.gameDate>='1938-01-01'}
-function stockAvailableInYear(ticker,sector,year){if(stockSeed1878.some(row=>row[0]===ticker))return year>=1878;return year>=({Automotive:1896,Aviation:1910}[sector]||1890) && !(ticker==='NRT'&&year<1920) && !(ticker==='RMI'&&year<1910) && !(ticker==='HHA'&&year<1900)}
+function stockAvailableInYear(ticker,sector,year){if(ticker==='FEC')return year>=1878;if(stockSeed1878.some(row=>row[0]===ticker))return year>=1878;return year>=({Automotive:1896,Aviation:1910}[sector]||1890) && !(ticker==='NRT'&&year<1920) && !(ticker==='RMI'&&year<1910) && !(ticker==='HHA'&&year<1900)}
 /* Alternate-history period capitalization: finite issued shares and a
    smaller contemporaneous number actually offered through the broker. */
 function stockShareStructure(ticker,sector){
@@ -201,7 +201,7 @@ function migrate(x){const fresh=initial();if(!x)return fresh;Object.assign(fresh
  for(const c of fresh.contracts.concat(fresh.contractOffers)){if(c.product==='Electric Lamps')c.product='Electric Light Bulbs';if(!fresh.customerHistory[c.customer])fresh.customerHistory[c.customer]={completed:0,rejected:0,late:0,discounted:0,partial:0};if(c.customerTrait==null)c.customerTrait=(contractCustomers.find(v=>v[0]===c.customer)||[])[2]||'balanced';if(c.producedQuality==null)c.producedQuality=c.quality;if(!Number.isFinite(+c.delivered))c.delivered=(c.status==='delivered'||c.status==='delivered-discount')?Math.max(0,+c.quantity||0):0;if(!Number.isFinite(+c.productionQuantity)||+c.productionQuantity<1)c.productionQuantity=Math.max(1,+c.quantity||1);if(!c.productionPolicy)c.productionPolicy='normal';if(!c.deadlineMonth)c.deadlineMonth=monthKey(fresh.gameDate);if(!Number.isFinite(+c.deadlineTurnSerial))c.deadlineTurnSerial=campaignSerialForMonthEnd(c.deadlineMonth,fresh.campaignStartYear);if(!c.deadlineClass)c.deadlineClass='STANDARD';if(!Number.isFinite(+c.deadlineTurns))c.deadlineTurns=Math.max(1,c.deadlineTurnSerial-fresh.turnSerial+1);c.deadlineDate=c.deadlineDate||contractDeadlineDate(c.deadlineTurnSerial,fresh.campaignStartYear);c.deadlineMonth=monthKey(c.deadlineDate);c.deadline=contractDeadlineLabel(c.deadlineTurnSerial,c.deadlineClass,fresh.campaignStartYear);c.deadlinePassed=!!c.deadlinePassed;if(!Number.isFinite(+c.lastLatePenaltyTurn))c.lastLatePenaltyTurn=0;if(c.status==='production'||c.status==='complete')c.status='accepted';if(!c.productionState)c.productionState=(c.status==='delivered'||c.status==='delivered-discount')?'complete':(+c.completed>=+c.productionQuantity?'complete':'queued');if(c.status==='offered'){if(c.requestedQuantity==null)c.requestedQuantity=c.quantity;if(c.requestedQuality==null)c.requestedQuality=c.quality;if(c.requestedQualityName==null)c.requestedQualityName=contractGrade(c.requestedQuality).qualityName;if(c.suggestedPrice==null)c.suggestedPrice=+c.price||contractGrade(c.requestedQuality).price;if(!c.negotiation)c.negotiation={rounds:0,counter:null,lastProposal:null}}if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}
  fresh.productionQueue=(x.productionQueue||fresh.contracts.filter(c=>c.productionState==='queued'||c.productionState==='running'||c.productionState==='paused').map(c=>c.id)).filter(id=>{const c=fresh.contracts.find(v=>v.id===id);return c&&c.status!=='delivered'&&c.status!=='delivered-discount'&&(+c.completed||0)<(+c.productionQuantity||+c.quantity||1)});
  fresh.activeContractId=fresh.productionQueue.includes(x.activeContractId)?x.activeContractId:null;fresh.lineStatus=x.lineStatus||'idle';fresh.lineMessage=x.lineMessage||'No production run is running.';fresh.lastProductionQuality=x.lastProductionQuality||null;
- for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';return fresh}
+ for(const p of Object.values(fresh.portfolio)){if(p.realized==null)p.realized=0}for(const c of fresh.contracts.concat(fresh.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}fresh.marketWire='Trading continues on the Federal Exchange. Federal Electric has no live intraday quotation service; the opening sheet remains posted until the closing quotations are published.';window.FE_CORPORATE?.syncListing?.(fresh);return fresh}
 let profileSaveReadBlocked=false;
 let profileSaveWriteError='';
 let diskSaveQueue=Promise.resolve();
@@ -422,6 +422,8 @@ function renderOwnership(){
  if(value)value.textContent=money(companyValueEstimate());
  if(rep)rep.textContent=Math.round(S.reputation)+'/100';
  if(exposure)exposure.textContent=accountingExposure();
+ const badge=document.querySelector('.ownership-head .private-badge');if(badge){const c=window.FE_CORPORATE?.ensure?.(S);badge.textContent=c?.status==='public'?'PUBLIC · FEC':c?.status==='chartered'?'INCORPORATED · PRIVATE':'PRIVATE · NOT QUOTED';}
+ openBtn.textContent='Corporate Affairs';window.FE_CORPORATE_UI?.desk?.();
 }
 function capacity(){return Math.floor(S.workers*60*(S.machinery/100)*workforceProductionFactor())}
 function normalizeProductionTimes(){for(const c of S.contracts.concat(S.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}}
@@ -430,6 +432,7 @@ function portfolioCost(){return Object.values(S.portfolio).reduce((a,p)=>a+p.cos
 function marketIndex(){const rows=Object.entries(S.stocks).filter(([k,x])=>stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))),current=rows.reduce((a,[,x])=>a+x.price,0),base=rows.reduce((a,[k])=>a+(stockOpeningValues[k]||0),0);return base?current/base*100:100}
 function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
+window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
 function render(){
  document.body.classList.toggle('pre-radio-era',!periodRadioAvailable());
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
@@ -868,6 +871,7 @@ function renderBrokerOffice(){
   }
  }
  for(const id of ['brokerBuy','brokerSell']){const btn=document.getElementById(id);if(btn)btn.disabled=!businessOpen()||S.paused}
+ window.FE_CORPORATE_UI?.broker?.();
 }
 function brokerPlaceOrder(direction){
  const result=document.getElementById('brokerOrderStatus');if(!result)return;
@@ -940,7 +944,7 @@ $('#pokerProgress').textContent='Boiler Room: OPEN TO EVERYONE · Commerce Club:
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function materialQty(k){const n=Math.floor(Number(document.getElementById('material_qty_'+k)?.value));return Number.isFinite(n)&&n>0?n:0}
 window.tradeMaterial=(k,direction,forcedQty=null)=>{
- if(S.paused)return note('Game is paused.');
+ if(S.paused)return note('Game is paused.');if(!window.FE_CORPORATE?.canManage?.(S))return note('The board has removed Charles from Federal Electric management.');
  if(!businessOpen())return note('Suppliers are closed for the night.');
  const market=MATERIAL_MARKET[k],qty=forcedQty||materialQty(k);if(!market||!qty)return note('Enter a valid material quantity.');
  const amount=market.unitPrice*qty;
@@ -949,7 +953,7 @@ window.tradeMaterial=(k,direction,forcedQty=null)=>{
  save();render();
 }
 window.sellAllMaterial=k=>{const qty=Math.floor(S.materials[k]||0);if(!qty)return note('No '+(MATERIAL_MARKET[k]?.name||k).toLowerCase()+' inventory to sell.');window.tradeMaterial(k,-1,qty)}
-window.trade=(k,direction,forcedQty=null)=>{if(S.paused)return note('The game is paused.');if(!businessOpen())return note('The Federal Exchange is closed for the night.');if(!brokerChannel())return note('Stock orders require a visit to your broker. Only the Federal Electric proprietor may send telegrams from the executive office after repeated meetings.');const qty=forcedQty===null?tradeQty(k):Number(forcedQty),x=S.stocks[k],p=S.portfolio[k];if(!Number.isSafeInteger(qty)||qty<1)return note('Enter a positive whole number of shares.');if(!x||!p||!stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4)))return note('That security is not listed on the Federal Exchange in this year.');if(direction>0&&qty>(x.sharesOffered||0))return note('Your broker can only find '+(x.sharesOffered||0).toLocaleString()+' '+k+' shares currently offered. No new shares are invented.');const commission=Math.max(1,qty*.05),gross=x.price*qty;if(direction>0){const total=gross+commission;if(S.personalCash<total)return note('Insufficient personal cash. Purchase requires '+cash(total)+' including commission; available cash is '+cash(S.personalCash)+'.');S.personalCash-=total;p.shares+=qty;p.cost+=total;x.sharesOffered-=qty;S.transactions.push({date:displayDate(),action:'BUY',ticker:k,shares:qty,price:x.price,amount:-total,realized:0});note('Bought '+qty+' '+k+' at '+cash(x.price)+' · total cost '+cash(total)+' · cash available '+cash(S.personalCash)+'.')}else{if(p.shares<qty)return note('Not enough '+k+' shares. You own '+p.shares+'.');const avg=p.cost/p.shares,proceeds=gross-commission,costBasis=avg*qty,realized=proceeds-costBasis;p.shares-=qty;p.cost=Math.max(0,p.cost-costBasis);if(p.shares===0)p.cost=0;p.realized=(p.realized||0)+realized;S.personalCash+=proceeds;x.sharesOffered=Math.min(x.issuedShares,(x.sharesOffered||0)+qty);S.transactions.push({date:displayDate(),action:'SELL',ticker:k,shares:qty,price:x.price,amount:proceeds,realized});note('Sold '+qty+' '+k+' · proceeds '+cash(proceeds)+' · realized '+(realized>=0?'profit ':'loss ')+cash(Math.abs(realized))+' · cash available '+cash(S.personalCash)+'.')}save();render()}
+window.trade=(k,direction,forcedQty=null)=>{if(S.paused)return note('The game is paused.');if(!businessOpen())return note('The Federal Exchange is closed for the night.');if(!brokerChannel())return note('Stock orders require a visit to your broker. Only the Federal Electric proprietor may send telegrams from the executive office after repeated meetings.');const qty=forcedQty===null?tradeQty(k):Number(forcedQty),x=S.stocks[k],p=S.portfolio[k];if(!Number.isSafeInteger(qty)||qty<1)return note('Enter a positive whole number of shares.');if(!x||!p||!stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4)))return note('That security is not listed on the Federal Exchange in this year.');if(k==='FEC'){const g=window.FE_CORPORATE?.ensure?.(S);if(!g||g.status!=='public'||(direction>0&&g.publicShares<qty)||(direction<0&&g.marketShares<qty))return note('Federal Electric share transfer exceeds the public float or personal holding.');}if(direction>0&&qty>(x.sharesOffered||0))return note('Your broker can only find '+(x.sharesOffered||0).toLocaleString()+' '+k+' shares currently offered. No new shares are invented.');const commission=Math.max(1,qty*.05),gross=x.price*qty;if(direction>0){const total=gross+commission;if(S.personalCash<total)return note('Insufficient personal cash. Purchase requires '+cash(total)+' including commission; available cash is '+cash(S.personalCash)+'.');S.personalCash-=total;p.shares+=qty;p.cost+=total;x.sharesOffered-=qty;S.transactions.push({date:displayDate(),action:'BUY',ticker:k,shares:qty,price:x.price,amount:-total,realized:0});note('Bought '+qty+' '+k+' at '+cash(x.price)+' · total cost '+cash(total)+' · cash available '+cash(S.personalCash)+'.')}else{if(p.shares<qty)return note('Not enough '+k+' shares. You own '+p.shares+'.');const avg=p.cost/p.shares,proceeds=gross-commission,costBasis=avg*qty,realized=proceeds-costBasis;p.shares-=qty;p.cost=Math.max(0,p.cost-costBasis);if(p.shares===0)p.cost=0;p.realized=(p.realized||0)+realized;S.personalCash+=proceeds;x.sharesOffered=Math.min(x.issuedShares,(x.sharesOffered||0)+qty);S.transactions.push({date:displayDate(),action:'SELL',ticker:k,shares:qty,price:x.price,amount:proceeds,realized});note('Sold '+qty+' '+k+' · proceeds '+cash(proceeds)+' · realized '+(realized>=0?'profit ':'loss ')+cash(Math.abs(realized))+' · cash available '+cash(S.personalCash)+'.')}if(k==='FEC'){const transfer=window.FE_CORPORATE.marketFill(S,direction,qty);if(!transfer.ok)throw Error(transfer.reason);}save();render()}
 window.sellAll=k=>{const qty=S.portfolio[k].shares;if(!qty)return note('No '+k+' shares to sell.');window.trade(k,-1,qty)}
 function stepHiddenMarket(){
  const sectors=[...new Set(Object.values(S.stocks).map(x=>x.sector))],sectorMove={};sectors.forEach(s=>sectorMove[s]=(Math.random()-.5)*.0012);
@@ -1106,12 +1110,12 @@ function closeNight(manual=false){
 function beginNextDay(){
  if(S.phase!=='report')return;
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
- archiveToday();const old=S.gameDate,next=window.FE_WASHINGTON_TIME?.now?.(S)?.date||window.FE_WASHINGTON_TIME.nextCivilDay(S.gameDate);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;payMonthlyDividends(old,S.gameDate);window.FE_EMPIRE?.advance?.(S);window.FE_FISHING_VESSELS?.advance?.(S);
+ archiveToday();const old=S.gameDate,next=window.FE_WASHINGTON_TIME?.now?.(S)?.date||window.FE_WASHINGTON_TIME.nextCivilDay(S.gameDate);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;const takeoverNotice=window.FE_CORPORATE?.advanceDay?.(S);payMonthlyDividends(old,S.gameDate);window.FE_EMPIRE?.advance?.(S);window.FE_FISHING_VESSELS?.advance?.(S);
  S.phase='day';S.dayRemaining=window.FE_WASHINGTON_TIME.phaseSecondsRemaining(S);S.phaseBudgetRemainder=0;window.FE_NPC_AI?.syncClock?.();
  for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
  if(S.raidMonth!==monthKey(S.gameDate)){S.raidMonth=monthKey(S.gameDate);S.raidDays=rollRaidDays(S.gameDate)}
- generateTurnConditions();if(!S.componentWorks){processPendingQualityClaims();ageManagementNeglect()}const delegatedStart=S.componentWorks?false:applyMorningDelegation();generatePaper();
+ generateTurnConditions();if(!S.componentWorks){processPendingQualityClaims();ageManagementNeglect()}const delegatedStart=S.componentWorks?false:applyMorningDelegation();generatePaper();if(takeoverNotice?.kind==='loss-of-control'){S.headline='FEDERAL ELECTRIC PRESIDENT OUSTED BY SYNDICATE';S.story='Financiers have organized a controlling share bloc and removed Charles Whitcomb from the presidency. His personal shares remain intact.';}
  if(window.FE_LIVING_CHARACTERS){const freshPublic=window.FE_LIVING_CHARACTERS.advance(S.turnSerial);window.FE_LIVING_CHARACTERS.publishInPaper(freshPublic)}
  if(S.componentWorks){S.componentWorks.date=S.gameDate;
   if(window.FE_COMPONENT_WORKS.renewStandingOrders(S.componentWorks,S.gameDate))
@@ -1190,7 +1194,7 @@ function treasuryHandlingTime(out){
 const exploreIpo=$('#exploreIpo');if(exploreIpo)exploreIpo.onclick=()=>{ipoScaffoldOpen=!ipoScaffoldOpen;renderOwnership()};
 const closeIpoScaffold=$('#closeIpoScaffold');if(closeIpoScaffold)closeIpoScaffold.onclick=()=>{ipoScaffoldOpen=false;renderOwnership()};
 const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistribution.onclick=()=>{
- const amount=treasuryAmount(),out=$('#treasuryNote');if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
+ const amount=treasuryAmount(),out=$('#treasuryNote');if(!window.FE_CORPORATE?.canManage?.(S))return out.textContent='A dismissed president cannot authorize company distributions.';if(!businessOpen())return out.textContent='Recorded distributions are handled during the Business Day.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
  if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'ownerDistribution',amount,currentCityLocation().locationId,S.characterRoute);
@@ -1199,7 +1203,7 @@ const ownerDistribution=$('#ownerDistribution');if(ownerDistribution)ownerDistri
  out.textContent='Recorded distribution completed: '+cash(amount)+' moved to personal cash.';save();render();
 };
 const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCompanyFunds.onclick=()=>{
- const amount=treasuryAmount(),out=$('#treasuryNote');if(S.phase==='report')return out.textContent='The books are closed for the completed date.';
+ const amount=treasuryAmount(),out=$('#treasuryNote');if(!window.FE_CORPORATE?.canManage?.(S))return out.textContent='The board has removed Charles from company management.';if(S.phase==='report')return out.textContent='The books are closed for the completed date.';
  if(!amount)return out.textContent='Enter a valid amount.';if(amount>S.companyCash)return out.textContent='Federal Electric does not have that much company cash.';
  if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'irregularDraw',amount,currentCityLocation().locationId,S.characterRoute);
