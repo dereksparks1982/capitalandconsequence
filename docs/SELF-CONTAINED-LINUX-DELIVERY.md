@@ -43,3 +43,6 @@ After locally creating **both** Linux outputs in the project root, run `npm run 
 
 ## Optional research hyperlinks
 Historical reading links (for example, Wikipedia and the Library of Congress) are optional and may open in a web browser only on player action. They are **not** bundled gameplay dependencies. The offline audit blocks remote script, media, stylesheet loading and selected network APIs instead of rejecting historical URLs embedded as data. The asset manifest still verifies local image, audio, script and stylesheet paths separately. This static check does not replace a live offline launch test.
+
+## Verified portable archive packaging
+`npm run dist:linux:portable` now builds the portable `linux-unpacked` directory directly inside the project and uses a local Node.js-driven tar/gzip assembly. The resulting `Capital-and-Consequence-<version>-x64.tar.gz` is renamed into place **only after** both gzip validation and tar member inspection confirm it contains `linux-unpacked/capital-consequence`. If packaging fails, a previous archive is preserved instead of being silently replaced by a truncated download. The launch smoke check separately tests the extracted executable. All output remains directly in the single project folder, without `dist/`.

@@ -16,7 +16,7 @@
     "audit:bundle": "node desktop/check-bundle-assets.cjs",
     "predist:linux": "npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
     "prepack:linux": "npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
-    "dist:linux:portable": "electron-builder --linux tar.gz --x64 --publish never",
+    "dist:linux:portable": "electron-builder --linux dir --x64 --publish never && node scripts/package-linux-portable.cjs",
     "predist:linux:portable": "npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
     "qa:linux": "npm run test:source && npm run audit:bundle && npm run audit:offline && npm run audit:artwork",
     "verify:linux:artifacts": "node scripts/verify-linux-distributions.cjs",

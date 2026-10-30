@@ -31,6 +31,9 @@ try{
  check('appimage',image);
  const archives=fs.readdirSync(dist).filter(n=>n.startsWith(prefix)&&n.endsWith('.tar.gz'));
  if(archives.length!==1)throw Error('Expected exactly one portable tar.gz, found '+archives.length);
+ const health=run('gzip',['-t',path.join(dist,archives[0])]);
+ if(health.error||health.status!==0)
+  throw Error('Portable archive is corrupt or incomplete: '+(health.error?.message||health.stderr||'gzip failed'));
  const extracted=path.join(temp,'extracted');fs.mkdirSync(extracted,{recursive:true});
  const tar=run('tar',['-xzf',path.join(dist,archives[0]),'-C',extracted]);
  if(tar.error||tar.status!==0)throw Error('Portable extraction failed: '+(tar.error?.message||tar.stderr));

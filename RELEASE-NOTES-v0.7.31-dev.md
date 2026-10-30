@@ -32,3 +32,9 @@ Development source on `main`, not an accepted Linux binary release.
 - Added safe one-time consolidation of pre-existing `dist/` contents; files are moved, never overwritten, and the empty folder is removed.
 - Packaged-executable verification and artifact tests now read the project root, and generated files remain Git-ignored.
 - No QA project copy, secondary branch, GitHub Actions, or release tag.
+
+## Executable smoke-test defects and portable archive repair, October 30
+- The first owner-built AppImage revealed four missing external script closing tags in `index.html`, which caused `FE_ROAD_LAYOUT.sanitize` to be undefined. Repaired closing tags without changing the map or its geometry.
+- Updated the Electron smoke travel sequence to wait for actual async animated journeys, using the engine's supported reduced-motion animation for efficient verification.
+- The initial portable `.tar.gz` was truncated (`gzip: unexpected end of file`). The portable build now assembles a complete archive from a fresh `linux-unpacked` game folder, checks gzip and tar integrity and the game executable, then atomically replaces the previous tarball.
+- Added source regressions for HTML script integrity and portable archive integrity. **Both new executable formats still need owner-side rebuild and smoke rerun.** No Actions or second branch.
