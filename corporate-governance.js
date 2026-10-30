@@ -155,6 +155,9 @@ function listing(save,newShares,secondaryShares,priceCents,token){
   if(newShares+secondaryShares>20000)return reject('Underwriter cannot place more than 20,000 shares.');
   if(c.authorizations.ipo>save.gameDate)return reject('The authorization date is invalid.');
   if((save.brokerage?.visits||0)<2)return reject('Make two separate visits to establish an underwriting relationship.');
+  if((save.ledger?.length||0)<4||(save.reputation||0)<50||(save.companyCash||0)<750)return reject('Underwriters require four closed company accounts, reputation of at least 50, and $750 in operating funds.');
+  const fair=quote(save).priceCents;
+  if(priceCents<Math.round(fair*.75)||priceCents>Math.round(fair*1.5))return reject('The underwriter requires a share price close to the published company valuation.');
   const cashCents=Math.floor(newShares*priceCents*.95);
   const personalCents=Math.floor(secondaryShares*priceCents*.95);
   c.issuedShares+=newShares;c.founderShares-=secondaryShares;
