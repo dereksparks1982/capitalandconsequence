@@ -43,6 +43,7 @@ function ownership(save){
   public:c.publicShares,tradable:c.publicShares};
 }
 function canManage(save){const c=ensure(save);return save.characterRoute==='industrialist'&&c.president==='charles';}
+function syncTreasury(save){if(save.componentWorks&&Number.isFinite(save.companyCash))save.componentWorks.cashCents=Math.round(save.companyCash*100);}
 function register(save,kind,message,details={}){
  const c=ensure(save),entry={id:'FE-CORP-'+c.nextId++,date:save.gameDate||'1878-01-02',kind,message,...details};
  c.events.push(entry);return entry;
@@ -68,7 +69,7 @@ function incorporate(save,token){
   const reason=check(save,'factory');if(reason)return reject(reason);
   if(c.status!=='private')return reject('Federal Electric already has a corporate charter.');
   if(Math.round((save.companyCash||0)*100)<7500)return reject('Incorporation and records cost $75 in company funds.');
-  save.companyCash=Math.round((save.companyCash-75)*100)/100;
+  save.companyCash=Math.round((save.companyCash-75)*100)/100;syncTreasury(save);
   c.status='chartered';c.charterDate=save.gameDate;c.directors=[
    {id:'charles',name:'Charles Whitcomb',loyalty:100,temperament:'founder'},
    {id:'harlow',name:'Edwin Harlow',loyalty:68,temperament:'banker'},
@@ -129,7 +130,7 @@ function vote(save,resolution,token){
    const cents=Math.floor(Math.round((save.companyCash||0)*100)*.12);
    if(cents<1000)return reject('A dividend must distribute at least $10 in company funds.');
    const founderCents=Math.floor(cents*(c.founderShares+c.marketShares)/c.issuedShares);
-   save.companyCash=Math.round((save.companyCash-cents/100)*100)/100;
+   save.companyCash=Math.round((save.companyCash-cents/100)*100)/100;syncTreasury(save);
    save.personalCash=Math.round(((save.personalCash||0)+founderCents/100)*100)/100;
    c.dividends.push({date:save.gameDate,totalCents:cents,founderCents});
   }
@@ -163,7 +164,7 @@ function listing(save,newShares,secondaryShares,priceCents,token){
   c.issuedShares+=newShares;c.founderShares-=secondaryShares;
   c.publicShares+=newShares+secondaryShares;
   c.status='public';c.offeringDate=save.gameDate;c.offeringPriceCents=priceCents;
-  save.companyCash=Math.round(((save.companyCash||0)+cashCents/100)*100)/100;
+  save.companyCash=Math.round(((save.companyCash||0)+cashCents/100)*100)/100;syncTreasury(save);
   save.personalCash=Math.round(((save.personalCash||0)+personalCents/100)*100)/100;
   syncListing(save);
   register(save,'ipo','Federal Electric listed as FEC: '+newShares+' new and '+secondaryShares+' founder shares sold.',{newShares,secondaryShares,priceCents});
