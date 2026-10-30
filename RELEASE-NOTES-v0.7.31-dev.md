@@ -48,3 +48,9 @@ Development source on `main`, not an accepted Linux binary release.
 - Source-only Electron smoke diagnostic on the Surface identified the exact Commerce Club interruption: the previous M-key room-return test had queued a `requestAnimationFrame` auto-selection of `home`. That stale callback ran after Commerce Club was selected and while its animated journey was active, so the intended destination guard correctly canceled arrival.
 - Deferred room focus now uses an epoch token and refuses to act if the map is closed, a trip is active, a newer selection or dismissal occurred, or the player is no longer at the original room.
 - Regression test exercises normal room-return focus and all five interruption cases. **The updated executable smoke test is not yet confirmed on the Surface.** Travel billing and animated game mechanics, map pins and Washington artwork are unchanged.
+
+## Real custody and map navigation smoke corrections, October 30
+- The owner's 158/158 source regressions passed, then Electron reached a poker smoke test built with fabricated pending sessions and no cash-custody tickets. The real cash-custody resolver correctly refused both fake settlements.
+- Smoke setup now reserves genuine personal stakes through escrow, verifies a forfeited $25 and an undealt canceled $20, and restores original profile custody. An independent regression exercises the live resolver with valid tickets, refunds and duplicate-payout protection.
+- Refreshed a later legacy Electron navigation smoke block to await asynchronous street animation and check the currently always-visible `Enter Location` control. It no longer assumes instant travel or hidden same-location buttons.
+- Source fixes await Surface Pro 8 full regression and Electron smoke runs; no verified binary release yet. One main folder, no GitHub Actions.

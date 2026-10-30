@@ -19,4 +19,11 @@ assert.equal((smoke.match(/await goAndWait\(\);/g)||[]).length,3,'Commerce, Star
 assert.ok(smoke.includes('out.commerceTravelStarted=await goAndWait()'),'Commerce must confirm animation began');
 assert.ok(smoke.includes('await Promise.race([')&&smoke.includes('guide.decode()'),'Cold map image must decode before first travel');
 assert.ok(smoke.includes('out.commerceDiagnostic='),'A failed first journey must provide useful diagnostics');
+assert.ok(smoke.includes("window.FE_CASH_CUSTODY.stake(S,'personal',25,'workingPoker')"));
+assert.ok(smoke.includes("window.FE_CASH_CUSTODY.stake(S,'personal',20,'commercePoker')"));
+assert.ok(smoke.includes('S.cashCustody=originalCustody'),'Poker smoke restores actual custody state');
+assert.ok(smoke.includes('const cityTravel=await win.webContents.executeJavaScript(' + String.fromCharCode(96) + '(async () => {'));
+assert.ok(smoke.includes('context.firstTravelCompleted=await travelFromTitleMap()'));
+assert.ok(smoke.includes('context.secondTravelCompleted=await travelFromTitleMap()'));
+assert.ok(smoke.includes("context.sameLocationButtonEnters=!go.hidden"),'Enter Location control remains visible when already at location');
 console.log('Renderer script integrity and asynchronous travel smoke: passed.');

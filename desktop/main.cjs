@@ -456,24 +456,30 @@ async function runSmokeTest(win) {
 
     const unresolvedPokerTest=await win.webContents.executeJavaScript(`(() => {
       const originalSessions=S.pokerSessions,originalEvents=S.outcomeEvents,
-        originalNotes=S.notes,originalCash=S.personalCash;
+        originalNotes=S.notes,originalCash=S.personalCash,originalCustody=S.cashCustody;
       const oldActive=localStorage.getItem('federalElectricActiveProfile');
       const out={};
       try{
         localStorage.setItem('federalElectricActiveProfile','__smoke-poker');
         S.pokerSessions={version:1,pending:[],settled:[]};
-        S.outcomeEvents=[];S.notes=[];S.personalCash=100;
-        S.pokerSessions.pending.push({id:'smoke-claimed',profileId:'__smoke-poker',circle:'working',stake:25,gameDate:S.gameDate,claimed:true});
-        out.forfeited=resolveUnfinishedPoker('smoke-claimed')&&S.personalCash===100;
+        S.outcomeEvents=[];S.notes=[];S.personalCash=100;S.cashCustody=null;
+        const booked=window.FE_CASH_CUSTODY.stake(S,'personal',25,'workingPoker');
+        if(!booked.ok)throw new Error('Poker smoke escrow could not reserve real stake: '+booked.reason);
+        S.pokerSessions.pending.push({id:'smoke-claimed',profileId:'__smoke-poker',circle:'working',stake:25,gameDate:S.gameDate,claimed:true,funding:'personal',custodyTicket:booked.ticket});
+        out.forfeited=resolveUnfinishedPoker('smoke-claimed')&&S.personalCash===75&&
+         S.cashCustody.closedWagers.includes(booked.ticket.custodyId);
         out.noDuplicateForfeit=!resolveUnfinishedPoker('smoke-claimed')&&S.outcomeEvents.length===1;
         out.pokerCannotSettleLater=!window.FE_POKER_SETTLE('smoke-claimed','working',500,10,60);
-        S.pokerSessions.pending.push({id:'smoke-undealt',profileId:'__smoke-poker',circle:'middle',stake:20,gameDate:S.gameDate,claimed:false});
-        out.undealtRefunded=resolveUnfinishedPoker('smoke-undealt')&&S.personalCash===120;
+        const undealt=window.FE_CASH_CUSTODY.stake(S,'personal',20,'commercePoker');
+        if(!undealt.ok)throw new Error('Poker smoke escrow could not reserve undealt stake: '+undealt.reason);
+        S.pokerSessions.pending.push({id:'smoke-undealt',profileId:'__smoke-poker',circle:'middle',stake:20,gameDate:S.gameDate,claimed:false,funding:'personal',custodyTicket:undealt.ticket});
+        out.undealtRefunded=resolveUnfinishedPoker('smoke-undealt')&&S.personalCash===75&&
+         S.cashCustody.closedWagers.includes(undealt.ticket.custodyId)&&S.outcomeEvents.length===2;
         out.notReclaimable=!window.FE_POKER_SETTLE('smoke-undealt','middle',500,10,60);
         return out;
       }finally{
         S.pokerSessions=originalSessions;S.outcomeEvents=originalEvents;
-        S.notes=originalNotes;S.personalCash=originalCash;
+        S.notes=originalNotes;S.personalCash=originalCash;S.cashCustody=originalCustody;
         if(oldActive===null)localStorage.removeItem('federalElectricActiveProfile');
         else localStorage.setItem('federalElectricActiveProfile',oldActive);
         localStorage.removeItem('federalElectricProfile___smoke-poker');
@@ -483,41 +489,43 @@ async function runSmokeTest(win) {
     if(Object.values(unresolvedPokerTest).some(value=>value!==true))
       throw new Error('One-use poker resolution regression: '+JSON.stringify(unresolvedPokerTest));
 
-    const cityTravel=await win.webContents.executeJavaScript(`(() => {
+    const cityTravel=await win.webContents.executeJavaScript(`(async () => {
       const room=document.getElementById('cityRoomOverlay');
       const title=document.getElementById('titleScreen');
       const map=document.getElementById('titleMapViewer');
       const go=document.getElementById('titleMapLocationTravel');
       const previousProfile=localStorage.getItem('federalElectricActiveProfile');
       const previousState=S.currentLocation ? {...S.currentLocation} : null;
-      const previousDeskBreak=titleScreenDeskBreak;
+      const previousDeskBreak=titleScreenDeskBreak,oldMatchMedia=window.matchMedia;
       const before=window.FederalElectricCity.getLocation('oldChinatown');
       const context={hasRoom:!!before?.rooms?.length,previousProfile};
       try{
+        window.matchMedia=function(query){return query==='(prefers-reduced-motion: reduce)'?{matches:true}:oldMatchMedia.call(window,query);};
         localStorage.setItem('federalElectricActiveProfile','__smoke-navigation');
         title.hidden=false;
         openTitleMap();
         openTitleMapLocation('oldChinatown');
-        context.beforeGoVisible=!go.hidden;
-        travelFromTitleMap();
+        context.beforeGoVisible=!go.hidden&&!go.disabled;
+        context.firstTravelCompleted=await travelFromTitleMap();
         context.savedLocation=window.FE_CITY.currentLocation().locationId;
         context.roomVisible=!room.hidden && getComputedStyle(room).display!=='none';
         context.roomAboveTitle=Number(getComputedStyle(room).zIndex)>Number(getComputedStyle(title).zIndex);
         context.mapClosed=map.hidden;
         returnCityRoomToMap();
         openTitleMapLocation('oldChinatown');
-        context.sameLocationButtonHidden=go.hidden;
+        context.sameLocationButtonEnters=!go.hidden&&!go.disabled&&go.textContent==='Enter Location';
         context.mapReturned=!map.hidden;
         closeTitleMapOrReturnToLocation();
         context.mapCloseRestoresRoom=!room.hidden && window.FE_CITY.currentLocation().locationId==='oldChinatown';
         returnCityRoomToMap();
         openTitleMapLocation('russianTradeHall');
-        travelFromTitleMap();
+        context.secondTravelCompleted=await travelFromTitleMap();
         context.secondDestination=window.FE_CITY.currentLocation().locationId;
         context.secondRoomVisible=!room.hidden && getComputedStyle(room).display!=='none';
         returnCityRoomToOffice();
         context.officeRestored=window.FE_CITY.currentLocation().locationId==='factory' && room.hidden;
       }finally{
+        window.matchMedia=oldMatchMedia;
         closeTitleMap();closeCityRoom();title.hidden=true;
         S.currentLocation=previousState||{locationId:'factory',roomId:'executive-office'};
         titleScreenDeskBreak=previousDeskBreak;
@@ -527,7 +535,7 @@ async function runSmokeTest(win) {
       }
       return context;
     })()`);
-    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonHidden||!cityTravel.mapReturned||!cityTravel.mapCloseRestoresRoom||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored){
+    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonEnters||!cityTravel.mapReturned||!cityTravel.mapCloseRestoresRoom||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored||!cityTravel.firstTravelCompleted||!cityTravel.secondTravelCompleted){
       throw new Error('Map navigation/room visibility regression: '+JSON.stringify(cityTravel));
     }
 
