@@ -17,3 +17,11 @@ Players download the official Linux AppImage from the repository's **Releases**,
 
 ## Known boundary
 A Linux executable cannot be completely independent of the host kernel, core graphics/drivers, and every distro-specific library. Test supported distributions and document them; do not claim universal compatibility.
+
+## Two developer-generated Linux release targets
+
+- \`npm run dist:linux\` generates the FUSE-free single-file AppImage.
+- \`npm run dist:linux:portable\` generates a complete portable \`.tar.gz\` application folder that unpacks to its own executable and libraries. This is a true extracted-file distribution, not a zipped AppImage.
+- Neither build automatically publishes or invokes GitHub Actions. Attach a tested binary artifact to this repository's Releases only after acceptance.
+- \`desktopName\` and \`linux.syncDesktopName\` match the existing app ID to keep GNOME/KDE window associations stable.
+- The executive-office book and paperwork remain visually in the same positions; only the Business Ledger button opens the actual ledger. The decorative book/paper are labelled as Federal Electric and Washington Works, not duplicate ledgers.

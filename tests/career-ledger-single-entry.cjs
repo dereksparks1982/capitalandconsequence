@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const src=fs.readFileSync(path.join(root,'career-shell.js'),'utf8');
+assert.ok(src.includes("route.id==='industrialist'?'Federal Electric'"),'Executive decorative book shows company name, not another ledger');
+assert.ok(src.includes("route.id==='industrialist'?'WASHINGTON<br>WORKS':'REPORTS<br>AND NOTES'"),'Executive papers no longer masquerade as a duplicate ledger');
+assert.ok(src.includes("route.id==='industrialist'?'Business Ledger'"),'Only business-ledger action remains');
+assert.equal((src.match(/'Business Ledger'/g)||[]).length,1,'Business Ledger is named exactly once in the desk');
+assert.ok(src.includes("desk.querySelector('#careerDeskJournal').onclick=()=>window.FE_PERSONAL_BOOK?.open?.()"),'Business Ledger opens the existing personal-book interface');
+assert.ok(src.includes('id="careerDeskMap"')&&src.includes('id="careerDeskMapButton"'),'Map access and desk geometry remain in place');
+console.log('Executive office ledger consolidation: passed.');

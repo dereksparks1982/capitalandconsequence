@@ -133,8 +133,8 @@
    desk.dataset.route=route.id;
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
     <div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
-      <div class="career-desk-ledger"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${route.id==='industrialist'?'Factory Ledger':route.id==='investigator'?'Duty & Incident Book':route.id==='criminal'?'Personal Notebook':'Institutional Ward Register'}</strong><span>WASHINGTON · PRIVATE PAPERS</span></div>
-      <div class="career-desk-blotter"><div class="career-desk-sheet">REPORTS<br>AND NOTES</div><button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button></div>
+      <div class="career-desk-ledger"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${route.id==='industrialist'?'Federal Electric':route.id==='investigator'?'Duty & Incident Book':route.id==='criminal'?'Personal Notebook':'Institutional Ward Register'}</strong><span>WASHINGTON · PRIVATE PAPERS</span></div>
+      <div class="career-desk-blotter"><div class="career-desk-sheet">${route.id==='industrialist'?'WASHINGTON<br>WORKS':'REPORTS<br>AND NOTES'}</div><button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button></div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>

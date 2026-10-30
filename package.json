@@ -15,7 +15,9 @@
     "test:source": "node tests/run-all.cjs",
     "audit:bundle": "node desktop/check-bundle-assets.cjs",
     "predist:linux": "npm run prepare:runtime",
-    "prepack:linux": "npm run prepare:runtime"
+    "prepack:linux": "npm run prepare:runtime",
+    "dist:linux:portable": "electron-builder --linux tar.gz --x64 --publish never",
+    "predist:linux:portable": "npm run prepare:runtime"
   },
   "devDependencies": {
     "electron": "44.5.1",
@@ -51,12 +53,14 @@
         "AppImage"
       ],
       "category": "Game",
-      "executableName": "capital-consequence"
+      "executableName": "capital-consequence",
+      "syncDesktopName": true
     },
     "toolsets": {
       "appimage": "1.0.3"
     }
   },
   "author": "Elderred Softworks LLC",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "desktopName": "com.elderredsoftworks.federalelectric.desktop"
 }

@@ -10,7 +10,7 @@ Explore the city on its illustrated Washington map, travel on foot, horseback, o
 
 ## Linux playable downloads
 
-A GitHub **source-code ZIP is for developers** and cannot be made an executable merely by extracting it. Official playable downloads will be attached to this repository's **Releases** as a self-contained Linux AppImage. The AppImage packages Electron, game code, map, and audio; no Node.js, npm, FUSE 2, online asset fetches, or GitHub Actions are required on the player's machine. Compatibility still depends on normal Linux system graphics and libraries. A release artifact is distinct from a GitHub-generated source archive.
+A GitHub **source-code ZIP is for developers** and cannot be made an executable merely by extracting it. Official playable downloads will be attached to this repository's **Releases** as a self-contained Linux AppImage or a portable Linux `.tar.gz` folder. The AppImage packages Electron, game code, map, and audio; no Node.js, npm, FUSE 2, online asset fetches, or GitHub Actions are required on the player's machine. Compatibility still depends on normal Linux system graphics and libraries. A release artifact is distinct from a GitHub-generated source archive.
 
 The static AppImage runtime was tested on a Surface Pro 8 (Ubuntu 26.04). All game media must be local before packaging; `npm run audit:bundle` rejects missing files. This is a development branch, **not an accepted public release**. Audio/artwork provenance and permissions still require approval before public distribution.
 
