@@ -1814,3 +1814,12 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 /* A remembered public betting pattern, never hidden hole-card knowledge. */
 .p-seat .poker-table-read{display:block;margin:.15rem auto 0;max-width:130px;
  font:italic .7rem/1.25 Georgia,serif;color:#e0c495;opacity:.9}
+
+/* v0.7.28: staff break room without map or shell geometry changes. */
+.factory-break-room{margin:12px 0;padding:14px;border:1px solid #857f71;border-left:5px solid #775b39;background:#faf5e8}
+.factory-break-room[hidden]{display:none}
+.factory-break-room h4{margin:0 0 8px;color:#593c28;font-size:17px}
+.factory-break-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.factory-break-actions button{background:#eee6cf;border:1px solid #9b805c;border-bottom:3px solid #775b39;min-width:128px}
+.factory-break-actions button:disabled{opacity:.5;cursor:not-allowed}
+#cityRoomBreakStatus:not(:empty){font-weight:bold;color:#423928}

@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.27-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.28-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -404,7 +404,7 @@ function accountingExposure(){
  return 'LOW';
 }
 function renderTreasury(){
- const atWorks=currentCityLocation().locationId==='factory'&&!cityRoomSession.dev;
+ const atWorks=currentCityLocation().locationId==='factory'&&currentCityLocation().roomId==='executive-office'&&!cityRoomSession.dev;
  const draw=$('#ownerDrawsToday'),diverted=$('#divertedToday'),missing=$('#unaccountedFunds'),exposure=$('#accountingExposure'),distribution=$('#ownerDistribution'),divert=$('#divertCompanyFunds');
  if(draw)draw.textContent=money(S.ownerDistributionsToday||0);if(diverted)diverted.textContent=money(S.divertedToday||0);if(missing)missing.textContent=money(S.unaccountedFunds||0);if(exposure)exposure.textContent=accountingExposure();
  if(distribution){distribution.disabled=!businessOpen()||S.paused||!atWorks||S.corporateGovernance?.status==='public';distribution.title=S.corporateGovernance?.status==='public'?'Public company distributions require a board-approved dividend.':'';}if(divert)divert.disabled=S.phase==='report'||S.paused||!atWorks;
@@ -444,7 +444,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -1175,6 +1175,7 @@ if(goToLunch)goToLunch.onclick=()=>{
  save(true);render();note('12:00 PM. Washington continued while you worked. Your location is unchanged.');
 };
 const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
+const factoryCoffeeBreak=$('#factoryCoffeeBreak');if(factoryCoffeeBreak)factoryCoffeeBreak.onclick=()=>enterMapDestination('factory',null,'break-room')
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
 function startFreshGame(){const route=S.characterRoute;clearPauseLock();S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(route)||'industrialist';selectedStockTicker=null;save();render()}
 $('#reset').onclick=()=>{if(confirm('You are about to start a new game. All previous progress will be lost. Continue?'))startFreshGame()}
@@ -2253,6 +2254,55 @@ function normalizeCurrentLocation(value){
  return {locationId:location.id,roomId:room?.id||location.defaultRoom||location.rooms?.[0]?.id||''};
 }
 function currentCityLocation(){return normalizeCurrentLocation(S.currentLocation)}
+// Break-room actions spend real game minutes and personal money, never company funds.
+const STAFF_REFRESHMENTS=Object.freeze({
+ rest:{text:'Took a ten-minute break in the staff room.',cents:0,seconds:600},
+ coffee:{text:'Bought coffee from the experimental coin-operated dispenser.',cents:3,seconds:120},
+ tea:{text:'Bought tea from the factory refreshment cabinet.',cents:2,seconds:120},
+ biscuit:{text:'Bought a biscuit from the factory refreshment cabinet.',cents:1,seconds:120},
+ water:{text:'Filled a mug with drinking water.',cents:0,seconds:60}
+});
+function renderFactoryBreakRoom(){
+ const p=currentCityLocation(),works=p.locationId==='factory';
+ const owner=S.characterRoute==='industrialist'&&!!activeProfileId()&&!cityRoomSession.dev;
+ const inside=owner&&works&&p.roomId==='break-room';
+ const panel=document.getElementById('cityRoomBreakRoom');if(panel)panel.hidden=!inside;
+ const go=document.getElementById('cityRoomCoffeeBreak');
+ if(go){go.hidden=!owner||!works||inside;go.disabled=S.paused||S.phase!=='day'}
+ const desk=document.getElementById('factoryCoffeeBreak');
+ if(desk){desk.hidden=S.characterRoute!=='industrialist';desk.disabled=!owner||!works||S.paused||S.phase!=='day'}
+ if(!inside||!panel)return;
+ const history=document.getElementById('cityRoomBreakHistory');
+ if(history){const entries=(S.factoryBreakHistory||[]).filter(x=>x.date===S.gameDate);
+  history.textContent=entries.length?entries.length+' break-room activities today.':'No break-room activities today.'}
+ for(const button of panel.querySelectorAll('button[data-factory-break]')){
+  const item=STAFF_REFRESHMENTS[button.dataset.factoryBreak];
+  if(item)button.disabled=S.paused||S.phase!=='day'||Math.round(S.personalCash*100)<item.cents||
+   (window.FE_WASHINGTON_TIME?.secondsUntilBusinessClose?.(S)||0)<item.seconds;
+ }
+}
+function takeFactoryBreak(key){
+ const item=STAFF_REFRESHMENTS[key],noteBox=document.getElementById('cityRoomBreakStatus');
+ const fail=msg=>{if(noteBox)noteBox.textContent=msg;return false};
+ const p=currentCityLocation();
+ if(!item||!activeProfileId()||cityRoomSession.dev||S.characterRoute!=='industrialist'||
+  p.locationId!=='factory'||p.roomId!=='break-room')return fail('Enter the factory break room first.');
+ if(S.paused||S.phase!=='day')return fail('The break room refreshment service is closed for the shift.');
+ if(Math.round(S.personalCash*100)<item.cents)return fail('Insufficient personal cash.');
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,item.seconds)||
+  (window.FE_WASHINGTON_TIME.secondsUntilBusinessClose(S)||0)<item.seconds)
+  return fail('Not enough time remains before the factory closes.');
+ if(window.advanceWorldTime?.(item.seconds,true)!==item.seconds)return fail('Break interrupted; no purchase charged.');
+ S.personalCash=Math.round(S.personalCash*100-item.cents)/100;
+ if(!Array.isArray(S.factoryBreakHistory))S.factoryBreakHistory=[];
+ S.factoryBreakHistory.push({date:S.gameDate,kind:key,cents:item.cents,seconds:item.seconds});
+ if(S.factoryBreakHistory.length>128)S.factoryBreakHistory.splice(0,S.factoryBreakHistory.length-128);
+ S.notes.push({date:displayDate(),source:'factory break room',text:item.text+
+  (item.cents?' Paid '+cash(item.cents/100)+' personally.':'')});
+ save(true);render();
+ if(noteBox)noteBox.textContent=item.text+' '+Math.round(item.seconds/60)+' in-game minute(s) elapsed.';
+ return true;
+}
 
 function titleDevPopulateRooms(locationId,preferredRoomId=''){
  const roomSelect=document.getElementById('titleDevRoomSelect');
@@ -2374,6 +2424,9 @@ function openCityRoom(locationId,roomId,options={}){
   document.getElementById('cityRoomDescription').textContent=room.description||location.description||'Room shell registered.';
   const roomTag=document.querySelector('#cityRoomOverlay .city-room-placeholder-tag');
   if(roomTag)roomTag.textContent='INSIDE '+location.name.toLocaleUpperCase()+' · '+room.name.toLocaleUpperCase();
+  if(dev){const p=document.getElementById('cityRoomCashOffice');if(p)p.hidden=true;
+   const b=document.getElementById('cityRoomCashConfirm');if(b){b.onclick=null;b.disabled=true}
+   const c=document.getElementById('cityRoomBreakRoom');if(c)c.hidden=true;}
   guardedRoomPanel('place reference',()=>renderPlaceReference(location));
   guardedRoomPanel('pastimes',()=>{setPastimeActivity('legal',null);setPastimeActivity('illicit',null)});
   guardedRoomPanel('local people',()=>renderCityRoomPeople(location));
@@ -2394,6 +2447,7 @@ function openCityRoom(locationId,roomId,options={}){
   const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
+  guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
   document.body.classList.add('city-room-open');
   guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
   guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
@@ -2584,6 +2638,8 @@ function initCityRoomUI(){
  document.getElementById('cityRoomReturnMap').onclick=returnCityRoomToMap;
  document.getElementById('cityRoomReturnOffice').onclick=returnCityRoomToOffice;
  const mainMenuButton=document.getElementById('cityRoomMainMenu');if(mainMenuButton)mainMenuButton.onclick=()=>window.FE_CAREER_SHELL?.open?.();
+ const breakGo=document.getElementById('cityRoomCoffeeBreak');if(breakGo)breakGo.onclick=()=>enterMapDestination('factory',null,'break-room');
+ document.querySelectorAll('#cityRoomBreakRoom button[data-factory-break]').forEach(b=>b.onclick=()=>takeFactoryBreak(b.dataset.factoryBreak));
  for(const [id,event] of [['brokerStockSearch','input'],['brokerStockSector','change']])document.getElementById(id)?.addEventListener(event,()=>renderBrokerOffice());
  const buy=document.getElementById('brokerBuy'),sell=document.getElementById('brokerSell');
  if(buy)buy.onclick=()=>brokerPlaceOrder(1);
@@ -3655,6 +3711,7 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  overlay.hidden=false;
  document.body.classList.add('city-room-open');
  guardedRoomPanel('room access menu',()=>renderCityRoomDirectory(place,room.id));
+ guardedRoomPanel('break room after travel',()=>renderFactoryBreakRoom());
  guardedRoomPanel('room opportunities',()=>window.FE_VENUES?.renderRoomOpportunities?.(place.id));
  guardedRoomPanel('cash office after map travel',()=>window.FE_CASH_UI?.render?.(S,place.id,S.characterRoute,()=>{save(true);render();window.FE_CASH_UI?.render?.(S,place.id,S.characterRoute,()=>{save(true);render()})}));
  guardedRoomPanel('broker after map travel',()=>{

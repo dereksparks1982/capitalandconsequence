@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const money=require('../cash-custody.js');
 const game=()=>({gameDate:'1878-01-02',characterRoute:'industrialist',companyCash:2500,personalCash:600,
+ currentLocation:{locationId:'factory',roomId:'executive-office'},
  ownerDistributionsToday:0,divertedToday:0,unaccountedFunds:0,corporateMisuseCount:0});
 const s=game();
 assert.equal(money.transfer(s,'collectCompany',1000,'districtBank','industrialist').ok,false);
@@ -10,6 +11,13 @@ assert.equal(money.transfer(s,'collectCompany',1000,'factory','industrialist').o
 assert.equal(s.companyCash,1500);
 assert.equal(money.balances(s).companyCarried,1000);
 assert.equal(s.personalCash,600,'Company cash in your pocket remains company property');
+for(const roomId of ['workers-lodging','break-room','receiving-office','production-floor','rear-stable']){
+ s.currentLocation={locationId:'factory',roomId};
+ assert.equal(money.transfer(s,'collectCompany',1,'factory','industrialist').ok,false,roomId+' is not a cashier');
+}
+s.currentLocation={locationId:'districtBank',roomId:'vault'};
+assert.equal(money.transfer(s,'depositChecking',1,'districtBank','industrialist').ok,false,'Vault is not a teller');
+s.currentLocation={locationId:'districtBank',roomId:'banking-hall'};
 assert.equal(money.transfer(s,'depositBusiness',650,'districtBank','industrialist').ok,true);
 assert.equal(money.balances(s).companyCarried,350);
 assert.equal(money.balances(s).businessBank,650);
@@ -46,6 +54,7 @@ const loss=money.stake(s,'company',40,'races');
 assert.equal(loss.ok,true);
 assert.equal(money.settle(s,loss.ticket,0).ok,true);
 assert.equal(s.unaccountedFunds,40,'Lost company money leaves actual shortfall');
+s.currentLocation={locationId:'factory',roomId:'executive-office'};
 assert.equal(money.transfer(s,'ownerDistribution',100,'factory','industrialist').ok,true);
 assert.equal(s.ownerDistributionsToday,100);
 assert.equal(s.personalCash,beforeCasino.personalCash+100);
@@ -64,6 +73,7 @@ assert.equal(happened.occurred,true,'Risk can sometimes become actual loss');
 assert.ok(happened.companyLoss>=0&&happened.personalLoss>=0);
 assert.ok(s.personalCash+money.balances(s).companyCarried<totalBefore);
 assert.equal(money.travelRisk(s,{from:'districtBank',to:'races',minute:906,night:true},0).repeated,true);
+s.currentLocation={locationId:'districtBank',roomId:'banking-hall'};
 const saved=JSON.parse(JSON.stringify(s));
 assert.equal(money.transfer(saved,'depositBusiness',100,'districtBank','industrialist').ok,true);
 assert.ok(money.balances(saved).businessBank>money.balances(s).businessBank,'Each profile keeps its own bank ledger');

@@ -55,6 +55,10 @@
   if(route!=='industrialist'&&(spec[0]==='companyCash'||spec[0]==='companyCarried'||spec[0]==='businessBank'))
    return {ok:false,reason:'Business funds belong to Federal Electric.'};
   if(spec[2]!==location)return {ok:false,reason:'Go to '+(spec[2]==='factory'?'Federal Electric':'the District Bank')+' to handle that cash.'};
+  // The saved player room, not the caller's building label, authorizes handling cash.
+  const required=location==='factory'?'executive-office':'banking-hall';
+  if(save.currentLocation?.locationId!==location||save.currentLocation?.roomId!==required)
+   return {ok:false,reason:location==='factory'?'Use the Federal Electric Executive Office.':'Use the District Bank Banking Hall teller.'};
   const raw=Number(amount),n=cents(raw);
   if(!Number.isFinite(raw)||Math.abs(raw*100-n)>0.000001)
    return {ok:false,reason:'Cash amounts must be exact dollars and cents.'};

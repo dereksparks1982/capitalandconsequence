@@ -18,6 +18,7 @@
     {id:'receiving-office',name:'Receiving Office',description:'Customers and deliveries are received at this public factory office.'},
     {id:'production-floor',name:'Production Floor',restricted:true,description:'Employees and authorized visitors work with machinery and materials.'},
     {id:'executive-office',name:'Executive Office',restricted:true,description:'Federal Electric’s existing Washington office hub. The room registry can address it independently of any particular playable character.'},
+    {id:'break-room',name:'Factory Break Room',restricted:true,description:'Benches, an enamel kettle and experimental coin-operated refreshment cabinets for workers on break.'},
     {id:'rear-stable',name:'Factory Rear Stable and Carriage Shed',restricted:true,description:'A modest private horse stall and carriage shelter behind the works, initially empty. Feed and repairs must be paid for if animals are eventually kept here.'},
     {id:'workers-lodging',name:'Sullivan’s Rented Room',restricted:true,description:'One simple factory-grounds lodging room rented to the assistant for 25 cents each week. It is a residence, not another employee or a visitor attraction.'}
    ]

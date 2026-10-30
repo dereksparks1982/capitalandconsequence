@@ -6,6 +6,7 @@ const cash=require('../cash-custody.js');
 const read=f=>fs.readFileSync(path.join(__dirname,'..',f),'utf8');
 function world(route='industrialist'){
  return {gameDate:'1878-01-02',characterRoute:route,companyCash:1250,personalCash:180,
+ currentLocation:{locationId:'factory',roomId:'executive-office'},
   unaccountedFunds:0,corporateMisuseCount:0};
 }
 const player=world();
@@ -45,6 +46,7 @@ assert.equal(cash.settle(player,personal.ticket,120).ok,true);
 assert.equal(player.personalCash,250,'Personal poker profit remains personal cash');
 const long=cash.stake(player,'company',20,'races');
 assert.equal(long.ok,true);
+player.currentLocation={locationId:'districtBank',roomId:'banking-hall'};
 for(let j=0;j<280;j++){
  const gift=cash.transfer(player,'depositChecking',.01,'districtBank','industrialist');
  assert.equal(gift.ok,true);

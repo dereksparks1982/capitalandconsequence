@@ -25,9 +25,12 @@
  });
  function render(save,location,route,changed){
   const panel=document.getElementById('cityRoomCashOffice');if(!panel)return;
-  const options=location==='factory'&&route!=='industrialist'?[]:ACTIONS[location]||[];
+  const pos=save?.currentLocation;
+  const atOffice=location==='factory'&&pos?.locationId==='factory'&&pos.roomId==='executive-office';
+  const atTeller=location==='districtBank'&&pos?.locationId==='districtBank'&&pos.roomId==='banking-hall';
+  const options=atOffice&&route==='industrialist'?ACTIONS.factory:atTeller?ACTIONS.districtBank:[];
   panel.hidden=!options.length;
-  if(!options.length)return;
+  if(!options.length){const b=document.getElementById('cityRoomCashConfirm');if(b){b.onclick=null;b.disabled=true}return;}
   const b=book.balances(save),summary=document.getElementById('cityRoomCashBalances');
   if(summary){
    summary.replaceChildren();

@@ -17,6 +17,9 @@ assert.equal(access.canRoom(city,{route:'wardman'},'blackwoodAsylum','superinten
 assert.equal(access.canRoom(city,{kind:'npc',id:'visitor'},'blackwoodAsylum','patient-ward',day).ok,false);
 assert.equal(access.canRoom(city,employee,'factory','production-floor',day).ok,true);
 assert.equal(access.canRoom(city,{route:'industrialist'},'factory','rear-stable',day).ok,true);
+assert.equal(access.canRoom(city,{route:'industrialist'},'factory','break-room',day).ok,true);
+assert.equal(access.canRoom(city,{route:'investigator'},'factory','break-room',day).ok,false);
+assert.equal(access.canRoom(city,employee,'factory','break-room',day).ok,true);
 assert.equal(access.canRoom(city,{kind:'npc',id:'foremanSullivan'},'factory','workers-lodging',day).ok,true);
 assert.equal(access.canRoom(city,{kind:'npc',id:'visitor'},'factory','workers-lodging',day).ok,false);
 assert.equal(access.canRoom(city,{kind:'npc',id:'visitor'},'westLivery','owner-office',day).ok,false);

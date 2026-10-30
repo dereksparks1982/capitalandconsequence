@@ -20,7 +20,8 @@ const root={FE_CASH_CUSTODY:cash,
 const code=fs.readFileSync(path.join(__dirname,'../cash-custody-ui.js'),'utf8');
 vm.runInNewContext(code,{window:root,document:doc});
 const ui=root.FE_CASH_UI;
-const save={gameDate:'1878-01-02',characterRoute:'industrialist',phase:'day',personalCash:100,companyCash:1000};
+const save={gameDate:'1878-01-02',characterRoute:'industrialist',phase:'day',personalCash:100,companyCash:1000,
+ currentLocation:{locationId:'districtBank',roomId:'banking-hall'}};
 ui.render(save,'districtBank','industrialist',()=>changed++);
 assert.equal(element('cityRoomCashOffice').hidden,false);
 const action=element('cityRoomCashAction'),amount=element('cityRoomCashAmount'),confirm=element('cityRoomCashConfirm');
@@ -41,6 +42,11 @@ assert.equal(spent,120,'A valid teller transaction consumes exactly two game min
 assert.equal(changed,1);
 assert.equal(save.personalCash,80);
 assert.equal(cash.balances(save).personalChecking,20);
+save.currentLocation={locationId:'factory',roomId:'workers-lodging'};
+ui.render(save,'factory','industrialist',()=>changed++);
+assert.equal(element('cityRoomCashOffice').hidden,true,'Sullivan cannot see cashier panel');
+assert.equal(confirm.onclick,null,'Old handler removed');
+save.currentLocation={locationId:'factory',roomId:'executive-office'};
 ui.render(save,'factory','industrialist',()=>changed++);
 action.value='collectCompany';amount.value='100';confirm.onclick();
 assert.equal(spent,240);
@@ -50,6 +56,7 @@ assert.equal(save.personalCash,80);
 ui.header(save);
 assert.match(element('cityRoomCompanyCash').textContent,/100\.00/);
 assert.match(element('cityRoomPersonalCash').textContent,/80\.00/);
+save.currentLocation={locationId:'districtBank',roomId:'banking-hall'};
 ui.render(save,'districtBank','industrialist',()=>changed++);
 action.value='depositBusiness';amount.value='60';confirm.onclick();
 assert.equal(spent,360);
