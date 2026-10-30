@@ -12,12 +12,13 @@ This register identifies third-party materials **actually incorporated into the 
 |---|---|---|---|---|---|
 | Astronomy Engine | Copyright (c) 2019–2025 Don Cross | [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy) | MIT | `vendor/astronomy-engine/astronomy.browser.js` | [vendor/astronomy-engine/LICENSE](vendor/astronomy-engine/LICENSE) |
 | Howler.js | Copyright (c) 2013–2020 James Simpson and GoldFire Studios, Inc. | [goldfire/howler.js](https://github.com/goldfire/howler.js) | MIT | `vendor/howler/howler.core.min.js` | [vendor/howler/LICENSE.md](vendor/howler/LICENSE.md) |
+| chess.js | Copyright (c) 2020 Jeff Hlywa | [jhlywa/chess.js, v0.10.3](https://github.com/jhlywa/chess.js/tree/v0.10.3) | BSD-2-Clause | `vendor/chessjs/chess.js` (unmodified upstream rules source; no upstream art) | [vendor/chessjs/LICENSE](vendor/chessjs/LICENSE), [source and import notes](vendor/chessjs/SOURCE.md) |
 
-These copyright names and notices are taken from the **actual bundled license files**. This summary is for navigation; the complete upstream notices remain authoritative. Users may exercise rights granted by those upstream licenses **in those upstream components**, subject to their terms.
+These copyright names and notices are taken from the **actual bundled license files**. The original chess.js author owns the upstream engine; the game's tabletop presentation, scheduling and original game-specific code are separate. This summary is for navigation; the complete upstream notices remain authoritative. Users may exercise rights granted by those upstream licenses **in those upstream components**, subject to their terms.
 
 ## Investigated candidates are not bundled dependencies
 
-The 20 external board/tabletop repositories in [docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md](docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) are **research candidates, not adopted dependencies**. They are **not** claimed as components of Capital & Consequence, and appearing in that survey does not imply their authors' endorsement. If any is incorporated later, add an actual adopted-components entry here **in the same change** that imports the code.
+The external board/tabletop repositories in [docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md](docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) were initially reviewed as research candidates. **chess.js v0.10.3 is the first adopted engine** and is listed above. The other candidates remain **research-only**, are not bundled by this survey, and are not represented as endorsing the game. Future incorporated engines must receive actual adopted-component entries **in the same change** that imports their code.
 
 Earlier design references such as llama.cpp, Ollama, AI Town, Generative Agents, Mysterious Murder and Cold Truth are identified in [LEGAL.md](LEGAL.md) as reviewed, rather than copied software, wherever that is the repository's current status. They must not be represented as bundled merely because they are cited.
 
