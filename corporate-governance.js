@@ -118,6 +118,8 @@ function vote(save,resolution,token){
   if(resolution==='ipo'&&c.status!=='chartered')return reject('Federal Electric is already listed.');
   if(resolution==='dividend'&&c.status!=='public')return reject('A public-company dividend requires an exchange listing.');
   if(resolution==='reinstate'&&c.president==='charles')return reject('Charles already holds the presidency.');
+  if(resolution==='dividend'&&Math.round((save.companyCash||0)*100)<10000)return reject('The company requires at least $100 for a dividend.');
+  if(resolution==='dividend'&&c.dividends.some(d=>d.date.slice(0,7)===save.gameDate.slice(0,7)))return reject('The board has already paid a dividend this month.');
   const votes=c.directors.map(d=>({id:d.id,yes:boardSupport(save,resolution,d)}));
   const ayes=votes.filter(v=>v.yes).length,passed=ayes>c.directors.length/2;
   c.votes.push({date:save.gameDate,resolution,ayes,nays:votes.length-ayes,passed,votes});
@@ -125,7 +127,7 @@ function vote(save,resolution,token){
   if(passed&&resolution==='reinstate')c.president='charles';
   if(passed&&resolution==='dividend'){
    const cents=Math.floor(Math.round((save.companyCash||0)*100)*.12);
-   if(cents<10000)return reject('The company requires at least $100 available for a dividend.');
+   if(cents<1000)return reject('A dividend must distribute at least $10 in company funds.');
    const founderCents=Math.floor(cents*(c.founderShares+c.marketShares)/c.issuedShares);
    save.companyCash=Math.round((save.companyCash-cents/100)*100)/100;
    save.personalCash=Math.round(((save.personalCash||0)+founderCents/100)*100)/100;
@@ -169,7 +171,7 @@ function syncListing(save){
  const c=ensure(save);if(c.status!=='public')return;
  if(!save.stocks)save.stocks={};if(!save.portfolio)save.portfolio={};
  const price=c.offeringPriceCents/100,old=save.stocks.FEC;
- save.stocks.FEC=old?{...old,issuedShares:c.issuedShares,sharesOffered:Math.min(c.publicShares,old.sharesOffered||c.publicShares)}:
+ save.stocks.FEC=old?{...old,issuedShares:c.issuedShares,sharesOffered:Math.min(c.publicShares,Number.isSafeInteger(old.sharesOffered)?old.sharesOffered:c.publicShares)}:
  {name:'Federal Electric',sector:'Electrical',price,open:price,hiddenPrice:price,
  prev:price,prevClose:price,yieldRate:0,vol:.045,history:[],issuedShares:c.issuedShares,
  sharesOffered:c.publicShares,shareParValue:100,listedOn:c.offeringDate};
@@ -222,7 +224,8 @@ function advanceDay(save){
  }
  if(c.bid?.active&&c.publicShares>0){
   const desired=Math.max(1,Math.floor(c.issuedShares*.025));
-  const bought=Math.min(c.publicShares,desired);
+  const bought=Math.min(c.publicShares,Math.max(0,desired-Math.floor(desired*Math.min(2,c.bid.defense||0)/2)));
+  c.bid.defense=Math.max(0,(c.bid.defense||0)-1);
   c.publicShares-=bought;c.rivalShares+=bought;c.bid.hostileShares+=bought;
   if(save.stocks?.FEC)save.stocks.FEC.sharesOffered=Math.min(save.stocks.FEC.sharesOffered,c.publicShares);
   register(save,'share-accumulation',c.bid.bidder+' acquired '+bought+' outside shares.');
@@ -241,7 +244,7 @@ function tender(save,ticker,leveragePercent,token){
  return commit(save,token,c=>{
   const reason=check(save,'brokerOffice');if(reason)return reject(reason);
   if(c.status==='private')return reject('Incorporate your company before making corporate acquisition bids.');
-  const security=save.stocks?.[ticker];if(!security||ticker==='FEC'||!Number.isSafeInteger(leveragePercent)||leveragePercent<0||leveragePercent>70)return reject('Choose a listed rival and 0–70 percent leverage.');
+  const security=save.stocks?.[ticker];if(!security||ticker==='FEC'||!Array.isArray(security.history)||!security.history.length||!Number.isSafeInteger(leveragePercent)||leveragePercent<0||leveragePercent>70)return reject('Choose a listed rival and 0–70 percent leverage.');
   if(c.acquisitions.some(a=>a.ticker===ticker&&a.status==='controlled'))return reject('This company is already controlled.');
   const shares=Math.floor((security.issuedShares||0)*.51)+1;
   const priceCents=Math.ceil((security.price||0)*115);
@@ -253,6 +256,25 @@ function tender(save,ticker,leveragePercent,token){
   c.acquisitions.push({ticker,date:save.gameDate,shares,totalCents:total,debtCents:credit,status:'controlled',ownershipPercent:percent(shares,security.issuedShares),loanSecuredBy:'acquired company'});
   register(save,'takeover','Charles acquired '+ticker+' through a '+leveragePercent+'% leveraged tender.',{ticker,shares,equity,credit});
   return {ok:true,message:'Controlling interest acquired in '+ticker+'. Loan '+dollars(credit)+' is owed against the acquired business.'};
+ });
+}
+function increaseStake(save,ticker,targetPercent,leveragePercent,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  const a=c.acquisitions.find(x=>x.ticker===ticker&&x.status==='controlled');
+  if(!a||![75,90].includes(targetPercent)||!Number.isSafeInteger(leveragePercent)||leveragePercent<0||leveragePercent>70)
+   return reject('Select a controlled rival, a 75% or 90% stake, and 0–70% leverage.');
+  const security=save.stocks?.[ticker],target=Math.ceil(security.issuedShares*targetPercent/100);
+  if(target<=a.shares)return reject('You already hold the requested shareholding.');
+  const additional=target-a.shares,total=additional*Math.ceil(security.price*120);
+  const debt=Math.floor(total*leveragePercent/100),equity=total-debt;
+  if(!Number.isSafeInteger(total)||Math.round((save.personalCash||0)*100)<equity)
+   return reject('This extra tender requires '+dollars(equity)+' of personal equity.');
+  save.personalCash=Math.round((save.personalCash-equity/100)*100)/100;
+  a.shares=target;a.debtCents+=debt;a.totalCents+=total;
+  a.ownershipPercent=percent(target,security.issuedShares);
+  register(save,'stake-increase','Charles purchased an additional '+additional+' shares of '+ticker+' with '+leveragePercent+'% borrowed financing.');
+  return {ok:true,message:'Controlling stake expanded to '+a.ownershipPercent+'%; acquired-company debt now '+dollars(a.debtCents)+'.'};
  });
 }
 function squeezeOut(save,ticker,token){
@@ -270,7 +292,7 @@ function squeezeOut(save,ticker,token){
  });
 }
 const api=Object.freeze({PEOPLE,initial,ensure,ownership,canManage,incorporate,appoint,lobby,vote,quote,
- listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,squeezeOut});
+ listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,increaseStake,squeezeOut});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CORPORATE=api;
 })(typeof window!=='undefined'?window:globalThis);
