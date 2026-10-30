@@ -1,0 +1,276 @@
+/* Capital & Consequence: period-inspired Federal Electric incorporation and control.
+ * Saved separately from personal investments; one canonical cap table.
+ * 1878 vocabulary: president rather than modern CEO. Fictional charter rules.
+ */
+(function(root){
+'use strict';
+const PEOPLE=Object.freeze([
+ {id:'charles',name:'Charles Whitcomb',temperament:'founder',loyalty:100},
+ {id:'harlow',name:'Edwin Harlow',temperament:'banker',loyalty:68},
+ {id:'vale',name:'Harrison Vale',temperament:'financier',loyalty:42},
+ {id:'prescott',name:'Nathaniel Prescott',temperament:'industrialist',loyalty:60},
+ {id:'mercer',name:'Augustus Mercer',temperament:'speculator',loyalty:30},
+ {id:'bell',name:'James Bellamy',temperament:'accountant',loyalty:77}
+]);
+const positive=n=>Number.isSafeInteger(n)&&n>0;
+const dollars=cents=>'$'+(cents/100).toFixed(2);
+const validDate=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s);
+const clone=x=>JSON.parse(JSON.stringify(x));
+function initial(){return {version:1,status:'private',ticker:'FEC',issuedShares:10000,founderShares:10000,
+ publicShares:0,rivalShares:0,marketShares:0,offeringPriceCents:500,offeringDate:null,
+ directors:[],president:'charles',charterDate:null,authorizations:{},shareholderProxies:0,
+ votes:[],dividends:[],bid:null,acquisitions:[],lastAdvanceDate:null,events:[],receipts:{},nextId:1};}
+function ensure(save){
+ if(!save||typeof save!=='object')throw Error('A saved profile is required.');
+ if(!save.corporateGovernance)save.corporateGovernance=initial();
+ const c=save.corporateGovernance;
+ if(c.version!==1||!Number.isSafeInteger(c.issuedShares)||!positive(c.issuedShares)||
+  !Number.isSafeInteger(c.founderShares)||!Number.isSafeInteger(c.publicShares)||
+  !Number.isSafeInteger(c.rivalShares)||!Number.isSafeInteger(c.marketShares)||
+  c.founderShares<0||c.publicShares<0||c.rivalShares<0||c.marketShares<0||
+  c.issuedShares!==c.founderShares+c.publicShares+c.rivalShares+c.marketShares||
+  !Array.isArray(c.directors)||!Array.isArray(c.events)||!Array.isArray(c.votes)||
+  !Array.isArray(c.dividends)||!Array.isArray(c.acquisitions)||!c.receipts)
+  throw Error('Unrecognized corporate charter. Save preserved; no automatic reset.');
+ return c;
+}
+function percent(shares,total){return total?Math.round(10000*shares/total)/100:0;}
+function ownership(save){
+ const c=ensure(save),personal=c.founderShares+c.marketShares,others=c.publicShares+c.rivalShares;
+ return {founder:personal,founderPercent:percent(personal,c.issuedShares),
+  outsider:others,outsiderPercent:percent(others,c.issuedShares),rival:c.rivalShares,
+  rivalPercent:percent(c.rivalShares,c.issuedShares),issued:c.issuedShares,
+  public:c.publicShares,tradable:c.publicShares};
+}
+function canManage(save){const c=ensure(save);return save.characterRoute==='industrialist'&&c.president==='charles';}
+function register(save,kind,message,details={}){
+ const c=ensure(save),entry={id:'FE-CORP-'+c.nextId++,date:save.gameDate||'1878-01-02',kind,message,...details};
+ c.events.push(entry);return entry;
+}
+function reject(reason){return {ok:false,reason};}
+function commit(save,token,action){
+ const c=ensure(save);
+ if(typeof token!=='string'||!/^[a-z0-9:._-]{1,90}$/i.test(token))return reject('An action receipt is required.');
+ if(Object.prototype.hasOwnProperty.call(c.receipts,token))return {...clone(c.receipts[token]),repeated:true};
+ const answer=action(c);
+ if(answer.ok)c.receipts[token]=clone(answer);
+ return answer;
+}
+function check(save,site,role=true){
+ if(save.paused||save.phase!=='day')return 'Company offices are closed or the game is paused.';
+ if(role&&save.characterRoute!=='industrialist')return 'Only Charles Whitcomb may direct Federal Electric.';
+ if(site&&save.currentLocation?.locationId!==site)return site==='factory'?'Conduct this business at Federal Electric.':'Visit the stockbroker in person.';
+ return null;
+}
+function electable(c,id){return PEOPLE.find(p=>p.id===id&&!c.directors.some(d=>d.id===id));}
+function incorporate(save,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'factory');if(reason)return reject(reason);
+  if(c.status!=='private')return reject('Federal Electric already has a corporate charter.');
+  if(Math.round((save.companyCash||0)*100)<7500)return reject('Incorporation and records cost $75 in company funds.');
+  save.companyCash=Math.round((save.companyCash-75)*100)/100;
+  c.status='chartered';c.charterDate=save.gameDate;c.directors=[
+   {id:'charles',name:'Charles Whitcomb',loyalty:100,temperament:'founder'},
+   {id:'harlow',name:'Edwin Harlow',loyalty:68,temperament:'banker'},
+   {id:'prescott',name:'Nathaniel Prescott',loyalty:60,temperament:'industrialist'}
+  ];register(save,'charter','Federal Electric incorporated. A three-director board elected Charles president.');
+  return {ok:true,message:'Corporate charter recorded. Charles remains president and owns every voting share.'};
+ });
+}
+function appoint(save,id,slot,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'factory');if(reason)return reject(reason);
+  if(c.status==='private')return reject('Incorporate Federal Electric before electing directors.');
+  if(!Number.isInteger(slot)||slot<1||slot>=c.directors.length)return reject('Choose one of the two outside director seats.');
+  const candidate=electable(c,id);if(!candidate)return reject('Candidate is unavailable or already serves.');
+  if(ownership(save).founderPercent<=50&&c.shareholderProxies<10)return reject('You lack a majority of the voting shares or sufficient shareholder proxies.');
+  c.directors[slot]={...candidate};c.shareholderProxies=0;
+  register(save,'election',candidate.name+' elected director following a shareholder vote.');
+  return {ok:true,message:candidate.name+' elected to the board.'};
+ });
+}
+function lobby(save,id,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'factory',false);if(reason)return reject(reason);
+  const director=c.directors.find(d=>d.id===id&&d.id!=='charles');
+  if(!director)return reject('This director cannot be courted.');
+  if(Math.round((save.personalCash||0)*100)<2500)return reject('A directors meeting costs $25 in personal funds.');
+  if(director.lastMeeting===save.gameDate)return reject('You have already met this director today.');
+  save.personalCash=Math.round((save.personalCash-25)*100)/100;
+  director.lastMeeting=save.gameDate;director.loyalty=Math.min(100,director.loyalty+14);
+  register(save,'relationship','Charles held a private business conversation with '+director.name+'.');
+  return {ok:true,message:director.name+' is more receptive to your proposals.'};
+ });
+}
+function boardSupport(save,resolution,d){
+ if(d.id==='charles')return resolution!=='remove';
+ const pressure=(save.reputation||50)<40?-18:(save.reputation||50)>=75?9:0;
+ const cashPoor=(save.companyCash||0)<600?-20:0;
+ const thresholds={ipo:54,dividend:66,reinstate:60,remove:75};
+ const score=d.loyalty+pressure+cashPoor+(resolution==='remove'?-12:0);
+ return resolution==='remove'?score<46:score>=(thresholds[resolution]||65);
+}
+function vote(save,resolution,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'factory',false);if(reason)return reject(reason);
+  if(c.status==='private')return reject('A chartered board is required.');
+  if(!['ipo','dividend','reinstate'].includes(resolution))return reject('Unknown board resolution.');
+  if(resolution==='ipo'&&c.status!=='chartered')return reject('Federal Electric is already listed.');
+  if(resolution==='dividend'&&c.status!=='public')return reject('A public-company dividend requires an exchange listing.');
+  if(resolution==='reinstate'&&c.president==='charles')return reject('Charles already holds the presidency.');
+  const votes=c.directors.map(d=>({id:d.id,yes:boardSupport(save,resolution,d)}));
+  const ayes=votes.filter(v=>v.yes).length,passed=ayes>c.directors.length/2;
+  c.votes.push({date:save.gameDate,resolution,ayes,nays:votes.length-ayes,passed,votes});
+  if(passed&&resolution==='ipo')c.authorizations.ipo=save.gameDate;
+  if(passed&&resolution==='reinstate')c.president='charles';
+  if(passed&&resolution==='dividend'){
+   const cents=Math.floor(Math.round((save.companyCash||0)*100)*.12);
+   if(cents<10000)return reject('The company requires at least $100 available for a dividend.');
+   const founderCents=Math.floor(cents*(c.founderShares+c.marketShares)/c.issuedShares);
+   save.companyCash=Math.round((save.companyCash-cents/100)*100)/100;
+   save.personalCash=Math.round(((save.personalCash||0)+founderCents/100)*100)/100;
+   c.dividends.push({date:save.gameDate,totalCents:cents,founderCents});
+  }
+  register(save,'board-vote','Board '+(passed?'approved ':'rejected ')+resolution+' ('+ayes+' to '+(votes.length-ayes)+').');
+  return {ok:true,passed,ayes,nays:votes.length-ayes,message:'Board '+(passed?'approved ':'rejected ')+resolution+' by '+ayes+' to '+(votes.length-ayes)+'.'};
+ });
+}
+function quote(save){
+ const c=ensure(save);
+ const assets=Math.max(0,Math.round((save.companyCash||0)*100)+Math.round((save.cashCustody?.businessBank||0)*100));
+ const goodwill=Math.max(500000,Math.round(assets*(1+Math.max(0,save.reputation||0)/100)));
+ const floor=Math.max(100,Math.floor(goodwill/c.issuedShares));
+ return {priceCents:Math.max(100,Math.min(2500,floor)),assetsCents:assets};
+}
+function listing(save,newShares,secondaryShares,priceCents,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  if(c.status!=='chartered'||!c.authorizations.ipo)return reject('A board-approved public offering is required.');
+  if(!Number.isSafeInteger(newShares)||newShares<500||newShares>10000||
+     !Number.isSafeInteger(secondaryShares)||secondaryShares<0||secondaryShares>c.founderShares||
+     !positive(priceCents)||priceCents<100||priceCents>2500)
+   return reject('Choose 500–10,000 new shares, a valid founder sale, and a $1–$25 offering price.');
+  if(newShares+secondaryShares>12000)return reject('Underwriter cannot place more than 12,000 shares.');
+  if(c.authorizations.ipo>save.gameDate)return reject('The authorization date is invalid.');
+  if((save.brokerage?.visits||0)<2)return reject('Make two separate visits to establish an underwriting relationship.');
+  const cashCents=Math.floor(newShares*priceCents*.95);
+  const personalCents=Math.floor(secondaryShares*priceCents*.95);
+  c.issuedShares+=newShares;c.founderShares-=secondaryShares;
+  c.publicShares+=newShares+secondaryShares;
+  c.status='public';c.offeringDate=save.gameDate;c.offeringPriceCents=priceCents;
+  save.companyCash=Math.round(((save.companyCash||0)+cashCents/100)*100)/100;
+  save.personalCash=Math.round(((save.personalCash||0)+personalCents/100)*100)/100;
+  syncListing(save);
+  register(save,'ipo','Federal Electric listed as FEC: '+newShares+' new and '+secondaryShares+' founder shares sold.',{newShares,secondaryShares,priceCents});
+  return {ok:true,message:'FEC listed. Company raised '+dollars(cashCents)+'; Charlie received '+dollars(personalCents)+'.',newShares,secondaryShares};
+ });
+}
+function syncListing(save){
+ const c=ensure(save);if(c.status!=='public')return;
+ if(!save.stocks)save.stocks={};if(!save.portfolio)save.portfolio={};
+ const price=c.offeringPriceCents/100,old=save.stocks.FEC;
+ save.stocks.FEC=old?{...old,issuedShares:c.issuedShares,sharesOffered:Math.min(c.publicShares,old.sharesOffered||c.publicShares)}:
+ {name:'Federal Electric',sector:'Electrical',price,open:price,hiddenPrice:price,
+ prev:price,prevClose:price,yieldRate:0,vol:.045,history:[],issuedShares:c.issuedShares,
+ sharesOffered:c.publicShares,shareParValue:100,listedOn:c.offeringDate};
+ if(!save.portfolio.FEC)save.portfolio.FEC={shares:0,cost:0,realized:0};
+}
+function marketFill(save,direction,quantity){
+ const c=ensure(save);
+ if(c.status!=='public'||!positive(quantity))return reject('FEC is not listed, or the quantity is invalid.');
+ if(direction>0){
+  if(c.publicShares<quantity)return reject('The outside float cannot supply those shares.');
+  c.publicShares-=quantity;c.marketShares+=quantity;
+ }else{
+  if(c.marketShares<quantity)return reject('These shares are not held in the personal stock account.');
+  c.marketShares-=quantity;c.publicShares+=quantity;
+ }
+ return {ok:true};
+}
+function proxy(save,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  if(c.status!=='public')return reject('Shareholder proxies require a public listing.');
+  if((save.personalCash||0)<100)return reject('Proxy solicitation costs $100.');
+  save.personalCash=Math.round((save.personalCash-100)*100)/100;
+  c.shareholderProxies=Math.min(30,c.shareholderProxies+10);
+  register(save,'proxy','Charles solicited ten points of shareholder proxy support.');
+  return {ok:true,message:'Proxy support improved. It may help elect a new board.'};
+ });
+}
+function counterBid(save,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  if(c.status!=='public'||!c.bid?.active)return reject('No hostile bid is underway.');
+  if((save.personalCash||0)<150)return reject('Defensive shareholder outreach costs $150.');
+  save.personalCash=Math.round((save.personalCash-150)*100)/100;
+  c.bid.defense=(c.bid.defense||0)+1;c.shareholderProxies=Math.min(30,c.shareholderProxies+10);
+  register(save,'defense','Charlie organized shareholders against the hostile syndicate.');
+  return {ok:true,message:'Defensive solicitation recorded. A takeover is still possible.'};
+ });
+}
+function advanceDay(save){
+ const c=ensure(save);if(!validDate(save.gameDate)||c.lastAdvanceDate===save.gameDate)return null;
+ c.lastAdvanceDate=save.gameDate;
+ if(c.status!=='public')return null;
+ const share=ownership(save);
+ const days=Math.max(0,Math.round((Date.parse(save.gameDate)-Date.parse(c.offeringDate||save.gameDate))/86400000));
+ if(!c.bid&&days>=6&&share.founderPercent<65&&(save.reputation||0)<80){
+  c.bid={active:true,bidder:'Vale & Mercer Syndicate',opened:save.gameDate,
+   hostileShares:0,defense:0,financing:'borrowed bank credit'};
+  register(save,'hostile-offer','Vale & Mercer began purchasing Federal Electric shares through intermediaries.');
+ }
+ if(c.bid?.active&&c.publicShares>0){
+  const desired=Math.max(1,Math.floor(c.issuedShares*.025));
+  const bought=Math.min(c.publicShares,desired);
+  c.publicShares-=bought;c.rivalShares+=bought;c.bid.hostileShares+=bought;
+  if(save.stocks?.FEC)save.stocks.FEC.sharesOffered=Math.min(save.stocks.FEC.sharesOffered,c.publicShares);
+  register(save,'share-accumulation',c.bid.bidder+' acquired '+bought+' outside shares.');
+  if(percent(c.rivalShares,c.issuedShares)>50){
+   c.bid.active=false;c.bid.outcome='rival-control';c.president='harlow';
+   register(save,'control-change','A hostile voting majority removed Charles as president. He still owns his shares.');
+   return {kind:'loss-of-control',message:'Shareholders removed Charles from the presidency.'};
+  }
+  if(c.publicShares===0&&percent(c.rivalShares,c.issuedShares)<=50){
+   c.bid.active=false;c.bid.outcome='blocked';register(save,'takeover-blocked','The syndicate failed to obtain a majority.');
+  }
+ }
+ return null;
+}
+function tender(save,ticker,leveragePercent,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  if(c.status==='private')return reject('Incorporate your company before making corporate acquisition bids.');
+  const security=save.stocks?.[ticker];if(!security||ticker==='FEC'||!Number.isSafeInteger(leveragePercent)||leveragePercent<0||leveragePercent>70)return reject('Choose a listed rival and 0–70 percent leverage.');
+  if(c.acquisitions.some(a=>a.ticker===ticker&&a.status==='controlled'))return reject('This company is already controlled.');
+  const shares=Math.floor((security.issuedShares||0)*.51)+1;
+  const priceCents=Math.ceil((security.price||0)*115);
+  if(!positive(shares)||!positive(priceCents))return reject('The exchange has no reliable capitalization for this rival.');
+  const total=shares*priceCents,credit=Math.floor(total*leveragePercent/100),equity=total-credit;
+  if(!Number.isSafeInteger(total)||!Number.isSafeInteger(equity))return reject('Acquisition exceeds safe accounting limits.');
+  if(Math.round((save.personalCash||0)*100)<equity)return reject('The controlling tender needs '+dollars(equity)+' equity in personal funds.');
+  save.personalCash=Math.round((save.personalCash-equity/100)*100)/100;
+  c.acquisitions.push({ticker,date:save.gameDate,shares,totalCents:total,debtCents:credit,status:'controlled',ownershipPercent:percent(shares,security.issuedShares),loanSecuredBy:'acquired company'});
+  register(save,'takeover','Charles acquired '+ticker+' through a '+leveragePercent+'% leveraged tender.',{ticker,shares,equity,credit});
+  return {ok:true,message:'Controlling interest acquired in '+ticker+'. Loan '+dollars(credit)+' is owed against the acquired business.'};
+ });
+}
+function squeezeOut(save,ticker,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  const a=c.acquisitions.find(x=>x.ticker===ticker&&x.status==='controlled');
+  if(!a||a.ownershipPercent<90)return reject('Compulsory minority buyouts require at least 90% ownership and an approved charter mechanism.');
+  const s=save.stocks[ticker],remaining=s.issuedShares-a.shares;
+  const payout=Math.ceil(remaining*s.price*125);
+  if(Math.round((save.personalCash||0)*100)<payout)return reject('Insufficient cash to compensate all remaining shareholders.');
+  save.personalCash=Math.round((save.personalCash-payout/100)*100)/100;
+  a.shares=s.issuedShares;a.ownershipPercent=100;a.status='wholly-owned';
+  register(save,'squeeze-out','Remaining '+ticker+' shareholders were paid '+dollars(payout)+' under the fictional merger charter.');
+  return {ok:true,message:ticker+' is now wholly owned after compensating minority shareholders.'};
+ });
+}
+const api=Object.freeze({PEOPLE,initial,ensure,ownership,canManage,incorporate,appoint,lobby,vote,quote,
+ listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,squeezeOut});
+if(typeof module==='object'&&module.exports)module.exports=api;
+if(root)root.FE_CORPORATE=api;
+})(typeof window!=='undefined'?window:globalThis);
