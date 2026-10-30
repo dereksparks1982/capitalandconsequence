@@ -15,7 +15,29 @@ function charter(s){
  assert.equal(C.vote(s,'ipo','approval').passed,true);
  s.currentLocation.locationId='brokerOffice';
 }
+const previewSave=setup();
+const unopened=C.prospectus(previewSave,3000,500,100);
+assert.equal(unopened.ok,false,'Private firm has no exchange listing');
+assert.match(unopened.reason,/Incorporate/);
+const stored=JSON.stringify(previewSave);
+const draft=C.prospectus(previewSave,3000,500,100);
+assert.equal(JSON.stringify(previewSave),stored,'Prospectus is strictly read-only');
+assert.equal(draft.companyProceedsCents,285000);
+assert.equal(draft.founderProceedsCents,47500);
+assert.equal(draft.feesCents,17500);
+assert.equal(draft.issuedShares,13000);
+assert.equal(draft.founderShares,9500);
 const a=setup();charter(a);
+const prospectus=C.prospectus(a,5000,9000,100);
+assert.equal(prospectus.ok,true,'Approved offering should be ready at broker');
+assert.equal(prospectus.majorityLost,true,'Massive founder sale yields a loss-of-control warning');
+assert.equal(prospectus.founderPercent,6.67);
+assert.equal(prospectus.companyProceedsCents,475000);
+assert.equal(prospectus.founderProceedsCents,855000);
+const beforeQuote=JSON.stringify(a);
+assert.equal(C.prospectus(a,5000,9000,100).ok,true);
+assert.equal(JSON.stringify(a),beforeQuote,'Read-only prospectus must not mutate approved offering');
+
 const before=C.ownership(a);
 assert.equal(C.listing(a,-1,0,100,'invalid').ok,false);
 assert.deepEqual(C.ownership(a),before);
@@ -26,6 +48,10 @@ assert.equal(C.ownership(a).founder,1000);
 assert.equal(a.companyCash,7175);
 assert.equal(a.personalCash,9150);
 assert.equal(a.stocks.FEC.issuedShares,15000);
+assert.equal(C.ensure(a).events.at(-1).underwritingFeesCents,70000,'Underwriter fees are recorded in the corporate minute book');
+assert.equal(C.ensure(a).events.at(-1).founderPercent,6.67,'IPO records actual post-offering control');
+assert.equal(a.stocks.FEC.history.length,0,'FEC must not gain invented pre-IPO market history');
+
 assert.equal(a.stocks.FEC.sharesOffered,14000);
 assert.equal(C.marketFill(a,1,100).ok,true);
 assert.equal(C.marketFill(a,-1,100).ok,true);

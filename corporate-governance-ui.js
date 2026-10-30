@@ -98,14 +98,39 @@ function broker(){
   return;
  }
  if(c.status==='chartered'){
-  const price=api.quote(save);
+  const valuation=api.quote(save);
   const newQty=numeric(3000,500,10000),oldQty=numeric(500,0,c.founderShares);
-  const offer=numeric(Math.max(1,price.priceCents/100),1,25,.01);
+  const offer=numeric(Math.max(1,valuation.priceCents/100),1,25,.01);
   const controls=node('div');controls.className='trade-buttons';
-  controls.append(label('New company shares',newQty),label('Existing founder shares',oldQty),label('Offer price per share ($)',offer));
-  controls.append(button('Arrange Federal Electric IPO',()=>perform('offer',(s,t,a)=>a.listing(s,Number(newQty.value),Number(oldQty.value),Math.round(Number(offer.value)*100),t)),!!c.authorizations.ipo));
-  host.appendChild(controls);
-  message(host,'An IPO requires 4 closed business records, reputation 50+, $750 operating cash and two broker visits. The board must approve. New issues pay Federal Electric, founder sales pay Charlie; the underwriter charges 5%.');
+  controls.append(label('New company shares',newQty),label('Existing founder shares',oldQty),
+   label('Offer price per share ($)',offer));
+  const order=button('Arrange Federal Electric IPO',()=>perform('offer',
+   (s,t,a)=>a.listing(s,Number(newQty.value),Number(oldQty.value),Math.round(Number(offer.value)*100),t)));
+  controls.appendChild(order);host.appendChild(controls);
+  host.append(node('h5','Proposed Public Offering · Underwriter Prospectus'));
+  const preview=message(host,'');
+  // Recalculate dilution, cash splits and eligibility while the owner edits
+  // the three existing controls. Nothing is committed until an actual click.
+  const update=()=>{
+   const inputPrice=Number(offer.value);
+   const cents=Number.isFinite(inputPrice)?Math.round(inputPrice*100):NaN;
+   const terms=api.prospectus(save,Number(newQty.value),Number(oldQty.value),cents);
+   order.disabled=!terms.ok;
+   preview.textContent='Valuation '+$(terms.fairPriceCents/100)+
+    ' · permitted offer '+$(terms.minPriceCents/100)+' to '+$(terms.maxPriceCents/100)+
+    '. New shares '+Number(newQty.value).toLocaleString()+
+    '; existing founder shares '+Number(oldQty.value).toLocaleString()+
+    '; total issued after offer '+terms.issuedShares.toLocaleString()+
+    '; public placement '+terms.sharesPlaced.toLocaleString()+
+    '. Company receives '+$(terms.companyProceedsCents/100)+
+    '; Charles personally receives '+$(terms.founderProceedsCents/100)+
+    '; underwriter retains '+$(terms.feesCents/100)+
+    '. Founder voting stake '+terms.founderPercent.toFixed(2)+'%. '+terms.note+
+    (terms.ok?' READY TO SUBMIT.':' NOT READY: '+terms.problems.join(' '));
+  };
+  for(const field of [newQty,oldQty,offer])field.addEventListener('input',update);
+  update();
+  message(host,'This is a fictional 1878 Federal Exchange offering: board authorization, four closed accounts, reputation 50+, $750 operating cash and two separate broker visits are required. A primary issue funds the factory; founder sales fund Charles personally. Underwriting retains 5% of each portion.');
  }
  if(c.status==='public'){
   const controls=node('div');controls.className='trade-buttons';

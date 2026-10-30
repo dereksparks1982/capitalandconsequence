@@ -145,30 +145,78 @@ function quote(save){
  const floor=Math.max(100,Math.floor(goodwill/c.issuedShares));
  return {priceCents:Math.max(100,Math.min(2500,floor)),assetsCents:assets};
 }
+// Read-only underwriting prospectus. Calculations are in integer cents; the
+// prospectus never reserves shares or money and cannot bypass the real broker.
+function prospectus(save,newShares,secondaryShares,priceCents){
+ const c=ensure(save),fair=quote(save).priceCents;
+ const minPrice=Math.max(100,Math.round(fair*.75)),maxPrice=Math.min(2500,Math.round(fair*1.5));
+ const problems=[];
+ if(save.characterRoute!=='industrialist')problems.push('Only the Federal Electric businessman may issue shares.');
+ if(save.paused||save.phase!=='day')problems.push('Corporate underwriting requires open business hours.');
+ if(save.currentLocation?.locationId!=='brokerOffice')problems.push('Visit the stockbroker in person to sign the offering.');
+ if(c.status!=='chartered')problems.push(c.status==='public'?'Federal Electric is already listed.':'Incorporate Federal Electric before offering shares.');
+ if(c.status==='chartered'&&!c.authorizations.ipo)problems.push('The board must approve a public offering.');
+ if(c.status==='chartered'&&c.president!=='charles')problems.push('Charles must be restored as president before he can authorize a new issue.');
+ if(c.authorizations.ipo>save.gameDate)problems.push('The board authorization is dated after the current game day.');
+ const brokerVisits=Number.isSafeInteger(save.brokerage?.visits)?save.brokerage.visits:0;
+ if(brokerVisits<2)problems.push('Build the underwriter relationship with two separate broker visits ('+brokerVisits+'/2).');
+ const accounts=Array.isArray(save.ledger)?save.ledger.length:0;
+ if(accounts<4)problems.push('Complete four company account records ('+accounts+'/4).');
+ if((save.reputation||0)<50)problems.push('Reputation must reach 50 ('+(save.reputation||0)+'/50).');
+ if((save.companyCash||0)<750)problems.push('Keep $750 operating cash in Federal Electric.');
+ const validShares=Number.isSafeInteger(newShares)&&newShares>=500&&newShares<=10000&&
+  Number.isSafeInteger(secondaryShares)&&secondaryShares>=0&&secondaryShares<=c.founderShares&&
+  newShares+secondaryShares<=20000;
+ if(!validShares)problems.push('Issue 500–10,000 new shares; founder sales must be held shares, with 20,000 total placed at most.');
+ const validPrice=Number.isSafeInteger(priceCents)&&priceCents>=100&&priceCents<=2500;
+ if(!validPrice||priceCents<minPrice||priceCents>maxPrice)
+  problems.push('The offer must be a whole-cent price in the underwriter range '+dollars(minPrice)+' to '+dollars(maxPrice)+'.');
+ const safe=validShares&&validPrice&&
+  Number.isSafeInteger(newShares*priceCents)&&Number.isSafeInteger(secondaryShares*priceCents);
+ if(!safe&&validShares&&validPrice)problems.push('The share sale is too large for safe accounting.');
+ const issued=safe?c.issuedShares+newShares:c.issuedShares;
+ const founder=safe?c.founderShares-secondaryShares:c.founderShares;
+ const sharesPlaced=safe?newShares+secondaryShares:0;
+ const companyGrossCents=safe?newShares*priceCents:0,founderGrossCents=safe?secondaryShares*priceCents:0;
+ const companyProceedsCents=Math.floor(companyGrossCents*95/100);
+ const founderProceedsCents=Math.floor(founderGrossCents*95/100);
+ const feesCents=companyGrossCents+founderGrossCents-companyProceedsCents-founderProceedsCents;
+ const founderPercent=percent(founder+c.marketShares,issued);
+ const dilution=Number((100-founderPercent).toFixed(2));
+ const majorityLost=founderPercent<=50;
+ return {ok:problems.length===0,reason:problems[0]||null,problems,
+  fairPriceCents:fair,minPriceCents:minPrice,maxPriceCents:maxPrice,
+  newShares,secondaryShares,priceCents,issuedShares:issued,sharesPlaced,
+  founderShares:founder,founderPercent,outsiderPercent:dilution,majorityLost,
+  companyGrossCents,founderGrossCents,companyProceedsCents,founderProceedsCents,feesCents,
+  note:majorityLost?'Charles would lose majority voting control. Outside holders may elect directors or mount a takeover.':
+   founderPercent<65?'Charles keeps a majority, but a concentrated outside float increases takeover pressure.':
+   'Charles retains a majority stake, although directors and shareholders still have influence.'};
+}
 function listing(save,newShares,secondaryShares,priceCents,token){
  return commit(save,token,c=>{
-  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
-  if(c.status!=='chartered'||!c.authorizations.ipo)return reject('A board-approved public offering is required.');
-  if(!Number.isSafeInteger(newShares)||newShares<500||newShares>10000||
-     !Number.isSafeInteger(secondaryShares)||secondaryShares<0||secondaryShares>c.founderShares||
-     !positive(priceCents)||priceCents<100||priceCents>2500)
-   return reject('Choose 500–10,000 new shares, a valid founder sale, and a $1–$25 offering price.');
-  if(newShares+secondaryShares>20000)return reject('Underwriter cannot place more than 20,000 shares.');
-  if(c.authorizations.ipo>save.gameDate)return reject('The authorization date is invalid.');
-  if((save.brokerage?.visits||0)<2)return reject('Make two separate visits to establish an underwriting relationship.');
-  if((save.ledger?.length||0)<4||(save.reputation||0)<50||(save.companyCash||0)<750)return reject('Underwriters require four closed company accounts, reputation of at least 50, and $750 in operating funds.');
-  const fair=quote(save).priceCents;
-  if(priceCents<Math.round(fair*.75)||priceCents>Math.round(fair*1.5))return reject('The underwriter requires a share price close to the published company valuation.');
-  const cashCents=Math.floor(newShares*priceCents*.95);
-  const personalCents=Math.floor(secondaryShares*priceCents*.95);
-  c.issuedShares+=newShares;c.founderShares-=secondaryShares;
-  c.publicShares+=newShares+secondaryShares;
+  const terms=prospectus(save,newShares,secondaryShares,priceCents);
+  if(!terms.ok)return reject(terms.reason);
+  // Keep the funding, the cap table, and the first quotation one transaction:
+  // two repeated clicks with the same receipt can never issue extra shares.
+  c.issuedShares=terms.issuedShares;
+  c.founderShares=terms.founderShares;
+  c.publicShares+=terms.sharesPlaced;
   c.status='public';c.offeringDate=save.gameDate;c.offeringPriceCents=priceCents;
-  save.companyCash=Math.round(((save.companyCash||0)+cashCents/100)*100)/100;syncTreasury(save);
-  save.personalCash=Math.round(((save.personalCash||0)+personalCents/100)*100)/100;
+  save.companyCash=Math.round(((save.companyCash||0)+terms.companyProceedsCents/100)*100)/100;
+  syncTreasury(save);
+  save.personalCash=Math.round(((save.personalCash||0)+terms.founderProceedsCents/100)*100)/100;
   syncListing(save);
-  register(save,'ipo','Federal Electric listed as FEC: '+newShares+' new and '+secondaryShares+' founder shares sold.',{newShares,secondaryShares,priceCents});
-  return {ok:true,message:'FEC listed. Company raised '+dollars(cashCents)+'; Charlie received '+dollars(personalCents)+'.',newShares,secondaryShares};
+  register(save,'ipo','Federal Electric listed as FEC: '+newShares+' new and '+secondaryShares+' founder shares sold.',
+   {newShares,secondaryShares,priceCents,companyProceedsCents:terms.companyProceedsCents,
+    founderProceedsCents:terms.founderProceedsCents,underwritingFeesCents:terms.feesCents,
+    founderPercent:terms.founderPercent});
+  return {ok:true,message:'FEC listed. Company raised '+dollars(terms.companyProceedsCents)+
+   '; Charles received '+dollars(terms.founderProceedsCents)+
+   '. Ownership '+terms.founderPercent.toFixed(2)+'%.',
+   newShares,secondaryShares,founderPercent:terms.founderPercent,
+   companyProceedsCents:terms.companyProceedsCents,founderProceedsCents:terms.founderProceedsCents,
+   underwritingFeesCents:terms.feesCents};
  });
 }
 function syncListing(save){
@@ -333,7 +381,7 @@ function squeezeOut(save,ticker,token){
   return {ok:true,message:ticker+' is now wholly owned after compensating minority shareholders.'};
  });
 }
-const api=Object.freeze({PEOPLE,initial,ensure,ownership,canManage,incorporate,appoint,lobby,vote,quote,
+const api=Object.freeze({PEOPLE,initial,ensure,ownership,canManage,incorporate,appoint,lobby,vote,quote,prospectus,
  listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,increaseStake,repayDebt,squeezeOut});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CORPORATE=api;

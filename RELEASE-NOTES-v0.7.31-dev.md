@@ -54,3 +54,10 @@ Development source on `main`, not an accepted Linux binary release.
 - Smoke setup now reserves genuine personal stakes through escrow, verifies a forfeited $25 and an undealt canceled $20, and restores original profile custody. An independent regression exercises the live resolver with valid tickets, refunds and duplicate-payout protection.
 - Refreshed a later legacy Electron navigation smoke block to await asynchronous street animation and check the currently always-visible `Enter Location` control. It no longer assumes instant travel or hidden same-location buttons.
 - Source fixes await Surface Pro 8 full regression and Electron smoke runs; no verified binary release yet. One main folder, no GitHub Actions.
+
+## Subsequent development: Federal Electric IPO prospectus
+- Existing corporate charter, board approval and in-person broker listing remain the authoritative workflow; no second exchange system or artificial pre-IPO ticker was introduced.
+- Added an interactive underwriting prospectus showing company versus founder proceeds, 5% placement fees, new capitalization, outside float, founder control dilution, and hostile-majority risk before confirmation.
+- The broker button is withheld when underwriting checks fail. The confirmed listing consumes the same verified prospectus terms, enters an idempotent receipt, synchronizes company cash to the factory ledger, and records the fee/control result in the corporate minute book.
+- Added substantial pure source coverage for invalid shares/prices, approvals, broker visits, company history, reputation, operating funds, personal versus company money, zero prelisting market history, and finite public float.
+- **Development code only**; the latest binaries were accepted as test artifacts on Surface Pro 8 before these additional changes. No new binary, tag, GitHub Actions or public release.
