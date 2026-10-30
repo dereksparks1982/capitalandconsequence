@@ -160,4 +160,4 @@ function beforeTravel(locationId,roomId){
 }
 function beforeClose(){beforeTravel(null,null)}
 root.FE_CHESS_UI=Object.freeze({refresh,beforeTravel,beforeClose});
-})();
+})(typeof window!=='undefined'?window:globalThis);
