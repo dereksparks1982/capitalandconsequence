@@ -1,0 +1,52 @@
+/* Capital & Consequence: original generic Victorian chess table.
+   A common top-down tabletop visual language for future parlor games.
+   No upstream chess.js visual artwork is used. */
+.fe-chess-salon{margin:18px 0 22px;border:3px double #9d8050;background:linear-gradient(130deg,#efe2bf,#dac699 66%,#cdb27e);padding:18px;color:#322319;font-family:Georgia,"Times New Roman",serif;box-shadow:0 8px 24px #1e150d38}
+.fe-chess-salon[hidden],.fe-chess-salon [hidden]{display:none!important}
+.fe-chess-header{display:flex;justify-content:space-between;align-items:start;gap:12px;border-bottom:1px solid #9a805d;padding-bottom:8px}
+.fe-chess-header h4{font-size:25px;margin:4px 0;font-variant:small-caps;letter-spacing:1px}
+.fe-chess-header p{margin:4px 0 8px;font-size:14px}
+.fe-chess-eyebrow{font-size:10px;letter-spacing:1.8px;color:#6e5028}
+.fe-chess-mini-badge{border:1px solid #8a6742;white-space:nowrap;padding:5px 9px;letter-spacing:1px;font-size:11px;background:#e0d0a7}
+.fe-chess-intro{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.fe-chess-intro select{border:1px solid #765a37;background:#f5ecd3;color:#25180e;padding:10px;max-width:280px}
+.fe-chess-salon button:not(.fe-chess-square){border:1px solid #7b5b39;background:#3b2b1d;color:#f4e8cd;padding:8px 13px;cursor:pointer;font-family:Georgia,serif;min-height:38px}
+.fe-chess-salon button:not(.fe-chess-square):hover{background:#69462a}
+.fe-chess-overhead{display:flex;flex-direction:column;align-items:center;gap:7px;padding:18px 12px;background:radial-gradient(ellipse at 49% 52%,#63513b 5%,#3c2e23 69%,#241a15 100%);border:12px solid #4c2c16;border-radius:40% / 12%;margin:12px auto;box-shadow:inset 0 0 0 3px #a17b46,0 8px 10px #2d1b0c55;max-width:720px;min-width:0}
+.fe-chess-felt{padding:9px;background:#224638;border:3px solid #a07e45;box-shadow:inset 0 0 0 2px #102b24,0 2px 12px #100d0a80;width:min(100%,552px)}
+.fe-chess-board-surround{padding:11px;background:repeating-linear-gradient(125deg,#7e4729,#754123 10px,#8c522f 20px);border:4px ridge #c39b5a;box-shadow:inset 0 0 0 2px #301a0d}
+.fe-chess-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1/1;border:2px solid #271b11;box-shadow:0 0 16px #180f0c77}
+.fe-chess-salon .fe-chess-square{border:0;outline-offset:-3px;position:relative;min-width:0;min-height:0;padding:0;cursor:pointer;font-size:clamp(21px,5.3vw,49px);line-height:1;display:flex;align-items:center;justify-content:center;text-align:center;font-family:"DejaVu Sans",Georgia,serif;user-select:none}
+.fe-chess-square.light{background:#dfc59a}.fe-chess-square.dark{background:#865b3f}
+.fe-chess-square.fe-chess-piece-w{color:#fff9e8;text-shadow:2px 2px 1px #26221c,-1px -1px 2px #272019,0 0 3px #352d27}
+.fe-chess-square.fe-chess-piece-b{color:#241c18;text-shadow:1px 1px 1px #ecdbb8,-1px -1px 1px #bfa17a}
+.fe-chess-square.chosen{box-shadow:inset 0 0 0 4px #e6ce65;z-index:1}
+.fe-chess-square.possible:after{content:"";position:absolute;inset:34%;border-radius:50%;background:#356d45a6;pointer-events:none}
+.fe-chess-square.check{box-shadow:inset 0 0 0 4px #ae2825}
+.fe-chess-square:focus-visible{outline:3px solid #fff2af;z-index:2}
+.fe-chess-person{display:flex;align-items:center;gap:12px;flex-direction:row;justify-content:center;margin:0;padding:3px 10px 5px;background:#20170f99;border:1px solid #a18a5b;color:#f6e3bc;min-width:160px;max-width:90%;border-radius:4px}
+.fe-chess-person figcaption{font-size:14px;text-align:center;letter-spacing:.3px}
+.fe-chess-portrait{width:55px;height:61px;position:relative;overflow:hidden;flex:none;border:4px ridge #a78952;box-shadow:inset 0 0 0 2px #271c12;background:radial-gradient(ellipse at 50% 32%,#a18c72,#6a5946 58%,#302720);border-radius:28px 28px 10px 10px}
+.fe-chess-portrait:before{content:"";position:absolute;top:9px;left:16px;width:17px;height:22px;border-radius:46% 46% 43% 43%;background:linear-gradient(#30261f 0 15%,#a88968 15% 90%,#664c35 100%);box-shadow:0 -4px 0 #2e251e}
+.fe-chess-portrait:after{content:"";position:absolute;left:5px;bottom:-15px;width:40px;height:37px;border-radius:44% 44% 0 0;background:linear-gradient(90deg,#17191c,#343639 49%,#12161a);box-shadow:inset 0 3px 0 #68665d}
+.fe-chess-person-bottom .fe-chess-portrait:after{background:linear-gradient(90deg,#35281b,#665035,#332719)}
+.fe-chess-commands{max-width:720px;margin:0 auto 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fe-chess-commands p{font-size:12px;flex:1 1 250px;overflow-wrap:anywhere}
+.fe-chess-salon .fe-chess-resign{background:#77472e!important}
+.fe-chess-notice{font-size:14px;font-weight:bold;padding:7px 0;color:#55321d;min-height:20px}
+.fe-chess-ledger{font:13px/1.45 Georgia,serif;border-bottom:1px dotted #876d4c;margin:0;padding:6px 0}
+.fe-chess-warning{color:#923a24;font-weight:bold}
+@media(max-width:650px){
+ .fe-chess-salon{padding:9px;margin:12px 0}
+ .fe-chess-header h4{font-size:19px}
+ .fe-chess-mini-badge{display:none}
+ .fe-chess-overhead{border-width:5px;border-radius:25% / 5%;padding:10px 5px;gap:5px}
+ .fe-chess-felt{padding:5px}
+ .fe-chess-board-surround{padding:5px;border-width:2px}
+ .fe-chess-person{min-width:100px}
+ .fe-chess-person figcaption{font-size:12px}
+ .fe-chess-portrait{width:40px;height:47px}
+ .fe-chess-portrait:before{left:10px}
+ .fe-chess-portrait:after{left:0}
+ .fe-chess-salon .fe-chess-square{font-size:clamp(16px,7vw,35px)}
+}
