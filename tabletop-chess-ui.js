@@ -102,8 +102,8 @@ function makeBoard(game){
  if(!live.some(x=>x.id===game.opponentId)){
   mount.appendChild(element('p','fe-chess-warning','Your opponent is no longer in this room. The game cannot continue.'));
   mount.appendChild(button('Record Opponent Departure',()=>{
-   const receipt=chess().abandon(saveState());
-   if(receipt)persist();first=null;refresh();
+   const receipt=chess().departed(saveState());
+   if(receipt)persist();first=null;notify('The opponent departed; the match is recorded as a forfeit in your favor.');refresh();
   }));
  }
 }
