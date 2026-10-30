@@ -1,6 +1,6 @@
 # Tabletop, Parlor & Social Games: Living Washington Design Register
 
-**Capital & Consequence | Design specification | 29 October 2026 | Documentation only**
+**Capital & Consequence | Design specification | 29 October 2026 | Chess prototype source integrated; other games planned**
 
 ## Governing rule
 
@@ -8,7 +8,7 @@ Washington's games, tournaments, champions, defeats, rivalries and friendships e
 
 Games are discovered **at actual venues**, according to period, local culture, available equipment, scheduled players, permission to enter, and opening hours. There is no universal games button, no simultaneous presence in two rooms, and no magic remote opponent. A historic champion mentioned in the paper must have won a genuine simulated match.
 
-**Scope:** 28 distinct games identified and approved in design discussion, including Western dominoes, Chinese dominoes/Pai Gow, and Mahjong. Existing poker, horse/dog racing, boxing and fishing remain separate systems but should eventually share the same competition ledger and newspaper reporting contract. This is a design document, **not a statement that any newly listed game has been implemented**.
+**Scope:** 28 distinct games identified and approved in design discussion, including Western dominoes, Chinese dominoes/Pai Gow, and Mahjong. Existing poker, horse/dog racing, boxing and fishing remain separate systems but should eventually share the same competition ledger and newspaper reporting contract. **Current source status:** Chess is the first game integrated with a licensed rules engine and top-down player-versus-present-NPC room UI, plus initial NPC-only fixtures and news. The other 27 games remain design-only. Chess league titles, NPC preferences, advanced skill and polished portrait artwork are still future work.
 
 ## Complete game register (28)
 
@@ -71,7 +71,7 @@ The city registry and original printed Washington map **must not be changed** to
 9. **Press:** The Metropolitan Ledger publishes selected significant, **already resolved** matches, new champions, rivalries and tournament announcements; local neighborhood commentary and word of mouth can spread faster or differently. Unpublished contests stay out of public headlines.
 10. **Time:** All actions consume authoritative Washington clock time. Resolving pending fixtures while the player works elsewhere must not require opening a game panel. There is **no progress while the app is closed**.
 
-### Proposed durable record contracts (not coded)
+### Proposed durable record contracts (partially coded for chess)
 
 - `GameDefinition`: id, name, origin, rulesVariant, availableFromDate, equipment, capacity, turnPolicy, venueEligibility, legalWagerPolicy.
 - `VenueGameOffering`: locationId, roomId, gameId, variantId, equipmentId, accessRule, timeWindow, hostNPCId.
@@ -97,4 +97,4 @@ The city registry and original printed Washington map **must not be changed** to
 
 Reuse the existing saved Washington clock, location/room access, NPC schedules, social/memory, shared-world event and press systems. Prefer a **single scheduling/results/competition framework** with modular **per-game rules engines**; hard games such as chess, Go, Mahjong, Xiangqi and backgammon require genuine legal moves and competent opposition, not outcome-only random buttons. Inspect library compatibility, licenses, dates and dependencies *before* bringing third-party code into this proprietary game.
 
-**Research follow-up:** A separate repository/implementation survey should list candidate engines, source URLs, exact license evidence, integration difficulty, and any gaps requiring custom code. **No dependencies are adopted merely because they appear on that list.**
+**Research and adoption:** The [candidate engine survey](OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) records candidate engines, sources, license evidence, complexity and gaps. **Only chess.js v0.10.3 is currently adopted; research listings do not imply other dependencies are installed.**
