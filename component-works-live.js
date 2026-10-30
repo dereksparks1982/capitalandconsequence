@@ -10,6 +10,7 @@
  const periods=Object.freeze({order:5,purchase:5,ship:15});
  function transact(save,kind,details,token,spend,finishAtBell=null){
   if(!save?.componentWorks||save.paused)return {ok:false,reason:'Workshop unavailable or paused'};
+  if(root.FE_CORPORATE&&!root.FE_CORPORATE.canManage(save))return {ok:false,reason:'Charles has been removed as company president. Factory authorizations now require the appointed management.'};
   works.verify(save.componentWorks);
   if(!['order','purchase','assemble','ship','repair'].includes(kind)||typeof token!=='string'||!token||token.length>120)
    return {ok:false,reason:'Invalid component action'};
