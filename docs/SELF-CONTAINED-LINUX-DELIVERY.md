@@ -36,3 +36,6 @@ Run `npm run qa:linux` for the complete offline source regression suite and asse
 
 ## Packaged executable regression test
 After locally creating **both** Linux outputs, run `npm run verify:linux:artifacts`. It starts the FUSE-free AppImage directly, extracts the portable tar.gz to a temporary folder, launches its included executable, and checks for Electron's real `FEDERAL_ELECTRIC_SMOKE_OK` token. Both run with isolated temporary HOME/XDG profile directories, which are removed afterward. The verification command uses developer-side `tar`; end users do not need tar after extraction. This does not replace testing without network access or on other Linux distributions.
+
+## Optional research hyperlinks
+Historical reading links (for example, Wikipedia and the Library of Congress) are optional and may open in a web browser only on player action. They are **not** bundled gameplay dependencies. The offline audit blocks remote script, media, stylesheet loading and selected network APIs instead of rejecting historical URLs embedded as data. The asset manifest still verifies local image, audio, script and stylesheet paths separately. This static check does not replace a live offline launch test.

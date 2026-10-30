@@ -20,3 +20,9 @@ Development source on `main`, not an accepted Linux binary release.
 - One Business Ledger entry in the Executive Office; no map geometry changes.
 - Added `npm run verify:linux:artifacts` to run the actual AppImage and extracted portable executable with isolated save data and Electron smoke tests.
 - Full source tests, actual new binary tests, audio approval and third-party distribution audit are **pending**. No new public release, tagged snapshot or GitHub Actions.
+
+## Surface Pro 8 source QA and offline-audit correction, October 30
+- Owner's updated local `main` checkout completed **153/153 source tests** and passed the runtime asset bundle audit.
+- The next audit incorrectly rejected historical Wikipedia / Library of Congress reference hyperlinks in `app.js` and `city.js`, even though they do not load automatically or support game startup.
+- Replaced the blanket URL scanner with a check for actual network APIs, remote media/style/script loads and remote renderer resources. Historical research links remain optional and are not required to play offline.
+- Added executable negative and positive source regressions for this distinction. **The new audit has not yet been re-run on the user's Surface.** No release, tag, GUI validation, or GitHub Actions.
