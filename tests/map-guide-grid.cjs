@@ -136,7 +136,7 @@ for(const id of ['titleMapLocationFact','titleMapHistoricalReading','cityRoomFac
  assert.ok(img.includes('id="'+id+'"'),id+' real/fiction education slot exists');
 }
 assert.ok(app.includes('renderPlaceReference(location,true)'), 'map card displays badge and reading');
-assert.ok(app.includes('renderPlaceReference(location);'), 'city room displays badge and reading');
+assert.ok(app.includes("guardedRoomPanel('place reference',()=>renderPlaceReference(location))"), 'city room displays badge and reading');
 assert.ok(app.includes("badge.textContent=isReal?'Non-Fiction':'Fiction'"),
  'real versus invented displayed as explicit words on the card');
 assert.ok(app.includes("link.rel='noopener noreferrer'"), 'educational links open safely');

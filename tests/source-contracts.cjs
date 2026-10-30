@@ -217,7 +217,7 @@ check(travel.plan('home','races','walk').miles===null,'No invented mileage');
 check(travel.plan('home','races','horse').status==='no-horse-here','Riding requires a horse present at origin');
 check(travel.plan('home','races','owned-carriage').status==='no-team-and-carriage-here','Carriage requires team at origin');
 check(travel.recordProvisional('home','races')===true&&travelS.transport.journeys.length===1,'Direct old navigation produces labeled journey record');
-check(travelS.transport.journeys[0].minutes===null&&travelS.transport.journeys[0].mode===null,'Provisional movement cannot claim verified time or horse');
+check(travelS.transport.journeys[0].minutes===null&&travelS.transport.journeys[0].miles===null&&travelS.transport.journeys[0].mode==='walk'&&travelS.transport.journeys[0].provisional===true,'Provisional movement cannot claim verified time or horse');
 check(travel.plan('home','home','walk').status==='invalid','Cannot travel to same location');
 check(index.includes('id="unresolvedPokerResolve"'),'Poker rescue control exists in Info tab');
 check(appSource.includes('function resolveUnfinishedPoker(token)'),'Poker escrow resolution handler implemented');
@@ -340,7 +340,7 @@ check(index.includes('npc-witness.js?v=')&&index.indexOf('npc-witness.js?v=')<in
 check(index.includes('npc-rumors.js?v=')&&index.indexOf('npc-rumors.js?v=')<index.indexOf('npc-ai.js?v='),'Rumor privacy and trust policy loads before NPC execution');
 check(read('npc-ai.js').includes('FE_NPC_RUMORS?.coPresent?.(from,to)'),'Rumors require identical actual rooms');
 check(mandatoryTest('tests/npc-rumors.cjs'),'Rumor relationship and privacy tests are part of mandatory QA');
-check(read('npc-ai.js').includes('recordWitnessedMeetings(window.FE_NPC_SOCIAL?.meet?.'),'New meetings may become personally witnessed journal events');
+check(read('npc-ai.js').includes('recordWitnessedMeetings(meetings);')&&read('npc-ai.js').includes('window.FE_NPC_WITNESS?.record?.(S,records,window.FE_CITY?.currentLocation?.(),autonomous())'),'New meetings may become personally witnessed journal events');
 check(mandatoryTest('tests/npc-witness.cjs'),'Observed encounter privacy tests remain mandatory');
 check(read('npc-ai.js').includes('FE_NPC_INTENTIONS?.plan?.'),'NPC decisions can influence the destination of personal travel');
 check(index.includes('npc-agency.js?v=')&&index.indexOf('npc-agency.js?v=')<index.indexOf('npc-ai.js?v='),'NPC agency engine loads before runtime');
@@ -369,7 +369,7 @@ const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===21,'Eighteen named Washington residents and exactly three unselected playable protagonists have autonomous agents');
+check(npc.list().length===22,'Nineteen named Washington residents and exactly three unselected playable protagonists have autonomous agents');
  check(!npc.list().some(v=>v.id==='charlieWhitcomb'),'Selected industrialist is never also an NPC');
  check(['samHarlan','eliCrowe','edmundWardman'].every(id=>npc.list().some(v=>v.id===id)),'The other three protagonists receive independent AI definitions');
 check(npc.list().some(v=>v.id==='samuelTilden'),'President Tilden is a historically based resident');
@@ -394,7 +394,7 @@ check(npcSave.npcSimulation.events.every(e=>e.actorId&&e.turn===1),'NPC decision
 check(city.getLocation('oldChinatown').name==='Chinatown','Chinatown has the player-facing agreed name');
 check(city.getLocation('star').description.includes('Gambling is not permitted'),'Star Club no gambling policy reflected in registry');
 check(appSource.includes('function mapTravelRestriction(location)'), 'Map gives locked destination explanations');
-check(appSource.includes('room.dataset.locationId!==id')&&appSource.includes('if(!reached||!room')&&appSource.includes("document.body.classList.add('city-room-open')"), 'Map leaves only the confirmed destination room visible');
+check(appSource.includes('if(!rendered||!overlay||overlay.hidden||overlay.dataset.locationId!==place.id')&&appSource.includes("document.body.classList.add('city-room-open')"), 'Map leaves only the confirmed destination room visible');
 check(appSource.indexOf('save(true);',appSource.indexOf('function openCityRoom('))>appSource.indexOf("overlay.hidden=false;",appSource.indexOf('function openCityRoom(')), 'Room visit is saved after renderer setup succeeds');
 check(appSource.includes('S.currentLocation=priorLocation;'), 'Failed travel restores saved character location');
 check(index.includes('id="saveFailureBanner"'),'Save failures have a visible warning');
@@ -415,7 +415,7 @@ try{
  check(!fs.readdirSync(diskRoot).some(x=>x.includes('.tmp-')),'Atomic file save leaves no pending temp files');
  check(diskStore.readSave(diskRoot,'p1').ok,'Valid mirror recognized');
  fs.writeFileSync(path.join(diskRoot,'p1.json'),'{broken');
- check(diskStore.readSave(diskRoot,'p1').reason==='corrupt','Corrupt mirror is never accepted');
+ check(diskStore.readSave(diskRoot,'p1').ok===true&&diskStore.readSave(diskRoot,'p1').recovered===true&&diskStore.readSave(diskRoot,'p1').json===a,'Corrupt primary restores validated recovery save');
  check(fs.readFileSync(path.join(diskRoot,'p1.json.recovery'),'utf8')===a,'Corrupt primary does not erase recovery copy');
  check(diskStore.deleteSave(diskRoot,'p1').ok&&!fs.existsSync(path.join(diskRoot,'p1.json.recovery')),'Explicit profile deletion deletes the recovery mirror');
  check(!index.includes('nodeIntegration:true'),'Renderer has no Node privileges');
@@ -662,7 +662,7 @@ check(wardmanSave.otherLives.history.length===0,'Legacy actor catch-up does not 
 wardmanCtx.S.characterRoute='wardman';wardmanCtx.S.otherLives={version:1,seed:null,lastProcessedTurn:0,actors:{},history:[]};
 check(!wardmanCtx.window.FE_LIVING_CHARACTERS.ensure().actors.wardman,'Selected Wardman protagonist is never duplicated as a background actor');
 check(read('living-characters.js').includes("id==='wardman'"),'Wardman has distinct institutional public news templates');
-console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
+
 
 check(index.includes('workshop-operations.js?v=')&&index.indexOf('workshop-operations.js?v=')<index.indexOf('app.js?v='),'Real workshop operations loaded before game');
 check(mandatoryTest('tests/workshop-operations.cjs'),'Shift/breakdown regression required in full Source QA');
@@ -703,7 +703,7 @@ check(index.includes('fishing-ui.js?v=')&&index.indexOf('fishing-ui.js?v=')>inde
 check(index.includes('market-ui.js?v=')&&index.indexOf('market-ui.js?v=')>index.indexOf('app.js?v='),'Market controls load after game state');
 check(appSource.includes('window.FE_FISHING_UI?.render?.()')&&appSource.includes('window.FE_MARKET_UI?.render?.()'),'Room integrates actual fishing and merchant counters');
 check(read('npc-ai.js').includes('deliveryForCalendar?.(S,c.date'),'NPC calendar triggers actual physical restock');
-check(read('npc-economy.js').includes('market.purchase(context.save,def.id,goodId'),'Autonomous NPCs share purchased physical inventory');
+check(read('npc-ai.js').includes('const receipt=shopAtObservedMarket(')&&mandatoryTest('tests/npc-market-bridge.cjs'),'Autonomous purchases require physical arrival and are covered by market bridge QA');
 check(mandatoryTest('tests/fishing-play.cjs')&&mandatoryTest('tests/market-inventory.cjs')&&mandatoryTest('tests/npc-market-bridge.cjs'),'Mandatory gameplay and market regression suites');
 
 check(!read('styles.css').includes('border-style:dashed;'),'Unverified map pin metadata must not render dotted circles');
@@ -764,10 +764,13 @@ check(index.includes('id="titleMapPinStatus"')&&
 check(read('city.js').includes('mapGridReference,')&&
  appSource.includes('return window.FederalElectricCity.mapGridReference(x,y);'),
  'A–R and 1–30 grid conversion has a single authoritative registry source');
-check(read('styles.css').includes('.title-map-pin-tethers')&&
- appSource.includes("line.classList.add('title-map-pin-tether')")&&
- appSource.includes("dot.classList.add('title-map-pin-anchor')"),
- 'Visually shifted pin badges have a stem and a dot at their immutable source position');
-check(appSource.includes("const cardRect=infoCard&&!infoCard.hidden?")&&
- appSource.includes("const cardFree=p=>!blocked"),
- 'Info card may not swallow map pins such as District Asylum #22');
+check(!read('styles.css').includes('.title-map-pin-tethers')&&
+ !appSource.includes("line.classList.add('title-map-pin-tether')")&&
+ !appSource.includes("dot.classList.add('title-map-pin-anchor')"),
+ 'Legacy anchor overlays are absent');
+check(appSource.includes('function titleMapPositionMarkers(){')&&
+ appSource.includes("marker.style.left=(titleMapState.x+point.x*scale)+'px';")&&
+ appSource.includes("marker.style.top=(titleMapState.y+point.y*scale)+'px';")&&
+ mandatoryTest('tests/map-all-pins.cjs'),
+ 'Map pin anchoring and all 40 directory locations retain source regression coverage');
+console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
