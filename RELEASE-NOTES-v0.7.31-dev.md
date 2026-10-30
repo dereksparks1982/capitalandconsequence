@@ -83,3 +83,6 @@ Development source on `main`, not an accepted Linux binary release.
 ## Additional sourced culvert regressions
 - Expanded the existing 48-campaign scene test to check fresh masonry at the service culvert only in the outsider variant, stable scene provenance and distinct staff versus police documents.
 - Expanded the full two-protagonist case walkthrough to visit the culvert and grievance registers, obtain authorized officer copies, spend game minutes and verify neither character inherits the other's private observations.
+
+## Offline script-load contract
+- The renderer regression now enforces the shared-world → incident → asylum scene → casework → story → game → in-room inquiry load order and requires the new local casework module to ship with the bundle.

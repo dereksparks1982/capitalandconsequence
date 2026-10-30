@@ -43,5 +43,9 @@ Public visibility on GitHub does **not** grant a license to reuse this project's
 See [LICENSE](LICENSE), [LEGAL.md](LEGAL.md) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for ownership, currently bundled credits, license locations and release-review requirements.
 
 
+
+## Murder case development (post-verified-build source)
+The shared District Asylum case now has four possible perpetrator roles and three independent lines of personally sourced evidence. Sam's official referral is reviewed on a later campaign day and can be rejected, costing professional standing; Edmund can privately record a concern, potentially intensifying his family's pressure. The asylum's service culvert is a possible entry in the outside-visitor variant and remains an investigable alternative in other cases. The officer's casebook and orderly's notebook do not exchange private facts automatically. No arrest, conviction, or confinement is fabricated by a single statement. This is **development source on main** following the verified 159-test Linux baseline, not a newly verified packaged release.
+
 ### Shared District Asylum inquiry (development)
 The same dated 1878 death belongs to shared Washington rather than a protagonist-specific roll. A new casebook contrasts the ward's access records, a physical trace and independent time accounts. Edmund can record a private workplace concern; Sam, after earning off-duty sergeant access, may submit a named suspect for later police review. A single clue is ambiguous, private discoveries do not automatically transfer between characters, and a police referral is not a conviction. The director may be among the suspected actors. Family pressure, professional credibility and official history can change without moving the original map. These additions have not yet been included in a newly verified Linux executable.

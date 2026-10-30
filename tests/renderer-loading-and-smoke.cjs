@@ -8,6 +8,15 @@ assert.equal(external,complete,'External scripts close before the next script ta
 const order=['vendor/pathfinding/pathfinding-browser.min.js','vendor/konva/konva.min.js','vendor/yuka/yuka.min.js','road-layout.js','capital-travel-system.js','app.js','road-editor.js'];
 let at=-1;
 for(const name of order){const next=html.indexOf('src="'+name+'?');assert.ok(next>at,'Missing or misordered script: '+name);at=next;}
+const investigationOrder=['shared-world.js','asylum-incident.js','asylum-evidence.js',
+ 'asylum-casework.js','asylum-story.js','app.js','asylum-story-ui.js'];
+let inquiryPrevious=-1;
+for(const file of investigationOrder){
+ const scriptPosition=html.indexOf('src="'+file+'?');
+ assert.ok(scriptPosition>inquiryPrevious,'Asylum module must load after its dependencies: '+file);
+ inquiryPrevious=scriptPosition;
+}
+assert.ok(read('asylum-casework.js').includes('function review(world)'),'Casework review module must ship in offline bundle');
 const ctx={window:{},document:{getElementById:()=>null}};
 vm.createContext(ctx);vm.runInContext(read('road-layout.js'),ctx);vm.runInContext(read('road-editor.js'),ctx);
 assert.equal(typeof ctx.window.FE_ROAD_LAYOUT.sanitize,'function');
