@@ -83,7 +83,7 @@ function appoint(save,id,slot,token){
   if(c.status==='private')return reject('Incorporate Federal Electric before electing directors.');
   if(!Number.isInteger(slot)||slot<1||slot>=c.directors.length)return reject('Choose one of the two outside director seats.');
   const candidate=electable(c,id);if(!candidate)return reject('Candidate is unavailable or already serves.');
-  if(ownership(save).founderPercent<=50&&c.shareholderProxies<10)return reject('You lack a majority of the voting shares or sufficient shareholder proxies.');
+  if(ownership(save).founderPercent+c.shareholderProxies<=50)return reject('You lack a majority of the voting shares and pledged shareholder proxies.');
   c.directors[slot]={...candidate};c.shareholderProxies=0;
   register(save,'election',candidate.name+' elected director following a shareholder vote.');
   return {ok:true,message:candidate.name+' elected to the board.'};
@@ -211,6 +211,21 @@ function counterBid(save,token){
   return {ok:true,message:'Defensive solicitation recorded. A takeover is still possible.'};
  });
 }
+function removePresident(save,cause){
+ const c=ensure(save);if(c.status==='private'||c.president!=='charles')return null;
+ if(cause==='hostile-majority'){
+  c.directors[1]={...PEOPLE.find(p=>p.id==='vale')};
+  c.directors[2]={...PEOPLE.find(p=>p.id==='mercer')};
+ }
+ const votes=c.directors.map(d=>({id:d.id,yes:d.id!=='charles'&&(cause==='hostile-majority'||d.loyalty<40)}));
+ const ayes=votes.filter(v=>v.yes).length,passed=ayes>c.directors.length/2;
+ c.votes.push({date:save.gameDate,resolution:'remove-president',cause,ayes,nays:votes.length-ayes,passed,votes});
+ register(save,'board-vote','Board '+(passed?'adopted':'rejected')+' removal of Charles, '+ayes+' to '+(votes.length-ayes)+'.');
+ if(!passed)return null;
+ c.president='harlow';
+ register(save,'control-change','The board removed Charles from the presidency. His shares remain his personal property.');
+ return {kind:'loss-of-control',message:'Federal Electric directors voted Charles out as president.'};
+}
 function advanceDay(save){
  const c=ensure(save);if(!validDate(save.gameDate)||c.lastAdvanceDate===save.gameDate)return null;
  c.lastAdvanceDate=save.gameDate;
@@ -222,6 +237,7 @@ function advanceDay(save){
    hostileShares:0,defense:0,financing:'borrowed bank credit'};
   register(save,'hostile-offer','Vale & Mercer began purchasing Federal Electric shares through intermediaries.');
  }
+ if(c.president==='charles'&&c.directors.filter(d=>d.id!=='charles'&&d.loyalty<40).length>=2&&(save.companyCash||0)<750){const removal=removePresident(save,'directors-lost-confidence');if(removal)return removal;}
  if(c.bid?.active&&c.publicShares>0){
   const desired=Math.max(1,Math.floor(c.issuedShares*.025));
   const bought=Math.min(c.publicShares,Math.max(0,desired-Math.floor(desired*Math.min(2,c.bid.defense||0)/2)));
@@ -230,9 +246,8 @@ function advanceDay(save){
   if(save.stocks?.FEC)save.stocks.FEC.sharesOffered=Math.min(save.stocks.FEC.sharesOffered,c.publicShares);
   register(save,'share-accumulation',c.bid.bidder+' acquired '+bought+' outside shares.');
   if(percent(c.rivalShares,c.issuedShares)>50){
-   c.bid.active=false;c.bid.outcome='rival-control';c.president='harlow';
-   register(save,'control-change','A hostile voting majority removed Charles as president. He still owns his shares.');
-   return {kind:'loss-of-control',message:'Shareholders removed Charles from the presidency.'};
+   c.bid.active=false;c.bid.outcome='rival-control';
+   return removePresident(save,'hostile-majority');
   }
   if(c.publicShares===0&&percent(c.rivalShares,c.issuedShares)<=50){
    c.bid.active=false;c.bid.outcome='blocked';register(save,'takeover-blocked','The syndicate failed to obtain a majority.');
