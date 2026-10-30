@@ -16,6 +16,8 @@ Explore the city on its illustrated Washington map, travel on foot, horseback, o
 
 **This is a proprietary project, not open-source software.** No permission is granted to use, copy, modify, redistribute, republish, sell, incorporate into another project, or create derivative works from the project's original source code, artwork, game systems, writing, characters, or other original materials without the copyright holder's **prior express written permission**, except as required by applicable law or GitHub's governing terms.
 
-Public visibility on GitHub does **not** grant a license to reuse this project. Official unmodified game builds, if intentionally released for public play, may be played personally and noncommercially under the limited terms in [LICENSE](LICENSE). Third-party materials retain their own rights and licenses.
+Public visibility on GitHub does **not** grant a license to reuse this project's original proprietary materials. Official unmodified game builds, if intentionally released for public play, may be played personally and noncommercially under the limited terms in [LICENSE](LICENSE).
 
-See [LICENSE](LICENSE) and [LEGAL.md](LEGAL.md) for the complete terms and notices.
+**Third-party credit and ownership:** We do **not** claim ownership of external libraries, game engines, artwork, recordings, fonts or other third-party works merely because they are included here. Every adopted component remains subject to **its own license**, which may vary by project, including whatever independent rights that license grants. We preserve required notices and attribution. Merely researching a repository does **not** mean its code has been included.
+
+See [LICENSE](LICENSE), [LEGAL.md](LEGAL.md) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for ownership, currently bundled credits, license locations and release-review requirements.
