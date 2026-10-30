@@ -26,7 +26,7 @@ function desk(){
  const save=ctx.save,c=api.ensure(save),own=api.ownership(save);
  host.replaceChildren();
  const head=node('div');head.className='ipo-scaffold-head';
- head.append(node('h4','Federal Electric · Corporate Affairs'));
+ head.append(node('h4','Federal Electric · Corporate Affairs'),button('Close',()=>get('exploreIpo')?.click()));
  host.appendChild(head);
  message(host,'Charter: '+c.status.toUpperCase()+' · President: '+(c.president==='charles'?'Charles Whitcomb':'Edwin Harlow')+
   ' · Ownership: '+own.founderPercent.toFixed(2)+'% of '+own.issued.toLocaleString()+' shares ('+own.founder.toLocaleString()+' held).');
@@ -101,7 +101,7 @@ function broker(){
   if(c.bid?.active)controls.append(button('Defend Against Takeover · $150',()=>perform('defense',(s,t,a)=>a.counterBid(s,t))));
   host.appendChild(controls);
  }
- const targets=Object.entries(save.stocks||{}).filter(([id,v])=>id!=='FEC'&&v.issuedShares&&v.price>0);
+ const targets=Object.entries(save.stocks||{}).filter(([id,v])=>id!=='FEC'&&v.issuedShares&&v.price>0&&Array.isArray(v.history)&&v.history.length>0);
  if(c.status!=='private'&&targets.length){
   host.append(node('h5','Acquire a Rival Company'));
   const target=selection(targets.map(([id,v])=>[id,id+' · '+v.name]));
@@ -115,8 +115,12 @@ function broker(){
   host.append(node('h5','Minority Buyouts'));
   for(const a of c.acquisitions){
    const row=node('div');row.className='trade-buttons';
-   row.append(node('span',a.ticker+' · '+a.ownershipPercent+'% controlled'),
-    button('Buy Out Remaining Holders',()=>perform('squeeze-'+a.ticker,(s,t,x)=>x.squeezeOut(s,a.ticker,t)),a.ownershipPercent>=90));
+   row.append(node('span',a.ticker+' · '+a.ownershipPercent+'% controlled'));
+   if(a.status==='controlled'){
+    row.append(button('Tender to 75% · 50% Loan',()=>perform('tender75-'+a.ticker,(s,t,x)=>x.increaseStake(s,a.ticker,75,50,t)),a.ownershipPercent<75));
+    row.append(button('Tender to 90% · 50% Loan',()=>perform('tender90-'+a.ticker,(s,t,x)=>x.increaseStake(s,a.ticker,90,50,t)),a.ownershipPercent<90));
+   }
+   row.append(button('Buy Out Remaining Holders',()=>perform('squeeze-'+a.ticker,(s,t,x)=>x.squeezeOut(s,a.ticker,t)),a.status==='controlled'&&a.ownershipPercent>=90));
    host.appendChild(row);
   }
  }
