@@ -16,6 +16,12 @@ function route(from,to){
  if(!from||!to||![from.x,from.y,to.x,to.y].every(Number.isFinite))return [];
  const a={x:clamp(from.x),y:clamp(from.y)},b={x:clamp(to.x),y:clamp(to.y)};
  if(a.x===b.x&&a.y===b.y)return [a];
+ // An activated custom road overlay is authoritative. Unreachable routes
+ // must fail instead of cutting through an untraced building.
+ if(root.FE_ROAD_LAYOUT?.isActive?.()){
+  const edited=root.FE_ROAD_LAYOUT.route(a,b);
+  return edited?.length>=2?edited:[];
+ }
  // Real graph edges first: piece moves down mapped block corridors and
  // modeled diagonal avenues, not one imaginary shortcut through buildings.
  const street=root.FE_CAPITAL_STREETS?.streetRoute?.(a,b);

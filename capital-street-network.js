@@ -294,6 +294,7 @@ function streetRoute(start,end){
 }
 const api=Object.freeze({version:6,source:'approximate-guide-intersections',image:IMG,
  nodeCount:graph.length,edgeCount:edges.length,streetRoute,validateItinerary,
+ draftSegments:()=>edges.map(e=>({a:{...graph[e.a]},b:{...graph[e.b]},source:'approximate-guide'})),
  diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_STREETS=api;
