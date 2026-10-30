@@ -152,7 +152,7 @@ function listing(save,newShares,secondaryShares,priceCents,token){
      !Number.isSafeInteger(secondaryShares)||secondaryShares<0||secondaryShares>c.founderShares||
      !positive(priceCents)||priceCents<100||priceCents>2500)
    return reject('Choose 500–10,000 new shares, a valid founder sale, and a $1–$25 offering price.');
-  if(newShares+secondaryShares>12000)return reject('Underwriter cannot place more than 12,000 shares.');
+  if(newShares+secondaryShares>20000)return reject('Underwriter cannot place more than 20,000 shares.');
   if(c.authorizations.ipo>save.gameDate)return reject('The authorization date is invalid.');
   if((save.brokerage?.visits||0)<2)return reject('Make two separate visits to establish an underwriting relationship.');
   const cashCents=Math.floor(newShares*priceCents*.95);
