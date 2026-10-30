@@ -1,6 +1,6 @@
 # Self-contained Linux distribution contract
 
-**Development only.** No public release, main-branch change, tag, or GitHub Actions run is authorized by this document.
+**Development only.** These changes are tracked on `main`. No public release or annotated release tag has been accepted. Never use GitHub Actions.
 
 ## Player requirement
 Players download the official Linux AppImage from the repository's **Releases**, mark it executable if their desktop requires that, and launch it. No installation of Node, npm, FUSE, build-essential, or asset-download scripts. The GitHub-generated source ZIP is for **developers**, not a playable Linux distribution.
@@ -27,3 +27,9 @@ A Linux executable cannot be completely independent of the host kernel, core gra
 - The executive-office book and paperwork remain visually in the same positions; only the Business Ledger button opens the actual ledger. The decorative book/paper are labelled as Federal Electric and Washington Works, not duplicate ledgers.
 
 **Immutable source art guard:** the offline asset audit verifies the Git object SHA-1 of the existing Washington map (`57ab4c66dccb151a4153864f2fdd9790065ec77d`), not just whether a file with that name exists. This protects against accidental substitutions while retaining the approved image bytes.
+
+## Offline release preflight
+
+All three Linux packaging commands now automatically run `audit:bundle`, `audit:offline`, and `audit:artwork` before packaging. The bundle audit resolves every local `<script>`, `<link>`, `<img>`, `<audio>`, `<source>`, and `<video>` dependency in `index.html` and CSS `url(...)` resources; it also checks known JS audio/art paths and the immutable map's Git blob identity. Any missing file or remote renderer dependency stops the build.
+
+Run `npm run qa:linux` for the complete offline source regression suite and asset checks before considering an acceptance snapshot. Those checks are **not equivalent** to testing a downloaded AppImage or portable archive on a clean machine with networking disabled.
