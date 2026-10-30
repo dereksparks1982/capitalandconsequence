@@ -8,7 +8,7 @@ for(const key of ['titleMapRoadSeed','titleMapRoadScan','titleMapRoadAccept','ti
  assert.ok(html.includes('id="'+key+'"'),key+' exists in map controls');
 assert.ok(html.includes('road-editor.js?v=')&&html.includes('road-layout.js?v='));
 assert.ok(app.includes('FE_ROAD_EDITOR?.mount?.(')&&app.includes('FE_ROAD_EDITOR?.sync?.()'));
-assert.ok(editor.includes('root.Konva.Stage')&&editor.includes('draft.segments.push(')&&editor.includes('draft.blocks.push('));
+assert.ok(editor.includes('new Konva.Stage')&&editor.includes('draft.segments.push(')&&editor.includes('draft.blocks.push('));
 assert.ok(editor.includes("getImageData(0,0,256,145)")&&editor.includes('FE_CAPITAL_STREETS?.draftSegments?.()'));
 assert.ok(street.includes('draftSegments:()=>edges.map('));
 assert.ok(css.includes('.title-map-road-canvas.editing'));
