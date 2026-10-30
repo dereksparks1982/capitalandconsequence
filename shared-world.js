@@ -27,6 +27,7 @@ function attach(save,world){
   save.chessCircuit.active=personalMatch?copy(personalMatch):null;
  }
  save.lastChessResult=world.lastChessResult||null;
+ root.FE_ASYLUM_CASEWORK?.syncReview?.(save,world);
  save.dayRemaining=root.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(save)??save.dayRemaining;
  return save;
 }
@@ -49,6 +50,7 @@ function capture(save,prior,profileId=null){
     recordEvent(next,{id:'ward-file:'+profileId+':'+log.id,type:'asylum-work',
      at:log.date,summary:'An orderly filed a routine care-service entry.',
      actorId:'edmundWardman',locationId:'blackwoodAsylum'});
+ root.FE_ASYLUM_CASEWORK?.publish?.(next,save,profileId);
  root.FE_ASYLUM_STORY?.advanceWorld?.(next);
  return next;
 }

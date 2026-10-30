@@ -71,6 +71,7 @@ function advanceWorld(world){
   truth.verifiedTimeline={medicalFindings:[...FINDINGS]};
   root.FE_MORGUE_REGISTRY.examine(world,{bodyId:BODY_ID,examinerId:'districtCoroner',examinedAt:EXAM,findings:[...FINDINGS]});
  }
+ root.FE_ASYLUM_CASEWORK?.review?.(world);
  return {ok:true,status:at>=EXAM?'examined':at>=ARRIVAL?'admitted':'reported'};
 }
 function visible(world){return root.FE_ASYLUM_INCIDENT?.publicFile?.(world,CASE_ID)||null}

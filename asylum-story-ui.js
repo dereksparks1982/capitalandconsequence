@@ -15,7 +15,15 @@ function mount(){
  const summary=document.createElement('p');summary.id='asylumInquirySummary';
  const actions=document.createElement('div');actions.id='asylumInquiryActions';
  const notice=document.createElement('p');notice.id='asylumInquiryNotice';notice.setAttribute('role','status');
- panel.append(head,summary,actions,notice);parent.appendChild(panel);
+ const casebook=document.createElement('div');casebook.id='asylumCasebook';casebook.className='doorman-work-box';
+ const roster=document.createElement('div');roster.id='asylumCasebookLeads';
+ const select=document.createElement('select');select.id='asylumCasebookSuspect';
+ select.setAttribute('aria-label','Person named in case referral');
+ const submit=document.createElement('button');submit.id='asylumCasebookFile';submit.type='button';
+ submit.addEventListener('click',fileSuspect);
+ const review=document.createElement('p');review.id='asylumCasebookReview';review.setAttribute('role','status');
+ casebook.append(roster,select,submit,review);
+ panel.append(head,summary,actions,casebook,notice);parent.appendChild(panel);
  return panel;
 }
 function context(){
@@ -53,6 +61,66 @@ function action(id){
   'Filed in your private records. No suspect has been declared guilty.');
  return true;
 }
+function fileSuspect(){
+ const work=root.FE_ASYLUM_CASEWORK,world=current(),place=context(),profile=activeProfileId(),saveRef=S;
+ const suspect=$('asylumCasebookSuspect')?.value;
+ const check=work?.canFile?.(S,world,place,suspect);
+ if(!check?.ok){show(check?.reason||'The case cannot be filed here.');return false;}
+ if(typeof root.confirm==='function'&&!root.confirm(check.warning+' File this report?'))return false;
+ if(!root.FE_WASHINGTON_TIME?.canSpend?.(S,check.seconds)){show('Insufficient game time for this filing.');return false}
+ const elapsed=root.advanceWorldTime(check.seconds,true);
+ if(elapsed!==check.seconds||S!==saveRef||profile!==activeProfileId()){
+  show('The case filing was interrupted. No allegation was recorded.');return false;
+ }
+ const result=work.file(S,current()||world,place,suspect,{spentSeconds:elapsed});
+ if(!result?.ok){show(result?.reason||'The case filing failed.');return false;}
+ const persisted=save(true);
+ if(!persisted){show('Autosave failed. Keep the game open to retry the save.');return false}
+ render();refresh();
+ show(result.kind==='referral'?
+  'Police referral filed for independent review. No arrest, conviction, or verdict was entered.':
+  'Edmund recorded a private concern. Family pressure may rise; he has not ordered an arrest.');
+ return true;
+}
+function casebook(){
+ const area=$('asylumCasebook'),work=root.FE_ASYLUM_CASEWORK,world=current();
+ if(!area)return;
+ const file=work?.dossier?.(S,world),place=context();
+ area.hidden=!file;
+ if(!file)return;
+ const list=$('asylumCasebookLeads');list.replaceChildren();
+ const title=document.createElement('h4');title.textContent='Casebook · Access, Passage and Time';list.append(title);
+ for(const lead of file.leads){
+  const row=document.createElement('p');
+  row.textContent=lead.available?lead.label+': '+lead.description:
+   lead.label+': Unverified. Examine '+lead.sourceAction+' through your own authorized work.';
+  list.append(row);
+ }
+ const result=document.createElement('p');
+ result.textContent=file.ready?
+  'All three independent accounts now overlap on one possible suspect. This is sufficient to file a reasoned allegation, NOT a conviction.':
+  'Three independent sources are required before naming a suspect. No identity has been proven.';
+ list.append(result);
+ const choices=$('asylumCasebookSuspect'),previous=choices.value;
+ choices.replaceChildren();
+ for(const person of file.suspects){
+  const option=document.createElement('option');option.value=person.id;
+  option.textContent=person.name+' · '+person.statement;choices.append(option);
+ }
+ if(file.suspects.some(x=>x.id===previous))choices.value=previous;
+ const submit=$('asylumCasebookFile');submit.textContent=S.characterRoute==='investigator'?
+  'Refer Named Suspect to Sergeant · 10 minutes':'Enter Named Concern in Orderly Register · 10 minutes';
+ const permission=work.canFile(S,world,place,choices.value);
+ submit.disabled=!permission.ok;submit.title=permission.reason||permission.warning||'';
+ const review=$('asylumCasebookReview');
+ review.textContent=file.publicReview?
+  'Official referral: '+file.publicReview.status+
+  (file.publicReview.decision?' · Review: '+file.publicReview.decision:' · No official finding yet.')+
+  '. No conviction entered.':
+  S.characterRoute==='wardman'?
+   'Edmund has no police arrest power. A witnessed written record may protect him against family pressure.':
+   'A referral starts independent police review after a later world day. An accusation is not a warrant.';
+}
 function refresh(){
  const panel=mount();if(!panel)return;
  const story=api(),world=current(),place=context(),caseFile=story?.visible?.(world);
@@ -82,7 +150,8 @@ function refresh(){
   empty.textContent='No further inquiry actions available in this room. Your casebook and personal journal retain discoveries made here.';
   actions.append(empty);
  }
+ casebook();
 }
-root.FE_ASYLUM_CASE_UI=Object.freeze({refresh,action});
+root.FE_ASYLUM_CASE_UI=Object.freeze({refresh,action,fileSuspect});
 refresh();
 })(typeof window!=='undefined'?window:globalThis);

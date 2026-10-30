@@ -41,3 +41,7 @@ Public visibility on GitHub does **not** grant a license to reuse this project's
 **Third-party credit and ownership:** We do **not** claim ownership of external libraries, game engines, artwork, recordings, fonts or other third-party works merely because they are included here. Every adopted component remains subject to **its own license**, which may vary by project, including whatever independent rights that license grants. We preserve required notices and attribution. Merely researching a repository does **not** mean its code has been included.
 
 See [LICENSE](LICENSE), [LEGAL.md](LEGAL.md) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for ownership, currently bundled credits, license locations and release-review requirements.
+
+
+### Shared District Asylum inquiry (development)
+The same dated 1878 death belongs to shared Washington rather than a protagonist-specific roll. A new casebook contrasts the ward's access records, a physical trace and independent time accounts. Edmund can record a private workplace concern; Sam, after earning off-duty sergeant access, may submit a named suspect for later police review. A single clue is ambiguous, private discoveries do not automatically transfer between characters, and a police referral is not a conviction. The director may be among the suspected actors. Family pressure, professional credibility and official history can change without moving the original map. These additions have not yet been included in a newly verified Linux executable.
