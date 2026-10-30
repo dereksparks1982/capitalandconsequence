@@ -1832,3 +1832,14 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
  padding:8px 10px;
 }
 .title-map-directory-panel:not([open]) > .title-map-legend{display:none!important}
+
+/* v0.7.31: Editable transparent road network. Existing approved map geometry stays put. */
+.title-map-road-canvas{position:absolute;inset:0;z-index:5;pointer-events:none}
+.title-map-road-canvas[hidden]{display:none!important}
+.title-map-road-canvas.editing{pointer-events:auto;cursor:crosshair}
+.title-map-road-tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 9px;border-bottom:1px solid #876d44;color:#ead8b8;font:12px Georgia,serif}
+.title-map-road-tools[hidden]{display:none!important}
+.title-map-road-tools label{margin:0}
+.title-map-road-tools button,.title-map-road-tools select,.title-map-road-import{color:#f3e0bc;background:#352c20;border:1px solid #8b6e47;padding:3px 7px;min-height:30px}
+.title-map-road-tools output{flex:1 1 100%;color:#dcc59f;line-height:1.35}
+.title-map-road-import input{width:120px;max-width:100%;padding:2px;font-size:12px}

@@ -17,6 +17,8 @@ Explore the city on its illustrated Washington map, travel on foot, horseback, o
 
 **Travel navigation upgrade (v0.7.30-dev):** Bundles open-source PathFinding.js, Konva, and Yuka locally, each under its own MIT license, rather than using remote CDNs. On-screen travel pacing has been slowed without changing saved Washington journey minutes. An editable, independently stored overlay roadmap can be layered onto the immutable Washington artwork; route reconstruction remains explicitly provisional until reviewed. See the bundled licensing register and release notes.
 
+**Custom Washington roads (v0.7.31-dev):** The **Road Editor** overlays editable streets and blocked rectangles on the unchanged original Washington map. Konva powers interactive drawing; PathFinding.js A* follows the user-accepted road cells and avoids explicitly marked blocks; Yuka provides route geometry. `Suggest Current Streets` seeds provisional roads from the existing approximate graph. `Scan Printed Map` experimentally proposes high-contrast straight patterns from the image (these are suggestions, not verified roads). Suggestions only affect travel after **Accept Suggestions** and **Activate Custom Routes**. Custom maps can be undone, imported, exported, deactivated and stored in the profile. An incomplete activated map may temporarily make some destinations unreachable; **Use Original Routes** restores the existing network. Full Ubuntu Electron UI testing remains outstanding.
+
 ## Legal: All Rights Reserved
 
 **Copyright © 2026 Derek Sparks. All rights reserved. Published by Elderred Softworks LLC.**

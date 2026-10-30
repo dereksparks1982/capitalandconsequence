@@ -3255,6 +3255,12 @@ function syncTitleMapFilters(){
  renderTitleMapDirectory();
 }
 function initTitleMapFilters(){
+ window.FE_ROAD_EDITOR?.mount?.({
+  getSave:()=>S,persist:()=>save(true),
+  refresh:()=>{window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);renderCapitalTravelPreview();},
+  getView:()=>({x:titleMapState.x,y:titleMapState.y,scale:titleMapState.scale}),
+  busy:()=>capitalTravelBusy
+ });
  const select=document.getElementById('titleMapCategory'),names=document.getElementById('titleMapShowNames');
  const search=$('#titleMapSearch'),origin=$('#titleMapOrigin');
  if(!select||!names||!search||!origin)return;
@@ -3350,7 +3356,7 @@ function updateTitleMapPinEditor(){
  if(help)help.textContent=titleMapPinEdit?'Drag pin to correct A–R / 1–30 grid position · confirm before saving; cancel restores it':'Mouse wheel to zoom · click and drag to move';
 }
 function toggleTitleMapPinEditor(){
- if(capitalTravelBusy)return;
+ if(capitalTravelBusy||window.FE_ROAD_EDITOR?.isEditing?.())return;
  titleMapPinEdit=!titleMapPinEdit;
  titleMapPinDrag=null;
  closeTitleMapLocation();
@@ -3362,6 +3368,7 @@ function titleMapApply(){
  const img=$('#titleMapImage');if(!img)return;
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
+ window.FE_ROAD_EDITOR?.sync?.();
  renderCapitalTravelPreview();
  const viewport=$('#titleMapViewport'),viewer=$('#titleMapViewer');
  if(img.naturalWidth&&viewport)
@@ -3770,7 +3777,7 @@ function capitalTravelFollow(point){
 }
 async function travelFromTitleMap(event){
  event?.preventDefault?.();event?.stopPropagation?.();
- if(capitalTravelBusy||titleMapPinEdit)return false;
+ if(capitalTravelBusy||titleMapPinEdit||window.FE_ROAD_EDITOR?.isEditing?.())return false;
  const id=titleMapSelectedLocationId||
   document.getElementById('titleMapLocationTravel')?.dataset.locationId;
  const from=currentCityLocation()?.locationId;
