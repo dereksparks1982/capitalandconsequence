@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.25-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.26-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -429,7 +429,7 @@ function capacity(){return Math.floor(S.workers*60*(S.machinery/100)*workforcePr
 function normalizeProductionTimes(){for(const c of S.contracts.concat(S.contractOffers||[])){if(!c.productionSeconds)c.productionSeconds=contractRunSeconds(c.productionQuantity||c.quantity)}}
 function portfolioValue(){return Object.entries(S.portfolio).reduce((a,[k,p])=>a+p.shares*S.stocks[k].price,0)}
 function portfolioCost(){return Object.values(S.portfolio).reduce((a,p)=>a+p.cost,0)}
-function marketIndex(){const rows=Object.entries(S.stocks).filter(([k,x])=>stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))),current=rows.reduce((a,[,x])=>a+x.price,0),base=rows.reduce((a,[k])=>a+(stockOpeningValues[k]||0),0);return base?current/base*100:100}
+function marketIndex(){const rows=Object.entries(S.stocks).filter(([k,x])=>stockAvailableInYear(k,x.sector,+S.gameDate.slice(0,4))),current=rows.reduce((a,[,x])=>a+x.price,0),base=rows.reduce((a,[k,x])=>a+(stockOpeningValues[k]||x.open||0),0);return base?current/base*100:100}
 function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
@@ -1059,7 +1059,7 @@ function closeBusinessDay(manual=false){
  if(window.finishRaceMeeting)window.finishRaceMeeting();
  if(window.finishUnderworldDay)window.finishUnderworldDay();
  finishDayContracts();
- for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const close=Number.isFinite(+x.hiddenPrice)?+x.hiddenPrice:+x.price;x.price=close;if(!Array.isArray(x.history))x.history=[];const last=x.history[x.history.length-1];if(last&&last.date===S.gameDate)last.close=close;else x.history.push({date:S.gameDate,close});if(x.history.length>260)x.history=x.history.slice(-260);x.prev=x.prevClose}
+ for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;let close=Number.isFinite(+x.hiddenPrice)?+x.hiddenPrice:+x.price;if(ticker==='FEC'){const margin=clamp(((S.lastRevenue||0)-(S.lastExpenses||0))/Math.max(500,S.companyCash||0),-.25,.25);const exposure=(S.unaccountedFunds||0)>0?-.008:0;close=Math.max(1,Math.round(close*(1+margin*.06+exposure)*100)/100);x.hiddenPrice=close;}x.price=close;if(!Array.isArray(x.history))x.history=[];const last=x.history[x.history.length-1];if(last&&last.date===S.gameDate)last.close=close;else x.history.push({date:S.gameDate,close});if(x.history.length>260)x.history=x.history.slice(-260);x.prev=x.prevClose}
  if(!S.componentWorks)settleStandingTrade();
  if(S.componentWorks){
   // Charlie is the owner; the one assistant's earned wage transfers real cash
