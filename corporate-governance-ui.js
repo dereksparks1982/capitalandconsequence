@@ -5,6 +5,7 @@ const get=id=>document.getElementById(id);
 const $=n=>'$'+Number(n||0).toFixed(2);
 const corp=()=>root.FE_CORPORATE;
 const context=()=>root.FE_CORPORATE_CONTEXT?.();
+let latestResult='';
 function node(tag,text){const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);return e;}
 function button(text,handler,enabled=true){
  const el=node('button',text);el.type='button';el.disabled=!enabled;el.addEventListener('click',handler);return el;
@@ -27,6 +28,7 @@ function perform(name,fn){
   const elapsed=root.advanceWorldTime?.(seconds,true);
   if(elapsed!==seconds)result={...result,message:result.message+' The corporate record was saved, but the clock could not complete the expected interval.'};
  }
+ latestResult=result?.message||result?.reason||'Corporate instructions not completed.';
  ctx.finish(result);
 }
 function desk(){
@@ -89,6 +91,7 @@ function broker(){
  host.replaceChildren();
  const save=ctx.save,c=api.ensure(save),own=api.ownership(save);
  host.append(node('h4','Federal Electric · Underwriting & Corporate Control'));
+ if(latestResult)message(host,latestResult);
  message(host,'Current state: '+c.status.toUpperCase()+' · FEC ownership '+own.founderPercent+'% · '+own.public+' public shares · '+own.rival+' held by hostile interests.');
  if(save.characterRoute!=='industrialist'){
   message(host,'These company instructions belong to Charles Whitcomb. Other careers can trade ordinary securities.');
@@ -102,7 +105,7 @@ function broker(){
   controls.append(label('New company shares',newQty),label('Existing founder shares',oldQty),label('Offer price per share ($)',offer));
   controls.append(button('Arrange Federal Electric IPO',()=>perform('offer',(s,t,a)=>a.listing(s,Number(newQty.value),Number(oldQty.value),Math.round(Number(offer.value)*100),t)),!!c.authorizations.ipo));
   host.appendChild(controls);
-  message(host,'Issue proceeds go to Federal Electric; selling founder shares pays Charlie personally. Underwriting fee: 5%. Board authorization required.');
+  message(host,'An IPO requires 4 closed business records, reputation 50+, $750 operating cash and two broker visits. The board must approve. New issues pay Federal Electric, founder sales pay Charlie; the underwriter charges 5%.');
  }
  if(c.status==='public'){
   const controls=node('div');controls.className='trade-buttons';
