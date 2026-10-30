@@ -123,7 +123,28 @@ def main():
                        check=True,cwd=directory)
         if not ready.is_file() or ready.stat().st_size<10000:
             raise RuntimeError('Replacement archive did not validate.')
-        os.replace(ready,archive)
+        # /tmp may be on a different filesystem from resources/. A direct
+        # os.replace across devices raises EXDEV. Copy the *validated* archive
+        # into a temporary file on the destination filesystem, then rename
+        # that local temporary file atomically over app.asar.
+        target_temp=None
+        try:
+            with tempfile.NamedTemporaryFile(
+                prefix='.app.asar-update-',suffix='.tmp',
+                dir=archive.parent,delete=False
+            ) as handle:
+                target_temp=Path(handle.name)
+                with ready.open('rb') as source:
+                    shutil.copyfileobj(source,handle,1024*1024)
+                handle.flush()
+                os.fsync(handle.fileno())
+            if target_temp.stat().st_size!=ready.stat().st_size:
+                raise RuntimeError('Staged archive size mismatch; existing game preserved.')
+            os.replace(target_temp,archive)
+            target_temp=None
+        finally:
+            if target_temp is not None:
+                target_temp.unlink(missing_ok=True)
         print('SUCCESS: existing game updated to main',commit[:12])
         print(len(changed),'runtime files updated inside resources/app.asar.')
         print('No new executable, no alternate project folder, no password, no GitHub Actions.')
