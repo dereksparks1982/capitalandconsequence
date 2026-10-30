@@ -2381,7 +2381,6 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('duel aftermath',()=>window.FE_DUEL_AFTERCARE_UI?.render?.());
   guardedRoomPanel('resident visitors',()=>window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('NPC visitors',()=>window.FE_NPC_AI?.renderRoomVisitors?.(location.id));
-  guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
   guardedRoomPanel('activities',()=>window.FE_VENUES?.renderRoomOpportunities?.(location.id));
   guardedRoomPanel('personal storage',()=>window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id));
   guardedRoomPanel('fishing',()=>window.FE_FISHING_UI?.render?.());
@@ -2396,6 +2395,7 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   document.body.classList.add('city-room-open');
+  guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
   guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
   guardedRoomPanel('asylum inquiry',()=>window.FE_ASYLUM_CASE_UI?.refresh?.());
   guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
