@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const C=require('../corporate-governance.js');
 function setup(){
  return {gameDate:'1878-01-02',phase:'day',paused:false,characterRoute:'industrialist',
- currentLocation:{locationId:'factory'},companyCash:2500,personalCash:600,reputation:55,
+ currentLocation:{locationId:'factory'},companyCash:2500,personalCash:600,reputation:55,ledger:[{},{},{},{}],
  brokerage:{visits:3},portfolio:{},stocks:{PWR:{issuedShares:400,price:4.50,sector:'Railroads',
  history:[{date:'1878-01-01',close:4.50}]}}};
 }
