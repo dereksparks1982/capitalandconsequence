@@ -16,8 +16,17 @@ function message(host,text){const p=node('p',text);p.className='fine';p.setAttri
 function perform(name,fn){
  const ctx=context(),api=corp();if(!ctx?.save||!api)return;
  const token='corp:'+name+':'+api.ensure(ctx.save).nextId;
+ const seconds=name.startsWith('offer')||name.startsWith('tender')||name.startsWith('squeeze')?900:
+   name.startsWith('elect')||name.startsWith('charter')?600:300;
+ if(!root.FE_WASHINGTON_TIME?.canSpend?.(ctx.save,seconds)){
+  ctx.finish({ok:false,reason:'Not enough Washington business time remains to complete these corporate papers.'});return;
+ }
  let result;
  try{result=fn(ctx.save,token,api)}catch(err){result={ok:false,reason:err.message}}
+ if(result?.ok){
+  const elapsed=root.advanceWorldTime?.(seconds,true);
+  if(elapsed!==seconds)result={...result,message:result.message+' The corporate record was saved, but the clock could not complete the expected interval.'};
+ }
  ctx.finish(result);
 }
 function desk(){
