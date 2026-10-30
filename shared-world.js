@@ -10,6 +10,7 @@ function create(id,save){
  return {version:1,id,clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase||'day',
   npcSimulation:copy(save.npcSimulation||null),otherLives:copy(save.otherLives||null),
+  chessCircuit:copy(save.chessCircuit||null),
   events:[],nextEvent:1,incidents:{},worldTruth:{},missions:{version:1,active:{},history:[]}};
 }
 function attach(save,world){
@@ -17,6 +18,7 @@ function attach(save,world){
  save.worldCalendar=copy(world.clock);save.worldCalendarStatus='ready';save.worldCalendarRemainder=world.remainder||0;
  save.gameDate=world.date;save.turnSerial=world.turnSerial;save.phase=world.phase;
  save.npcSimulation=copy(world.npcSimulation);save.otherLives=copy(world.otherLives);
+ if(world.chessCircuit)save.chessCircuit=copy(world.chessCircuit);
  save.dayRemaining=root.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(save)??save.dayRemaining;
  return save;
 }
@@ -28,7 +30,8 @@ function capture(save,prior,profileId=null){
  if(world.clock.worldMinute>save.worldCalendar.worldMinute)throw Error('Refusing to rewind shared Washington');
  const next={...copy(world),clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
-  npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives)};
+  npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives),
+  chessCircuit:copy(save.chessCircuit||world.chessCircuit||null)};
  // Public world facts from filed, paid work only. Private words and theories
  // never flow into another protagonist's knowledge or NPC memories.
  if(profileId&&save.characterRoute==='wardman')
