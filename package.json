@@ -12,7 +12,10 @@
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never",
     "audit:offline": "node desktop/check-offline-runtime.cjs",
     "audit:artwork": "node desktop/check-artwork-paths.cjs",
-    "test:source": "node tests/run-all.cjs"
+    "test:source": "node tests/run-all.cjs",
+    "audit:bundle": "node desktop/check-bundle-assets.cjs",
+    "predist:linux": "npm run prepare:runtime",
+    "prepack:linux": "npm run prepare:runtime"
   },
   "devDependencies": {
     "electron": "44.5.1",
@@ -49,6 +52,9 @@
       ],
       "category": "Game",
       "executableName": "capital-consequence"
+    },
+    "toolsets": {
+      "appimage": "1.0.3"
     }
   },
   "author": "Elderred Softworks LLC",
