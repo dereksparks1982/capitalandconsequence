@@ -1,6 +1,9 @@
 /* Shared Washington truth and clock, with no automatic character knowledge. */
 (function(root){'use strict';
 const copy=v=>JSON.parse(JSON.stringify(v));
+// Club fixtures, standings and completed matches belong to shared Washington;
+// a playable character's unfinished turn at a table remains private to their own save.
+function publicChess(c){if(!c||c.version!==1)return null;return {...copy(c),active:null}}
 const validId=id=>typeof id==='string'&&/^w[a-zA-Z0-9_-]{1,48}$/.test(id);
 const key=id=>'federalElectricSharedWorld_'+id,diskId=id=>'world_'+id;
 function valid(w,id){return !!w&&w.version===1&&w.id===id&&w.clock?.version===1&&Number.isSafeInteger(w.clock.worldMinute)&&Array.isArray(w.events)}
@@ -10,7 +13,7 @@ function create(id,save){
  return {version:1,id,clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase||'day',
   npcSimulation:copy(save.npcSimulation||null),otherLives:copy(save.otherLives||null),
-  chessCircuit:copy(save.chessCircuit||null),
+  chessCircuit:publicChess(save.chessCircuit),lastChessResult:save.lastChessResult||null,
   events:[],nextEvent:1,incidents:{},worldTruth:{},missions:{version:1,active:{},history:[]}};
 }
 function attach(save,world){
@@ -18,7 +21,12 @@ function attach(save,world){
  save.worldCalendar=copy(world.clock);save.worldCalendarStatus='ready';save.worldCalendarRemainder=world.remainder||0;
  save.gameDate=world.date;save.turnSerial=world.turnSerial;save.phase=world.phase;
  save.npcSimulation=copy(world.npcSimulation);save.otherLives=copy(world.otherLives);
- if(world.chessCircuit)save.chessCircuit=copy(world.chessCircuit);
+ if(world.chessCircuit){
+  const personalMatch=save.chessCircuit?.active||null;
+  save.chessCircuit=publicChess(world.chessCircuit);
+  save.chessCircuit.active=personalMatch?copy(personalMatch):null;
+ }
+ save.lastChessResult=world.lastChessResult||null;
  save.dayRemaining=root.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(save)??save.dayRemaining;
  return save;
 }
@@ -31,7 +39,8 @@ function capture(save,prior,profileId=null){
  const next={...copy(world),clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
   npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives),
-  chessCircuit:copy(save.chessCircuit||world.chessCircuit||null)};
+  chessCircuit:publicChess(save.chessCircuit||world.chessCircuit),
+  lastChessResult:save.lastChessResult||null};
  // Public world facts from filed, paid work only. Private words and theories
  // never flow into another protagonist's knowledge or NPC memories.
  if(profileId&&save.characterRoute==='wardman')
