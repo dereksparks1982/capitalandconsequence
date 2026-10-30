@@ -61,3 +61,8 @@ Development source on `main`, not an accepted Linux binary release.
 - The broker button is withheld when underwriting checks fail. The confirmed listing consumes the same verified prospectus terms, enters an idempotent receipt, synchronizes company cash to the factory ledger, and records the fee/control result in the corporate minute book.
 - Added substantial pure source coverage for invalid shares/prices, approvals, broker visits, company history, reputation, operating funds, personal versus company money, zero prelisting market history, and finite public float.
 - **Development code only**; the latest binaries were accepted as test artifacts on Surface Pro 8 before these additional changes. No new binary, tag, GitHub Actions or public release.
+
+## IPO interaction regression and securities documentation
+- Added an isolated DOM-based underwriter interaction test: editable share quantities and price, live net proceeds, blocked invalid offers, majority-loss warning, separate treasury/personal credits, company capitalization and the 15-minute paperwork debit.
+- Updated the opening README with the correct **159/159 source and both packaged smoke PASS** on the earlier Surface Pro 8 baseline. These results **do not** establish that the new IPO changes passed the full Linux smoke test.
+- Expanded MARKET-DESIGN.md to describe the existing charter/board/broker-only listing route and the new read-only prospectus. No approved UI geometry, map artwork or pin positions were changed.

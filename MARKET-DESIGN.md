@@ -117,3 +117,20 @@ Implemented in the current test build:
 - completed playable business days are appended to that security's saved quotation history
 
 The seeded history is fictional market context for fictional companies. It is not presented as real historical exchange data.
+
+
+## Implemented development rules (v0.7.31-dev, after the verified Linux baseline)
+
+The founding-era Federal Exchange quotes from **1878** are fictional securities. The player sees published opening and closing prices, never secret intraday values. Orders remain broker-only, except correspondence from the executive office after the required broker relationship is earned.
+
+Federal Electric starts **privately held and unquoted**. Choosing to list requires a $75 corporate charter at the factory, a board vote approving the IPO, four closed company-account records, reputation 50 or higher, $750 in operating cash and two broker visits on separate dates. The owner must submit the actual offer from the broker's office during an active business day.
+
+The interactive underwriting prospectus forecasts, before any cash moves:
+- 500–10,000 newly issued shares and any secondary sale from Charles's existing holdings; new shares enlarge the share register while secondary sales do not
+- An underwriter-supported offer price between $1 and $25, constrained to roughly 75–150 percent of the displayed fictional valuation
+- The exact receipts credited separately to **Federal Electric's treasury** and **Charles's personal money**, net of a 5 percent underwriting charge for each portion
+- Total shares issued after the offering, placed public float, Charles's resulting voting percentage and warnings when majority control or a stronger buffer is lost
+
+The completed offering is recorded in the corporate minute book with an idempotent receipt; FEC then enters the brokerage quotation sheet without fabricated pre-IPO prices. Market purchases and sales transfer finite public shares between outside holders and the personal share account. Later directors, proxy relationships, dividends and hostile bids can change who governs Federal Electric. These are **fictional game rules**, not a claim to reproduce every historical federal or state securities law.
+
+The prospectus and UI changes are presently **development source on main**, not a new user-accepted release. The prior packaged Linux smoke run predates this implementation.
