@@ -1,0 +1,1 @@
+Yuka v0.7.8 (upstream package manifest), upstream `build/yuka.min.js` from https://github.com/Mugen87/yuka , master at import. Original upstream browser bundle unmodified. Full original upstream LICENSE retained. MIT, Copyright 2023 Yuka authors. The browser build includes runtime code and copyright banner; no external runtime fetch.

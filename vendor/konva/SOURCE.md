@@ -1,0 +1,1 @@
+Konva v8.4.3, upstream `konva.min.js` from https://github.com/konvajs/konva/tree/8.4.3 . Original upstream browser bundle, unmodified. Original upstream LICENSE copied in full. MIT, original work Eric Rowell, modified work Anton Lavrenov.

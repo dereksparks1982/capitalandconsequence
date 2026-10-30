@@ -7,12 +7,12 @@ for(const pixels of [50,200,650,1500,3200]){
  const carriage=travel.animationDuration(pixels,'carriage');
  assert.ok(walking>carriage&&carriage>horseback,
   'Walking should remain visibly slower than a carriage or horse');
- assert.ok(walking<=8000&&horseback>=850);
+ assert.ok(walking<=22000&&horseback>=1350);
 }
 assert.ok(travel.animationDuration(100,'walk')<travel.animationDuration(1200,'walk'),
  'Longer journeys should take longer to watch');
-assert.equal(travel.animationDuration(-1,'walk'),2200);
-assert.equal(travel.animationDuration(NaN,'walk'),2200);
+assert.equal(travel.animationDuration(-1,'walk'),2500);
+assert.equal(travel.animationDuration(NaN,'walk'),2500);
 const frames=[];
 global.requestAnimationFrame=fn=>(frames.push(fn),frames.length);
 global.cancelAnimationFrame=()=>{};

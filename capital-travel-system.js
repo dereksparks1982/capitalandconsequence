@@ -84,10 +84,12 @@ function weatherEstimate(points,weather){
 // Screen-time pacing only. The WORLD CLOCK uses estimate(...).minutes;
  // this short animation duration must never become a second game-time debit.
 function animationDuration(guidePixels,mode='walk'){
- if(!Number.isFinite(guidePixels)||guidePixels<0)return 2200;
- const speed=mode==='horse'?.68:mode==='carriage'?.82:1;
- const walkingMs=Math.min(8000,1000+Math.min(guidePixels,4000)*3.6);
- return Math.max(850,Math.round(walkingMs*speed));
+ if(!Number.isFinite(guidePixels)||guidePixels<0)return 2500;
+ // Watchable on-screen pacing; actual paid Washington minutes stay unchanged.
+ // Walking is unhurried, carriage intermediate, horseback brisk but readable.
+ const speed=mode==='horse'?.54:mode==='carriage'?.72:1;
+ const walkingMs=Math.min(22000,2500+Math.min(guidePixels,4000)*15);
+ return Math.max(1350,Math.round(walkingMs*speed));
 }
 // Preview the saved Washington calendar without advancing it. Travel is
 // still charged exactly once by the authoritative journey ledger on arrival.
@@ -319,7 +321,7 @@ function animate({viewport,points,project,mode='walk',durationMs=null,onProgress
   return Promise.resolve(false);
  const spec=MODES.find(m=>m.id===mode)||MODES[0];
  const reduce=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
- const duration=reduce?180:Math.max(350,Math.min(8500,
+ const duration=reduce?180:Math.max(350,Math.min(24000,
   Number.isFinite(durationMs)?durationMs:
    animationDuration(estimate(points).guidePixels,mode)));
  const svg=el('svg',{class:'capital-travel-overlay','aria-hidden':'true'});
