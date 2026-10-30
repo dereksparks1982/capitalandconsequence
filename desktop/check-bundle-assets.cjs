@@ -3,8 +3,11 @@
 // This audit runs offline and never downloads anything for the player.
 const fs=require('node:fs');
 const path=require('node:path');
+const crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
 const staticSources=['app.js','index.html','styles.css','radio/radio-engine.js','radio/stations.js'];
+const immutableMap='assets/artwork/maps/title-map-1938.jpg';
+const immutableMapBlobSha='57ab4c66dccb151a4153864f2fdd9790065ec77d';
 const required=[
  'assets/artwork/maps/title-map-1938.jpg',
  'assets/audio/title-day-ambience.wav',
@@ -26,6 +29,13 @@ function missingAssets(base=root){
   if(!full.startsWith(path.resolve(base)+path.sep)){errors.push('Unsafe asset path: '+rel);continue;}
   try{if(!fs.statSync(full).isFile()||!fs.statSync(full).size)errors.push('Empty asset: '+rel);}
   catch{errors.push('Missing asset: '+rel);}
+ }
+ // The user-approved 1938 Washington bitmap is immutable across every era and build.
+ const imageFile=path.join(base,immutableMap);
+ if(fs.existsSync(imageFile)){
+  const image=fs.readFileSync(imageFile);
+  const sha=crypto.createHash('sha1').update(Buffer.from('blob '+image.length+'\0')).update(image).digest('hex');
+  if(sha!==immutableMapBlobSha)errors.push('Washington map bytes changed: '+immutableMap);
  }
  return errors;
 }

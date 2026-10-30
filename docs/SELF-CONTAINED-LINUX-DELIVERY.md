@@ -25,3 +25,5 @@ A Linux executable cannot be completely independent of the host kernel, core gra
 - Neither build automatically publishes or invokes GitHub Actions. Attach a tested binary artifact to this repository's Releases only after acceptance.
 - \`desktopName\` and \`linux.syncDesktopName\` match the existing app ID to keep GNOME/KDE window associations stable.
 - The executive-office book and paperwork remain visually in the same positions; only the Business Ledger button opens the actual ledger. The decorative book/paper are labelled as Federal Electric and Washington Works, not duplicate ledgers.
+
+**Immutable source art guard:** the offline asset audit verifies the Git object SHA-1 of the existing Washington map (`57ab4c66dccb151a4153864f2fdd9790065ec77d`), not just whether a file with that name exists. This protects against accidental substitutions while retaining the approved image bytes.
