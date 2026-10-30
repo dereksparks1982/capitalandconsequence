@@ -223,4 +223,7 @@ function mount(args){
  reload();
 }
 root.FE_ROAD_EDITOR=Object.freeze({mount,sync,isEditing:()=>editing,scanRaster:scan});
+// The desktop game may initialize its map before this script is evaluated.
+// Mount idempotently from either load order; never depend on a timer.
+root.FE_ROAD_EDITOR_SETUP?.();
 })(typeof window!=='undefined'?window:globalThis);

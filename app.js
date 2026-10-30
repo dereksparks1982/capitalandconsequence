@@ -3254,13 +3254,14 @@ function syncTitleMapFilters(){
  if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&titleMapMatchesFilters(v)))closeTitleMapLocation();
  renderTitleMapDirectory();
 }
-function initTitleMapFilters(){
- window.FE_ROAD_EDITOR?.mount?.({
+window.FE_ROAD_EDITOR_SETUP=()=>window.FE_ROAD_EDITOR?.mount?.({
   getSave:()=>S,persist:()=>save(true),
   refresh:()=>{window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);renderCapitalTravelPreview();},
   getView:()=>({x:titleMapState.x,y:titleMapState.y,scale:titleMapState.scale}),
   busy:()=>capitalTravelBusy
  });
+function initTitleMapFilters(){
+ window.FE_ROAD_EDITOR_SETUP?.();
  const select=document.getElementById('titleMapCategory'),names=document.getElementById('titleMapShowNames');
  const search=$('#titleMapSearch'),origin=$('#titleMapOrigin');
  if(!select||!names||!search||!origin)return;

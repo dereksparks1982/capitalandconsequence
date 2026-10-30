@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const PF=require('../vendor/pathfinding/pathfinding-browser.min.js');
 const YUKA=require('../vendor/yuka/yuka.min.js');
 assert.ok(PF.Grid&&PF.AStarFinder,'PathFinding browser bundle is usable in Node');
+assert.equal(new PF.Grid(2,2,[[0,0],[0,0]]).isWalkableAt(0,0),true,'Bundled browser version requires explicit grid dimensions');
 assert.ok(YUKA.Vector3,'Yuka geometry vector is usable');
 const road=require('../road-layout.js');
 const p=(x,y)=>({x,y}),s=(x,y,u,v)=>({a:p(x,y),b:p(u,v)});

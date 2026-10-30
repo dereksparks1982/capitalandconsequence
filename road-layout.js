@@ -77,7 +77,7 @@ function route(a,b){
  const start=entrance(a,net),end=entrance(b,net);
  if(!start||!end)return null;
  const search=new PF.AStarFinder({allowDiagonal:false});
- const raw=search.findPath(start.x,start.y,end.x,end.y,new PF.Grid(net.matrix));
+ const raw=search.findPath(start.x,start.y,end.x,end.y,new PF.Grid(W,H,net.matrix));
  if(!raw.length)return null;
  const corners=[];
  for(let i=0;i<raw.length;i++){
