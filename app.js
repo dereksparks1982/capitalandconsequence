@@ -2523,7 +2523,17 @@ function returnCityRoomToMap(){
  if(!locationId)return;
  closeCityRoom();
  openTitleMap();
- if(TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))requestAnimationFrame(()=>openTitleMapLocation(locationId));
+ // The map hotkey can queue this callback while a prior renderer test or
+ // another user action selects a different destination before the next frame.
+ // An outdated room focus must NEVER interrupt an in-progress journey.
+ const epoch=++titleMapReturnFocusEpoch;
+ if(TITLE_MAP_LOCATIONS.some(v=>v.id===locationId))requestAnimationFrame(()=>{
+  const viewer=document.getElementById('titleMapViewer');
+  if(epoch!==titleMapReturnFocusEpoch||viewer?.hidden!==false||
+    capitalTravelBusy||titleMapSelectedLocationId||
+    currentCityLocation()?.locationId!==locationId)return;
+  openTitleMapLocation(locationId);
+ });
 }
 function returnCityRoomToOffice(){
  // Return to the current character's personal desk, not the old title office.
@@ -3142,7 +3152,7 @@ window.FE_NPC_MAP_PIN=id=>{
  const p=titleMapDisplayCoordinate(pin,img);
  return {x:p.x/img.naturalWidth,y:p.y/img.naturalHeight};
 };
-let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null;
+let titleMapPinEdit=false,titleMapPinDrag=null,titleMapSelectedLocationId=null,titleMapReturnFocusEpoch=0;
 let titleMapOpenedFromGame=false;
 let capitalTravelBusy=false;
 let titleMapShowNames=false,titleMapCategory='all',titleMapOrigin='all',titleMapSearchQuery='';
@@ -3410,6 +3420,8 @@ function titleMapPositionMarkers(){
  }
 }
 function closeTitleMapLocation(){
+ // Dismiss any delayed room-focus action when the player closes/changes the map.
+ titleMapReturnFocusEpoch++;
  const card=$('#titleMapLocationCard');if(card)card.hidden=true;
  titleMapSelectedLocationId=null;
  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
@@ -3595,6 +3607,7 @@ function renderCapitalTravelChoice(id){
 }
 function openTitleMapLocation(id){
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id),card=$('#titleMapLocationCard');if(!location||!card)return;
+ titleMapReturnFocusEpoch++;
  titleMapSelectedLocationId=id;
  syncTitleMapFilters();
  $('#titleMapLocationName').textContent=pinDisplayName(location);

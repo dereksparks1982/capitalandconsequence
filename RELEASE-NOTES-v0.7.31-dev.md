@@ -43,3 +43,8 @@ Development source on `main`, not an accepted Linux binary release.
 - Surface Pro 8 owner test: 157/157 source regressions and all asset audits passed. Both Linux executables start successfully; the verified portable tar archive extracts correctly.
 - Only the first automated map visit (Commerce Club) fails its arrival assertion, while Star Club and Chinatown pass. Added explicit initial Washington image decode readiness, animation-start confirmation, and precise first-visit refusal diagnostics.
 - `npm run smoke:linux:source` runs the identical Electron smoke test directly from the checked-out source, avoiding repeated AppImage/portable rebuilds during diagnosis. The new test instrumentation is **not yet verified on the Surface**; do not claim the executable test has passed.
+
+## Stale map-selection callback corrected, October 30
+- Source-only Electron smoke diagnostic on the Surface identified the exact Commerce Club interruption: the previous M-key room-return test had queued a `requestAnimationFrame` auto-selection of `home`. That stale callback ran after Commerce Club was selected and while its animated journey was active, so the intended destination guard correctly canceled arrival.
+- Deferred room focus now uses an epoch token and refuses to act if the map is closed, a trip is active, a newer selection or dismissal occurred, or the player is no longer at the original room.
+- Regression test exercises normal room-return focus and all five interruption cases. **The updated executable smoke test is not yet confirmed on the Surface.** Travel billing and animated game mechanics, map pins and Washington artwork are unchanged.
