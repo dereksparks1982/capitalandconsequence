@@ -8,7 +8,7 @@ Choose from different lives, including a businessman building **Federal Electric
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
 
-**Development status:** Beta. The `v0.7.25-dev` working branch expands shared Washington casework with persistent alibis, physical evidence, certified statements, and dated family consequences for Edmund. Source work remains unaccepted pending complete Node and Linux Electron verification.
+**Development status:** Beta. The `v0.7.26-dev` working branch adds Federal Electric incorporation, director elections and board votes, underwritten FEC stock issuance, personal versus company proceeds, company dividends, share-ledger reconciliation, shareholder proxy campaigns, hostile takeover pressure, staged leveraged acquisition bids, and compensated minority buyouts. The earlier shared Washington casework remains in the branch. **Development source only:** targeted JavaScript checks passed, while the complete Node suite and Linux Electron gameplay verification are still required. `main` has not been updated.
 
 ## Legal: All Rights Reserved
 
