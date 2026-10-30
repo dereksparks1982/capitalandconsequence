@@ -1823,3 +1823,12 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .factory-break-actions button{background:#eee6cf;border:1px solid #9b805c;border-bottom:3px solid #775b39;min-width:128px}
 .factory-break-actions button:disabled{opacity:.5;cursor:not-allowed}
 #cityRoomBreakStatus:not(:empty){font-weight:bold;color:#423928}
+
+/* v0.7.29: The color guide is part of the collapsible Washington Directory.
+   Hide it completely when minimized to restore vertical map viewing area. */
+.title-map-directory-panel > .title-map-legend{
+ justify-content:flex-start;
+ border-bottom:1px solid #6e5738;
+ padding:8px 10px;
+}
+.title-map-directory-panel:not([open]) > .title-map-legend{display:none!important}

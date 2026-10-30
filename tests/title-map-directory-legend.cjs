@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+const directory=html.match(/<details class="title-map-directory-panel">([\s\S]*?)<\/details>/);
+assert.ok(directory,'Washington directory exists');
+assert.equal((html.match(/class="title-map-legend"/g)||[]).length,1,'Exactly one color legend');
+assert.ok(directory[1].includes('class="title-map-legend"'),'Legend inside collapsible directory');
+assert.ok(directory[1].indexOf('class="title-map-legend"')<directory[1].indexOf('id="titleMapDirectory"'),'Legend above directory location buttons');
+assert.ok(!/<details class="title-map-directory-panel"[^>]*\bopen\b/.test(directory[0]),'Directory remains minimizable');
+assert.ok(css.includes('.title-map-directory-panel:not([open]) > .title-map-legend{display:none!important}'),'Hidden directory hides legend');
+assert.ok(html.includes('id="titleMapDirectoryCount"'),'Directory counter unchanged');
+assert.ok(html.includes('title-map-swatch purpose-government')&&html.includes('title-map-swatch purpose-green'),'All guide identities preserved');
+console.log('PASS map legend collapses with Washington Directory');
