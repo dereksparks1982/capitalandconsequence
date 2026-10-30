@@ -14,7 +14,7 @@ const S={pokerSessions:{version:1,pending:[],settled:[]},outcomeEvents:[],notes:
  personalCash:100,gameDate:'1878-01-02',turnSerial:1,characterRoute:'industrialist'};
 let saves=0,renders=0;
 const ctx={S,window:{FE_CASH_CUSTODY:cash,updateCashHeader(){}},
- activeProfileId:()=>'test-profile',cash:n=>'$'+Number(n).toFixed(2),
+ activeProfileId:()=>'test-profile',pokerCircleName:circle=>({working:'Neighborhood Game',middle:'Commerce Club',elite:'Embassy Room'}[circle]),cash:n=>'$'+Number(n).toFixed(2),
  displayDate:()=>S.gameDate,save(){saves++},render(){renders++}};
 vm.createContext(ctx);vm.runInContext(handlers+'\nthis.resolve=resolveUnfinishedPoker;',ctx);
 const opened=cash.stake(S,'personal',25,'workingPoker');
