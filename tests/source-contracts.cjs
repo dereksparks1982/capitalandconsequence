@@ -14,13 +14,15 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishing-engine.js','fishing-ui.js','market-ui.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','horse-stable-ui.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishing-engine.js','fishing-ui.js','market-ui.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','corporate-governance.js','corporate-governance-ui.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','horse-stable-ui.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
 check(/^0\.\d+\.\d+$/.test(pkg.version),'Package has a numeric development version');
 check(appSource.includes("APP_VERSION='v"+pkg.version+"-dev'"),'Game masthead matches package version');
 check(index.indexOf('patrol-duty.js?v=')<index.indexOf('app.js?v='),'Patrol model loads before game save and clock');
+check(index.indexOf('corporate-governance.js?v=')<index.indexOf('app.js?v='),'Corporate accounting loads before game state');
+check(index.indexOf('corporate-governance-ui.js?v=')>index.indexOf('app.js?v='),'Corporate interface loads after game context');
 check(index.indexOf('doorman-duty.js?v=')<index.indexOf('app.js?v='),'Doorman model loads before game save and clock');
 check(index.indexOf('patrol-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Doorman UI follows patrol UI and career desks');
 check(index.indexOf('career-shell.js?v=')<index.indexOf('doorman-ui.js?v='),'Nightclub UI loads after the career desk');
