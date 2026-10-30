@@ -1,6 +1,6 @@
 # External Game Engines: GitHub Source & License Survey
 
-**Capital & Consequence | Initial research | 29 October 2026 | Source discovery only**
+**Capital & Consequence | Initial research, updated 29 October 2026 | Candidate survey and first verified adoption**
 
 Companion to [Tabletop, Parlor & Social Games](TABLETOP-PARLOR-GAMES-AND-LIVING-CIRCUITS.md). The 28 approved games are documented there, including Mahjong and both Western and Chinese dominoes.
 
@@ -8,13 +8,13 @@ Companion to [Tabletop, Parlor & Social Games](TABLETOP-PARLOR-GAMES-AND-LIVING-
 
 Capital & Consequence is a **proprietary commercial-capable project**. A public GitHub repository is **not** permission to copy its code. The reported licenses below were checked against GitHub repository metadata and/or README/license listings on **2026-10-29**, but a metadata flag is **not a full legal or technical audit**. Before importing any implementation, review the exact LICENSE file, file-level headers, bundled resources, transitive dependencies, attribution requirements, patents where relevant, and historical game rules. Pin source versions; preserve all required notices. Do not ship third-party artwork without separately verifying its rights.
 
-Prefer permissive MIT, ISC, BSD and Apache-2.0 licensed software. **Do not copy GPL/AGPL or unlicensed code** into our proprietary shipped game without a separate rights and architectural review. This survey does not import, install, fork, vendor, build or run any dependency.
+Prefer permissive MIT, ISC, BSD and Apache-2.0 licensed software. **Do not copy GPL/AGPL or unlicensed code** into our proprietary shipped game without a separate rights and architectural review. This survey originated as research only. **Since that research pass, chess.js v0.10.3 has been imported as the first licensed dependency**, tracked at `vendor/chessjs/` with the full BSD-2-Clause notice in `vendor/chessjs/LICENSE`. The other listed repositories have not been adopted.
 
 ## Priority short list (license metadata verified)
 
 | Priority | Game(s) / function | Repository | License reported | Integration assessment |
 |---|---|---|---|---|
-| High | Chess legal moves, checks, draws, PGN | [jhlywa/chess.js](https://github.com/jhlywa/chess.js) | BSD-2-Clause | Strong headless TS/JS rules library; **no AI or graphics**. Excellent foundation. |
+| **ADOPTED** | Chess legal moves, checks, draws, PGN | [jhlywa/chess.js v0.10.3](https://github.com/jhlywa/chess.js/tree/v0.10.3) | BSD-2-Clause | Unmodified upstream JS vendored at `vendor/chessjs/chess.js`. Original separate top-down table UI and basic deterministic NPC move selector; no upstream art. |
 | High | Chessboard interface | [oakmac/chessboard2](https://github.com/oakmac/chessboard2) | ISC | Board UI, not rules. Inspect browser support/packaging; alternative is our own matching paper-table UI. |
 | High | Backgammon | [quasoft/backgammonjs](https://github.com/quasoft/backgammonjs) | MIT | Real browser game with modular rule variants; separate offline rules logic from its multiplayer architecture. |
 | Alternative | Backgammon, smaller/older JS basis | [binarymax/backgammon.js](https://github.com/binarymax/backgammon.js) | MIT | Lightweight alternative; older code, audit move/turn correctness. |
@@ -63,4 +63,4 @@ Prefer permissive MIT, ISC, BSD and Apache-2.0 licensed software. **Do not copy 
 5. Press notices must derive from finished, durable match receipts. A club champion cannot be invented merely because a newspaper needs a headline. Test reload/idempotence, midnight crossings and switching playable characters.
 6. Before adoption of **each** external repository: record the exact commit/license/dependencies and retain original author copyright/NOTICE. Keep approved Washington artwork and existing pin geometry unchanged.
 
-**Status as of this document:** The search and license metadata review are completed. **No external repositories were cloned, installed or copied. No new minigames were built or accepted. No GitHub Actions or alternate branch created.**
+**Current status:** Initial source and license research was completed. **chess.js v0.10.3 has since been actually imported with its BSD-2-Clause license and a separately built original chess table.** The other game-engine candidates remain unadopted. Full standalone Linux game testing and acceptance are pending. No GitHub Actions or alternate branch created.
