@@ -79,3 +79,7 @@ Development source on `main`, not an accepted Linux binary release.
 - In a campaign with an outsider culprit, the fixed 08:55 scene chronology uses the service culvert and produces genuinely fresh outfall traces. Other campaigns retain the passage as an ambiguous possibility with no confirmed recent entry. Evidence remains sourced and the identity is not exposed by a single drain report.
 - The correspondence docket includes a visitor with a possible personal grievance over harm to a relative, alongside staffing, patient and director disputes. These are hypotheses, not automatic truths, confessions, or convictions.
 - The director remains Edmund Wardman's **unnamed elder brother**; the original public District Asylum and map location are unchanged.
+
+## Additional sourced culvert regressions
+- Expanded the existing 48-campaign scene test to check fresh masonry at the service culvert only in the outsider variant, stable scene provenance and distinct staff versus police documents.
+- Expanded the full two-protagonist case walkthrough to visit the culvert and grievance registers, obtain authorized officer copies, spend game minutes and verify neither character inherits the other's private observations.

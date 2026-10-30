@@ -10,6 +10,18 @@ for(let i=0;i<48;i++){
  FE_ASYLUM_INCIDENT.start(w,{id:e.CASE,at:'1878-01-05T09:00',victimId:'resident'});
  const scene=e.ensure(w);
  assert.equal(scene.persons.length,4);
+ assert.ok(scene.exhibits.drainSurvey&&scene.exhibits.drainReport&&scene.exhibits.motiveLedger&&scene.exhibits.motiveDocket,
+  'Culvert, police report and competing-grievance sources share one fixed scene');
+ const outsider=scene.persons.find(p=>p.role==='outside-visitor');
+ const passage=outsider.moments.find(m=>m.time==='1878-01-05T08:55');
+ assert.equal(passage.at,w.worldTruth[e.CASE].culpritRole==='outside-visitor'?'service-culvert':'reception',
+  'Only the outsider variant includes the attempted culvert approach');
+ const physical=e.describe(w,'drainSurvey');
+ const certified=e.describe(w,'drainReport');
+ assert.equal(physical.description.includes('dislodged mortar'),w.worldTruth[e.CASE].culpritRole==='outside-visitor');
+ assert.equal(certified.description.includes('dislodged mortar'),w.worldTruth[e.CASE].culpritRole==='outside-visitor');
+ assert.ok(e.describe(w,'motiveLedger').description.includes('not proof of guilt'));
+ assert.ok(e.describe(w,'motiveDocket').description.includes('allegations'));
  assert.equal(scene.persons.filter(p=>p.moments.some(x=>x.time.endsWith('T09:00')&&x.at==='private-ward')).length,1);
  assert.equal(JSON.stringify(scene),JSON.stringify(e.ensure(w)));
  assert.equal(e.roster(w).length,4);
