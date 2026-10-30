@@ -127,7 +127,8 @@ function broker(){
   host.append(node('h5','Minority Buyouts'));
   for(const a of c.acquisitions){
    const row=node('div');row.className='trade-buttons';
-   row.append(node('span',a.ticker+' · '+a.ownershipPercent+'% controlled'));
+   row.append(node('span',a.ticker+' · '+a.ownershipPercent+'% controlled · debt '+$(a.debtCents/100)));
+   if(a.debtCents>0&&a.status!=='foreclosed')row.append(button('Repay Up to $100',()=>perform('repay-'+a.ticker,(s,t,x)=>x.repayDebt(s,a.ticker,10000,t))));
    if(a.status==='controlled'){
     row.append(button('Tender to 75% · 50% Loan',()=>perform('tender75-'+a.ticker,(s,t,x)=>x.increaseStake(s,a.ticker,75,50,t)),a.ownershipPercent<75));
     row.append(button('Tender to 90% · 50% Loan',()=>perform('tender90-'+a.ticker,(s,t,x)=>x.increaseStake(s,a.ticker,90,50,t)),a.ownershipPercent<90));
