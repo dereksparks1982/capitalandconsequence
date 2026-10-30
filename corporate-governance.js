@@ -231,7 +231,18 @@ function removePresident(save,cause){
 }
 function advanceDay(save){
  const c=ensure(save);if(!validDate(save.gameDate)||c.lastAdvanceDate===save.gameDate)return null;
- c.lastAdvanceDate=save.gameDate;
+ const previous=c.lastAdvanceDate;c.lastAdvanceDate=save.gameDate;
+ const elapsed=previous?Math.max(1,Math.min(90,Math.round((Date.parse(save.gameDate)-Date.parse(previous))/86400000))):1;
+ for(const acquisition of c.acquisitions){
+  if(acquisition.debtCents<=0||!['controlled','wholly-owned'].includes(acquisition.status))continue;
+  const interest=Math.ceil(acquisition.debtCents*.07*elapsed/365);
+  if(!Number.isSafeInteger(interest)||acquisition.debtCents+interest>Number.MAX_SAFE_INTEGER)throw Error('Unsafe acquisition interest settlement');
+  acquisition.debtCents+=interest;acquisition.interestCents=(acquisition.interestCents||0)+interest;
+  if(acquisition.debtCents>acquisition.totalCents*1.8){
+   acquisition.status='foreclosed';
+   register(save,'foreclosure',acquisition.ticker+' pledged shares were seized by lenders after acquisition debt ran beyond collateral.');
+  }
+ }
  if(c.status!=='public')return null;
  const share=ownership(save);
  const days=Math.max(0,Math.round((Date.parse(save.gameDate)-Date.parse(c.offeringDate||save.gameDate))/86400000));
@@ -295,6 +306,18 @@ function increaseStake(save,ticker,targetPercent,leveragePercent,token){
   return {ok:true,message:'Controlling stake expanded to '+a.ownershipPercent+'%; acquired-company debt now '+dollars(a.debtCents)+'.'};
  });
 }
+function repayDebt(save,ticker,amountCents,token){
+ return commit(save,token,c=>{
+  const reason=check(save,'brokerOffice');if(reason)return reject(reason);
+  const a=c.acquisitions.find(x=>x.ticker===ticker&&['controlled','wholly-owned'].includes(x.status));
+  if(!a||!positive(a.debtCents)||!positive(amountCents))return reject('No acquisition debt can be repaid.');
+  const paid=Math.min(a.debtCents,amountCents);
+  if(Math.round((save.personalCash||0)*100)<paid)return reject('Insufficient personal funds for this debt payment.');
+  save.personalCash=Math.round((save.personalCash-paid/100)*100)/100;
+  a.debtCents-=paid;register(save,'debt-payment','Charles repaid '+dollars(paid)+' of '+ticker+' acquisition debt.');
+  return {ok:true,message:'Loan reduced by '+dollars(paid)+'. Remaining debt '+dollars(a.debtCents)+'.'};
+ });
+}
 function squeezeOut(save,ticker,token){
  return commit(save,token,c=>{
   const reason=check(save,'brokerOffice');if(reason)return reject(reason);
@@ -310,7 +333,7 @@ function squeezeOut(save,ticker,token){
  });
 }
 const api=Object.freeze({PEOPLE,initial,ensure,ownership,canManage,incorporate,appoint,lobby,vote,quote,
- listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,increaseStake,squeezeOut});
+ listing,syncListing,marketFill,proxy,counterBid,advanceDay,tender,increaseStake,repayDebt,squeezeOut});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CORPORATE=api;
 })(typeof window!=='undefined'?window:globalThis);
