@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.26-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.27-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1002,6 +1002,7 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
     }
    else if(reached?.minuteOfDay===480&&S.phase==='night'){closeNight(false);beginNextDay();}
    window.FE_NPC_AI?.syncClock?.();
+   window.FE_CHESS?.tick?.(S,{now:window.FE_WASHINGTON_TIME?.now?.(S),presentAt:id=>window.FE_NPC_AI?.visibleAt?.(id)||[]});
   }
  }finally{S.npcOffscreenCatchup=oldAway}
  return spent;
@@ -1026,7 +1027,7 @@ window.finishWorkshopClosingBell=()=>{
 
 function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
-function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'};const fishingNews=window.FE_FISHING?.pendingNews?.(S);
+function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult,S.lastChessResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;S.lastChessResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'};const fishingNews=window.FE_FISHING?.pendingNews?.(S);
  if(fishingNews){
   S.sportsStory+=' '+fishingNews.story;
   if(S.headline==='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY'||S.headline==='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS'){
@@ -2364,6 +2365,7 @@ function openCityRoom(locationId,roomId,options={}){
  try{
   window.FE_NPC_CARD?.close?.();
   guardedRoomPanel('previous activity',()=>restoreLocalVenueActivity());
+  if(!dev)window.FE_CHESS_UI?.beforeTravel?.(location.id,room.id);
   cityRoomSession={locationId:location.id,roomId:room.id,dev,source};
   if(!dev)S.currentLocation={locationId:location.id,roomId:room.id};
   document.getElementById('cityRoomLocationName').textContent=location.name;
@@ -2379,6 +2381,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('duel aftermath',()=>window.FE_DUEL_AFTERCARE_UI?.render?.());
   guardedRoomPanel('resident visitors',()=>window.FE_LIVING_CHARACTERS?.renderRoomVisitors?.(location.id));
   guardedRoomPanel('NPC visitors',()=>window.FE_NPC_AI?.renderRoomVisitors?.(location.id));
+  guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
   guardedRoomPanel('activities',()=>window.FE_VENUES?.renderRoomOpportunities?.(location.id));
   guardedRoomPanel('personal storage',()=>window.FE_PERSONAL_EFFECTS?.renderRoomStorage?.(location.id,room.id));
   guardedRoomPanel('fishing',()=>window.FE_FISHING_UI?.render?.());
@@ -2451,6 +2454,7 @@ function openCityRoom(locationId,roomId,options={}){
 }
 function closeCityRoom(){
  if(window.FE_DUEL_UI?.active)return;
+ window.FE_CHESS_UI?.beforeClose?.();
  window.FE_NPC_CARD?.close?.();
  restoreLocalVenueActivity();
  const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}
