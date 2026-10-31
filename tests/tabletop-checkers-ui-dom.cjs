@@ -40,6 +40,10 @@ assert.equal(seconds,60);assert.equal(S.checkersCircuit.active.aiDepth,3);
 assert.equal(nodes.feCheckersMatch.hidden,false);
 const board=all(nodes.feCheckersMatch,x=>x.className.includes('fe-checkers-square'));
 assert.equal(board.length,64,'Real 64 square overhead table');
+assert.equal(board.filter(x=>x.className.includes('fe-checkers-selectable')).length,7,
+ 'Opening men with legal moves are marked on the actual tabletop');
+assert.equal(board.filter(x=>x['aria-pressed']==='true').length,0);
+assert.equal(board.filter(x=>x['aria-label'].includes('red man')).length,12);
 assert.equal(all(nodes.feCheckersMatch,x=>x.className.includes('fe-chess-person')).length,2,'Two physical player portraits');
 const legal=checkers.options(S.checkersCircuit.active.position)[0];
 board[legal.from].onclick();
@@ -47,6 +51,9 @@ const changed=all(nodes.feCheckersMatch,x=>x.className.includes('fe-checkers-squ
 changed[legal.to].onclick();
 assert.equal(seconds,120,'A real turn spends exactly a minute');
 assert.ok(S.checkersCircuit.active.position.ply>=2,'Opponent replies instead of self-play');
+assert.ok(all(nodes.feCheckersMatch,x=>x.className.includes('fe-checkers-move-history'))
+ .some(x=>x.children.some(y=>y.textContent.includes('Red '))),
+ 'The tabletop includes the actual played moves in a player-readable journal');
 assert.equal(saves,2);
 window.FE_CHECKERS_UI.beforeClose();
 assert.equal(S.checkersCircuit.results[0].winnerId,'samHarlan');

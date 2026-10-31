@@ -119,3 +119,9 @@ The first one-step opponent was upgraded to a locally bundled **alpha-beta searc
 - Added pure source test for actual multi-turn AI choices (depths 2–5), compulsory capture and chained jumps, king promotion, played NPC responses, scheduled offscreen matches, honest cancellation, shared-world/private game separation and attribution.
 - Added DOM-based board test for the visible physical checkers table, difficulty controls, named NPC challenge, 64-square board, real red move and AI answer, autosave and forfeit on departure.
 - Renderer load contract asserts the MIT search bundle and license appear in the offline HTML package before the checkers logic and UI. A full Ubuntu regression and Electron test have not yet been executed.
+
+### Checkers parlor access and playability expansion
+- Confirmed the previously adopted and licensed rapid-draughts AI adapter is **already shipped locally**, without an external dependency or GitHub Actions.
+- Expanded the existing playable checkers tables to five actual city room identifiers: Hillsdale street, working-class card room, Commerce Club, Russian Trade Hall and University Engineering Hall. No new map pins or room geometry.
+- Added visible outlines for selectable men, selected-piece ARIA state and keyboard focus indication; legal destination markers remain separate. Added a readable recent-move ledger including jumps and crowning during the match.
+- Expanded source and DOM regressions for authentic venue mapping, accessible choices and move history. Development source needs full Linux QA before packaged claims.

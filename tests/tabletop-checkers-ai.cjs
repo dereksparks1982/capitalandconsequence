@@ -5,6 +5,12 @@ const p=()=>C.fresh();
 const board=()=>Array(64).fill(null);
 assert.equal(C.initial().filter(Boolean).length,24,'American draughts has twelve players on each side');
 assert.equal(C.options(p()).length,7,'Opening red side has seven legal diagonal moves');
+for(const [place,room] of [['hillsdale','neighborhood-street'],['workingPoker','card-room'],
+ ['commercePoker','club-room'],['russianTradeHall','meeting-hall'],
+ ['universityMaryland','engineering-hall']])
+ assert.equal(C.venue(place,room),true,'Only a registered tabletop location may host checkers: '+place);
+assert.equal(C.venue('star','star-room'),false,'No unscheduled table appears at the Star Club');
+assert.equal(C.venue('russianTradeHall','office'),false,'Checkers cannot appear in an unregistered room');
 assert.equal(typeof AI.choose,'function');
 for(const depth of [2,3,4,5]){
  const game=p();game.turn='b';

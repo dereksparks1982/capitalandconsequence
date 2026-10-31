@@ -76,12 +76,16 @@ function renderBoard(game){
  const frame=el('div','fe-checkers-frame'),grid=el('div','fe-checkers-board');
  grid.setAttribute('role','group');grid.setAttribute('aria-label','Checkers board seen from above; red player at bottom, black NPC at top');
  const legal=selectedMoves(game),forced=game.position.forced;
+ const selectable=new Set(engine().options(game.position).map(m=>m.from));
  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
   const index=r*8+c,piece=game.position.board[index];
   const dark=(r+c)%2===1;
   const cell=button('',()=>tap(index),'fe-checkers-square '+(dark?'fe-checkers-dark':'fe-checkers-light')+
-   (source===index?' fe-checkers-selected':'')+(legal.some(m=>m.to===index)?' fe-checkers-legal':''));
+   (source===index?' fe-checkers-selected':'')+
+   (selectable.has(index)?' fe-checkers-selectable':'')+
+   (legal.some(m=>m.to===index)?' fe-checkers-legal':''));
   cell.dataset.index=String(index);
+  cell.setAttribute('aria-pressed',source===index?'true':'false');
   cell.setAttribute('aria-label','row '+(r+1)+' column '+(c+1)+' · '+
    (piece?(piece.toLowerCase()==='r'?'red':'black')+(piece===piece.toUpperCase()?' king':' man'):'empty'));
   if(piece){
@@ -99,6 +103,17 @@ function renderBoard(game){
   moves.some(x=>x.capture!==null)?'Mandatory capture. Select a piece that can jump.':
    'Red to play. Select one of your pieces, then a highlighted square.';
  mount.append(el('p','fe-checkers-turn',caption+' · AI depth: '+(game.aiDepth||4)));
+ const journal=el('div','fe-checkers-move-history');
+ journal.setAttribute('aria-label','Recent checkers moves');
+ const turns=game.position.history.slice(-10);
+ if(turns.length){
+  const square=i=>String.fromCharCode(97+i%8)+(8-Math.floor(i/8));
+  journal.append(el('strong','', 'Recent moves · '));
+  journal.append(el('span','',turns.map(m=>
+   (m.side==='r'?'Red ':'Black ')+square(m.from)+
+   (m.captured!==null?' × ':' → ')+square(m.to)+(m.king?' (king)':'')).join(' · ')));
+ }
+ mount.append(journal);
  mount.append(button('Resign & Leave Table',()=>{
   if(busy)return;const result=engine().abandon(saveData());
   if(result){persist();source=null;tell('You resigned. A real loss is recorded.');refresh();}

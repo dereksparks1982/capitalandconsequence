@@ -15,12 +15,15 @@
 .fe-checkers-light{background:#dfcda4!important;cursor:default!important}
 .fe-checkers-dark{background:#80533a!important}
 .fe-checkers-selected{box-shadow:inset 0 0 0 4px #ecdf91!important}
+.fe-checkers-selectable:not(.fe-checkers-selected){box-shadow:inset 0 0 0 2px #f3dda279!important}
+.fe-checkers-square:focus-visible{outline:3px solid #f4de95;outline-offset:-3px;z-index:2}
 .fe-checkers-legal:after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:#c6ebaa88;pointer-events:none}
 .fe-checkers-disc{display:grid;place-items:center;width:77%;height:77%;z-index:1;border-radius:50%;border:3px double #e6caa0;box-shadow:inset 0 0 0 3px #ffffff22, 0 3px 4px #19100d77;font:18px Georgia,serif}
 .fe-checkers-disc-r{background:radial-gradient(circle at 30% 25%,#b54f40,#7c2d26 77%);color:#ffdb8b}
 .fe-checkers-disc-b{background:radial-gradient(circle at 30% 25%,#5e4c47,#1f1c22 78%);color:#f8dba3}
 .fe-checkers-king{border:3px double #dcb969}
 .fe-checkers-turn{text-align:center;font-weight:bold;padding:7px}
+.fe-checkers-move-history{font:12px/1.45 Georgia,serif;margin:7px 0;padding:8px;border:1px solid #a08054;background:#f8eedb;max-height:100px;overflow:auto;overflow-wrap:anywhere}
 .fe-checkers-primary{background:#315e50;color:#fff5e3;padding:7px 12px}
 .fe-checkers-resign{background:#764232;color:#fff3e7;padding:8px 12px}
 .fe-checkers-warning{color:#982e1b;font-weight:bold}

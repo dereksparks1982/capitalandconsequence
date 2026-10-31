@@ -5,7 +5,12 @@
  * multiple jumps, and crowning ENDS the current turn.
  */
 (function(root){'use strict';
-const VENUES=Object.freeze({hillsdale:['neighborhood-street'],workingPoker:['card-room']});
+// Real tabletop spaces already registered in the 1878 Washington city data.
+const VENUES=Object.freeze({
+ hillsdale:['neighborhood-street'],workingPoker:['card-room'],
+ commercePoker:['club-room'],russianTradeHall:['meeting-hall'],
+ universityMaryland:['engineering-hall']
+});
 const copy=x=>JSON.parse(JSON.stringify(x));
 const hash=x=>{let h=2166136261;for(const ch of String(x)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
 const row=i=>Math.floor(i/8),col=i=>i%8;
