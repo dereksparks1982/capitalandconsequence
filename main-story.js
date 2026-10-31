@@ -38,7 +38,7 @@ const CAMPAIGNS=Object.freeze({
   acts:Object.freeze([
    {id:'threshold',title:'I · At the Peacock Door',goal:'Complete two paid visitor encounters at Lui’s club.',marker:'door',playable:true},
    {id:'favour',title:'II · A Favor with a Price',goal:'Meet the patron, decide who receives the sealed envelope and face the outcome.',marker:'peacockFavor',playable:true},
-   {id:'leverage',title:'III · The Keeper of Secrets',goal:'Discover which patrons are using the nightclub to conceal larger schemes.',marker:null,playable:false},
+   {id:'leverage',title:'III · The Keeper of Secrets',goal:'Meet a suspicious regular, choose how to use the information and face the response.',marker:'peacockNetwork',playable:true},
    {id:'betrayal',title:'IV · Debts Come Due',goal:'Decide whom to trust when a criminal arrangement unravels.',marker:null,playable:false},
    {id:'exit',title:'V · The Last Door',goal:'Choose a lawful future, a criminal empire, or a dangerous escape.',marker:null,playable:false}
   ])}),
@@ -71,6 +71,7 @@ function mark(save){
   certificate:hasObservation(save,'policeWardmanCertify'),
   door:(save?.doormanDuty?.totalSegments||0)>=2,
   peacockFavor:save?.peacockStory?.stage==='resolved'&&!!save?.peacockStory?.finishedAt,
+  peacockNetwork:save?.peacockNetwork?.stage==='resolved'&&!!save?.peacockNetwork?.completedAt,
   ward:(save?.orderlyDuty?.totalAssignments||0)>=1,
   wardMemo:hasObservation(save,'wardMemo'),
   petition:!!save?.wardmanStanding?.petition,

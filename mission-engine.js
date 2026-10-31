@@ -5,6 +5,9 @@
  */
 (function(root){'use strict';
 const TEMPLATES=Object.freeze({
+ 'peacock-network':Object.freeze({label:'The Keeper of Secrets · The Peacock Contact',
+  route:'criminal',initial:'inquiry',transitions:Object.freeze({
+   inquiry:Object.freeze({choose:'waiting'}),waiting:Object.freeze({consequence:'completed'})})}),
  'peacock-favor':Object.freeze({label:'Golden Peacock · A Favor with a Price',route:'criminal',
   initial:'first-contact',transitions:Object.freeze({
   'first-contact':Object.freeze({choose:'awaiting-return'}),

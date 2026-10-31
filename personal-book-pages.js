@@ -73,6 +73,10 @@ function criminalPages(save){
   'Eli witnessed these events at the club door',
   ['No one knows the sealed contents. A private book is not a police report.'],
   plot.events.map(e=>item(e.date+' · '+e.source,e.description))));
+ const network=root.FE_PEACOCK_NETWORK?.summary?.(save);
+ if(network?.events.length)pages.push(page('peacock-network','Main Story','The Keeper of Secrets',
+  'Eli personally witnessed these encounters, not an official police record',[],
+  network.events.map(e=>item(e.date+' · '+e.source,e.text))));
  pages.push(page('plans','Private Recollections','Plans & Recollections','Personally written',
   ['The player can write about targets, rivals, romances or exploits. The game will not pretend that a plan was carried out.']));
  return pages;

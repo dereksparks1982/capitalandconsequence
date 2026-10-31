@@ -34,6 +34,15 @@
    const notice=document.createElement('p');notice.id='peacockStoryNotice';notice.setAttribute('role','status');
    box.append(title,status,buttons,notice);door.appendChild(box);
   }
+  if(door&&!node('peacockNetworkPanel')){
+   const box=document.createElement('section');box.id='peacockNetworkPanel';
+   box.className='doorman-work-box';box.setAttribute('aria-label','Eli criminal connections');
+   const title=document.createElement('h4');title.textContent='Main Story · The Keeper of Secrets';
+   const status=document.createElement('p');status.id='peacockNetworkStatus';
+   const actions=document.createElement('div');actions.id='peacockNetworkActions';
+   const notice=document.createElement('p');notice.id='peacockNetworkNotice';notice.setAttribute('role','status');
+   box.append(title,status,actions,notice);door.appendChild(box);
+  }
  }
  function action(type,choiceId){
   if(S.characterRoute!=='criminal'||!activeProfileId())return;
@@ -109,6 +118,49 @@
    if(!allow.ok){const msg=document.createElement('small');msg.textContent=allow.reason;buttons.appendChild(msg)}
   }
  }
+ function networkAction(id){
+  const story=window.FE_PEACOCK_NETWORK,place=current(),old=S,profile=activeProfileId();
+  const preview=story?.preview?.(S,id,place.locationId,place.roomId,
+   {dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!preview?.ok){set('peacockNetworkNotice',preview?.reason||'Unavailable');return false}
+  if(S.dayRemaining<=preview.seconds||!window.FE_WASHINGTON_TIME?.canSpend?.(S,preview.seconds)||
+     window.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(S)<=preview.seconds){
+   set('peacockNetworkNotice','The club will close before this encounter ends.');return false;
+  }
+  const paid=window.advanceWorldTime(preview.seconds,true);
+  if(paid!==preview.seconds||S!==old||profile!==activeProfileId()){
+   set('peacockNetworkNotice','The action was interrupted. No encounter was recorded.');return false;
+  }
+  const outcome=story.apply(S,id,place.locationId,place.roomId,{spentSeconds:paid,
+   dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!outcome.ok){set('peacockNetworkNotice',outcome.reason);return false}
+  const saved=save(true);
+  render();refresh();
+  set('peacockNetworkNotice',saved?outcome.description:'Autosave failed; keep the game open.');
+  return !!saved;
+ }
+ function refreshNetwork(){
+  const story=window.FE_PEACOCK_NETWORK,box=node('peacockNetworkPanel'),buttons=node('peacockNetworkActions');
+  if(!story||!box||!buttons)return;
+  const visible=S?.characterRoute==='criminal'&&!!activeProfileId()&&
+   !node('doormanDoorPanel')?.hidden&&!window.FE_CITY?.isDevRoom?.();
+  box.hidden=!visible;if(!visible)return;
+  const stage=story.summary(S)?.stage||'unmet';
+  set('peacockNetworkStatus',stage==='unmet'?'The regular may approach after the envelope affair closes.':
+   stage==='met'?'He will return another night. Decide whether to protect, exploit or report.':
+   stage==='chosen'?'Your choice is recorded; consequences arrive another night.':
+   'This contact has reached an outcome. It cannot be replayed.');
+  buttons.replaceChildren();
+  const ids=stage==='unmet'?['meet']:stage==='met'?['protect','leverage','report']:
+   stage==='chosen'?['consequence']:[];
+  for(const id of ids){
+   const place=current(),allowed=story.preview(S,id,place.locationId,place.roomId);
+   const buttonNode=button(story.ACTIONS[id].label,()=>networkAction(id));
+   buttonNode.disabled=!allowed.ok||S.dayRemaining<=story.ACTIONS[id].seconds;
+   buttonNode.title=allowed.reason||'';buttons.appendChild(buttonNode);
+   if(!allowed.ok){const why=document.createElement('small');why.textContent=allowed.reason;buttons.appendChild(why)}
+  }
+ }
  function refresh(){
   mount();
   const on=S?.characterRoute==='criminal'&&!!activeProfileId(),desk=node('doormanDesk'),door=node('doormanDoorPanel');
@@ -130,6 +182,7 @@
   }
   if(!door||door.hidden)return;
   refreshStory();
+  refreshNetwork();
   const choices=node('doormanDoorActions');if(!choices)return;choices.replaceChildren();
   const disabled=S.paused||S.phase!=='night';
   if(pending){
