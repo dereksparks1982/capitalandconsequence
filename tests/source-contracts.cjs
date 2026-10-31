@@ -36,7 +36,10 @@ check(index.includes('<title>Capital &amp; Consequence</title>'),'Desktop docume
 check(read('career-shell.js').includes('<h1>CAPITAL &amp; CONSEQUENCE</h1>')&&read('career-shell.js').includes('One city. Countless lives. Every choice has consequences.'),'Active title displays selected name and motto');
 check(read('career-shell.js').includes('careerMenuDistricts')&&index.includes('national-districts.js?v='),'Title provides a national district register');
 check(index.indexOf('national-districts.js?v=')<index.indexOf('career-shell.js?v='),'National charter loads before live title');
-check(read('build-linux.sh').includes('Existing resources/app.asar missing'),'In-place developer build requires an existing runtime archive');
+check(read('scripts/build-root-linux.cjs').includes("const binaryName='capitalandconsequence'"),
+ 'Portable Linux build targets the required real root-level executable');
+check(read('scripts/build-root-linux.cjs').includes('smoke(dir)'),
+ 'Portable Linux build requires a native Electron smoke test before acceptance');
 const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');

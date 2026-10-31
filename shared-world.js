@@ -47,7 +47,8 @@ function capture(save,prior,profileId=null){
  if(world.clock.worldMinute>save.worldCalendar.worldMinute)throw Error('Refusing to rewind shared Washington');
  const next={...copy(world),clock:copy(save.worldCalendar),remainder:save.worldCalendarRemainder||0,
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
-  npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives),
+  npcSimulation:copy(save.npcSimulation===undefined?world.npcSimulation:save.npcSimulation),
+   otherLives:copy(save.otherLives===undefined?world.otherLives:save.otherLives),
   chessCircuit:publicChess(save.chessCircuit||world.chessCircuit),
   lastChessResult:save.lastChessResult||null,
   checkersCircuit:publicCheckers(save.checkersCircuit||world.checkersCircuit),

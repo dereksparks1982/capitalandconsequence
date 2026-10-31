@@ -103,7 +103,18 @@ function run(){
   fail('This packaging target is Linux x86_64 only.');
  const builder=path.join(root,'node_modules','.bin','electron-builder');
  if(!fs.existsSync(builder))fail('Electron builder is not installed locally. No build was produced.');
- execute(process.execPath,[path.join(root,'tests','run-all.cjs')],{timeout:600000});
+ // Print the precise failing tests instead of truncating away their names.
+ const testRun=cp.spawnSync(process.execPath,[path.join(root,'tests','run-all.cjs')],{
+  cwd:root,encoding:'utf8',timeout:600000,maxBuffer:32*1024*1024
+ });
+ const combined=[testRun.stdout||'',testRun.stderr||''].join('\n');
+ if(testRun.error||testRun.status!==0){
+  const failed=[...combined.matchAll(/^FAIL ([^\n]+)/gm)].map(x=>x[1]);
+  console.error(combined);
+  throw Error('Source regression suite failed ('+failed.length+' test(s)): '+failed.join(', ')+
+   (testRun.error?' · '+testRun.error.message:''));
+ }
+ console.log('Source regression suite passed.');
  execute(builder,['--linux','dir','--x64','--publish','never'],{timeout:1200000});
  const dir=path.join(root,'linux-unpacked');
  if(!fs.existsSync(dir))fail('Electron builder did not produce linux-unpacked.');
