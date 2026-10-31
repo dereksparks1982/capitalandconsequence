@@ -72,6 +72,13 @@ function advance(save){
  if(save?.characterRoute!=='wardman')return {events:[]};
  const p=save.wardmanStanding,c=p?.custodyRisk;
  if(c?.stage!=='review-pending'||c.outcome)return {events:[]};
+ if(p.status==='escaped'){
+  c.stage='suspended';c.outcome='absconded-before-review';
+  const description='The experimental intervention is suspended while Edmund is absent under an unresolved legal custody order. He has not been discharged.';
+  root.FE_LIFE_HISTORY?.record?.(save,{id:'wardman-custody:absconded:'+CASE,
+   date:save.gameDate,source:'custody register',text:description});
+  return {events:[{description}]};
+ }
  if(p.status!=='patient'){
   c.stage='cancelled';c.outcome='released-before-review';
   const description='Lawful discharge cancelled the proposed experimental operation.';

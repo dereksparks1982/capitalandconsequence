@@ -11,6 +11,11 @@ const FINDINGS=Object.freeze([
  'The physical examination does not identify an assailant.'
 ]);
 const ACTIONS=Object.freeze({
+ wardEscapeInspect:{label:'Study patient-ward restrictions · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'patient-ward observation',text:'Examined custody constraints.'},
+ wardEscapeQuiet:{label:'Prepare cautious escape attempt · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'patient-ward observation',text:'Prepared an escape attempt.'},
+ wardEscapeRisk:{label:'Prepare reckless escape attempt · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'patient-ward observation',text:'Prepared a dangerous escape attempt.'},
+ wardEscapeAttempt:{label:'Attempt to leave the ward · 30 minutes',seconds:1800,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'patient-ward observation',text:'Attempted escape.'},
+ wardEscapeSurrender:{label:'Return to patient custody · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'patient custody reception entry',text:'Voluntarily returned to custody.'},
  wardDisobey:{label:'Defy a patient-ward instruction · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'An act of disobedience was witnessed.'},
  wardSabotage:{label:'Damage ward property during escape attempt · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'The escape attempt was documented.'},
  wardAssault:{label:'Strike an attendant · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'The attack was documented.'},
@@ -149,6 +154,10 @@ function preview(save,world,id,where){
   const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
   if(!decision.ok)return decision;
  }
+ if(root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id]){
+  const escapeCheck=root.FE_WARDMAN_ESCAPE.preview(save,id);
+  if(!escapeCheck.ok)return escapeCheck;
+ }
  if(root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]){
   const status=root.FE_WARDMAN_CUSTODY.preview(save,id);
   if(!status.ok)return status;
@@ -173,7 +182,7 @@ function preview(save,world,id,where){
  }
  if(save.characterRoute==='wardman'&&save.wardmanStanding?.status==='patient'&&
     !['familyPatientAppeal','familyPatientPoliceCopy','familyReopenAppeal'].includes(id)&&
-    !root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id])
+    !root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]&&!root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id])
   return {ok:false,reason:'Edmund is confined as a patient and cannot perform ordinary asylum inquiries.'};
  if(save.characterRoute==='investigator'&&
     ['visitorRegister','bellStatement','clothingAccount','drainReport','motiveDocket'].includes(id)&&
@@ -244,14 +253,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const inheritanceOutcome=root.FE_WARDMAN_INHERITANCE?.ACTIONS?.[id]?
   root.FE_WARDMAN_INHERITANCE.apply(save,world,id,spentSeconds):null;
  if(inheritanceOutcome&&!inheritanceOutcome.ok)return inheritanceOutcome;
+ const escapeOutcome=root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id]?
+  root.FE_WARDMAN_ESCAPE.apply(save,world,id,spentSeconds):null;
+ if(escapeOutcome&&!escapeOutcome.ok)return escapeOutcome;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  description:inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
+  source:escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  description:escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
   at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
   locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
@@ -278,9 +290,9 @@ function apply(save,world,id,where,{spentSeconds}={}){
   }
  }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
-  source:inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  text:inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
- return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome,inheritanceOutcome};
+  source:escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  text:escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
+ return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome,inheritanceOutcome,escapeOutcome};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
 if(typeof module==='object'&&module.exports)module.exports=api;

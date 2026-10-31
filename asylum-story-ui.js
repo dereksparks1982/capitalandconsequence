@@ -54,13 +54,14 @@ function action(id){
  }
  const persisted=save(true);
  if(!persisted){show('Autosave failed. Keep the game open and retry after freeing storage.');return false}
- if(result.bridgeOutcome?.released||result.familyOutcome?.released){
+ if(result.bridgeOutcome?.released||result.familyOutcome?.released||result.escapeOutcome?.escaped){
   root.FE_CITY?.openRoom?.('blackwoodAsylum','reception');
  }
+ if(result.escapeOutcome?.returned)root.FE_CITY?.openRoom?.('blackwoodAsylum','patient-ward');
  render();refresh();
  const standing=S.characterRoute==='wardman'&&(id.startsWith('family')||id.startsWith('ward'))?S.wardmanStanding:null;
  show(standing?
-  (result.inheritanceOutcome?.description||result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
+  (result.escapeOutcome?.description||result.inheritanceOutcome?.description||result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
   ' Workplace trust: '+standing.workplaceTrust+
   '/100 · Family pressure: '+standing.familyPressure+
   '/100 · Petition: '+(standing.petition?.status||'none')+'.':
@@ -131,6 +132,14 @@ function casebook(){
    statement.textContent='Wardman settlement letter: received '+estate.receivedAt+
     (estate.verified?' · Independent clerk verified receipt':' · Not independently authenticated');
    list.append(statement);
+  }
+  const escape=root.FE_WARDMAN_ESCAPE?.summary?.(S);
+  if(escape?.events.length){
+   const line=document.createElement('p');
+   line.textContent='Escape attempt: '+escape.stage+
+    (escape.outcome?' · '+escape.outcome:'')+
+    (escape.absconder?' · Outstanding custody order':'');
+   list.append(line);
   }
   const police=root.FE_WARDMAN_POLICE?.summary?.(S);
   if(police){

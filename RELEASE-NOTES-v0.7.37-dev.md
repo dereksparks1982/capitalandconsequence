@@ -1,0 +1,3 @@
+# Capital & Consequence v0.7.37-dev | Edmund asylum escape
+
+Edmund can examine custody restrictions, prepare a cautious or reckless attempt, and attempt escape on a following night. The seed-stable result leaves him escaped with a legally outstanding confinement order or caught and further exposed to family pressure. A voluntarily returned patient can resume petition actions. Existing patient ward/reception rooms, time charges, private journal, and true state transitions used. Explicitly distinguish absconding from legal discharge when an experimental lobotomy review is interrupted. Source tests added; no map/geometry alterations, no GitHub Actions, Linux acceptance pending.

@@ -99,6 +99,12 @@ function wardmanPages(save){
   findings.filter(e=>e?.eventId?.startsWith('asylum:')).map(e=>
    item(e.at+' · '+e.source+(e.locationId?' · '+e.locationId+(e.roomId?'/'+e.roomId:''):''),
     e.description))));
+ const escape=root.FE_WARDMAN_ESCAPE?.summary?.(save);
+ if(escape?.events.length)pages.push(page('wardman-escape','Personal Matters',
+  'Custody, Escape and Return','Edmund’s own recorded actions, never a legal pardon',
+  [escape.absconder?'Custody papers remain outstanding; Edmund has not been discharged.':
+   'The recorded outcome is separate from the family petition ruling.'],
+  escape.events.map(e=>item(e.date+' · '+e.source,e.text))));
  const estate=root.FE_WARDMAN_INHERITANCE?.summary?.(save);
  if(estate?.records.length)pages.push(page('wardman-estate','Family Papers','The Wardman Settlement',
   'Personally received family documents, not a murder verdict',
