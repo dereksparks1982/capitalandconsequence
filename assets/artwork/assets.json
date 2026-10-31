@@ -1,0 +1,1514 @@
+{
+  "name": "Capital & Consequence - Federal Electric Office Starter Pack",
+  "schema_version": 1,
+  "license": "Original generated assets for Elderred Softworks; use and modify in your projects.",
+  "style": "Very basic 8-bit-like chunky pixel art; fixed legs, no walk cycles, flat palette",
+  "tile_size_px": 32,
+  "spritesheet": "spritesheet.png",
+  "spritesheet_size_px": [
+    720,
+    504
+  ],
+  "transparent_alpha": true,
+  "placement_origin": "top-left",
+  "units": "pixels",
+  "sprites": [
+    {
+      "id": "charles_front",
+      "name": "Charles (businessman), front",
+      "category": "people",
+      "file": "sprites/charles_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        20,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "charles_back",
+      "name": "Charles (businessman), back",
+      "category": "people",
+      "file": "sprites/charles_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        92,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "charles_left",
+      "name": "Charles (businessman), left",
+      "category": "people",
+      "file": "sprites/charles_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        164,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "charles_right",
+      "name": "Charles (businessman), right",
+      "category": "people",
+      "file": "sprites/charles_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        236,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "sam_front",
+      "name": "Sam (policeman), front",
+      "category": "people",
+      "file": "sprites/sam_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        308,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "sam_back",
+      "name": "Sam (policeman), back",
+      "category": "people",
+      "file": "sprites/sam_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        380,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "sam_left",
+      "name": "Sam (policeman), left",
+      "category": "people",
+      "file": "sprites/sam_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        452,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "sam_right",
+      "name": "Sam (policeman), right",
+      "category": "people",
+      "file": "sprites/sam_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        524,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "edmund_front",
+      "name": "Edmund (orderly), front",
+      "category": "people",
+      "file": "sprites/edmund_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        596,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "edmund_back",
+      "name": "Edmund (orderly), back",
+      "category": "people",
+      "file": "sprites/edmund_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        668,
+        20,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "edmund_left",
+      "name": "Edmund (orderly), left",
+      "category": "people",
+      "file": "sprites/edmund_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        20,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "edmund_right",
+      "name": "Edmund (orderly), right",
+      "category": "people",
+      "file": "sprites/edmund_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        92,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "doorman_front",
+      "name": "Club doorman, front",
+      "category": "people",
+      "file": "sprites/doorman_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        164,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "doorman_back",
+      "name": "Club doorman, back",
+      "category": "people",
+      "file": "sprites/doorman_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        236,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "doorman_left",
+      "name": "Club doorman, left",
+      "category": "people",
+      "file": "sprites/doorman_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        308,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "doorman_right",
+      "name": "Club doorman, right",
+      "category": "people",
+      "file": "sprites/doorman_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        380,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "clerk_front",
+      "name": "Office clerk, front",
+      "category": "people",
+      "file": "sprites/clerk_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        452,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "clerk_back",
+      "name": "Office clerk, back",
+      "category": "people",
+      "file": "sprites/clerk_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        524,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "clerk_left",
+      "name": "Office clerk, left",
+      "category": "people",
+      "file": "sprites/clerk_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        596,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "clerk_right",
+      "name": "Office clerk, right",
+      "category": "people",
+      "file": "sprites/clerk_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        668,
+        92,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "worker_front",
+      "name": "Factory worker, front",
+      "category": "people",
+      "file": "sprites/worker_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        20,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "worker_back",
+      "name": "Factory worker, back",
+      "category": "people",
+      "file": "sprites/worker_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        92,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "worker_left",
+      "name": "Factory worker, left",
+      "category": "people",
+      "file": "sprites/worker_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        164,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "worker_right",
+      "name": "Factory worker, right",
+      "category": "people",
+      "file": "sprites/worker_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        236,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "visitor_front",
+      "name": "Lady visitor, front",
+      "category": "people",
+      "file": "sprites/visitor_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        308,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "visitor_back",
+      "name": "Lady visitor, back",
+      "category": "people",
+      "file": "sprites/visitor_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        380,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "visitor_left",
+      "name": "Lady visitor, left",
+      "category": "people",
+      "file": "sprites/visitor_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        452,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "visitor_right",
+      "name": "Lady visitor, right",
+      "category": "people",
+      "file": "sprites/visitor_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        524,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "laborer_front",
+      "name": "Laborer, front",
+      "category": "people",
+      "file": "sprites/laborer_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "front",
+      "atlas_rect": [
+        596,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "laborer_back",
+      "name": "Laborer, back",
+      "category": "people",
+      "file": "sprites/laborer_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "back",
+      "atlas_rect": [
+        668,
+        164,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "laborer_left",
+      "name": "Laborer, left",
+      "category": "people",
+      "file": "sprites/laborer_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "left",
+      "atlas_rect": [
+        20,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "laborer_right",
+      "name": "Laborer, right",
+      "category": "people",
+      "file": "sprites/laborer_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "talk",
+      "layer": "characters",
+      "facing": "right",
+      "atlas_rect": [
+        92,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "floor_ochre",
+      "name": "Floor Ochre",
+      "category": "floors",
+      "file": "sprites/floor_ochre.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": null,
+      "layer": "floor",
+      "atlas_rect": [
+        164,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "floor_planks",
+      "name": "Floor Planks",
+      "category": "floors",
+      "file": "sprites/floor_planks.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": null,
+      "layer": "floor",
+      "atlas_rect": [
+        236,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "floor_stone",
+      "name": "Floor Stone",
+      "category": "floors",
+      "file": "sprites/floor_stone.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": null,
+      "layer": "floor",
+      "atlas_rect": [
+        308,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "floor_dirt",
+      "name": "Floor Dirt",
+      "category": "floors",
+      "file": "sprites/floor_dirt.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": null,
+      "layer": "floor",
+      "atlas_rect": [
+        380,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "floor_rug_red",
+      "name": "Floor Rug Red",
+      "category": "floors",
+      "file": "sprites/floor_rug_red.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": null,
+      "layer": "floor",
+      "atlas_rect": [
+        452,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wall_horizontal",
+      "name": "Wall Horizontal",
+      "category": "construction",
+      "file": "sprites/wall_horizontal.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": null,
+      "layer": "walls",
+      "atlas_rect": [
+        524,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wall_vertical",
+      "name": "Wall Vertical",
+      "category": "construction",
+      "file": "sprites/wall_vertical.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": null,
+      "layer": "walls",
+      "atlas_rect": [
+        596,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wall_corner",
+      "name": "Wall Corner",
+      "category": "construction",
+      "file": "sprites/wall_corner.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": null,
+      "layer": "walls",
+      "atlas_rect": [
+        668,
+        236,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "window_blue",
+      "name": "Window Blue",
+      "category": "construction",
+      "file": "sprites/window_blue.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": null,
+      "layer": "walls",
+      "atlas_rect": [
+        20,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "door_closed",
+      "name": "Door Closed",
+      "category": "construction",
+      "file": "sprites/door_closed.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "toggle_door",
+      "layer": "walls",
+      "atlas_rect": [
+        92,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "door_open",
+      "name": "Door Open",
+      "category": "construction",
+      "file": "sprites/door_open.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "toggle_door",
+      "layer": "walls",
+      "atlas_rect": [
+        164,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "desk_oak",
+      "name": "Desk Oak",
+      "category": "furniture",
+      "file": "sprites/desk_oak.png",
+      "w": 64,
+      "h": 32,
+      "footprint_tiles": [
+        2,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_business_desk",
+      "layer": "objects",
+      "atlas_rect": [
+        220,
+        308,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "desk_occupied",
+      "name": "Desk Occupied",
+      "category": "furniture",
+      "file": "sprites/desk_occupied.png",
+      "w": 64,
+      "h": 32,
+      "footprint_tiles": [
+        2,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_business_desk",
+      "layer": "objects",
+      "atlas_rect": [
+        292,
+        308,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "factory_workbench",
+      "name": "Factory Workbench",
+      "category": "furniture",
+      "file": "sprites/factory_workbench.png",
+      "w": 64,
+      "h": 32,
+      "footprint_tiles": [
+        2,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect_workbench",
+      "layer": "objects",
+      "atlas_rect": [
+        364,
+        308,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "chair_wood_front",
+      "name": "Chair Wood Front",
+      "category": "furniture",
+      "file": "sprites/chair_wood_front.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "sit",
+      "layer": "objects",
+      "facing": "front",
+      "tags": [
+        "chair"
+      ],
+      "atlas_rect": [
+        452,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "chair_wood_back",
+      "name": "Chair Wood Back",
+      "category": "furniture",
+      "file": "sprites/chair_wood_back.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "sit",
+      "layer": "objects",
+      "facing": "back",
+      "tags": [
+        "chair"
+      ],
+      "atlas_rect": [
+        524,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "chair_wood_left",
+      "name": "Chair Wood Left",
+      "category": "furniture",
+      "file": "sprites/chair_wood_left.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "sit",
+      "layer": "objects",
+      "facing": "left",
+      "tags": [
+        "chair"
+      ],
+      "atlas_rect": [
+        596,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "chair_wood_right",
+      "name": "Chair Wood Right",
+      "category": "furniture",
+      "file": "sprites/chair_wood_right.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "sit",
+      "layer": "objects",
+      "facing": "right",
+      "tags": [
+        "chair"
+      ],
+      "atlas_rect": [
+        668,
+        308,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "chair_office",
+      "name": "Chair Office",
+      "category": "furniture",
+      "file": "sprites/chair_office.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "sit",
+      "layer": "objects",
+      "atlas_rect": [
+        20,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wood_cabinet",
+      "name": "Wood Cabinet",
+      "category": "furniture",
+      "file": "sprites/wood_cabinet.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_storage",
+      "layer": "objects",
+      "atlas_rect": [
+        92,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "file_cabinet",
+      "name": "File Cabinet",
+      "category": "furniture",
+      "file": "sprites/file_cabinet.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_files",
+      "layer": "objects",
+      "atlas_rect": [
+        164,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "bookshelf",
+      "name": "Bookshelf",
+      "category": "furniture",
+      "file": "sprites/bookshelf.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "read_books",
+      "layer": "objects",
+      "atlas_rect": [
+        236,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "chest_drawers",
+      "name": "Chest Drawers",
+      "category": "furniture",
+      "file": "sprites/chest_drawers.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_storage",
+      "layer": "objects",
+      "atlas_rect": [
+        308,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "crate_wood",
+      "name": "Crate Wood",
+      "category": "furniture",
+      "file": "sprites/crate_wood.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect",
+      "layer": "objects",
+      "atlas_rect": [
+        380,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "barrel_wood",
+      "name": "Barrel Wood",
+      "category": "furniture",
+      "file": "sprites/barrel_wood.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect",
+      "layer": "objects",
+      "atlas_rect": [
+        452,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "plant_small",
+      "name": "Plant Small",
+      "category": "furniture",
+      "file": "sprites/plant_small.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": null,
+      "layer": "objects",
+      "atlas_rect": [
+        524,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "coat_stand",
+      "name": "Coat Stand",
+      "category": "furniture",
+      "file": "sprites/coat_stand.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "use_coat_stand",
+      "layer": "objects",
+      "atlas_rect": [
+        596,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "safe_iron",
+      "name": "Safe Iron",
+      "category": "furniture",
+      "file": "sprites/safe_iron.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "open_safe",
+      "layer": "objects",
+      "atlas_rect": [
+        668,
+        380,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "table_small",
+      "name": "Table Small",
+      "category": "furniture",
+      "file": "sprites/table_small.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect",
+      "layer": "objects",
+      "atlas_rect": [
+        20,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "ledger_open",
+      "name": "Ledger Open",
+      "category": "small_props",
+      "file": "sprites/ledger_open.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "read_ledger",
+      "layer": "objects",
+      "atlas_rect": [
+        92,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "paper_stack",
+      "name": "Paper Stack",
+      "category": "small_props",
+      "file": "sprites/paper_stack.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "read_document",
+      "layer": "objects",
+      "atlas_rect": [
+        164,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "inkwell",
+      "name": "Inkwell",
+      "category": "small_props",
+      "file": "sprites/inkwell.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "use_inkwell",
+      "layer": "objects",
+      "atlas_rect": [
+        236,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "oil_lamp",
+      "name": "Oil Lamp",
+      "category": "small_props",
+      "file": "sprites/oil_lamp.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "toggle_light",
+      "layer": "objects",
+      "atlas_rect": [
+        308,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wall_clock",
+      "name": "Wall Clock",
+      "category": "small_props",
+      "file": "sprites/wall_clock.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "inspect_time",
+      "layer": "objects",
+      "atlas_rect": [
+        380,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "wall_map",
+      "name": "Wall Map",
+      "category": "small_props",
+      "file": "sprites/wall_map.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": false,
+      "interaction": "open_city_map",
+      "layer": "objects",
+      "atlas_rect": [
+        452,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "typewriter",
+      "name": "Typewriter",
+      "category": "small_props",
+      "file": "sprites/typewriter.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect",
+      "layer": "objects",
+      "atlas_rect": [
+        524,
+        452,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "heating_stove",
+      "name": "Heating Stove",
+      "category": "furniture",
+      "file": "sprites/heating_stove.png",
+      "w": 32,
+      "h": 32,
+      "footprint_tiles": [
+        1,
+        1
+      ],
+      "solid": true,
+      "interaction": "inspect",
+      "layer": "objects",
+      "atlas_rect": [
+        596,
+        452,
+        32,
+        32
+      ]
+    }
+  ]
+}
