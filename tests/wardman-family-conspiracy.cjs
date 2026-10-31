@@ -34,6 +34,9 @@ function scenario(id,preserve){
   return out;
  }
  function day(when,minute=13*60){
+  // The calendar bridge tracks minute precision but intentionally leaves the
+  // legacy saved gameDate alone; actual day transitions update both values.
+  save.gameDate=when;
   bridge.start(save,when,minute);
   world=FE_SHARED_WORLD.capture(save,world,'edmund-'+id);
   FE_WARDMAN_POLITICS.advance(save);
