@@ -58,9 +58,9 @@ function action(id){
   root.FE_CITY?.openRoom?.('blackwoodAsylum','reception');
  }
  render();refresh();
- const standing=S.characterRoute==='wardman'&&id.startsWith('family')?S.wardmanStanding:null;
+ const standing=S.characterRoute==='wardman'&&(id.startsWith('family')||id.startsWith('ward'))?S.wardmanStanding:null;
  show(standing?
-  (result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
+  (result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
   ' Workplace trust: '+standing.workplaceTrust+
   '/100 · Family pressure: '+standing.familyPressure+
   '/100 · Petition: '+(standing.petition?.status||'none')+'.':
@@ -115,6 +115,16 @@ function casebook(){
    ' · Petition: '+(family.petition||'none')+
    (family.confinement?' · EDMUND CONFINED AS A PATIENT':'');
   list.append(summary);
+  const custody=root.FE_WARDMAN_CUSTODY?.summary?.(S);
+  if(custody){
+   const line=document.createElement('p');
+   line.textContent='Patient custody: '+custody.stage+
+    ' · Misconduct: '+custody.misconduct+' · Protections: '+custody.protection+
+    (custody.reviewDate?' · Procedure review: '+custody.reviewDate:'')+
+    (custody.outcome?' · Final decision: '+custody.outcome:'')+
+    (custody.careerEnded?' · CAREER ENDED':'');
+   list.append(line);
+  }
   const police=root.FE_WARDMAN_POLICE?.summary?.(S);
   if(police){
    const entry=document.createElement('p');

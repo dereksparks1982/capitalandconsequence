@@ -242,6 +242,7 @@ function save(silent=true){
  // Age documented family consequences on actual saved Washington dates only.
  const wasConfined=S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient';
  window.FE_WARDMAN_POLITICS?.advance?.(S);
+ window.FE_WARDMAN_CUSTODY?.advance?.(S);
  const becameConfined=!wasConfined&&S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient';
  // Archive only actual completed accounts/transactions, never projections.
  window.FE_LIFE_HISTORY?.syncBusiness?.(S);

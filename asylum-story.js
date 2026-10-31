@@ -11,6 +11,12 @@ const FINDINGS=Object.freeze([
  'The physical examination does not identify an assailant.'
 ]);
 const ACTIONS=Object.freeze({
+ wardDisobey:{label:'Defy a patient-ward instruction · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'An act of disobedience was witnessed.'},
+ wardSabotage:{label:'Damage ward property during escape attempt · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'The escape attempt was documented.'},
+ wardAssault:{label:'Strike an attendant · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'The attack was documented.'},
+ wardCooperate:{label:'Demonstrate peaceful cooperation · 15 minutes',seconds:900,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward custody register',text:'Peaceful conduct was documented.'},
+ wardCounsel:{label:'Seek an independent medical opinion · 20 minutes',seconds:1200,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'independent medical petition',text:'A second opinion was requested.'},
+ wardFateRecord:{label:'Record final custody finding · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'clinical review',text:'A final review was documented.'},
  notice:{label:'Read the official notice · 1 minute',seconds:60,location:'blackwoodAsylum',room:'reception',
   routes:['wardman','investigator'],source:'public asylum reception notice',
   text:'An unexplained death was reported inside District Asylum on the morning of January 5. No cause or perpetrator has been established.'},
@@ -137,6 +143,12 @@ function preview(save,world,id,where){
   const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
   if(!decision.ok)return decision;
  }
+ if(root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]){
+  const status=root.FE_WARDMAN_CUSTODY.preview(save,id);
+  if(!status.ok)return status;
+ }
+ if(save?.characterRoute==='wardman'&&save.wardmanStanding?.careerEnded&&id!=='wardFateRecord')
+  return {ok:false,reason:'Edmund’s playable career ended after the lobotomy.'};
  if(id==='familyReview'){
   const request=root.FE_WARDMAN_POLITICS?.canReview?.(save);
   if(!request?.ok)return request||{ok:false,reason:'No family petition review is possible'};
@@ -150,7 +162,8 @@ function preview(save,world,id,where){
   if(!authorized.ok)return authorized;
  }
  if(save.characterRoute==='wardman'&&save.wardmanStanding?.status==='patient'&&
-    !['familyPatientAppeal','familyPatientPoliceCopy','familyReopenAppeal'].includes(id))
+    !['familyPatientAppeal','familyPatientPoliceCopy','familyReopenAppeal'].includes(id)&&
+    !root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id])
   return {ok:false,reason:'Edmund is confined as a patient and cannot perform ordinary asylum inquiries.'};
  if(save.characterRoute==='investigator'&&
     ['visitorRegister','bellStatement','clothingAccount','drainReport','motiveDocket'].includes(id)&&
@@ -215,14 +228,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const bridgeOutcome=root.FE_WARDMAN_POLICE?.ACTIONS?.includes(id)?
   root.FE_WARDMAN_POLICE.apply(save,world,id,spentSeconds):null;
  if(bridgeOutcome&&!bridgeOutcome.ok)return bridgeOutcome;
+ const custodyOutcome=root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]?
+  root.FE_WARDMAN_CUSTODY.apply(save,world,id,spentSeconds):null;
+ if(custodyOutcome&&!custodyOutcome.ok)return custodyOutcome;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  description:bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
+  source:custodyOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  description:custodyOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
   at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
   locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
@@ -251,7 +267,7 @@ function apply(save,world,id,where,{spentSeconds}={}){
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
   source:bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
   text:bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
- return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome};
+ return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
 if(typeof module==='object'&&module.exports)module.exports=api;
