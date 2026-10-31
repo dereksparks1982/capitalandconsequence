@@ -154,8 +154,12 @@ function run(){
    (testRun.error?' · '+testRun.error.message:''));
  }
  console.log('Source regression suite passed.');
- execute(builder,['--linux','dir','--x64','--publish','never'],{timeout:1200000});
+ // Failed smoke tests intentionally leave their unpacked files for diagnosis.
+ // A subsequent build must start from a clean OUTPUT folder, never retain a
+ // renamed native launcher/runtime from the previous failed attempt.
  const dir=path.join(root,'linux-unpacked');
+ fs.rmSync(dir,{recursive:true,force:true});
+ execute(builder,['--linux','dir','--x64','--publish','never'],{timeout:1200000});
  if(!fs.existsSync(dir))fail('Electron builder did not produce linux-unpacked.');
  // Electron's JS entrypoint cannot disable the Linux Chromium sandbox soon
  // enough on Ubuntu AppArmor. A native ELF bootstrap supplies --no-sandbox at
