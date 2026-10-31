@@ -1843,3 +1843,40 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .title-map-road-tools button,.title-map-road-tools select,.title-map-road-import{color:#f3e0bc;background:#352c20;border:1px solid #8b6e47;padding:3px 7px;min-height:30px}
 .title-map-road-tools output{flex:1 1 100%;color:#dcc59f;line-height:1.35}
 .title-map-road-import input{width:120px;max-width:100%;padding:2px;font-size:12px}
+
+
+/* Washington map controls: never overflow narrow game windows. The close X
+ * is anchored independently and the editing tools stay in sight ABOVE the map. */
+.title-map-head{
+ display:flex;flex-direction:column;align-items:stretch;gap:7px;
+ min-width:0;padding:10px 62px 9px 12px;
+}
+.title-map-head>div:first-child{min-width:0}
+.title-map-head h2{font-size:20px;line-height:1.2;overflow-wrap:anywhere}
+.title-map-tools{display:flex;flex:1 1 auto;min-width:0;width:100%;
+ flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:5px}
+.title-map-tools>label{max-width:100%;margin:0;min-width:0}
+.title-map-tools button{min-width:0;min-height:34px;height:auto;
+ padding:5px 9px;white-space:normal;line-height:1.2;font-size:13px}
+.title-map-tools input,.title-map-tools select{max-width:100%;min-width:0}
+#titleMapSearch{width:clamp(110px,15vw,175px);min-width:0}
+.title-map-head .title-map-road-tools{
+ display:flex;flex:0 1 auto;min-width:0;max-width:100%;max-height:min(28vh,220px);
+ overflow-y:auto;flex-wrap:wrap;justify-content:flex-start;align-items:center;
+ border:1px solid #887048;padding:9px;background:#1b1a15;
+}
+.title-map-head .title-map-road-tools[hidden]{display:none!important}
+.title-map-road-tools button,.title-map-road-tools select{white-space:normal;min-height:35px}
+.title-map-road-tools select{max-width:min(260px,100%)}
+.title-map-road-canvas.editing{touch-action:none}
+#titleMapRoadEdit[aria-pressed="true"]{background:#375d79;border-color:#79b9d5;color:#fff}
+#titleMapRoadStatus{display:block;flex:1 1 100%;color:#e5d2ac;font:12px/1.35 Georgia,serif}
+#titleMapRoadStatus:not(:empty){padding:5px 7px;border-left:3px solid #5b9ec9}
+@media(max-width:700px){
+ .title-map-head{padding:7px 53px 7px 8px}
+ .title-map-head h2{font-size:17px}
+ .title-map-tools{justify-content:flex-start}
+ .title-map-tools button{font-size:12px;padding:4px 7px;min-height:32px}
+ .title-map-head .title-map-road-tools{max-height:min(35vh,230px)}
+ .title-map-filter-label{flex-wrap:wrap}
+}
