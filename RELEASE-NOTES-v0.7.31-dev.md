@@ -114,3 +114,8 @@ After the family review order becomes enforceable, a successful local save sched
 
 ### AI Checkers opponent: adopted MIT search algorithm
 The first one-step opponent was upgraded to a locally bundled **alpha-beta search adaptation** based on [loks0n/rapid-draughts](https://github.com/loks0n/rapid-draughts) (MIT, v1.0.6). The search evaluates multiple future legal turns, centers, kings, promotions and mandatory jump chains; the physical checkers table offers depths 2–5, while offscreen NPC matches use bounded two-turn search. Copyright notice and full MIT license are retained in `vendor/rapid-draughts-ai/`. No internet, Python service, AI API or installer dependency is needed. Source tests and packaged Linux verification remain outstanding.
+
+### Permanent AI regression coverage
+- Added pure source test for actual multi-turn AI choices (depths 2–5), compulsory capture and chained jumps, king promotion, played NPC responses, scheduled offscreen matches, honest cancellation, shared-world/private game separation and attribution.
+- Added DOM-based board test for the visible physical checkers table, difficulty controls, named NPC challenge, 64-square board, real red move and AI answer, autosave and forfeit on departure.
+- Renderer load contract asserts the MIT search bundle and license appear in the offline HTML package before the checkers logic and UI. A full Ubuntu regression and Electron test have not yet been executed.

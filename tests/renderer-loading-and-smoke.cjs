@@ -18,6 +18,19 @@ for(const file of investigationOrder){
 }
 assert.ok(read('asylum-casework.js').includes('function review(world)'),'Casework review module must ship in offline bundle');
 assert.ok(read('wardman-records.js').includes('function advanceWorld(world)'),'Wardman institutional record module must ship offline');
+const gameOrder=['vendor/rapid-draughts-ai/search.js','tabletop-checkers.js',
+ 'app.js','tabletop-checkers-ui.js'];
+let gameAt=-1;
+for(const filename of gameOrder){
+ const next=html.indexOf('src="'+filename+'?');
+ assert.ok(next>gameAt,'Offline American checkers AI must load before game logic and UI: '+filename);
+ gameAt=next;
+}
+assert.ok(html.includes('tabletop-checkers.css?'),'Checkers physical board stylesheet must ship');
+assert.ok(read('vendor/rapid-draughts-ai/LICENSE').includes('Copyright (c) 2023 loks0n'),
+ 'Adopted MIT AI license must be preserved in the artifact');
+assert.ok(read('tabletop-checkers.js').includes('FE_DRAUGHTS_AI'),
+ 'All checkers opponents must use the bundled search, not random play');
 const ctx={window:{},document:{getElementById:()=>null}};
 vm.createContext(ctx);vm.runInContext(read('road-layout.js'),ctx);vm.runInContext(read('road-editor.js'),ctx);
 assert.equal(typeof ctx.window.FE_ROAD_LAYOUT.sanitize,'function');
