@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
+const html=read('index.html'),ui=read('doorman-ui.js');
+assert.ok(html.includes('src="peacock-story.js?'));
+assert.ok(html.indexOf('src="mission-engine.js?')<html.indexOf('src="peacock-story.js?'));
+assert.ok(html.indexOf('src="peacock-story.js?')<html.indexOf('src="doorman-ui.js?'));
+assert.ok(ui.includes('FE_PEACOCK_STORY')&&ui.includes('advanceWorldTime(allowed.seconds,true)'));
+assert.ok(ui.includes('saved=save(true)')&&ui.includes('S!==beforeSave'));
+assert.ok(read('personal-book-pages.js').includes('FE_PEACOCK_STORY?.summary?.(save)'));
+console.log('PASS Peacock offline order, in-room clock/autosave safeguards and private book integration');

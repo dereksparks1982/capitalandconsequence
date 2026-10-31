@@ -5,6 +5,10 @@
  */
 (function(root){'use strict';
 const TEMPLATES=Object.freeze({
+ 'peacock-favor':Object.freeze({label:'Golden Peacock · A Favor with a Price',route:'criminal',
+  initial:'first-contact',transitions:Object.freeze({
+  'first-contact':Object.freeze({choose:'awaiting-return'}),
+  'awaiting-return':Object.freeze({followUp:'completed'})})}),
  'asylum-inquiry':Object.freeze({label:'District Asylum · Preliminary Inquiry',routes:Object.freeze(['wardman','investigator']),
   initial:'inquiry',transitions:Object.freeze({inquiry:Object.freeze({file:'completed'})})}),
  'ward-round':Object.freeze({label:'District Asylum · Ordinary Ward Service',route:'wardman',

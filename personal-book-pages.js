@@ -68,6 +68,11 @@ function criminalPages(save){
   'Actual recorded shifts',[],logs.slice(-ROWS).reverse().map(e=>item(
    txt(e?.date||e?.id||'Door entry',100),
    txt(e?.result||e?.description||'No details entered.',700)))));
+ const plot=root.FE_PEACOCK_STORY?.summary?.(save);
+ if(plot?.events.length)pages.push(page('peacock-favor','Main Story','A Favor with a Price',
+  'Eli witnessed these events at the club door',
+  ['No one knows the sealed contents. A private book is not a police report.'],
+  plot.events.map(e=>item(e.date+' · '+e.source,e.description))));
  pages.push(page('plans','Private Recollections','Plans & Recollections','Personally written',
   ['The player can write about targets, rivals, romances or exploits. The game will not pretend that a plan was carried out.']));
  return pages;

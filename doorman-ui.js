@@ -24,6 +24,16 @@
    area.innerHTML='<h3>Nightclub Door · On Duty</h3><p id="doormanDoorText"></p><div id="doormanDoorActions"></div><p id="doormanDoorNotice" role="status"></p>';
    city.appendChild(area);
   }
+  const door=node('doormanDoorPanel');
+  if(door&&!node('peacockStoryPanel')){
+   const box=document.createElement('section');box.id='peacockStoryPanel';
+   box.className='doorman-work-box';box.setAttribute('aria-label','Eli Crowe main story');
+   const title=document.createElement('h4');title.textContent='Main Story · A Favor with a Price';
+   const status=document.createElement('p');status.id='peacockStoryStatus';
+   const buttons=document.createElement('div');buttons.id='peacockStoryActions';
+   const notice=document.createElement('p');notice.id='peacockStoryNotice';notice.setAttribute('role','status');
+   box.append(title,status,buttons,notice);door.appendChild(box);
+  }
  }
  function action(type,choiceId){
   if(S.characterRoute!=='criminal'||!activeProfileId())return;
@@ -55,6 +65,50 @@
   save(true);render();refresh();
   set('doormanDoorNotice',type==='begin'?'A visitor is waiting. Decide how to handle the entrance.':result.log.result+' Earned $'+(result.wageCents/100).toFixed(2)+'.');
  }
+ function storyAction(id){
+  const story=window.FE_PEACOCK_STORY,place=current(),beforeSave=S,beforeProfile=activeProfileId();
+  if(!story)return false;
+  const allowed=story.preview(S,id,place.locationId,place.roomId,{dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!allowed.ok){set('peacockStoryNotice',allowed.reason);return false}
+  if(S.dayRemaining<=allowed.seconds||!window.FE_WASHINGTON_TIME?.canSpend?.(S,allowed.seconds)||
+     window.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(S)<=allowed.seconds){
+   set('peacockStoryNotice','Not enough Washington night remains for this action.');return false;
+  }
+  const spent=window.advanceWorldTime(allowed.seconds,true);
+  if(spent!==allowed.seconds||S!==beforeSave||activeProfileId()!==beforeProfile){
+   set('peacockStoryNotice','The scene was interrupted and no choice was recorded.');return false;
+  }
+  const result=story.apply(S,id,place.locationId,place.roomId,
+   {spentSeconds:spent,dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!result.ok){set('peacockStoryNotice',result.reason);return false}
+  const saved=save(true);
+  render();refresh();
+  set('peacockStoryNotice',saved?result.description:'Autosave failed. Keep the game open to protect the encounter.');
+  return !!saved;
+ }
+ function refreshStory(){
+  const story=window.FE_PEACOCK_STORY,box=node('peacockStoryPanel'),buttons=node('peacockStoryActions');
+  if(!story||!box||!buttons)return;
+  const visible=S?.characterRoute==='criminal'&&!!activeProfileId()&&
+   !node('doormanDoorPanel')?.hidden&&!window.FE_CITY?.isDevRoom?.();
+  box.hidden=!visible;if(!visible)return;
+  const record=story.summary(S),stage=record?.stage||'unmet';
+  set('peacockStoryStatus',stage==='unmet'?'After two paid contacts, a visitor may bring a dangerous favor.':
+   stage==='offered'?'An envelope awaits your choice on a later night.':
+   stage==='decided'?'Your decision has been made. Return on another night.':
+   'Completed: '+(record?.outcome||'resolved')+'. The choice cannot be replayed.');
+  buttons.replaceChildren();
+  const ids=stage==='unmet'?['hear']:stage==='offered'?['return','manager','sell']:
+   stage==='decided'?['followUp']:[];
+  for(const id of ids){
+   const action=story.ACTIONS[id],place=current();
+   const allow=story.preview(S,id,place.locationId,place.roomId);
+   const b=button(action.label,()=>storyAction(id));
+   b.disabled=!allow.ok||S.dayRemaining<=action.seconds;
+   b.title=allow.ok?'':allow.reason;buttons.appendChild(b);
+   if(!allow.ok){const msg=document.createElement('small');msg.textContent=allow.reason;buttons.appendChild(msg)}
+  }
+ }
  function refresh(){
   mount();
   const on=S?.characterRoute==='criminal'&&!!activeProfileId(),desk=node('doormanDesk'),door=node('doormanDoorPanel');
@@ -75,6 +129,7 @@
    if(!book.logs.length){const li=document.createElement('li');li.textContent='No completed shifts yet.';list.appendChild(li)}
   }
   if(!door||door.hidden)return;
+  refreshStory();
   const choices=node('doormanDoorActions');if(!choices)return;choices.replaceChildren();
   const disabled=S.paused||S.phase!=='night';
   if(pending){

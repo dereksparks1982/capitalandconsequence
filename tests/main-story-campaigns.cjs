@@ -31,10 +31,16 @@ cop.incidentObservations={records:[
  {incidentId:'asylum-ward-death-1878',eventId:'asylum:policeMemo'},
  {incidentId:'asylum-ward-death-1878',eventId:'asylum:policeWardmanCertify'}]};
 assert.deepEqual(stories.inspect(cop).acts.slice(0,4).map(x=>x.status),Array(4).fill('milestone-recorded'));
+const favoured=basic('criminal');
+favoured.doormanDuty={totalSegments:2};
+favoured.peacockStory={stage:'resolved',finishedAt:'1878-01-08'};
+assert.equal(stories.inspect(favoured).acts[1].status,'milestone-recorded');
+const heard=basic('wardman');heard.familyRecords={hearing:{result:'dismissed'}};
+assert.equal(stories.inspect(heard).acts[3].status,'milestone-recorded');
 const doorman=basic('criminal');
 doorman.doormanDuty={totalSegments:2};
 assert.equal(stories.inspect(doorman).acts[0].status,'milestone-recorded');
-assert.equal(stories.inspect(doorman).acts[1].status,'planned');
+assert.equal(stories.inspect(doorman).acts[1].status,'available');
 const edmund=basic('wardman');
 edmund.orderlyDuty={totalAssignments:1};
 edmund.incidentObservations={records:[{incidentId:'asylum-ward-death-1878',eventId:'asylum:wardMemo'}]};

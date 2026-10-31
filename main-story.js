@@ -37,7 +37,7 @@ const CAMPAIGNS=Object.freeze({
   themes:['loyalty','deception','money','personal freedom'],
   acts:Object.freeze([
    {id:'threshold',title:'I · At the Peacock Door',goal:'Complete two paid visitor encounters at Lui’s club.',marker:'door',playable:true},
-   {id:'favour',title:'II · A Favor with a Price',goal:'Choose whether to help an endangered regular or sell information to an interested rival.',marker:null,playable:false},
+   {id:'favour',title:'II · A Favor with a Price',goal:'Meet the patron, decide who receives the sealed envelope and face the outcome.',marker:'peacockFavor',playable:true},
    {id:'leverage',title:'III · The Keeper of Secrets',goal:'Discover which patrons are using the nightclub to conceal larger schemes.',marker:null,playable:false},
    {id:'betrayal',title:'IV · Debts Come Due',goal:'Decide whom to trust when a criminal arrangement unravels.',marker:null,playable:false},
    {id:'exit',title:'V · The Last Door',goal:'Choose a lawful future, a criminal empire, or a dangerous escape.',marker:null,playable:false}
@@ -51,7 +51,7 @@ const CAMPAIGNS=Object.freeze({
    {id:'orderly',title:'I · The Family Black Sheep',goal:'Perform and file an ordinary ward assignment as Edmund.',marker:'ward',playable:true},
    {id:'death',title:'II · A Death in the Ward',goal:'Record a sourced orderly incident memorandum after examining the ward.',marker:'wardMemo',playable:true},
    {id:'petition',title:'III · The Family Petition',goal:'Discover and contest any formally documented family commitment petition.',marker:'petition',playable:true},
-   {id:'confinement',title:'IV · The Patient in His Own Asylum',goal:'Face a lawful hearing, an appeal, or irreversible institutional consequences.',marker:null,playable:false},
+   {id:'confinement',title:'IV · The Patient in His Own Asylum',goal:'Undergo a recorded commitment hearing, confinement or clinical review.',marker:'confinement',playable:true},
    {id:'inheritance',title:'V · Blood and Evidence',goal:'Expose or challenge the family’s secrets without assuming the director committed the murder.',marker:null,playable:false}
   ])})
 });
@@ -70,9 +70,12 @@ function mark(save){
   caseMemo:hasObservation(save,'policeMemo'),
   certificate:hasObservation(save,'policeWardmanCertify'),
   door:(save?.doormanDuty?.totalSegments||0)>=2,
+  peacockFavor:save?.peacockStory?.stage==='resolved'&&!!save?.peacockStory?.finishedAt,
   ward:(save?.orderlyDuty?.totalAssignments||0)>=1,
   wardMemo:hasObservation(save,'wardMemo'),
-  petition:!!save?.wardmanStanding?.petition
+  petition:!!save?.wardmanStanding?.petition,
+  confinement:!!save?.familyRecords?.hearing||!!save?.familyRecords?.appeal||
+   save?.wardmanStanding?.status==='patient'||!!save?.wardmanStanding?.custodyRisk?.review
  });
 }
 function inspect(save){
