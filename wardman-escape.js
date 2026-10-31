@@ -84,8 +84,6 @@ function apply(save,world,id,seconds){
   description='Edmund presented himself voluntarily and returned to patient custody. His original institutional appeal remains unresolved; surrender is not an admission of murder or incapacity.';
  }
  s.events.push({id,date,source:'Edmund witnessed asylum custody incident',text:description});
- root.FE_LIFE_HISTORY?.record?.(save,{id:'wardman-escape:'+id,date,
-  source:'Edmund patient-ward record',text:description});
  return {ok:true,source:'Edmund patient-ward record',description,
   outcome:s.outcome,escaped,returned};
 }
