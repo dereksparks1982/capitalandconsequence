@@ -408,6 +408,85 @@ async function runSmokeTest(win) {
     })()`);
     if(Object.entries(cityTravelTest).some(([,ok])=>ok!==true))throw new Error('Map destination travel regression: '+JSON.stringify(cityTravelTest));
 
+    // LIVE packaged renderer test. A source-string test did not detect that
+    // Road Editor's controls were offscreen or that its paint canvas was dead.
+    // Exercise the actual button, blue drawing, persistence and display.
+    const roadEditorCheck=await win.webContents.executeJavaScript(`(async()=>{
+      const previousProfile=localStorage.getItem('federalElectricActiveProfile');
+      const previousLocation=S.currentLocation?{...S.currentLocation}:null;
+      const previousLayout=S.customRoadLayout?JSON.parse(JSON.stringify(S.customRoadLayout)):null;
+      const previousGameDate=S.gameDate,previousPhase=S.phase;
+      const previousPaused=S.paused,previousRemaining=S.dayRemaining;
+      const menu=document.getElementById('careerMainMenu'),previousMenuHidden=menu?.hidden;
+      const out={};
+      try{
+        if(menu)menu.hidden=true;
+        localStorage.setItem('federalElectricActiveProfile','__smoke-road-editor');
+        S.phase='day';S.paused=false;S.dayRemaining=Math.max(3600,S.dayRemaining||0);
+        S.customRoadLayout={version:1,active:false,segments:[],blocks:[]};
+        closeTitleMap(false);closeCityRoom();openTitleMap();
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        const viewer=document.getElementById('titleMapViewer');
+        const button=document.getElementById('titleMapRoadEdit');
+        const controls=document.getElementById('titleMapRoadTools');
+        const host=document.getElementById('titleMapRoadCanvas');
+        const mode=document.getElementById('titleMapRoadMode');
+        const heading=document.getElementById('titleMapHeading');
+        out.title=heading?.textContent?.trim()==='Washington, D.C.';
+        out.mounted=!!window.FE_ROAD_EDITOR?.getStatus;
+        button.click();
+        out.open=window.FE_ROAD_EDITOR.isEditing()&&!controls.hidden&&!host.hidden;
+        const toolRect=button.getBoundingClientRect();
+        out.controlsFit=toolRect.left>=0&&toolRect.right<=innerWidth+2&&toolRect.bottom<=innerHeight+2;
+        mode.value='paint';mode.dispatchEvent(new Event('change',{bubbles:true}));
+        const rect=host.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+        out.canvasSized=rect.width>100&&rect.height>100;
+        const pointer=(type,x,y)=>host.dispatchEvent(new PointerEvent(type,{
+          bubbles:true,cancelable:true,pointerId:73,pointerType:'mouse',
+          isPrimary:true,button:0,buttons:type==='pointerup'?0:1,
+          clientX:x,clientY:y
+        }));
+        pointer('pointerdown',cx,cy);
+        pointer('pointermove',cx+40,cy+5);
+        pointer('pointerup',cx+40,cy+5);
+        out.painted=(S.customRoadLayout?.blocks?.length||0)>2;
+        const surface=host.querySelector('canvas');
+        if(surface&&rect.width>0){
+          const scale=surface.width/rect.width;
+          const x=Math.floor((cx-rect.left)*scale),y=Math.floor((cy-rect.top)*scale);
+          const pixel=surface.getContext('2d').getImageData(x,y,1,1).data;
+          out.bluePixel=pixel[3]>0&&pixel[2]>pixel[0];
+        }else out.bluePixel=false;
+        button.click();
+        out.savedVisible=!window.FE_ROAD_EDITOR.isEditing()&&!host.hidden
+          &&(S.customRoadLayout?.blocks?.length||0)>2;
+        out.toolClosed=controls.hidden;
+        const before=window.FE_CAPITAL_STREETS?.streetRoute?.({x:.11,y:.33},{x:.19,y:.33});
+        window.FE_CAPITAL_STREETS?.setBuildings?.([{x0:.145,y0:.325,x1:.155,y1:.335}]);
+        const blocked=window.FE_CAPITAL_STREETS?.streetRoute?.({x:.11,y:.33},{x:.19,y:.33});
+        out.routeAvoidsBlue=!!before?.points?.length&&!!blocked?.points?.length&&
+          window.FE_CAPITAL_STREETS.validateItinerary(blocked.points).ok&&
+          JSON.stringify(before.points)!==JSON.stringify(blocked.points);
+        return out;
+      }finally{
+        if(window.FE_ROAD_EDITOR?.isEditing?.())window.FE_ROAD_EDITOR.toggle();
+        closeTitleMap(false);closeCityRoom();
+        if(previousLayout)S.customRoadLayout=previousLayout;
+        else delete S.customRoadLayout;
+        S.currentLocation=previousLocation||{locationId:'factory',roomId:'executive-office'};
+        S.gameDate=previousGameDate;S.phase=previousPhase;
+        S.paused=previousPaused;S.dayRemaining=previousRemaining;
+        window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);
+        window.FE_CAPITAL_STREETS?.setBuildings?.(S.customRoadLayout?.blocks||[]);
+        if(menu)menu.hidden=previousMenuHidden;
+        if(previousProfile===null)localStorage.removeItem('federalElectricActiveProfile');
+        else localStorage.setItem('federalElectricActiveProfile',previousProfile);
+        localStorage.removeItem('federalElectricProfile___smoke-road-editor');
+      }
+    })()`);
+    if(Object.values(roadEditorCheck).some(ok=>ok!==true))
+      throw new Error('Live blue-building/road-editor regression: '+JSON.stringify(roadEditorCheck));
+
     // Check personal effects are empty by default, attached to the save,
     // and cannot be retrieved from another city location.
     const effectsTest=await win.webContents.executeJavaScript(`(() => {
