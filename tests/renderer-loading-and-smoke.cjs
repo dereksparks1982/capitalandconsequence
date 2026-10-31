@@ -9,7 +9,7 @@ const order=['vendor/pathfinding/pathfinding-browser.min.js','vendor/konva/konva
 let at=-1;
 for(const name of order){const next=html.indexOf('src="'+name+'?');assert.ok(next>at,'Missing or misordered script: '+name);at=next;}
 const investigationOrder=['shared-world.js','asylum-incident.js','asylum-evidence.js',
- 'asylum-casework.js','asylum-story.js','app.js','asylum-story-ui.js'];
+ 'asylum-casework.js','wardman-records.js','asylum-story.js','app.js','asylum-story-ui.js'];
 let inquiryPrevious=-1;
 for(const file of investigationOrder){
  const scriptPosition=html.indexOf('src="'+file+'?');
@@ -17,6 +17,7 @@ for(const file of investigationOrder){
  inquiryPrevious=scriptPosition;
 }
 assert.ok(read('asylum-casework.js').includes('function review(world)'),'Casework review module must ship in offline bundle');
+assert.ok(read('wardman-records.js').includes('function advanceWorld(world)'),'Wardman institutional record module must ship offline');
 const ctx={window:{},document:{getElementById:()=>null}};
 vm.createContext(ctx);vm.runInContext(read('road-layout.js'),ctx);vm.runInContext(read('road-editor.js'),ctx);
 assert.equal(typeof ctx.window.FE_ROAD_LAYOUT.sanitize,'function');

@@ -98,3 +98,8 @@ Edmund's brother can have the asylum duty register amended on January 7 after th
 ### Family appeal and evidence privacy refinements
 - The casebook does not reveal the existence of an altered director’s register until Edmund personally compares it. Passive shared-world knowledge cannot spoil the investigation.
 - A fresh independent porter statement after an adverse hearing can improve an appeal to the independent panel. A still-unsupported allegation cannot automatically overturn the petition.
+
+## Contested-family hearing UI and offline loader regressions
+- The active in-room inquiry now tells Edmund the actual hearing or appeal result, with workplace trust, family pressure and petition status. It no longer hides the result behind a generic family-status message.
+- The renderer load-order contract verifies the new Wardman records script runs after shared-world and casework prerequisites but before asylum story and app startup.
+- New dedicated source regression: real calendar, dated register preservation and revision, family meeting pressure, hearings, reversal after additional evidence, delayed confinement, no wages during custody, and a once-only patient-ward appeal.

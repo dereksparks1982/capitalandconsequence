@@ -56,9 +56,12 @@ function action(id){
  if(!persisted){show('Autosave failed. Keep the game open and retry after freeing storage.');return false}
  render();refresh();
  const standing=S.characterRoute==='wardman'&&id.startsWith('family')?S.wardmanStanding:null;
- show(standing?'Response recorded. Workplace trust: '+standing.workplaceTrust+
-  '/100 · Family pressure: '+standing.familyPressure+'/100 · Petition: '+(standing.petition?.status||'none')+'.':
-  result.familyOutcome?.description||'Filed in your private records. No suspect has been declared guilty.');
+ show(standing?
+  (result.familyOutcome?.description||'Family response recorded.')+
+  ' Workplace trust: '+standing.workplaceTrust+
+  '/100 · Family pressure: '+standing.familyPressure+
+  '/100 · Petition: '+(standing.petition?.status||'none')+'.':
+  'Filed in your private records. No suspect has been declared guilty.');
  return true;
 }
 function fileSuspect(){
