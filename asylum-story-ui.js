@@ -61,7 +61,7 @@ function action(id){
  render();refresh();
  const standing=S.characterRoute==='wardman'&&(id.startsWith('family')||id.startsWith('ward'))?S.wardmanStanding:null;
  show(standing?
-  (result.escapeOutcome?.description||result.inheritanceOutcome?.description||result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
+  (result.estatePoliceOutcome?.description||result.escapeOutcome?.description||result.inheritanceOutcome?.description||result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
   ' Workplace trust: '+standing.workplaceTrust+
   '/100 · Family pressure: '+standing.familyPressure+
   '/100 · Petition: '+(standing.petition?.status||'none')+'.':
@@ -140,6 +140,14 @@ function casebook(){
     (escape.outcome?' · '+escape.outcome:'')+
     (escape.absconder?' · Outstanding custody order':'');
    list.append(line);
+  }
+  const estatePolice=root.FE_WARDMAN_ESTATE_POLICE?.summary?.(S);
+  if(estatePolice&&(estatePolice.certified||estatePolice.examined||estatePolice.received)){
+   const item=document.createElement('p');
+   item.textContent=S.characterRoute==='investigator'?
+    'Public trust record: '+(estatePolice.certified?'Signed comparison filed':'Abstract inspected'):
+    'Public trust police certificate: '+(estatePolice.received?'copy obtained':'not obtained');
+   list.append(item);
   }
   const police=root.FE_WARDMAN_POLICE?.summary?.(S);
   if(police){

@@ -99,6 +99,10 @@ function wardmanPages(save){
   findings.filter(e=>e?.eventId?.startsWith('asylum:')).map(e=>
    item(e.at+' · '+e.source+(e.locationId?' · '+e.locationId+(e.roomId?'/'+e.roomId:''):''),
     e.description))));
+ const trustPolice=root.FE_WARDMAN_ESTATE_POLICE?.summary?.(save);
+ if(trustPolice?.received)pages.push(page('wardman-trust-certificate','Family Papers',
+  'Certified Civil Trust Comparison','Personally received public police abstract',
+  ['Financial interest is not proof of a murder or a medical diagnosis.']));
  const escape=root.FE_WARDMAN_ESCAPE?.summary?.(save);
  if(escape?.events.length)pages.push(page('wardman-escape','Personal Matters',
   'Custody, Escape and Return','Edmund’s own recorded actions, never a legal pardon',

@@ -30,6 +30,15 @@ function advanceWorld(world){
    replacement:null,revisionDate:null,revisionSource:null};
  }
  const iso=root.FE_WORLD_CLOCK?.calendar?.(world.clock)?.iso||null;
+ if(iso&&iso>='1878-01-10T09:00'&&!file.trustDocket){
+  file.trustDocket={version:1,filedAt:'1878-01-10T09:00',
+   source:'public district civil settlement register',
+   summary:'Wardman trusteeship clauses assign control of certain assets only upon a formal incapacity finding. No wrongdoing established.'};
+  root.FE_SHARED_WORLD.recordEvent(world,{id:'wardman-trust-public-docket:'+CASE,
+   type:'civil-trust-filing',at:'1878-01-10T09:00',locationId:'metropolitanPolice',
+   summary:'A civil settlement abstract was publicly registered, without determining any person’s guilt.'});
+ }
+
  if(iso&&iso>=AMEND&&!file.replacement){
   // The alteration is fixed in this shared campaign, before either
   // protagonist can compare records. Whether it is criminal is NOT assumed.
@@ -52,12 +61,13 @@ function proof(save){
  const decline=save?.wardmanStanding?.familyMeetings?.some(m=>m.choice==='familyDecline');
  const certificate=personal?.policeExtract;
  const estate=!!root.FE_WARDMAN_INHERITANCE?.proof?.(save);
+ const estatePolice=!!root.FE_WARDMAN_ESTATE_POLICE?.proof?.(save);
  const police=!!certificate&&certificate.caseId===CASE&&
   certificate.certificateId==='wardman-police-certificate:'+CASE&&
   ['familyPoliceCopy','familyPatientPoliceCopy'].includes(certificate.action)&&
   has(save,certificate.action);
- return {signed,comparison,witness,publicMeeting:!!publicMeeting,decline:!!decline,estate,police,
-  score:(signed?4:0)+(comparison?2:0)+(witness?3:0)+(publicMeeting?2:0)+(decline?1:0)+(estate?2:0)+(police?5:0)};
+ return {signed,comparison,witness,publicMeeting:!!publicMeeting,decline:!!decline,estate,estatePolice,police,
+  score:(signed?4:0)+(comparison?2:0)+(witness?3:0)+(publicMeeting?2:0)+(decline?1:0)+(estate?2:0)+(estatePolice?3:0)+(police?5:0)};
 }
 function preview(save,world,id){
  if(save?.characterRoute!=='wardman')return {ok:false,reason:'These family papers belong to Edmund.'};

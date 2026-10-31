@@ -1,0 +1,3 @@
+# Capital & Consequence v0.7.38-dev | Sam cross-character estate inquiry
+
+A public civil Wardman trust abstract is registered on a fixed alternate-history date independently of private correspondence. Sam may inspect and certify it from the police station only after a sergeant referral and authenticated case-register work. A signed certificate becomes shared-world public evidence only on a valid campaign save. Edmund must personally obtain a copy in reception or patient custody to gain three documented petition-evidence points. The abstract is possible financial motive, not proof of a killer. No invisible transfer of secrets. Source regression added. No map changes or GitHub Actions, Linux full test pending.

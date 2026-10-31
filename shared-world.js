@@ -63,6 +63,7 @@ function capture(save,prior,profileId=null){
  root.FE_ASYLUM_CASEWORK?.publish?.(next,save,profileId);
  root.FE_ASYLUM_STORY?.advanceWorld?.(next);
  root.FE_WARDMAN_POLICE?.publish?.(next,save,profileId);
+ root.FE_WARDMAN_ESTATE_POLICE?.publish?.(next,save,profileId);
  return next;
 }
 function recordEvent(world,{id,type,at,summary,actorId,locationId}={}){

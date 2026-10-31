@@ -97,6 +97,10 @@ const ACTIONS=Object.freeze({
   location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'petition appeal',text:'Appealed the disputed confinement finding.'},
  familyPatientAppeal:{label:'Appeal from patient ward · 15 minutes',seconds:900,
   location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward petition',text:'Petitioned for release from an adverse order.'},
+ policeEstateAbstract:{label:'Read public family trust abstract · 10 minutes',seconds:600,location:'metropolitanPolice',room:'station-duty-room',routes:['investigator'],source:'public civil docket',text:'Reviewed the recorded Wardman civil settlement.'},
+ policeEstateCompare:{label:'Certify public estate and asylum register comparison · 10 minutes',seconds:600,location:'metropolitanPolice',room:'station-duty-room',routes:['investigator'],source:'police sworn comparison',text:'Recorded the financial conflict of interest in a certified report.'},
+ familyEstatePoliceCopy:{label:'Obtain Sam’s certified estate comparison · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'police public certificate',text:'Received an independent copy of civil trust findings.'},
+ familyPatientEstatePoliceCopy:{label:'Request Sam’s estate certificate in patient ward · 10 minutes',seconds:600,location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'public certificate ward delivery',text:'Received a police-certified trust record in custody.'},
  policeWardmanCompare:{label:'Compare director’s revised duty book · 10 minutes',seconds:600,
   location:'blackwoodAsylum',room:'reception',routes:['investigator'],
   source:'police physical record comparison',text:'Examined conflicting institutional staffing entries.'},
@@ -154,6 +158,10 @@ function preview(save,world,id,where){
   const decision=root.FE_WARDMAN_POLITICS.canDecide(save,id,CASE_ID);
   if(!decision.ok)return decision;
  }
+ if(root.FE_WARDMAN_ESTATE_POLICE?.ACTIONS?.[id]){
+  const check=root.FE_WARDMAN_ESTATE_POLICE.preview(save,world,id);
+  if(!check.ok)return check;
+ }
  if(root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id]){
   const escapeCheck=root.FE_WARDMAN_ESCAPE.preview(save,id);
   if(!escapeCheck.ok)return escapeCheck;
@@ -181,7 +189,7 @@ function preview(save,world,id,where){
   if(!authorized.ok)return authorized;
  }
  if(save.characterRoute==='wardman'&&save.wardmanStanding?.status==='patient'&&
-    !['familyPatientAppeal','familyPatientPoliceCopy','familyReopenAppeal'].includes(id)&&
+    !['familyPatientAppeal','familyPatientPoliceCopy','familyPatientEstatePoliceCopy','familyReopenAppeal'].includes(id)&&
     !root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]&&!root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id])
   return {ok:false,reason:'Edmund is confined as a patient and cannot perform ordinary asylum inquiries.'};
  if(save.characterRoute==='investigator'&&
@@ -256,14 +264,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const escapeOutcome=root.FE_WARDMAN_ESCAPE?.ACTIONS?.[id]?
   root.FE_WARDMAN_ESCAPE.apply(save,world,id,spentSeconds):null;
  if(escapeOutcome&&!escapeOutcome.ok)return escapeOutcome;
+ const estatePoliceOutcome=root.FE_WARDMAN_ESTATE_POLICE?.ACTIONS?.[id]?
+  root.FE_WARDMAN_ESTATE_POLICE.apply(save,world,id,spentSeconds):null;
+ if(estatePoliceOutcome&&!estatePoliceOutcome.ok)return estatePoliceOutcome;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  description:escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
+  source:estatePoliceOutcome?.source||escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  description:estatePoliceOutcome?.description||escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
   at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
   locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
@@ -290,9 +301,9 @@ function apply(save,world,id,where,{spentSeconds}={}){
   }
  }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
-  source:escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  text:escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
- return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome,inheritanceOutcome,escapeOutcome};
+  source:estatePoliceOutcome?.source||escapeOutcome?.source||inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  text:estatePoliceOutcome?.description||escapeOutcome?.description||inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
+ return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome,inheritanceOutcome,escapeOutcome,estatePoliceOutcome};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
 if(typeof module==='object'&&module.exports)module.exports=api;
