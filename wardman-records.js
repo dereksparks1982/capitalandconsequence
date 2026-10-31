@@ -50,8 +50,13 @@ function proof(save){
  const witness=!!personal?.witness;
  const publicMeeting=save?.wardmanStanding?.familyMeetings?.some(m=>m.choice==='familyPublic'&&m.witnessPresent);
  const decline=save?.wardmanStanding?.familyMeetings?.some(m=>m.choice==='familyDecline');
- return {signed,comparison,witness,publicMeeting:!!publicMeeting,decline:!!decline,
-  score:(signed?4:0)+(comparison?2:0)+(witness?3:0)+(publicMeeting?2:0)+(decline?1:0)};
+ const certificate=personal?.policeExtract;
+ const police=!!certificate&&certificate.caseId===CASE&&
+  certificate.certificateId==='wardman-police-certificate:'+CASE&&
+  ['familyPoliceCopy','familyPatientPoliceCopy'].includes(certificate.action)&&
+  has(save,certificate.action);
+ return {signed,comparison,witness,publicMeeting:!!publicMeeting,decline:!!decline,police,
+  score:(signed?4:0)+(comparison?2:0)+(witness?3:0)+(publicMeeting?2:0)+(decline?1:0)+(police?5:0)};
 }
 function preview(save,world,id){
  if(save?.characterRoute!=='wardman')return {ok:false,reason:'These family papers belong to Edmund.'};

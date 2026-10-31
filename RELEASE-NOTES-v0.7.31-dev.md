@@ -125,3 +125,8 @@ The first one-step opponent was upgraded to a locally bundled **alpha-beta searc
 - Expanded the existing playable checkers tables to five actual city room identifiers: Hillsdale street, working-class card room, Commerce Club, Russian Trade Hall and University Engineering Hall. No new map pins or room geometry.
 - Added visible outlines for selectable men, selected-piece ARIA state and keyboard focus indication; legal destination markers remain separate. Added a readable recent-move ledger including jumps and crowning during the match.
 - Expanded source and DOM regressions for authentic venue mapping, accessible choices and move history. Development source needs full Linux QA before packaged claims.
+
+### Sam and Edmund shared-police-certificate case arc
+- Added timed, real-room police compare and certify actions, plus explicit certificate pickup for a free or confined Edmund. The signed certificate enters the single campaign world after Sam's save and police authorization is verified, with an idempotent public event.
+- Family petitions receive credit only for documents Edmund collected through his own separate action; later, a newly acquired certificate permits one independent rehearing after his earlier patient appeal was denied. A successful rehearing restores orderly employment and releases Edmund to existing asylum reception.
+- Kept private murder evidence separate and preserved a fixed murderer regardless of police certification. No diagnosis or criminal verdict is invented. Source development remains unverified by a full Ubuntu runtime suite.

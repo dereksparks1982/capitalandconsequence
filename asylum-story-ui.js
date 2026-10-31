@@ -54,14 +54,17 @@ function action(id){
  }
  const persisted=save(true);
  if(!persisted){show('Autosave failed. Keep the game open and retry after freeing storage.');return false}
+ if(result.bridgeOutcome?.released||result.familyOutcome?.released){
+  root.FE_CITY?.openRoom?.('blackwoodAsylum','reception');
+ }
  render();refresh();
  const standing=S.characterRoute==='wardman'&&id.startsWith('family')?S.wardmanStanding:null;
  show(standing?
-  (result.familyOutcome?.description||'Family response recorded.')+
+  (result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
   ' Workplace trust: '+standing.workplaceTrust+
   '/100 · Family pressure: '+standing.familyPressure+
   '/100 · Petition: '+(standing.petition?.status||'none')+'.':
-  'Filed in your private records. No suspect has been declared guilty.');
+  (result.bridgeOutcome?.description||'Filed in your private records. No suspect has been declared guilty.'));
  return true;
 }
 function fileSuspect(){
@@ -112,6 +115,13 @@ function casebook(){
    ' · Petition: '+(family.petition||'none')+
    (family.confinement?' · EDMUND CONFINED AS A PATIENT':'');
   list.append(summary);
+  const police=root.FE_WARDMAN_POLICE?.summary?.(S);
+  if(police){
+   const entry=document.createElement('p');
+   entry.textContent='Independent police evidence: '+(police.received?'Authenticated copy received':'Not yet obtained')+
+    (police.rehearing?' · Reopened hearing: '+police.rehearing:'');
+   list.append(entry);
+  }
  }
  const result=document.createElement('p');
  result.textContent=file.ready?

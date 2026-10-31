@@ -58,3 +58,7 @@ Edmund's brother can have the asylum duty register amended on January 7 after th
 
 ### AI Checkers opponent: adopted MIT search algorithm
 The first one-step opponent was upgraded to a locally bundled **alpha-beta search adaptation** based on [loks0n/rapid-draughts](https://github.com/loks0n/rapid-draughts) (MIT, v1.0.6). The search evaluates multiple future legal turns, centers, kings, promotions and mandatory jump chains; the physical checkers table offers depths 2–5, while offscreen NPC matches use bounded two-turn search. Copyright notice and full MIT license are retained in `vendor/rapid-draughts-ai/`. No internet, Python service, AI API or installer dependency is needed. Source tests and packaged Linux verification remain outstanding.
+
+
+### Certified Sam-to-Edmund police evidence (development)
+After the disputed asylum duty register is revised, Sam can inspect both documents in person, then file a certified comparison through the metropolitan police duty sergeant. The certificate becomes part of the shared Washington record only after a valid campaign save, not by sharing Sam’s private observations. Edmund must obtain his own official copy in reception or request delivery while confined. The proof can support his petition at an initial hearing, or reopen a previously denied patient appeal when received afterward. This is an administrative discrepancy, not proof that the director committed murder. No new map locations or packaged release have been made for this change.
