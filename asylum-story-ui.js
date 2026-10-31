@@ -103,7 +103,7 @@ function casebook(){
  const family=root.FE_WARDMAN_RECORDS?.summary?.(S,world);
  if(family&&S.characterRoute==='wardman'){
   const summary=document.createElement('p');
-  summary.textContent='Institutional records: '+(family.amended?'Director’s register amended':'Original register in force')+
+  summary.textContent='Institutional records: '+(family.amended?'Amendment verified firsthand':'No amendment independently verified')+
    ' · Preserved copy: '+(family.copyPreserved?'yes':'no')+
    ' · Independent witness: '+(family.witness?'yes':'no')+
    ' · Petition: '+(family.petition||'none')+

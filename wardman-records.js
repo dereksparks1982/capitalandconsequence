@@ -126,7 +126,9 @@ function apply(save,world,id,spentSeconds){
    result='The panel sustained a provisional confinement order. Edmund has two days before transfer, with a right to appeal.';
   }
  }else{
-  const evidence=proof(save),overturned=evidence.score>=6;
+  // New independent corroboration can reverse an adverse hearing even
+  // without a preserved original, but an unsupported assertion cannot.
+  const evidence=proof(save),overturned=evidence.score>=5;
   s.appeal={at,score:evidence.score,result:overturned?'overturned':'denied',
    source:'recorded independent petition appeal'};
   if(overturned){
@@ -153,7 +155,7 @@ function apply(save,world,id,spentSeconds){
 function summary(save,world){
  const p=save?.characterRoute==='wardman'?save.wardmanStanding:null;
  const file=official(world),s=save?.familyRecords;
- return {amended:!!file?.revisionDate,copyPreserved:!!s?.original,
+ return {amended:!!file?.revisionDate&&has(save,'familyCompare'),copyPreserved:!!s?.original,
   comparison:!!s?.comparison,witness:!!s?.witness,
   petition:p?.petition?.status||null,confinement:p?.status==='patient',
   hearing:s?.hearing?.result||null,appeal:s?.appeal?.result||null};
