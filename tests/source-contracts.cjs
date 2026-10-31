@@ -648,7 +648,7 @@ check(city.getLocation('governmentHospital').mapPlacement==='map-anchored'&&city
 check(city.getRoom('governmentHospital','reception')?.id==='reception','Public hospital entrance is addressable');
 check(city.getRoom('governmentHospital','patient-ward')?.restricted===true&&city.getRoom('governmentHospital','superintendent-office')?.restricted===true,'Wards and superintendent office are access restricted');
 check(vc.window.FE_VENUES.canEnterLocation('governmentHospital'),'Public hospital reception is accessible from game start');
-check(appSource.includes('if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS')&&appSource.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms'),'Room entry and room buttons enforce staff permissions except in explicit dev override');
+check(appSource.includes('if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS')&&appSource.includes('button.disabled=(!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms'),'Room entry and room buttons enforce staff permissions except in explicit dev override');
 check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').includes('document.body.appendChild(devPanel)'),'Dev panel stays accessible throughout the live game');
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');

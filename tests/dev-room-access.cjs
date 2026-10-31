@@ -27,7 +27,8 @@ assert.equal(access.canRoom(city,{kind:'player',route:'criminal'},'blackwoodAsyl
 assert.ok(source.includes('if(!dev&&!titleDevUnlockAllRooms&&window.FE_PATROL?.travel?.(S,location.id)?.ok===false'));
 assert.ok(source.includes('if(!dev&&!titleDevUnlockAllRooms&&window.FE_VENUES'));
 assert.ok(source.includes('if(room?.restricted&&!dev&&!titleDevUnlockAllRooms'));
-assert.ok(source.includes('button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true'));
+assert.ok(source.includes('button.disabled=(!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true)'),
+ 'Restricted room buttons remain disabled without authorization or explicit developer override');
 assert.ok(source.includes('if(!titleDevUnlockAllRooms)restoreNormalCityRoomAccess();'));
 assert.ok(source.includes("payload=Object.assign({},payload,{currentLocation:{locationId:'hillsdale',roomId:'neighborhood-street'}})"));
 assert.ok(menu.indexOf('document.body.appendChild(devPanel)')<menu.indexOf('if(legacy){legacy.hidden=true'));

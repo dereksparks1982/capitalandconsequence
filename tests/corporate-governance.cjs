@@ -16,9 +16,17 @@ function charter(s){
  s.currentLocation.locationId='brokerOffice';
 }
 const previewSave=setup();
+// Visit the stockbroker so this test isolates the independent charter gate.
+// Outside the brokerage, the prospectus must separately deny remote issuance.
+previewSave.currentLocation.locationId='brokerOffice';
 const unopened=C.prospectus(previewSave,3000,500,100);
 assert.equal(unopened.ok,false,'Private firm has no exchange listing');
 assert.match(unopened.reason,/Incorporate/);
+assert.equal(unopened.problems.some(reason=>/Incorporate/.test(reason)),true,
+ 'A private company cannot offer shares even when Charles visits the broker');
+const remoteSave=setup();
+assert.match(C.prospectus(remoteSave,3000,500,100).reason,/stockbroker/,
+ 'Listing is impossible remotely even before incorporation');
 const stored=JSON.stringify(previewSave);
 const draft=C.prospectus(previewSave,3000,500,100);
 assert.equal(JSON.stringify(previewSave),stored,'Prospectus is strictly read-only');
