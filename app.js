@@ -3610,7 +3610,9 @@ function renderCapitalTravelChoice(id){
   const custom=window.FE_ROAD_LAYOUT?.isActive?.()===true;
   notice.textContent=custom?
    'Your custom streets do not connect this address. Choose Use Original Streets without deleting your drawings.':
-   'Road route unavailable. The original street network could not calculate a route.';
+   S.customRoadLayout?.blocks?.length?
+    'Blue building marks block this route. Open Road Editor and erase or adjust the marked buildings.':
+    'Road route unavailable. The original street network could not calculate a route.';
   if(restoreStreets)restoreStreets.hidden=!custom;
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();return;
  }
@@ -3858,7 +3860,9 @@ async function travelFromTitleMap(event){
   const custom=window.FE_ROAD_LAYOUT?.isActive?.()===true;
   if(travelNote)travelNote.textContent=custom?
    'Your custom streets cannot reach this location. Choose Use Original Streets. No journey was recorded.':
-   'Street route unavailable. You have not traveled or been charged.';
+   S.customRoadLayout?.blocks?.length?
+    'Blue buildings block the route. Use Road Editor to erase or adjust them. No journey was recorded.':
+    'Street route unavailable. You have not traveled or been charged.';
   const restore=document.getElementById('titleMapRestoreStreets');
   if(restore)restore.hidden=!custom;
   return false;

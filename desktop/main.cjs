@@ -436,8 +436,13 @@ async function runSmokeTest(win) {
         out.mounted=!!window.FE_ROAD_EDITOR?.getStatus;
         button.click();
         out.open=window.FE_ROAD_EDITOR.isEditing()&&!controls.hidden&&!host.hidden;
-        const toolRect=button.getBoundingClientRect();
-        out.controlsFit=toolRect.left>=0&&toolRect.right<=innerWidth+2&&toolRect.bottom<=innerHeight+2;
+        const controlsToCheck=[...document.querySelectorAll('.title-map-tools button, .title-map-tools input, .title-map-tools select')];
+        out.controlsFit=controlsToCheck.length>=8&&controlsToCheck.every(node=>{
+          const r=node.getBoundingClientRect();
+          return r.left>=-2&&r.right<=innerWidth+2&&r.top>=-2&&r.bottom<=innerHeight+2;
+        });
+        const mapView=document.getElementById('titleMapViewport').getBoundingClientRect();
+        out.mapVisible=mapView.width>=180&&mapView.height>=100;
         mode.value='paint';mode.dispatchEvent(new Event('change',{bubbles:true}));
         const rect=host.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
         out.canvasSized=rect.width>100&&rect.height>100;
@@ -461,6 +466,7 @@ async function runSmokeTest(win) {
         out.savedVisible=!window.FE_ROAD_EDITOR.isEditing()&&!host.hidden
           &&(S.customRoadLayout?.blocks?.length||0)>2;
         out.toolClosed=controls.hidden;
+        window.FE_CAPITAL_STREETS?.setBuildings?.([]);
         const before=window.FE_CAPITAL_STREETS?.streetRoute?.({x:.11,y:.33},{x:.19,y:.33});
         window.FE_CAPITAL_STREETS?.setBuildings?.([{x0:.145,y0:.325,x1:.155,y1:.335}]);
         const blocked=window.FE_CAPITAL_STREETS?.streetRoute?.({x:.11,y:.33},{x:.19,y:.33});
