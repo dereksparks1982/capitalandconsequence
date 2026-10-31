@@ -3527,6 +3527,9 @@ function capitalTravelPath(fromId,toId){
   return {x:p.x/img.naturalWidth,y:p.y/img.naturalHeight};
  });
  window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);
+ // Blue building markings obstruct the normal street graph as well as
+ // explicitly activated custom A* streets. They never change the map image.
+ window.FE_CAPITAL_STREETS?.setBuildings?.(S.customRoadLayout?.blocks||[]);
  const points=window.FE_CAPITAL_TRAVEL?.route?.(from,to)||[];
  // Two independently entered places may share the same provisional printed
  // anchor. They still require a short visit, not a 30-minute fallback.

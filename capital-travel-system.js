@@ -33,6 +33,9 @@ function route(from,to){
   path.namedRoads=street.namedRoads;
   return path;
  }
+ // Never draw a fallback through user-painted blue buildings. A disconnected
+ // street network must be fixed with the editor, not disguised as a shortcut.
+ if(root.FE_CAPITAL_STREETS?.diagnostic?.()?.blueBuildings>0)return [];
  // Fallback only if the guide network cannot connect the destinations.
  // This path remains visibly flagged as an unverified approximation.
  const lane=clamp(Math.round(((a.y+b.y)/2)*18)/18);

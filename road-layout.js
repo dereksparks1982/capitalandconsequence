@@ -7,7 +7,7 @@
 'use strict';
 const PF=root.PF||(typeof module==='object'&&module.exports?require('./vendor/pathfinding/pathfinding-browser.min.js'):null);
 const YUKA=root.YUKA||(typeof module==='object'&&module.exports?require('./vendor/yuka/yuka.min.js'):null);
-const W=192,H=109,MAX_ROADS=2200,MAX_BLOCKS=500;
+const W=192,H=109,MAX_ROADS=2200,MAX_BLOCKS=1200;
 let layout=null,network=null;
 const validPoint=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1;
 function sanitize(src){
