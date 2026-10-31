@@ -1,6 +1,6 @@
 # Tabletop, Parlor & Social Games: Living Washington Design Register
 
-**Capital & Consequence | Design specification | 29 October 2026 | Chess prototype source integrated; other games planned**
+**Capital & Consequence | Game register | 30 October 2026 | Chess and American checkers implemented in development source**
 
 ## Governing rule
 
@@ -8,7 +8,7 @@ Washington's games, tournaments, champions, defeats, rivalries and friendships e
 
 Games are discovered **at actual venues**, according to period, local culture, available equipment, scheduled players, permission to enter, and opening hours. There is no universal games button, no simultaneous presence in two rooms, and no magic remote opponent. A historic champion mentioned in the paper must have won a genuine simulated match.
 
-**Scope:** 28 distinct games identified and approved in design discussion, including Western dominoes, Chinese dominoes/Pai Gow, and Mahjong. Existing poker, horse/dog racing, boxing and fishing remain separate systems but should eventually share the same competition ledger and newspaper reporting contract. **Current source status:** Chess is the first game integrated with a licensed rules engine and top-down player-versus-present-NPC room UI, plus initial NPC-only fixtures and news. The other 27 games remain design-only. Chess league titles, NPC preferences, advanced skill and polished portrait artwork are still future work.
+**Scope:** 28 distinct games identified and approved in design discussion, including Western dominoes, Chinese dominoes/Pai Gow, and Mahjong. Existing poker, horse/dog racing, boxing and fishing remain separate systems but should eventually share the same competition ledger and newspaper reporting contract. **Current source status:** Chess uses the approved BSD-licensed chess.js engine. Game #2, Checkers / American Draughts, is now implemented with original legal-move logic, forced captures, king rules, live NPC tables and NPC-only scheduled results. The remaining 26 catalogued games remain design-only. Championship circuits, nuanced social preferences and painted NPC portraits are still future work.
 
 ## Complete game register (28)
 
@@ -98,3 +98,12 @@ The city registry and original printed Washington map **must not be changed** to
 Reuse the existing saved Washington clock, location/room access, NPC schedules, social/memory, shared-world event and press systems. Prefer a **single scheduling/results/competition framework** with modular **per-game rules engines**; hard games such as chess, Go, Mahjong, Xiangqi and backgammon require genuine legal moves and competent opposition, not outcome-only random buttons. Inspect library compatibility, licenses, dates and dependencies *before* bringing third-party code into this proprietary game.
 
 **Research and adoption:** The [candidate engine survey](OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) records candidate engines, sources, license evidence, complexity and gaps. **Only chess.js v0.10.3 is currently adopted; research listings do not imply other dependencies are installed.**
+
+
+### #2 Checkers · American draughts development integration (30 October 2026)
+
+- `tabletop-checkers.js` implements the English/American 8×8 rules: 12 men per side, red first from the near edge, diagonal movement on dark squares, mandatory captures, multi-jumps by the same man or king, no backward moves for uncrowned men, and crowning that **ends** the current jump turn.
+- The opponent is a locally present saved NPC, and the player sees the same overhead physical tabletop and framed generic portrait language established for chess. Plays and challenges consume one Washington minute each. Saved red and black move records are never invented; abandoning the table or an NPC leaving records the real resulting forfeit.
+- Hillsdale (`hillsdale/neighborhood-street`) and the Neighborhood Card Room (`workingPoker/card-room`) can have a board with suitable residents, without adding city pins. Neither Star Club poker nor a universal remote game menu is introduced.
+- The shared Washington checkers circuit preserves complete NPC match receipts, scores and public newspaper briefs across protagonist changes, but does not expose another protagonist's unfinished table turn. NPC-only matches use scheduled present residents and record honest cancellation on absence; active/scheduled chess participants are reserved from overlapping checkers bookings at the same table.
+- Only the **American rules variant** is implemented; international draughts, regional championships and cash wagering remain separate future work. These source changes await fresh Linux QA and manual play.

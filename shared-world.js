@@ -4,6 +4,7 @@ const copy=v=>JSON.parse(JSON.stringify(v));
 // Club fixtures, standings and completed matches belong to shared Washington;
 // a playable character's unfinished turn at a table remains private to their own save.
 function publicChess(c){if(!c||c.version!==1)return null;return {...copy(c),active:null}}
+function publicCheckers(c){if(!c||c.version!==1)return null;return {...copy(c),active:null}}
 const validId=id=>typeof id==='string'&&/^w[a-zA-Z0-9_-]{1,48}$/.test(id);
 const key=id=>'federalElectricSharedWorld_'+id,diskId=id=>'world_'+id;
 function valid(w,id){return !!w&&w.version===1&&w.id===id&&w.clock?.version===1&&Number.isSafeInteger(w.clock.worldMinute)&&Array.isArray(w.events)}
@@ -14,6 +15,7 @@ function create(id,save){
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase||'day',
   npcSimulation:copy(save.npcSimulation||null),otherLives:copy(save.otherLives||null),
   chessCircuit:publicChess(save.chessCircuit),lastChessResult:save.lastChessResult||null,
+  checkersCircuit:publicCheckers(save.checkersCircuit),lastCheckersResult:save.lastCheckersResult||null,
   events:[],nextEvent:1,incidents:{},worldTruth:{},missions:{version:1,active:{},history:[]}};
 }
 function attach(save,world){
@@ -27,6 +29,12 @@ function attach(save,world){
   save.chessCircuit.active=personalMatch?copy(personalMatch):null;
  }
  save.lastChessResult=world.lastChessResult||null;
+ if(world.checkersCircuit){
+  const personal=save.checkersCircuit?.active||null;
+  save.checkersCircuit=publicCheckers(world.checkersCircuit);
+  save.checkersCircuit.active=personal?copy(personal):null;
+ }
+ save.lastCheckersResult=world.lastCheckersResult||null;
  root.FE_ASYLUM_CASEWORK?.syncReview?.(save,world);
  save.dayRemaining=root.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(save)??save.dayRemaining;
  return save;
@@ -41,7 +49,9 @@ function capture(save,prior,profileId=null){
   date:save.gameDate,turnSerial:save.turnSerial||1,phase:save.phase,
   npcSimulation:copy(save.npcSimulation),otherLives:copy(save.otherLives),
   chessCircuit:publicChess(save.chessCircuit||world.chessCircuit),
-  lastChessResult:save.lastChessResult||null};
+  lastChessResult:save.lastChessResult||null,
+  checkersCircuit:publicCheckers(save.checkersCircuit||world.checkersCircuit),
+  lastCheckersResult:save.lastCheckersResult||null};
  // Public world facts from filed, paid work only. Private words and theories
  // never flow into another protagonist's knowledge or NPC memories.
  if(profileId&&save.characterRoute==='wardman')

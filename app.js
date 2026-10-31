@@ -1015,6 +1015,7 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
    else if(reached?.minuteOfDay===480&&S.phase==='night'){closeNight(false);beginNextDay();}
    window.FE_NPC_AI?.syncClock?.();
    window.FE_CHESS?.tick?.(S,{now:window.FE_WASHINGTON_TIME?.now?.(S),presentAt:id=>window.FE_NPC_AI?.visibleAt?.(id)||[]});
+   window.FE_CHECKERS?.tick?.(S,{now:window.FE_WASHINGTON_TIME?.now?.(S),presentAt:id=>window.FE_NPC_AI?.visibleAt?.(id)||[]});
   }
  }finally{S.npcOffscreenCatchup=oldAway}
  return spent;
@@ -1039,7 +1040,7 @@ window.finishWorkshopClosingBell=()=>{
 
 function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
-function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult,S.lastChessResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;S.lastChessResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'};const fishingNews=window.FE_FISHING?.pendingNews?.(S);
+function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult,S.lastChessResult,S.lastCheckersResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;S.lastChessResult=null;S.lastCheckersResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'};const fishingNews=window.FE_FISHING?.pendingNews?.(S);
  if(fishingNews){
   S.sportsStory+=' '+fishingNews.story;
   if(S.headline==='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY'||S.headline==='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS'){
@@ -2430,7 +2431,7 @@ function openCityRoom(locationId,roomId,options={}){
  try{
   window.FE_NPC_CARD?.close?.();
   guardedRoomPanel('previous activity',()=>restoreLocalVenueActivity());
-  if(!dev)window.FE_CHESS_UI?.beforeTravel?.(location.id,room.id);
+  if(!dev){window.FE_CHESS_UI?.beforeTravel?.(location.id,room.id);window.FE_CHECKERS_UI?.beforeTravel?.(location.id,room.id);}
   cityRoomSession={locationId:location.id,roomId:room.id,dev,source};
   if(!dev)S.currentLocation={locationId:location.id,roomId:room.id};
   document.getElementById('cityRoomLocationName').textContent=location.name;
@@ -2465,6 +2466,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
   document.body.classList.add('city-room-open');
   guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
+   guardedRoomPanel('checkers table',()=>window.FE_CHECKERS_UI?.refresh?.());
   guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
   guardedRoomPanel('asylum inquiry',()=>window.FE_ASYLUM_CASE_UI?.refresh?.());
   guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
@@ -2524,6 +2526,7 @@ function openCityRoom(locationId,roomId,options={}){
 function closeCityRoom(){
  if(window.FE_DUEL_UI?.active)return;
  window.FE_CHESS_UI?.beforeClose?.();
+ window.FE_CHECKERS_UI?.beforeClose?.();
  window.FE_NPC_CARD?.close?.();
  restoreLocalVenueActivity();
  const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}

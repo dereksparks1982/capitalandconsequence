@@ -40,3 +40,8 @@ All playable parlor, board, tile and card games should present **the physical ta
 - **Not yet complete:** true character-specific drawn portrait assets, advanced chess AI, formal championship titles/rating ladders, spectator controls, approved native Linux UI screenshot and gameplay testing.
 
 **No game may require changes to the fixed original Washington map artwork.** Generic art components can be replaced only by specifically approved originals or appropriately licensed art.
+
+
+### Checkers / American draughts development follow-up
+
+Game #2 now reuses the framed CSS silhouette portraits for the actual named residents, with its own red/black discs and eight-by-eight overhead wooden board. A crowned king shows a star, forced capture destinations are highlighted, and continuation keeps the player's selection on the jumping piece. All art is original CSS; no image, approved map position or historical room geometry is touched.

@@ -1,0 +1,29 @@
+/* Overhead physical checkers board; reuses original chess silhouette portraits. */
+.fe-checkers-salon{margin:16px 0;padding:16px;background:#f4e6cb;border:3px double #85613a;color:#35251a;font:15px/1.45 Georgia,serif;box-shadow:inset 0 0 14px #d9c49f}
+.fe-checkers-salon[hidden]{display:none!important}
+.fe-checkers-header{text-align:center;border-bottom:1px solid #9e7d52;margin-bottom:11px}
+.fe-checkers-header span{font-size:11px;letter-spacing:.15em;color:#66513b}
+.fe-checkers-header h4{margin:3px 0;font-size:22px}
+.fe-checkers-header p{margin:3px 0 11px;font-size:13px}
+.fe-checkers-start{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.fe-checkers-start select{max-width:100%;min-width:150px}
+.fe-checkers-salon button{cursor:pointer;font-family:Georgia,serif}
+.fe-checkers-overhead{max-width:640px;margin:12px auto;padding:11px;border:6px solid #744a2d;border-radius:24% / 5%;background:#336052;box-shadow:0 9px 20px #3b301c66, inset 0 0 0 3px #b08a57;display:flex;align-items:center;flex-direction:column;gap:8px}
+.fe-checkers-frame{width:min(98%,485px);padding:9px;background:#492d1f;border:3px solid #c19c61;box-shadow:0 2px 12px #15100f88}
+.fe-checkers-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1/1;border:2px solid #2c1c17}
+.fe-checkers-square{position:relative;aspect-ratio:1;display:grid;place-items:center;padding:0!important;margin:0!important;min-width:0!important;min-height:0!important;border:0!important;border-radius:0!important}
+.fe-checkers-light{background:#dfcda4!important;cursor:default!important}
+.fe-checkers-dark{background:#80533a!important}
+.fe-checkers-selected{box-shadow:inset 0 0 0 4px #ecdf91!important}
+.fe-checkers-legal:after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:#c6ebaa88;pointer-events:none}
+.fe-checkers-disc{display:grid;place-items:center;width:77%;height:77%;z-index:1;border-radius:50%;border:3px double #e6caa0;box-shadow:inset 0 0 0 3px #ffffff22, 0 3px 4px #19100d77;font:18px Georgia,serif}
+.fe-checkers-disc-r{background:radial-gradient(circle at 30% 25%,#b54f40,#7c2d26 77%);color:#ffdb8b}
+.fe-checkers-disc-b{background:radial-gradient(circle at 30% 25%,#5e4c47,#1f1c22 78%);color:#f8dba3}
+.fe-checkers-king{border:3px double #dcb969}
+.fe-checkers-turn{text-align:center;font-weight:bold;padding:7px}
+.fe-checkers-primary{background:#315e50;color:#fff5e3;padding:7px 12px}
+.fe-checkers-resign{background:#764232;color:#fff3e7;padding:8px 12px}
+.fe-checkers-warning{color:#982e1b;font-weight:bold}
+.fe-checkers-ledger{border-bottom:1px dotted #ab8e67;padding:6px 0}
+#feCheckersNotice{min-height:22px;font-weight:bold}
+@media(max-width:650px){.fe-checkers-salon{padding:9px}.fe-checkers-overhead{padding:8px 4px}.fe-checkers-frame{padding:5px}.fe-checkers-disc{border-width:2px;font-size:12px}}

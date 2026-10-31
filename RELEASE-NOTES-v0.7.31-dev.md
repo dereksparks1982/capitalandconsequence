@@ -106,3 +106,8 @@ Edmund's brother can have the asylum duty register amended on January 7 after th
 
 ## Saved confinement opens the original ward room
 After the family review order becomes enforceable, a successful local save schedules the actual asylum patient-ward room overlay. Staff rooms, room-directory choices and outside travel are blocked during custody. The transfer is not billed as a voluntary journey and cannot be introduced by a failed autosave. No UI geometry or artwork changed.
+
+## Game register #2: American Checkers / Draughts (post-release development)
+- Added a self-contained checkers engine and overhead tabletop UI with proper American draughts legal move/capture/king rules and multi-jump continuation, NPC choices and real, dated match receipts.
+- Added checkers to saved-world NPC fixture simulation, public newspaper outcomes, personal resumed games, standing records and venue-based challenges. Two existing venue rooms offer the game without pin or artwork changes.
+- No betting on the checkers table; no Star Club poker; no new external code or assets. Development source awaits complete offline regression and Electron tests on Ubuntu.

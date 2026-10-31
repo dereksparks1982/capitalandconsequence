@@ -4,6 +4,8 @@
 
 *Capital & Consequence* is a single-player, alternate-history life simulation set in Washington, D.C., beginning in **1878**. Build a life in a changing city where your work, money, relationships, reputation, and decisions can affect what happens next.
 
+The parlor-game register now has two implemented development games: Chess and **American Checkers (Draughts)**, with a real overhead board, NPC challenges at real venues and shared-world results. Checkers is source development pending Linux tests, not a newly verified package.
+
 Choose from different lives, including a businessman building **Federal Electric**, a police patrolman, a criminal-world doorman, and an asylum worker. Each character experiences Washington from a different perspective.
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
