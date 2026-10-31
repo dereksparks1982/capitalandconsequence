@@ -240,7 +240,9 @@ function save(silent=true){
  // Never persist the temporary player-absent simulation scope.
  if(S.npcOffscreenCatchup)payload=Object.assign({},payload,{npcOffscreenCatchup:false});
  // Age documented family consequences on actual saved Washington dates only.
+ const wasConfined=S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient';
  window.FE_WARDMAN_POLITICS?.advance?.(S);
+ const becameConfined=!wasConfined&&S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient';
  // Archive only actual completed accounts/transactions, never projections.
  window.FE_LIFE_HISTORY?.syncBusiness?.(S);
  // localStorage writes can throw QuotaExceededError or security exceptions.
@@ -277,6 +279,16 @@ function save(silent=true){
  try{touchActiveProfile()}catch(err){console.warn('Profile save succeeded; profile index update failed',err)}
  updateCashHeader();
  if(!silent)note('Company books saved.');
+ if(becameConfined){
+  // Complete the original atomic save before opening the authentic patient ward.
+  const confinedProfile=profileId,confinedSave=S;
+  requestAnimationFrame(()=>{
+   if(activeProfileId()!==confinedProfile||S!==confinedSave||
+      S.wardmanStanding?.status!=='patient')return;
+   if(!openCityRoom('blackwoodAsylum','patient-ward',{source:'custody'}))
+    console.warn('The custody move is saved, but the patient-ward room did not open.');
+  });
+ }
  return true;
 }
 function readProfiles(){try{const p=JSON.parse(localStorage.getItem(PROFILE_INDEX_KEY)||'[]');return Array.isArray(p)?p.slice(0,PROFILE_LIMIT):[]}catch(e){return[]}}
@@ -2356,7 +2368,8 @@ function renderCityRoomDirectory(location,activeRoomId){
   button.type='button';
   button.textContent=room.name;
   const access=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate);
-   button.disabled=!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true;
+   button.disabled=(!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true)||
+    (S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient'&&room.id!=='patient-ward'&&!cityRoomSession.dev);
   if(button.disabled)button.title='Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
   button.onclick=()=>cityRoomSession.dev?openCityRoom(location.id,room.id,{dev:true,source:'dev'}):enterMapDestination(location.id,null,room.id);
@@ -2384,6 +2397,8 @@ function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
  const dev=!!options.dev,source=options.source||'dev';
+ if(!dev&&S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient'&&
+    (location.id!=='blackwoodAsylum'||roomId!=='patient-ward'))return false;
  if(!dev&&!titleDevUnlockAllRooms&&window.FE_PATROL?.travel?.(S,location.id)?.ok===false)return false;
  if(!dev&&!titleDevUnlockAllRooms&&window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(location.id)){
   console.warn('Federal Electric: destination is not open',location.id,S.gameDate);return false;

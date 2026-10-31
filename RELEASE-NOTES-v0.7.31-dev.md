@@ -103,3 +103,6 @@ Edmund's brother can have the asylum duty register amended on January 7 after th
 - The active in-room inquiry now tells Edmund the actual hearing or appeal result, with workplace trust, family pressure and petition status. It no longer hides the result behind a generic family-status message.
 - The renderer load-order contract verifies the new Wardman records script runs after shared-world and casework prerequisites but before asylum story and app startup.
 - New dedicated source regression: real calendar, dated register preservation and revision, family meeting pressure, hearings, reversal after additional evidence, delayed confinement, no wages during custody, and a once-only patient-ward appeal.
+
+## Saved confinement opens the original ward room
+After the family review order becomes enforceable, a successful local save schedules the actual asylum patient-ward room overlay. Staff rooms, room-directory choices and outside travel are blocked during custody. The transfer is not billed as a voluntary journey and cannot be introduced by a failed autosave. No UI geometry or artwork changed.
