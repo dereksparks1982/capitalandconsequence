@@ -5,6 +5,10 @@
  */
 (function(root){'use strict';
 const TEMPLATES=Object.freeze({
+ 'peacock-debts':Object.freeze({label:'Golden Peacock · Debts Come Due',route:'criminal',
+  initial:'demanded',transitions:Object.freeze({
+   demanded:Object.freeze({decide:'awaiting-consequence'}),
+   'awaiting-consequence':Object.freeze({conclude:'completed'})})}),
  'peacock-network':Object.freeze({label:'The Keeper of Secrets · The Peacock Contact',
   route:'criminal',initial:'inquiry',transitions:Object.freeze({
    inquiry:Object.freeze({choose:'waiting'}),waiting:Object.freeze({consequence:'completed'})})}),

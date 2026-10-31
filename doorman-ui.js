@@ -43,6 +43,15 @@
    const notice=document.createElement('p');notice.id='peacockNetworkNotice';notice.setAttribute('role','status');
    box.append(title,status,actions,notice);door.appendChild(box);
   }
+  if(door&&!node('peacockDebtsPanel')){
+   const box=document.createElement('section');box.id='peacockDebtsPanel';
+   box.className='doorman-work-box';box.setAttribute('aria-label','Eli debt decisions');
+   const heading=document.createElement('h4');heading.textContent='Main Story · Debts Come Due';
+   const status=document.createElement('p');status.id='peacockDebtsStatus';
+   const actions=document.createElement('div');actions.id='peacockDebtsActions';
+   const notice=document.createElement('p');notice.id='peacockDebtsNotice';notice.setAttribute('role','status');
+   box.append(heading,status,actions,notice);door.appendChild(box);
+  }
  }
  function action(type,choiceId){
   if(S.characterRoute!=='criminal'||!activeProfileId())return;
@@ -161,6 +170,49 @@
    if(!allowed.ok){const why=document.createElement('small');why.textContent=allowed.reason;buttons.appendChild(why)}
   }
  }
+ function debtAction(id){
+  const story=window.FE_PEACOCK_DEBTS,place=current(),old=S,profile=activeProfileId();
+  if(!story)return false;
+  const check=story.preview(S,id,place.locationId,place.roomId,{dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!check.ok){set('peacockDebtsNotice',check.reason);return false}
+  if(S.dayRemaining<=check.seconds||!window.FE_WASHINGTON_TIME?.canSpend?.(S,check.seconds)||
+     window.FE_WASHINGTON_TIME?.phaseSecondsRemaining?.(S)<=check.seconds){
+   set('peacockDebtsNotice','Insufficient time to finish this conversation tonight.');return false;
+  }
+  const spent=window.advanceWorldTime(check.seconds,true);
+  if(spent!==check.seconds||S!==old||profile!==activeProfileId()){
+   set('peacockDebtsNotice','The encounter was interrupted; no choice was recorded.');return false;
+  }
+  const out=story.apply(S,id,place.locationId,place.roomId,{spentSeconds:spent,
+   dev:!!window.FE_CITY?.isDevRoom?.()});
+  if(!out.ok){set('peacockDebtsNotice',out.reason);return false}
+  const stored=save(true);
+  render();refresh();
+  set('peacockDebtsNotice',stored?out.description:'Autosave failed; keep the game open.');
+  return !!stored;
+ }
+ function refreshDebts(){
+  const story=window.FE_PEACOCK_DEBTS,box=node('peacockDebtsPanel'),actions=node('peacockDebtsActions');
+  if(!story||!box||!actions)return;
+  const visible=S?.characterRoute==='criminal'&&!!activeProfileId()&&
+   !node('doormanDoorPanel')?.hidden&&!window.FE_CITY?.isDevRoom?.();
+  box.hidden=!visible;if(!visible)return;
+  const stage=story.summary(S)?.stage||'unmet';
+  set('peacockDebtsStatus',stage==='unmet'?'After dealing with the regular, a dispute over money may arise.':
+   stage==='summoned'?'The claim is unverified; choose your response on a later night.':
+   stage==='decided'?'Your response is on record; the regular will return.':
+   'The debt dispute has reached an outcome.');
+  actions.replaceChildren();
+  const ids=stage==='unmet'?['summons']:stage==='summoned'?['settle','defy','disclose']:
+   stage==='decided'?['consequence']:[];
+  for(const id of ids){
+   const place=current(),can=story.preview(S,id,place.locationId,place.roomId);
+   const b=button(story.ACTIONS[id].label,()=>debtAction(id));
+   b.disabled=!can.ok||S.dayRemaining<=story.ACTIONS[id].seconds;
+   b.title=can.reason||'';actions.appendChild(b);
+   if(!can.ok){const why=document.createElement('small');why.textContent=can.reason;actions.appendChild(why)}
+  }
+ }
  function refresh(){
   mount();
   const on=S?.characterRoute==='criminal'&&!!activeProfileId(),desk=node('doormanDesk'),door=node('doormanDoorPanel');
@@ -183,6 +235,7 @@
   if(!door||door.hidden)return;
   refreshStory();
   refreshNetwork();
+  refreshDebts();
   const choices=node('doormanDoorActions');if(!choices)return;choices.replaceChildren();
   const disabled=S.paused||S.phase!=='night';
   if(pending){

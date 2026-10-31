@@ -77,6 +77,11 @@ function criminalPages(save){
  if(network?.events.length)pages.push(page('peacock-network','Main Story','The Keeper of Secrets',
   'Eli personally witnessed these encounters, not an official police record',[],
   network.events.map(e=>item(e.date+' · '+e.source,e.text))));
+ const debts=root.FE_PEACOCK_DEBTS?.summary?.(save);
+ if(debts?.events.length)pages.push(page('peacock-debts','Main Story','Debts Come Due',
+  'Only transactions and conversations Eli directly experienced',
+  ['Eli’s personal record does not accuse or arrest anyone.'],
+  debts.events.map(e=>item(e.date+' · '+e.source,e.text))));
  pages.push(page('plans','Private Recollections','Plans & Recollections','Personally written',
   ['The player can write about targets, rivals, romances or exploits. The game will not pretend that a plan was carried out.']));
  return pages;
