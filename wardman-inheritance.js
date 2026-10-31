@@ -51,8 +51,6 @@ function apply(save,world,id,seconds){
   if(p)p.workplaceTrust=Math.min(100,p.workplaceTrust+2);
  }
  state.records.push({id,date:now,source:'personally received Wardman family correspondence',text:description});
- root.FE_LIFE_HISTORY?.record?.(save,{id:'wardman-estate:'+id,date:now,
-  source:'Wardman family postal record',text:description});
  return {ok:true,source:'Wardman family correspondence',description,verified:state.verified};
 }
 function proof(save){return !!save?.wardmanInheritance?.verified&&!!save.wardmanInheritance.witnessAt&&
