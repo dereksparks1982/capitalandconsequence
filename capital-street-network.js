@@ -82,6 +82,26 @@ for(const avenue of diagonals)for(const [i,j,k,l] of avenue.pairs){
  const a=idByGrid.get(i+','+j),b=idByGrid.get(k+','+l);
  if(a!==undefined&&b!==undefined)link(a,b,avenue.name);
 }
+// Per-profile blue building strokes are independent of the approved fixed
+// graph. Recompute excluded edges when edited, never change registered roads.
+let userBuildings=[],excludedEdges=new Set(),buildingSignature='';
+function setBuildings(blocks){
+ const clean=(Array.isArray(blocks)?blocks:[]).slice(0,1200).filter(b=>
+  b&&[b.x0,b.x1,b.y0,b.y1].every(Number.isFinite)&&
+  b.x0>=0&&b.y0>=0&&b.x1<=1&&b.y1<=1&&b.x0<b.x1&&b.y0<b.y1)
+  .map(b=>({x0:b.x0,y0:b.y0,x1:b.x1,y1:b.y1}));
+ const signature=JSON.stringify(clean);
+ if(signature===buildingSignature)return false;
+ userBuildings=clean;buildingSignature=signature;excludedEdges=new Set();
+ for(let i=0;i<edges.length;i++){
+  const edge=edges[i],a=graph[edge.a],b=graph[edge.b];
+  if(userBuildings.some(box=>intersectsBox(a,b,box)))excludedEdges.add(i);
+ }
+ treeCache.clear();
+ return true;
+}
+const travelObstacles=()=>BLOCKED_LANDMARKS.concat(userBuildings);
+function blockedEntrance(p){return userBuildings.some(b=>pointInBox(p,b));}
 // Visit road endpoints without allowing an invisible long-range teleport:
 // snap a location to an existing EDGE, then walk to a genuine intersection.
 // Evaluate several plausible nearby road entrances; the closest street
@@ -89,6 +109,7 @@ for(const avenue of diagonals)for(const [i,j,k,l] of avenue.pairs){
 function nearbyEdges(p,limit=4){
  const candidates=[];
  for(let i=0;i<edges.length;i++){
+  if(excludedEdges.has(i))continue;
   const e=edges[i],a=graph[e.a],b=graph[e.b];
   const dx=(b.x-a.x)*IMG.w,dy=(b.y-a.y)*IMG.h;
   const t=Math.max(0,Math.min(1,(((p.x-a.x)*IMG.w)*dx+
@@ -124,10 +145,10 @@ function access(from,point){
  const verticalFirst={x:from.x,y:point.y};
  const preferred=sideways<vertical?horizontalFirst:verticalFirst;
  const other=sideways<vertical?verticalFirst:horizontalFirst;
- const inside=BLOCKED_LANDMARKS.some(box=>pointInBox(from,box));
+ const inside=travelObstacles().some(box=>pointInBox(from,box));
  for(const corner of [preferred,other]){
   const path=compact([from,corner,point]);
-  if(inside||!BLOCKED_LANDMARKS.some(box=>
+  if(inside||!travelObstacles().some(box=>
    path.some((v,j)=>j>0&&intersectsBox(path[j-1],v,box))))
    return compact([corner,point]);
  }
@@ -177,7 +198,7 @@ function treeFrom(start){
   if(visited[node]||cost>distance[node])continue;
   visited[node]=true;
   for(const edge of adj[node]){
-   if(visited[edge.to])continue;
+   if(excludedEdges.has(edge.edge)||visited[edge.to])continue;
    const next=distance[node]+edge.cost;
    if(next<distance[edge.to]){
     distance[edge.to]=next;prev[edge.to]=node;
@@ -234,7 +255,7 @@ function validateItinerary(points){
  if(!Array.isArray(points)||points.length<2||points.some(p=>
   !p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))
   return {ok:false,reason:'invalid-waypoints'};
- for(const blocked of BLOCKED_LANDMARKS){
+ for(const blocked of travelObstacles()){
   // Visiting the building itself is allowed; traversing its grounds as a
   // shortcut between two unrelated street addresses is never allowed.
   if(pointInBox(points[0],blocked)||pointInBox(points.at(-1),blocked))continue;
@@ -292,10 +313,10 @@ function streetRoute(start,end){
   accessPixels,intersections:direct?0:path.length,networkEdges:edges.length,
   turns:routeTurns(body),namedRoads:namedRoads(path,direct?a.edge:null)};
 }
-const api=Object.freeze({version:6,source:'approximate-guide-intersections',image:IMG,
- nodeCount:graph.length,edgeCount:edges.length,streetRoute,validateItinerary,
+const api=Object.freeze({version:7,source:'approximate-guide-intersections',image:IMG,
+ nodeCount:graph.length,edgeCount:edges.length,streetRoute,validateItinerary,setBuildings,
  draftSegments:()=>edges.map(e=>({a:{...graph[e.a]},b:{...graph[e.b]},source:'approximate-guide'})),
- diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name)})});
+ diagnostic:()=>({nodes:graph.length,edges:edges.length,cachedTrees:treeCache.size,avenues:diagonals.map(v=>v.name),blockedAreas:BLOCKED_LANDMARKS.map(v=>v.name),blueBuildings:userBuildings.length,excludedEdges:excludedEdges.size})});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_CAPITAL_STREETS=api;
 })(typeof window!=='undefined'?window:globalThis);
