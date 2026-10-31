@@ -21,6 +21,7 @@ The actual repository contains these separately licensed components:
 |---|---|---|---|
 | [Astronomy Engine](https://github.com/cosinekitty/astronomy) | © 2019–2025 Don Cross | MIT | [vendor/astronomy-engine/LICENSE](vendor/astronomy-engine/LICENSE) |
 | [Howler.js](https://github.com/goldfire/howler.js) | © 2013–2020 James Simpson and GoldFire Studios, Inc. | MIT | [vendor/howler/LICENSE.md](vendor/howler/LICENSE.md) |
+| [rapid-draughts alpha-beta AI adaptation](https://github.com/loks0n/rapid-draughts) | © 2023 loks0n | MIT | [vendor/rapid-draughts-ai/LICENSE](vendor/rapid-draughts-ai/LICENSE) |
 | [chess.js v0.10.3](https://github.com/jhlywa/chess.js/tree/v0.10.3) | © 2020 Jeff Hlywa | BSD-2-Clause | [vendor/chessjs/LICENSE](vendor/chessjs/LICENSE) |
 | [PathFinding.js v0.4.18](https://github.com/qiao/PathFinding.js) | Xueqiao Xu | MIT (upstream package manifest) | [vendor/pathfinding/LICENSE](vendor/pathfinding/LICENSE) |
 | [Konva v8.4.3](https://github.com/konvajs/konva/tree/8.4.3) | Eric Rowell / Anton Lavrenov | MIT | [vendor/konva/LICENSE](vendor/konva/LICENSE) |
@@ -30,7 +31,7 @@ These entries acknowledge **upstream authorship**, not a transfer of rights to E
 
 ## Evaluated or cited projects: **not** bundled just because they are mentioned
 
-The tabletop/board-game engine survey in [docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md](docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) originally described **possible future dependencies** for chess, checkers, Mahjong, Western dominoes, Xiangqi and backgammon. **chess.js v0.10.3 is now the first genuinely adopted engine**, credited above. **All other surveyed game-engine candidates remain research-only** until their actual source and licenses are reviewed and incorporated; their names appearing in research do not mean their code is in the game.
+The tabletop/board-game engine survey in [docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md](docs/OPEN-SOURCE-GAME-ENGINE-CANDIDATES.md) originally described **possible future dependencies** for chess, checkers, Mahjong, Western dominoes, Xiangqi and backgammon. **chess.js v0.10.3 and the adapted rapid-draughts alpha-beta AI are genuinely adopted components**, credited above. **All other surveyed game-engine candidates remain research-only** until their actual source and licenses are reviewed and incorporated; their names appearing in research do not mean their code is in the game.
 
 Other existing research and interoperability references:
 

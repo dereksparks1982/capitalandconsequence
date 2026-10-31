@@ -116,29 +116,20 @@ function start(save,{locationId,roomId,venueName,playerId,playerName,opponentId,
  if(s.active)return {ok:false,reason:'Finish the current checkers game before accepting another.'};
  const id='checkers-'+s.nextId++;
  s.active={id,locationId,roomId,venueName:venueName||locationId,playerId,playerName,
-  opponentId,opponentName,startedAt:at||now(save),position:fresh()};
+  opponentId,opponentName,startedAt:at||now(save),aiDepth:Math.max(2,Math.min(5,Number(save.checkersAiDepth)||4)),position:fresh()};
  return {ok:true,id};
 }
 function legal(save,from){const p=state(save).active?.position;return p?options(p).filter(m=>m.from===from):[]}
-function pick(position,seed){
- const moves=options(position);
- if(!moves.length)return null;
- let choice=null,best=-Infinity;
- for(const m of moves){
-  const before=position.board[m.from];
-  const trial=copy(position);apply(trial,m.from,m.to);
-  const enemy=trial.turn===position.turn?[]:options(trial);
-  const danger=enemy.filter(x=>x.capture===m.to).length;
-  const score=(m.capture!==null?20:0)+(trial.board[m.to]===before.toUpperCase()&&before===before.toLowerCase()?10:0)+
-   (position.turn==='b'?row(m.to):7-row(m.to))*0.3-danger*8+(hash(seed+':'+m.from+':'+m.to)%1000)/1000;
-  if(score>best){best=score;choice=m;}
- }
- return choice;
+function pick(position,seed,depth=4){
+ const ai=typeof module==='object'&&module.exports?
+  require('./vendor/rapid-draughts-ai/search.js'):root.FE_DRAUGHTS_AI;
+ if(!ai?.choose)throw Error('Offline alpha-beta checkers AI must be loaded before game play.');
+ return ai.choose(position,{options,apply,depth,seed,limit:depth<=2?4000:16000});
 }
-function npcTurn(pos,seed){
+function npcTurn(pos,seed,depth=4){
  const moves=[];let safety=0;
  while(pos.status==='playing'&&pos.turn==='b'&&safety++<20){
-  const move=pick(pos,seed+':'+safety);if(!move)break;
+  const move=pick(pos,seed+':'+safety,depth);if(!move)break;
   const result=apply(pos,move.from,move.to);
   if(!result.ok)throw Error('Checkers NPC attempted an illegal move');
   moves.push(result.move);
@@ -152,14 +143,14 @@ function play(save,from,to,{locationId,roomId,present:visitors,at}={}){
  if(g.position.turn!=='r')return {ok:false,reason:'Wait for the black pieces to move.'};
  const step=apply(g.position,from,to);if(!step.ok)return step;
  if(g.position.status==='finished')return {ok:true,move:step.move,opponent:[],continues:false,receipt:finish(save,null,at)};
- const opponent=step.continues?[]:npcTurn(g.position,g.id+':'+g.position.ply);
+ const opponent=step.continues?[]:npcTurn(g.position,g.id+':'+g.position.ply,g.aiDepth||4);
  const ended=g.position.status==='finished';
  return {ok:true,move:step.move,opponent,continues:step.continues,receipt:ended?finish(save,null,at):null};
 }
 function simulate(id,a,b,locationId,roomId,at){
  const pos=fresh();let safety=0;
  while(pos.status==='playing'&&safety++<320){
-  const m=pick(pos,id+':'+safety);if(!m)break;
+  const m=pick(pos,id+':'+safety,2);if(!m)break;
   const done=apply(pos,m.from,m.to);if(!done.ok)throw Error('NPC checkers simulation made an illegal move');
  }
  if(pos.status!=='finished'){pos.status='finished';pos.reason='simulation limit';pos.winner=null;}

@@ -41,6 +41,12 @@ function startBox(){
  const select=el('select');select.setAttribute('aria-label','Choose a checkers opponent');
  for(const resident of present){const o=el('option','',resident.name);o.value=resident.id;select.append(o)}
  const first=present[0];if(first)select.value=first.id;
+ const strength=el('select');strength.setAttribute('aria-label','Checkers opponent difficulty');
+ for(const [value,label] of [['2','Novice · 2 turns ahead'],['3','Club player · 3 turns ahead'],
+   ['4','Strong · 4 turns ahead'],['5','Expert · 5 turns ahead']]){
+  const item=el('option','',label);item.value=value;strength.append(item);
+ }
+ strength.value=String(Math.max(2,Math.min(5,Number(s.checkersAiDepth)||4)));
  const begin=button('Challenge to Checkers · 1 min',()=>{
   if(busy||!allowed()||s.paused||s.phase!=='day'&&s.phase!=='night')return;
   const here=place(),opponent=attendees(here).find(x=>x.id===select.value);
@@ -54,11 +60,13 @@ function startBox(){
    if(!match.ok){tell(match.reason);return}
    const elapsed=root.advanceWorldTime?.(60,true);
    if(elapsed!==60){engine().state(s).active=null;tell('The clock did not accept the challenge.');return}
+   s.checkersAiDepth=Number(strength.value);
+   engine().state(s).active.aiDepth=s.checkersAiDepth;
    source=null;tell('The red pieces are yours. Select a piece to begin.');
    persist();refresh();
   }finally{busy=false}
  },'fe-checkers-primary');
- const actions=el('div','fe-checkers-start');actions.append(select,begin);mount.append(actions);
+ const actions=el('div','fe-checkers-start');actions.append(select,strength,begin);mount.append(actions);
 }
 function selectedMoves(game){return source===null?[]:engine().options(game.position).filter(m=>m.from===source)}
 function renderBoard(game){
@@ -90,7 +98,7 @@ function renderBoard(game){
  const caption=forced!==null?'Multiple capture: the same piece must jump again.':
   moves.some(x=>x.capture!==null)?'Mandatory capture. Select a piece that can jump.':
    'Red to play. Select one of your pieces, then a highlighted square.';
- mount.append(el('p','fe-checkers-turn',caption));
+ mount.append(el('p','fe-checkers-turn',caption+' · AI depth: '+(game.aiDepth||4)));
  mount.append(button('Resign & Leave Table',()=>{
   if(busy)return;const result=engine().abandon(saveData());
   if(result){persist();source=null;tell('You resigned. A real loss is recorded.');refresh();}

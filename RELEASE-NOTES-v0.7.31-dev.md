@@ -111,3 +111,6 @@ After the family review order becomes enforceable, a successful local save sched
 - Added a self-contained checkers engine and overhead tabletop UI with proper American draughts legal move/capture/king rules and multi-jump continuation, NPC choices and real, dated match receipts.
 - Added checkers to saved-world NPC fixture simulation, public newspaper outcomes, personal resumed games, standing records and venue-based challenges. Two existing venue rooms offer the game without pin or artwork changes.
 - No betting on the checkers table; no Star Club poker; no new external code or assets. Development source awaits complete offline regression and Electron tests on Ubuntu.
+
+### AI Checkers opponent: adopted MIT search algorithm
+The first one-step opponent was upgraded to a locally bundled **alpha-beta search adaptation** based on [loks0n/rapid-draughts](https://github.com/loks0n/rapid-draughts) (MIT, v1.0.6). The search evaluates multiple future legal turns, centers, kings, promotions and mandatory jump chains; the physical checkers table offers depths 2–5, while offscreen NPC matches use bounded two-turn search. Copyright notice and full MIT license are retained in `vendor/rapid-draughts-ai/`. No internet, Python service, AI API or installer dependency is needed. Source tests and packaged Linux verification remain outstanding.
