@@ -3287,6 +3287,7 @@ window.FE_ROAD_EDITOR_SETUP=()=>window.FE_ROAD_EDITOR?.mount?.({
   getSave:()=>S,persist:()=>save(true),
   refresh:()=>{window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);renderCapitalTravelPreview();},
   getView:()=>({x:titleMapState.x,y:titleMapState.y,scale:titleMapState.scale}),
+  getPinEdit:()=>titleMapPinEdit,
   busy:()=>capitalTravelBusy
  });
 function initTitleMapFilters(){
@@ -4076,6 +4077,8 @@ function openTitleMap(){
  if(img.complete&&img.naturalWidth)ready();else img.addEventListener('load',ready,{once:true});
 }
 function closeTitleMap(chargeTime=true){
+ // Editor closes cleanly on map exit; drawn streets/buildings stay saved.
+ if(window.FE_ROAD_EDITOR?.isEditing?.())window.FE_ROAD_EDITOR.toggle();
  window.FE_NPC_STREET_TRAVEL?.clear?.();
  window.FE_CAPITAL_TRAVEL?.cancel?.();
  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
