@@ -7,6 +7,9 @@ const { app, BrowserWindow, shell, ipcMain } = require('electron');
 // portability/security tradeoff, NOT a permission elevation or a wrapper.
 // Users with a correctly installed Chromium sandbox may explicitly opt in
 // via CAPITAL_ENABLE_CHROMIUM_SANDBOX=1.
+// Note: the JS switch below is a secondary defense only: GPU/zygote helpers
+// may initialize before Electron runs this script. The native Linux ELF
+// entrypoint supplies --no-sandbox in argv BEFORE Chromium process startup.
 if (process.platform === 'linux' && process.env.CAPITAL_ENABLE_CHROMIUM_SANDBOX !== '1') {
   app.commandLine.appendSwitch('no-sandbox');
 }

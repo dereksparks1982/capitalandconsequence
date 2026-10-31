@@ -20,9 +20,18 @@ not installed by root with the setuid mode. This game's requested Linux ZIP work
 must not require users to run `sudo`, alter kernel security settings, or use a
 launcher that adds terminal flags.
 
-The packaged Linux entrypoint therefore selects Chromium's `no-sandbox` mode
-**before Electron is ready**, allowing double-clicking the actual root
-`capitalandconsequence` executable without root permissions or arguments.
+The packaged Linux distribution therefore includes a small, auditable **native
+ELF launcher** named `capitalandconsequence` beside the complete Electron game
+binary `capitalandconsequence-runtime`. The launcher directly executes the
+bundled game with `--no-sandbox` on the command line **before Chromium starts**.
+The previous `app.commandLine.appendSwitch` change inside the game was too
+late to stop Linux SUID sandbox errors. No shell, sudo, compiler, installer,
+AppImage, extra download, or second project directory is required.
+
+The launcher source is in `scripts/linux-root-launcher.c`; a compressed,
+SHA256-verified Linux x86_64 ELF copy is bundled in the repository so building
+does not depend on a C compiler being installed. Both launcher and actual
+Electron runtime remain real ELF executables in the existing game folder.
 **Security warning:** this disables the Chromium process sandbox and should not
 be used for browsing untrusted websites. Game content is bundled local HTML;
 external URLs are opened by the default browser and foreign in-app navigation is

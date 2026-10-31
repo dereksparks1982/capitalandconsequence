@@ -8,6 +8,12 @@ assert.equal(p.build.linux.executableName,name);
 assert.equal(p.build.directories.output,'.');
 assert.equal(p.scripts['build:root:linux'],'node scripts/build-root-linux.cjs');
 assert.equal(build.binaryName,name);
+assert.equal(build.launcherBytes().subarray(0,4).toString('hex'),'7f454c46',
+ 'A real Linux ELF (not a shell script or downloaded substitute) is bundled');
+assert.ok(fs.readFileSync(path.join(__dirname,'../scripts/linux-root-launcher.c'),'utf8').includes('execv(path, arguments)'),
+ 'Native startup code is auditable and directly executes the packaged Electron executable');
+assert.ok(fs.readFileSync(path.join(__dirname,'../scripts/build-root-linux.cjs'),'utf8').includes('prepareNativeLinuxEntrypoint(dir);'),
+ 'Packaged game must invoke native pre-Chromium sandbox compatibility before its smoke test');
 // Verify the actual packaged game can be opened by double-click, without a
 // command-line --no-sandbox argument, sudo or a root-owned Chromium helper.
 const mainSource=fs.readFileSync(path.join(__dirname,'../desktop/main.cjs'),'utf8');
@@ -30,6 +36,8 @@ try{
  assert.throws(()=>build.inspect(root),/resources\/app.asar/);
  fs.mkdirSync(path.join(root,'resources'));fs.mkdirSync(path.join(root,'locales'));
  fs.writeFileSync(path.join(root,'resources','app.asar'),Buffer.alloc(1024*1024+1));
+ assert.throws(()=>build.inspect(root),/executable Electron game runtime/);
+ fs.writeFileSync(path.join(root,name+'-runtime'),Buffer.from([127,69,76,70,0,0,0,0]),{mode:0o755});
  for(const item of ['icudtl.dat','resources.pak','v8_context_snapshot.bin'])
   fs.writeFileSync(path.join(root,item),'fixture');
  assert.equal(build.inspect(root,{publishable:true}).executable,elf);

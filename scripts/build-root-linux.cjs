@@ -10,6 +10,41 @@ const root=path.resolve(__dirname,'..');
 const binaryName='capitalandconsequence';
 const runtime=['resources','locales'];
 const GITHUB_MAX_BLOB=100*1024*1024;
+// Packed, auditably sourced x86_64 Linux ELF. No compiler, sudo or network
+// needed on the player's machine. The full Electron executable stays alongside
+// it at capitalandconsequence-runtime and the real game's resources stay put.
+const nativeLauncherSha256='e23cf0527ea58659c37e1468b4e6fdcd6bcffdbc52510df56af13c1ff1739a38';
+function launcherBytes(){
+ const zlib=require('node:zlib'),crypto=require('node:crypto');
+ const encoded=fs.readFileSync(path.join(root,'scripts','linux-launcher-x64.b64gz'),'utf8').trim();
+ const binary=zlib.gunzipSync(Buffer.from(encoded,'base64'),{maxOutputLength:65536});
+ if(binary.length<4096||binary.length>65536||
+  !binary.subarray(0,4).equals(Buffer.from([127,69,76,70]))||
+  binary[4]!==2||binary[5]!==1||binary.readUInt16LE(18)!==62||
+  crypto.createHash('sha256').update(binary).digest('hex')!==nativeLauncherSha256)
+  fail('Bundled native Linux launcher failed its SHA256/ELF architecture validation.');
+ return binary;
+}
+function prepareNativeLinuxEntrypoint(dir){
+ const original=path.join(dir,binaryName);
+ const runtimeExe=path.join(dir,binaryName+'-runtime');
+ if(fs.existsSync(runtimeExe))
+  fail('Packaging already contains a capitalandconsequence-runtime. Will not overwrite it.');
+ if(!fs.existsSync(original)||!validElf(original))
+  fail('Electron builder did not create the real Linux x86_64 game executable.');
+ // Validate everything before touching the packaged Electron executable.
+ const launcher=launcherBytes();
+ fs.renameSync(original,runtimeExe);
+ try{
+  fs.writeFileSync(original,launcher,{mode:0o755,flag:'wx'});
+  fs.chmodSync(original,0o755);
+  fs.chmodSync(runtimeExe,0o755);
+ }catch(error){
+  fs.rmSync(original,{force:true});
+  fs.renameSync(runtimeExe,original);
+  throw error;
+ }
+}
 function fail(message){throw Error(message)}
 function validElf(filename){
  const f=fs.openSync(filename,'r'),head=Buffer.alloc(4);
@@ -34,6 +69,10 @@ function inspect(dir,{publishable=false}={}){
   fail('A real executable ELF named '+binaryName+' is required.');
  if(!fs.existsSync(archive)||fs.statSync(archive).size<1024*1024)
   fail('Complete packaged resources/app.asar is required.');
+ const electron=path.join(dir,binaryName+'-runtime');
+ if(!fs.existsSync(electron)||!fs.statSync(electron).isFile()||
+  !(fs.statSync(electron).mode&0o111)||!validElf(electron))
+  fail('Complete executable Electron game runtime is required alongside the native launcher.');
  for(const name of runtime)if(!fs.statSync(path.join(dir,name)).isDirectory())
   fail('Bundled Linux runtime is missing '+name+'/');
  for(const name of ['icudtl.dat','resources.pak','v8_context_snapshot.bin']){
@@ -118,6 +157,10 @@ function run(){
  execute(builder,['--linux','dir','--x64','--publish','never'],{timeout:1200000});
  const dir=path.join(root,'linux-unpacked');
  if(!fs.existsSync(dir))fail('Electron builder did not produce linux-unpacked.');
+ // Electron's JS entrypoint cannot disable the Linux Chromium sandbox soon
+ // enough on Ubuntu AppArmor. A native ELF bootstrap supplies --no-sandbox at
+ // process startup and directly execs the fully bundled Electron game binary.
+ prepareNativeLinuxEntrypoint(dir);
  const test=inspect(dir);
  smoke(dir);
  install(dir);
@@ -133,4 +176,4 @@ function run(){
  }
 }
 if(require.main===module){try{run()}catch(error){console.error('REAL BUILD FAILED: '+error.message);process.exitCode=1}}
-module.exports={inspect,validElf,collect,install,GITHUB_MAX_BLOB,binaryName};
+module.exports={inspect,validElf,collect,install,GITHUB_MAX_BLOB,binaryName,launcherBytes,prepareNativeLinuxEntrypoint};
