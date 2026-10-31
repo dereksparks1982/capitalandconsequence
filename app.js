@@ -3438,6 +3438,8 @@ function mapTravelRestriction(location){
  if(entry.plannedOnly)return 'This location is planned but not yet open.';
  if(entry.availableFrom&&S.gameDate<entry.availableFrom)return 'Not open until '+entry.availableFrom+'.';
  if(entry.availableUntil&&S.gameDate>entry.availableUntil)return 'This historic location no longer exists after '+entry.availableUntil+'.';
+ if(S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient')
+  return 'Edmund is confined in District Asylum. Petition for release from the patient ward.';
  const dutyRestriction=window.FE_PATROL?.travel?.(S,entry.id);
  if(dutyRestriction&&!dutyRestriction.ok)return dutyRestriction.reason;
  if(window.FE_VENUES&&!window.FE_VENUES.canEnterLocation(entry.id))return 'This location is not yet accessible. Discover an invitation or satisfy its entry conditions.';

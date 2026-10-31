@@ -67,7 +67,19 @@ const ACTIONS=Object.freeze({
   text:'Declined the meeting and recorded a request to keep the institutional file available.'},
  familyReview:{label:'Request independent review of family petition · 10 minutes',seconds:600,
   location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'recorded petition review request',
-  text:'Requested outside review of a disputed family petition; no confinement was authorized.'}
+  text:'Requested outside review of a disputed family petition; no confinement was authorized.'},
+ familyPreserve:{label:'Copy original ward register · 5 minutes',seconds:300,
+  location:'blackwoodAsylum',room:'orderly-station',routes:['wardman'],source:'dated ward register',text:'Preserved an original signed ward record.'},
+ familyCompare:{label:'Inspect director’s revised register · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'orderly-station',routes:['wardman'],source:'disputed director register',text:'Compared the amended staffing entry.'},
+ familyWitness:{label:'Obtain independent porter testimony · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'porter testimony',text:'Received a limited signed porter account.'},
+ familyHearing:{label:'Attend independent petition hearing · 20 minutes',seconds:1200,
+  location:'governmentHospital',room:'reception',routes:['wardman'],source:'petition hearing',text:'Attended an independent petition hearing.'},
+ familyAppeal:{label:'Appeal adverse order · 15 minutes',seconds:900,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'petition appeal',text:'Appealed the disputed confinement finding.'},
+ familyPatientAppeal:{label:'Appeal from patient ward · 15 minutes',seconds:900,
+  location:'blackwoodAsylum',room:'patient-ward',routes:['wardman'],source:'ward petition',text:'Petitioned for release from an adverse order.'}
 });
 function now(world){const clock=root.FE_WORLD_CLOCK;if(!clock?.calendar||!world?.clock)return null;return clock.calendar(world.clock)?.iso||null}
 function advanceWorld(world){
@@ -75,6 +87,7 @@ function advanceWorld(world){
  const at=now(world);if(!at||at<TIME)return {ok:true,status:'not-due'};
  if(!world.incidents?.[CASE_ID])root.FE_ASYLUM_INCIDENT.start(world,{id:CASE_ID,at:TIME,victimId:'unnamed-asylum-resident'});
  root.FE_ASYLUM_EVIDENCE?.ensure?.(world,CASE_ID);
+ root.FE_WARDMAN_RECORDS?.advanceWorld?.(world);
  if(at>=ARRIVAL&&!world.morgue?.bodies?.[BODY_ID])
   root.FE_MORGUE_REGISTRY.admit(world,{bodyId:BODY_ID,incidentId:CASE_ID,arrivedAt:ARRIVAL});
  if(at>=EXAM&&!world.morgue?.reports?.[BODY_ID]){
@@ -113,6 +126,12 @@ function preview(save,world,id,where){
   const request=root.FE_WARDMAN_POLITICS?.canReview?.(save);
   if(!request?.ok)return request||{ok:false,reason:'No family petition review is possible'};
  }
+ if(root.FE_WARDMAN_RECORDS?.ACTIONS?.includes(id)){
+  const gate=root.FE_WARDMAN_RECORDS.preview(save,world,id);
+  if(!gate.ok)return gate;
+ }
+ if(save.characterRoute==='wardman'&&save.wardmanStanding?.status==='patient'&&id!=='familyPatientAppeal')
+  return {ok:false,reason:'Edmund is confined as a patient and cannot perform ordinary asylum inquiries.'};
  if(save.characterRoute==='investigator'&&
     ['visitorRegister','bellStatement','clothingAccount','drainReport','motiveDocket'].includes(id)&&
     (!permission(save)||!seen(save,'stationMemo')))
@@ -170,14 +189,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
   const outcome=root.FE_WARDMAN_POLITICS.requestReview(save);
   if(!outcome.ok)return outcome;
  }
+ const familyOutcome=root.FE_WARDMAN_RECORDS?.ACTIONS?.includes(id)?
+  root.FE_WARDMAN_RECORDS.apply(save,world,id,spentSeconds):null;
+ if(familyOutcome&&!familyOutcome.ok)return familyOutcome;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:sceneObservation?.source||action.source,
-  description:sceneObservation?.description||action.text,
+  source:familyOutcome?.source||sceneObservation?.source||action.source,
+  description:familyOutcome?.description||sceneObservation?.description||action.text,
   at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
   locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
@@ -204,9 +226,9 @@ function apply(save,world,id,where,{spentSeconds}={}){
   }
  }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
-  source:sceneObservation?.source||action.source,
-  text:sceneObservation?.description||action.text});
- return {ok:true,actionId:id,observation:record.observation||null};
+  source:familyOutcome?.source||sceneObservation?.source||action.source,
+  text:familyOutcome?.description||sceneObservation?.description||action.text});
+ return {ok:true,actionId:id,observation:record.observation||null,familyOutcome};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
 if(typeof module==='object'&&module.exports)module.exports=api;

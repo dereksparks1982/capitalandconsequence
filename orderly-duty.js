@@ -44,6 +44,7 @@
  }
  function access(save,stage,locationId,roomId){
   if(save?.characterRoute!=='wardman')return {ok:false,reason:'This is Edmund Wardman’s ordinary asylum employment.'};
+  if(save.wardmanStanding?.status==='patient')return {ok:false,reason:'A confined Edmund cannot receive orderly assignments or wages.'};
   if(save.paused||save.phase==='report')return {ok:false,reason:'The game clock must be active.'};
   if(locationId!==VENUE)return {ok:false,reason:'Duty is carried out at District Asylum.'};
   if(stage==='assign'&&(save.phase!=='day'||roomId!==STATION))

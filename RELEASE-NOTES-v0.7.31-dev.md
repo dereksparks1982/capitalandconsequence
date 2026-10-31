@@ -90,3 +90,7 @@ Development source on `main`, not an accepted Linux binary release.
 ## Restricted casebook testimony
 - Opening a casebook now shows the four listed persons but **not** their unearned alibis. Sam must read the certified statement folio; Edmund must inspect the ward staffing book. Neither gains the other character's private findings.
 - Shared-world test fixtures now timestamp observations using each protagonist's actual game clock, not a later synthetic timestamp.
+
+
+### Wardman family conspiracy and disputed records (development)
+Edmund's brother can have the asylum duty register amended on January 7 after the death. Edmund may preserve the dated original before the amendment, compare the altered register, obtain independent porter testimony and attend a later independent petition hearing. The choices of witnessed, private or declined family meetings influence his defense. An adverse recorded order is enforced only after a further two-day period, making Edmund a patient with blocked travel and paid orderly work. There is an appeal process both before and after confinement, and an overturned order restores his employment. A document alteration is *not* proof the director committed the murder, and a family allegation is *not* a diagnosis or a conviction. All actions use existing asylum/hospital rooms and charge real game minutes. Development source only, not a new accepted or verified executable.

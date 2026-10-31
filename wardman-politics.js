@@ -85,6 +85,19 @@
   if(p.familyPressure>=60&&p.workplaceTrust<=40&&!p.petition)
    p.petition={status:'threatened',date:save.gameDate,incidentId:CASE,
     reason:'Disputed family allegations; no medical or judicial conclusion'};
+  // A delayed enforcement order is not a medical finding and cannot arise
+  // from family pressure alone: an independent recorded hearing must occur.
+  if(p.petition?.status==='adverse-order'&&p.petition.enforcementDate&&
+     save.gameDate>=p.petition.enforcementDate&&p.status!=='patient'){
+   p.petition.status='enforced';p.petition.enforcedAt=save.gameDate;p.status='patient';
+   save.currentLocation={locationId:'blackwoodAsylum',roomId:'patient-ward'};
+   if(!Array.isArray(save.notes))save.notes=[];
+   const summary='Institutional officers executed a contested confinement order. Edmund is held as a patient pending an appeal; this is no murder verdict or medical diagnosis.';
+   save.notes.push({date:save.gameDate,source:'Wardman petition record',text:summary});
+   created.push({id:'family:'+CASE+':enforced',at:save.gameDate,summary});
+   root.FE_LIFE_HISTORY?.record?.(save,{id:'family:'+CASE+':enforced',date:save.gameDate,
+    source:'Wardman petition record',text:summary});
+  }
   return {events:created,petition:p.petition?{...p.petition}:null};
  }
  function canReview(save){

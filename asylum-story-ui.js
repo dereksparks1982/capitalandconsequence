@@ -57,8 +57,8 @@ function action(id){
  render();refresh();
  const standing=S.characterRoute==='wardman'&&id.startsWith('family')?S.wardmanStanding:null;
  show(standing?'Response recorded. Workplace trust: '+standing.workplaceTrust+
-  '/100 · Family pressure: '+standing.familyPressure+'/100. No commitment order has been issued.':
-  'Filed in your private records. No suspect has been declared guilty.');
+  '/100 · Family pressure: '+standing.familyPressure+'/100 · Petition: '+(standing.petition?.status||'none')+'.':
+  result.familyOutcome?.description||'Filed in your private records. No suspect has been declared guilty.');
  return true;
 }
 function fileSuspect(){
@@ -99,6 +99,16 @@ function casebook(){
  for(const record of file.supplements||[]){
   const line=document.createElement('p');line.textContent='Additional evidence · '+record.source+': '+record.description;
   list.append(line);
+ }
+ const family=root.FE_WARDMAN_RECORDS?.summary?.(S,world);
+ if(family&&S.characterRoute==='wardman'){
+  const summary=document.createElement('p');
+  summary.textContent='Institutional records: '+(family.amended?'Director’s register amended':'Original register in force')+
+   ' · Preserved copy: '+(family.copyPreserved?'yes':'no')+
+   ' · Independent witness: '+(family.witness?'yes':'no')+
+   ' · Petition: '+(family.petition||'none')+
+   (family.confinement?' · EDMUND CONFINED AS A PATIENT':'');
+  list.append(summary);
  }
  const result=document.createElement('p');
  result.textContent=file.ready?
