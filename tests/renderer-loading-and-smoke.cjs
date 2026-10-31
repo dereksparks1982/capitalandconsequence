@@ -9,7 +9,7 @@ const order=['vendor/pathfinding/pathfinding-browser.min.js','vendor/konva/konva
 let at=-1;
 for(const name of order){const next=html.indexOf('src="'+name+'?');assert.ok(next>at,'Missing or misordered script: '+name);at=next;}
 const investigationOrder=['shared-world.js','asylum-incident.js','asylum-evidence.js',
- 'asylum-casework.js','wardman-records.js','asylum-story.js','app.js','asylum-story-ui.js'];
+ 'wardman-politics.js','wardman-records.js','asylum-casework.js','asylum-story.js','app.js','asylum-story-ui.js'];
 let inquiryPrevious=-1;
 for(const file of investigationOrder){
  const scriptPosition=html.indexOf('src="'+file+'?');
