@@ -29,3 +29,11 @@
 
 ## Remaining release gates
 The full source test runner and packaged Electron smoke check must run on a Linux desktop with installed dependencies before anyone claims the build is playable or ready for public distribution. No GitHub Actions, AppImage or published executable was produced by this source commit.
+
+## Linux startup hotfix (October 31, 2026)
+- Corrected an Ubuntu/AppArmor failure that survived a passing source suite: Chromium SUID sandbox initialization occurs **before** the app's JavaScript `app.commandLine.appendSwitch('no-sandbox')` is applied.
+- The single root `capitalandconsequence` launcher is now a real, small, auditable Linux x86_64 ELF which directly `execv`s the complete bundled Electron game binary `capitalandconsequence-runtime` with `--no-sandbox` **already present in the process arguments**.
+- Compiled native boot code is included in compressed form, verified against a pinned SHA256 during packaging. Readable C source accompanies it; no compiler, `sudo`, AppImage, network fetch or GitHub Actions are required for the bootstrap.
+- Updated the Linux builder to keep **both** executables, validate their ELF headers and runtime resources, and smoke-test the same root launcher that the user double-clicks.
+- Added an offline test that executes the native binary with a mock game runtime, exercises startup arguments, validates opt-in sandbox behavior, tests a missing game runtime, and covers the build-time installation process.
+- The native launcher has been compiled and exercised on an x86_64 Linux development host, but the full packaged Electron smoke test has not yet passed on the user's desktop. No playable release or rebuilt local game is claimed.
