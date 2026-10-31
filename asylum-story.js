@@ -62,6 +62,12 @@ const ACTIONS=Object.freeze({
   location:'metropolitanPolice',room:'station-duty-room',
   routes:['investigator'],source:'police-certified witness statement register',
   text:'Recorded statements supplied by four persons who may have been near the ward.'},
+ familyEstateLetter:{label:'Read Wardman family settlement notice · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'Wardman family correspondence',
+  text:'Read personally delivered letter about contested family trust rights.'},
+ familyEstateWitness:{label:'Obtain clerk-witnessed delivery copy · 10 minutes',seconds:600,
+  location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'Wardman family correspondence',
+  text:'Obtained an independent signed mail-register corroboration.'},
  familyPublic:{label:'Request witnessed family meeting · 10 minutes',seconds:600,
   location:'blackwoodAsylum',room:'reception',routes:['wardman'],source:'witnessed family meeting',
   text:'Requested the presence of an independent staff member during the meeting.'},
@@ -149,6 +155,10 @@ function preview(save,world,id,where){
  }
  if(save?.characterRoute==='wardman'&&save.wardmanStanding?.careerEnded&&id!=='wardFateRecord')
   return {ok:false,reason:'Edmund’s playable career ended after the lobotomy.'};
+ if(root.FE_WARDMAN_INHERITANCE?.ACTIONS?.[id]){
+  const check=root.FE_WARDMAN_INHERITANCE.preview(save,world,id);
+  if(!check.ok)return check;
+ }
  if(id==='familyReview'){
   const request=root.FE_WARDMAN_POLITICS?.canReview?.(save);
   if(!request?.ok)return request||{ok:false,reason:'No family petition review is possible'};
@@ -231,14 +241,17 @@ function apply(save,world,id,where,{spentSeconds}={}){
  const custodyOutcome=root.FE_WARDMAN_CUSTODY?.ACTIONS?.[id]?
   root.FE_WARDMAN_CUSTODY.apply(save,world,id,spentSeconds):null;
  if(custodyOutcome&&!custodyOutcome.ok)return custodyOutcome;
+ const inheritanceOutcome=root.FE_WARDMAN_INHERITANCE?.ACTIONS?.[id]?
+  root.FE_WARDMAN_INHERITANCE.apply(save,world,id,spentSeconds):null;
+ if(inheritanceOutcome&&!inheritanceOutcome.ok)return inheritanceOutcome;
  if(id==='stationMemo'){
   if(!save.casePermissions)save.casePermissions={};
   save.casePermissions[CASE_ID]={incidentId:CASE_ID,access:'coroner-report',issuedBy:'station-sergeant',
    scope:'case-statements-and-clinical-copy-only',date:save.gameDate,rank:'patrolman'};
  }
  const record=root.FE_ASYLUM_INCIDENT.observe(save,{incidentId:CASE_ID,eventId:'asylum:'+id,
-  source:custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  description:custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
+  source:inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  description:inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text,
   at:root.FE_WASHINGTON_TIME.now(save)?.iso||save.gameDate,
   locationId:where.locationId,roomId:where.roomId});
  if(!record.ok)return record;
@@ -265,9 +278,9 @@ function apply(save,world,id,where,{spentSeconds}={}){
   }
  }
  root.FE_LIFE_HISTORY?.record?.(save,{id:'asylum:'+id+':'+CASE_ID,date:save.gameDate,
-  source:custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
-  text:custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
- return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome};
+  source:inheritanceOutcome?.source||custodyOutcome?.source||bridgeOutcome?.source||familyOutcome?.source||sceneObservation?.source||action.source,
+  text:inheritanceOutcome?.description||custodyOutcome?.description||bridgeOutcome?.description||familyOutcome?.description||sceneObservation?.description||action.text});
+ return {ok:true,actionId:id,observation:record.observation||null,familyOutcome,bridgeOutcome,custodyOutcome,inheritanceOutcome};
 }
 const api=Object.freeze({CASE_ID,BODY_ID,TIME,ARRIVAL,EXAM,FINDINGS,ACTIONS,advanceWorld,visible,preview,apply,permission,seen});
 if(typeof module==='object'&&module.exports)module.exports=api;

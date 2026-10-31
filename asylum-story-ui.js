@@ -60,7 +60,7 @@ function action(id){
  render();refresh();
  const standing=S.characterRoute==='wardman'&&(id.startsWith('family')||id.startsWith('ward'))?S.wardmanStanding:null;
  show(standing?
-  (result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
+  (result.inheritanceOutcome?.description||result.custodyOutcome?.description||result.bridgeOutcome?.description||result.familyOutcome?.description||'Family response recorded.')+
   ' Workplace trust: '+standing.workplaceTrust+
   '/100 · Family pressure: '+standing.familyPressure+
   '/100 · Petition: '+(standing.petition?.status||'none')+'.':
@@ -124,6 +124,13 @@ function casebook(){
     (custody.outcome?' · Final decision: '+custody.outcome:'')+
     (custody.careerEnded?' · CAREER ENDED':'');
    list.append(line);
+  }
+  const estate=root.FE_WARDMAN_INHERITANCE?.summary?.(S);
+  if(estate?.receivedAt){
+   const statement=document.createElement('p');
+   statement.textContent='Wardman settlement letter: received '+estate.receivedAt+
+    (estate.verified?' · Independent clerk verified receipt':' · Not independently authenticated');
+   list.append(statement);
   }
   const police=root.FE_WARDMAN_POLICE?.summary?.(S);
   if(police){

@@ -95,6 +95,11 @@ function wardmanPages(save){
   findings.filter(e=>e?.eventId?.startsWith('asylum:')).map(e=>
    item(e.at+' · '+e.source+(e.locationId?' · '+e.locationId+(e.roomId?'/'+e.roomId:''):''),
     e.description))));
+ const estate=root.FE_WARDMAN_INHERITANCE?.summary?.(save);
+ if(estate?.records.length)pages.push(page('wardman-estate','Family Papers','The Wardman Settlement',
+  'Personally received family documents, not a murder verdict',
+  ['A financial interest is a possible motive, not a determination of guilt.'],
+  estate.records.map(e=>item(e.date+' · '+e.source,e.text))));
  const standing=save.wardmanStanding?.version===1?save.wardmanStanding:null;
  pages.push(page('family','Personal Matters','Family & Standing',txt(save.gameDate,35),
   ['Family estrangement is part of Edmund’s established background. Any actual attempt to have him confined must arise from a recorded story event, not automatic family omniscience.'],
