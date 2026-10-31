@@ -10,6 +10,8 @@ Choose from different lives, including a businessman building **Federal Electric
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
 
+The Washington map includes optional developer tools for laying out streets and painting buildings blue as movement obstacles. Approved streets and buildings are stored as editable overlays rather than altering the original city illustration. The map also supports a saved road directory, route previews, walking, horseback travel and carriage travel.
+
 ## Linux sandbox compatibility (local ZIP/extracted game)
 
 On Ubuntu 24.04+ where AppArmor restricts unprivileged user namespaces, unpacked
