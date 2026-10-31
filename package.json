@@ -1,6 +1,6 @@
 {
   "name": "capital-consequence",
-  "version": "0.7.39",
+  "version": "0.7.40",
   "private": true,
   "description": "Capital & Consequence historical Washington life simulation (development beta)",
   "main": "desktop/main.cjs",
@@ -9,6 +9,7 @@
     "prestart": "npm run prepare:runtime",
     "start": "electron .",
     "pack:linux": "electron-builder --linux dir --x64 --publish never",
+    "build:root:linux": "node scripts/build-root-linux.cjs",
     "dist:linux": "electron-builder --linux AppImage --x64 --publish never",
     "audit:offline": "node desktop/check-offline-runtime.cjs",
     "audit:artwork": "node desktop/check-artwork-paths.cjs",
@@ -58,7 +59,7 @@
         "AppImage"
       ],
       "category": "Game",
-      "executableName": "capital-consequence",
+      "executableName": "capitalandconsequence",
       "syncDesktopName": true
     },
     "toolsets": {

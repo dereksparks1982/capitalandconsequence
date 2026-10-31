@@ -7,3 +7,6 @@ builder-effective-config.yaml
 latest-linux.yml
 npm-debug.log*
 assets/title-map-1938.jpg
+
+# Packaging stage remains transient, but DO NOT ignore the root playable runtime.
+.capital-root-runtime-backup-*/
