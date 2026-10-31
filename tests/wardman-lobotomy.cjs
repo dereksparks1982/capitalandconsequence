@@ -29,6 +29,10 @@ const free=make('employee');free.wardmanStanding.status='employed';
 assert.equal(story.preview(free,world,'wardAssault',place).ok,false);
 assert.equal(story.preview({...make('cop'),characterRoute:'investigator'},world,'wardAssault',place).ok,false);
 const peaceful=make('peaceful');doAction(peaceful,'wardCooperate');
+const narrative=peaceful.historyTest.find(r=>r.id==='asylum:wardCooperate:'+story.CASE_ID);
+assert.equal(narrative.source,'District Asylum custody register',
+ 'personal life history must retain the sourced custody finding');
+assert.match?.(narrative.text,/cooperated|cooperate/i);
 peaceful.gameDate='1878-01-22';
 assert.equal(FE_WARDMAN_CUSTODY.advance(peaceful).events.length,0);
 function stage(id){
