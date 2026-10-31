@@ -163,7 +163,12 @@ def main():
         info("Installing build dependencies locally.")
         subprocess.run([npm, "install", "--no-audit", "--no-fund"], cwd=ROOT, env=env, check=True)
         info("Building AND smoke-testing real Linux game.")
-        subprocess.run([npm, "run", "build:root:linux"], cwd=ROOT, env=env, check=True)
+        result = subprocess.run([npm, "run", "build:root:linux"], cwd=ROOT, env=env, check=False)
+        if result.returncode not in (0, 2):
+            raise RuntimeError("Linux executable build or smoke test failed (exit " + str(result.returncode) + ").")
+        if result.returncode == 2:
+            info("WARNING: Local game built, but a bundled file exceeds GitHub's source-ZIP size limit.")
+            info("The game may run locally, but the repository ZIP is not yet a playable distribution.")
     executable = ROOT / "capitalandconsequence"
     if not executable.is_file() or not os.access(executable, os.X_OK):
         raise RuntimeError("No executable produced; build is not complete.")
