@@ -3587,6 +3587,8 @@ function renderCapitalTravelChoice(id){
  const modeField=document.getElementById('capitalTravelMode');
  const notice=document.getElementById('capitalTravelEstimate');
  if(!modeField||!notice)return;
+ const restoreStreets=document.getElementById('titleMapRestoreStreets');
+ if(restoreStreets)restoreStreets.hidden=true;
  const origin=currentCityLocation()?.locationId;
  const same=origin===id;
  for(const option of modeField.options){
@@ -3601,7 +3603,11 @@ function renderCapitalTravelChoice(id){
   renderCapitalTravelPreview(id);return;
  }
  if(!capitalTravelStreetReady(points)){
-  notice.textContent='Road route unavailable. Wait for the map and street network to load.';
+  const custom=window.FE_ROAD_LAYOUT?.isActive?.()===true;
+  notice.textContent=custom?
+   'Your custom streets do not connect this address. Choose Use Original Streets without deleting your drawings.':
+   'Road route unavailable. The original street network could not calculate a route.';
+  if(restoreStreets)restoreStreets.hidden=!custom;
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();return;
  }
  const minutes=length?.minutes?.[modeField.value]||30;
@@ -3812,7 +3818,16 @@ function capitalTravelFollow(point){
 }
 async function travelFromTitleMap(event){
  event?.preventDefault?.();event?.stopPropagation?.();
- if(capitalTravelBusy||titleMapPinEdit||window.FE_ROAD_EDITOR?.isEditing?.())return false;
+ try{
+  const travelStatus=document.getElementById('titleMapTravelNote');
+  if(capitalTravelBusy){
+   if(travelStatus)travelStatus.textContent='A journey is already in progress.';
+   return false;
+  }
+  if(titleMapPinEdit||window.FE_ROAD_EDITOR?.isEditing?.()){
+   if(travelStatus)travelStatus.textContent='Finish editing pins or streets before traveling.';
+   return false;
+  }
  const id=titleMapSelectedLocationId||
   document.getElementById('titleMapLocationTravel')?.dataset.locationId;
  const from=currentCityLocation()?.locationId;
@@ -3836,8 +3851,12 @@ async function travelFromTitleMap(event){
  }
  const {points,estimate:measurement}=capitalTravelMeasurement(id);
  if(!capitalTravelStreetReady(points)||!measurement){
-  if(travelNote)travelNote.textContent=
+  const custom=window.FE_ROAD_LAYOUT?.isActive?.()===true;
+  if(travelNote)travelNote.textContent=custom?
+   'Your custom streets cannot reach this location. Choose Use Original Streets. No journey was recorded.':
    'Street route unavailable. You have not traveled or been charged.';
+  const restore=document.getElementById('titleMapRestoreStreets');
+  if(restore)restore.hidden=!custom;
   return false;
  }
  // An animation is visual only. The same profile and departure must still
@@ -3862,8 +3881,8 @@ async function travelFromTitleMap(event){
  const button=document.getElementById('titleMapLocationTravel');
  if(!img?.naturalWidth||!viewport||!viewer||viewer.hidden)return false;
  capitalTravelBusy=true;if(button)button.disabled=true;
- window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  try{
+  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
   if(travelNote)travelNote.textContent='Traveling by '+availability.mode+
    ' · approximately '+measurement.guidePixels+' map pixels (provisional).';
   let lastMilestone=-1;
@@ -3912,6 +3931,12 @@ async function travelFromTitleMap(event){
   capitalTravelBusy=false;
   if(button)button.disabled=false;
   if(!viewer.hidden)renderCapitalTravelPreview();
+ }
+ }catch(error){
+  console.error('Go There failed:',error);
+  const note=document.getElementById('titleMapTravelNote');
+  if(note)note.textContent='Travel could not start: '+String(error?.message||error).slice(0,160)+'. Check the route and try again.';
+  return false;
  }
 }
 function buildTitleMapMarkers(){
@@ -4161,8 +4186,28 @@ function initTitleMapViewer(){
  if(go){
   go.onclick=null;
   go.addEventListener('pointerdown',e=>e.stopPropagation(),true);
-  go.addEventListener('click',e=>{e.stopImmediatePropagation();travelFromTitleMap(e)},true);
+  go.addEventListener('click',e=>{
+   e.stopImmediatePropagation();
+   void travelFromTitleMap(e).catch(error=>{
+    console.error('Go There click dispatch failed:',error);
+    const note=document.getElementById('titleMapTravelNote');
+    if(note)note.textContent='Travel is unavailable: '+String(error?.message||error).slice(0,160);
+   });
+  },true);
  }
+ const restoreStreets=$('#titleMapRestoreStreets');
+ if(restoreStreets)restoreStreets.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  const saved=window.FE_ROAD_LAYOUT?.sanitize?.(S.customRoadLayout);
+  if(!saved?.active)return;
+  // Restore normal streets without deleting custom work or modifying map art.
+  S.customRoadLayout={...saved,active:false};
+  window.FE_ROAD_LAYOUT.load(S.customRoadLayout);
+  save(true);
+  if(titleMapSelectedLocationId)renderCapitalTravelChoice(titleMapSelectedLocationId);
+  const note=document.getElementById('titleMapTravelNote');
+  if(note)note.textContent='Original streets restored. Custom drawing preserved. Choose Go There.';
+ });
  $('#titleMapExportPins').onclick=exportTitleMapPins;
  // The location card contains a text field. Stop its pointerdown from reaching
  // the viewport's existing pan capture; leave the map pan/zoom code unchanged.
