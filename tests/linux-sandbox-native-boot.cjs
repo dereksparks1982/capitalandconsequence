@@ -12,8 +12,14 @@ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'capital-native-sandbox-'))
 try{
  const filename=path.join(directory,'capitalandconsequence');
  const runtime=path.join(directory,'capitalandconsequence-runtime');
- fs.writeFileSync(filename,build.launcherBytes(),{mode:0o755});
- fs.copyFileSync('/bin/echo',runtime);fs.chmodSync(runtime,0o755);
+ // Simulate electron-builder's actual unpacked output, then test the
+ // EXACT post-packaging replacement used by the real Linux build process.
+ fs.copyFileSync('/bin/echo',filename);fs.chmodSync(filename,0o755);
+ build.prepareNativeLinuxEntrypoint(directory);
+ assert.equal(build.validElf(filename),true,'Root-level game entry is a native ELF');
+ assert.equal(build.validElf(runtime),true,'Complete Electron-style game binary is retained');
+ assert.equal(fs.readFileSync(filename).compare(build.launcherBytes()),0,
+  'Packager installs exactly the audited, checksum-verified native ELF');
  const run=env=>cp.spawnSync(filename,['--smoke-test'],{
   cwd:directory,env:{...process.env,...env},encoding:'utf8',timeout:5000});
  const normal=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'0'});
