@@ -70,7 +70,7 @@ check(base.indexOf('tabletop-chess-ui.js?')>base.indexOf('npc-ai.js?'),'Chess pa
 check(base.includes('tabletop-chess.css?')&&art.includes('.fe-chess-overhead')&&art.includes('.fe-chess-portrait'),'Overhead table has original CSS character portrait frames');
 new vm.Script(fs.readFileSync(path.join(root,'tabletop-chess-ui.js'),'utf8'),{filename:'tabletop-chess-ui.js'});
 check(app.includes("FE_CHESS?.tick?.(S,{now:")&&app.includes("FE_CHESS_UI?.refresh?.()"),'Autonomous matches and local-room UI wired into main simulation');
-check(app.includes('S.lastChessResult].filter(Boolean)')&&app.includes('S.lastChessResult=null;'),'Real chess results feed newspaper and do not repeat forever');
+check(app.includes('S.lastChessResult,S.lastCheckersResult].filter(Boolean)')&&app.includes('S.lastChessResult=null;'),'Real chess results feed newspaper and do not repeat forever');
 check(fs.readFileSync(path.join(root,'vendor/chessjs/LICENSE'),'utf8').includes('Jeff Hlywa'),'Exact upstream BSD notice is retained');
 const shared=fs.readFileSync(path.join(root,'shared-world.js'),'utf8');
 check(shared.includes('chessCircuit:publicChess(save.chessCircuit||world.chessCircuit)')&&shared.includes('save.chessCircuit=publicChess(world.chessCircuit)'), 'Shared campaign transmits public results, not someone else\'s active match');
