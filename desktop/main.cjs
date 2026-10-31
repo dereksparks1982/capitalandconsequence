@@ -1,4 +1,15 @@
 const { app, BrowserWindow, shell, ipcMain } = require('electron');
+// Portable, unpacked Linux Electron builds cannot install a root-owned 4755
+// chrome-sandbox inside the user's extracted game folder. On Ubuntu with
+// AppArmor's user namespace restrictions, Chromium otherwise aborts before
+// any game window opens. The game only loads its bundled local HTML and
+// blocks external navigation. The unsandboxed Chromium mode is a documented
+// portability/security tradeoff, NOT a permission elevation or a wrapper.
+// Users with a correctly installed Chromium sandbox may explicitly opt in
+// via CAPITAL_ENABLE_CHROMIUM_SANDBOX=1.
+if (process.platform === 'linux' && process.env.CAPITAL_ENABLE_CHROMIUM_SANDBOX !== '1') {
+  app.commandLine.appendSwitch('no-sandbox');
+}
 const fs = require('fs');
 const path = require('path');
 const { fileURLToPath } = require('url');

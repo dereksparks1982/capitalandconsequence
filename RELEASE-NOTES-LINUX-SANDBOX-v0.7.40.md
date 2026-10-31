@@ -1,0 +1,3 @@
+# Local Linux sandbox compatibility hotfix for v0.7.40
+
+The portable game entrypoint now chooses Chromium no-sandbox on Linux by default, before Electron is ready, so the real root ELF is able to launch from the user's extracted game folder without a setuid root-owned chrome-sandbox helper. This is a Chromium security tradeoff, explicitly documented in the README; it is appropriate only for trusted locally bundled game content, not untrusted browsing. An explicit environment opt-in is available for users with configured Chromium sandbox policies. Regression assertions require the root binary smoke path to remain the same executable that players launch. No AppImage, Actions, sudo, or fake launcher. A successful complete packaged smoke run is not claimed yet.

@@ -8,6 +8,19 @@ assert.equal(p.build.linux.executableName,name);
 assert.equal(p.build.directories.output,'.');
 assert.equal(p.scripts['build:root:linux'],'node scripts/build-root-linux.cjs');
 assert.equal(build.binaryName,name);
+// Verify the actual packaged game can be opened by double-click, without a
+// command-line --no-sandbox argument, sudo or a root-owned Chromium helper.
+const mainSource=fs.readFileSync(path.join(__dirname,'../desktop/main.cjs'),'utf8');
+assert.ok(mainSource.includes("process.platform === 'linux'"),'Rootless mode applies only to Linux');
+assert.ok(mainSource.includes("app.commandLine.appendSwitch('no-sandbox')"),
+ 'Linux ELF must set the no-sandbox switch before Electron ready');
+assert.ok(mainSource.indexOf("app.commandLine.appendSwitch('no-sandbox')") <
+ mainSource.indexOf('app.whenReady()'),'Chromium sandbox compatibility is enabled before app ready');
+assert.ok(mainSource.includes("process.env.CAPITAL_ENABLE_CHROMIUM_SANDBOX !== '1'"),
+ 'Experienced users may enable Chromium sandbox with a configured local policy');
+const builderSource=fs.readFileSync(path.join(__dirname,'../scripts/build-root-linux.cjs'),'utf8');
+assert.ok(builderSource.includes("execute(exe,['--smoke-test']"),
+ 'Smoke tests must launch the same actual root ELF that players double-click');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'capital-build-check-'));
 try{
  assert.throws(()=>build.inspect(root),/real executable ELF/);

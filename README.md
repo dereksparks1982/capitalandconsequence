@@ -10,6 +10,26 @@ Choose from different lives, including a businessman building **Federal Electric
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
 
+## Linux sandbox compatibility (local ZIP/extracted game)
+
+On Ubuntu 24.04+ where AppArmor restricts unprivileged user namespaces, unpacked
+Electron executables fail at startup when the bundled `chrome-sandbox` helper is
+not installed by root with the setuid mode. This game's requested Linux ZIP workflow
+must not require users to run `sudo`, alter kernel security settings, or use a
+launcher that adds terminal flags.
+
+The packaged Linux entrypoint therefore selects Chromium's `no-sandbox` mode
+**before Electron is ready**, allowing double-clicking the actual root
+`capitalandconsequence` executable without root permissions or arguments.
+**Security warning:** this disables the Chromium process sandbox and should not
+be used for browsing untrusted websites. Game content is bundled local HTML;
+external URLs are opened by the default browser and foreign in-app navigation is
+blocked. Users who have installed a working Chromium sandbox/AppArmor policy
+can opt back in by launching with `CAPITAL_ENABLE_CHROMIUM_SANDBOX=1`.
+This compatibility mode has not yet passed the actual packaged desktop smoke
+test; successful local Linux build and download-ZIP QA remain prerequisites
+for claiming a release.
+
 ## Linux runnable-game acceptance rule
 
 The requested game format is a self-contained Linux x64 root-level **ELF executable named `capitalandconsequence`**, with its complete `resources/`, `locales/` and other Electron runtime files at the top level of the **same repository**. Players must be able to extract GitHub's repository ZIP and double-click that executable. An AppImage, a source-only checkout, a shell wrapper, or a downloader does **not** meet the requirement.
