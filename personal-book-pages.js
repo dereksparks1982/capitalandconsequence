@@ -102,6 +102,7 @@ function buildPages(save,{publicFile}={}){
  if(!save||!Object.hasOwn(DATA,save.characterRoute))return [];
  const def=DATA[save.characterRoute];
  let pages=[cover(save,def)];
+ pages.push(...(root.FE_MAIN_STORIES?.pages?.(save)||[]));
  if(save.characterRoute==='investigator'){
   const police=root.FE_CASEBOOK_PAGES?.buildPages?.(save,{publicFile})||[];
   pages=pages.concat(police.filter(p=>p.id!=='cover'&&p.id!=='notes'));
