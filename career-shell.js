@@ -131,20 +131,21 @@
   if(lastRenderedRoute!==route.id){
    lastRenderedRoute=route.id;
    desk.dataset.route=route.id;
+   const bookTitle=route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal';
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
     <div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
-      <div class="career-desk-ledger"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${route.id==='industrialist'?'Federal Electric':route.id==='investigator'?'Duty & Incident Book':route.id==='criminal'?'Personal Notebook':'Institutional Ward Register'}</strong><span>WASHINGTON · PRIVATE PAPERS</span></div>
-      <div class="career-desk-blotter"><div class="career-desk-sheet">${route.id==='industrialist'?'WASHINGTON<br>WORKS':'REPORTS<br>AND NOTES'}</div><button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button></div>
+      <button type="button" id="careerDeskLedger" class="career-desk-ledger" title="Open ${escape(bookTitle)}" aria-label="Open ${escape(bookTitle)}"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${escape(bookTitle)}</strong><span>WASHINGTON · PRIVATE PAPERS</span></button>
+      <div class="career-desk-blotter"><button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button></div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Your executive career and business systems remain available below. This desk uses a generic period placeholder, not the retired title-screen artwork.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
-    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskJournal">${route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal'}</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
+    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskEnterLocation').onclick=()=>window.FE_CITY?.openRoom?.(S.currentLocation.locationId,S.currentLocation.roomId);
-   desk.querySelector('#careerDeskJournal').onclick=()=>window.FE_PERSONAL_BOOK?.open?.();
+   desk.querySelector('#careerDeskLedger').onclick=()=>window.FE_PERSONAL_BOOK?.open?.();
    desk.querySelector('#careerDeskMenu').onclick=open;
    desk.querySelector('#careerDeskWait').onclick=()=>{
     if(S.paused)return;
