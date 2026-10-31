@@ -37,5 +37,11 @@ state.scale=2;ctx.capitalTravelBusy=false;
 ctx.follow({x:.99,y:.99});
 assert.deepEqual({x:state.x,y:state.y},movingState,
  'Camera follow never moves the normal map outside an active journey');
-assert.match(app.slice(end,end+3200),/onFrame:point=>capitalTravelFollow\(point\)/);
+// Verify the FULL departure handler. Additional preflight guards made the
+// old arbitrary 3,200-character window stop before the actual animation call.
+const departureEnd=app.indexOf('function buildTitleMapMarkers(',end);
+assert.ok(departureEnd>end,'Full Go There handler must follow the camera function');
+const departure=app.slice(end,departureEnd);
+assert.match(departure,/window\.FE_CAPITAL_TRAVEL\.animate\(\{[\s\S]*?onFrame:point=>capitalTravelFollow\(point\)/,
+ 'The real animated journey must feed each frame to the camera-follow handler');
 console.log('PASS automatic zoomed camera, manual pan priority, fit-to-view and original pin immutability');
