@@ -100,8 +100,55 @@ function purchase(save,buyer,goodId,opts={}){
   ...(opts.token?{token:String(opts.token).slice(0,120)}:{})};
  m.purchases.push(receipt);
  if(m.purchases.length>1300)m.purchases.splice(0,m.purchases.length-1300);
- if(buyer==='player')m.playerBag.push({id:'purchase-'+receipt.id,good:good.id,label:good.label,units:good.units,date});
+ if(buyer==='player'){
+  const t=save.worldCalendar?.worldMinute,p=root.FE_FOOD_CATALOG?.find?.(good.id);
+  m.playerBag.push({id:'purchase-'+receipt.id,good:good.id,label:good.label,units:good.units,date,
+    boughtAt:Number.isSafeInteger(t)?t:null,
+    expiresAt:Number.isSafeInteger(t)&&Number.isFinite(p?.shelfDays)?t+p.shelfDays*1440:null});
+ }
  return {ok:true,receipt,stockRemaining:stock[good.id]};
+}
+/* Single all-or-nothing shopping-basket settlement. No phantom packages. */
+function quoteBasket(save,siteId,lines){
+ if(siteId!==''&&(!siteId||!Object.hasOwn(SITES,siteId)))return {ok:false,reason:'Unknown market.'};
+ if(!Array.isArray(lines)||!lines.length||lines.length>24)
+  return {ok:false,reason:'Choose one to 24 distinct groceries.'};
+ const m=ensure(save),stock=siteId?m.siteStocks[siteId]:m.stock;
+ let packages=0,totalCents=0;const unique=new Set();
+ for(const x of lines){
+  const g=BY_GOOD[x?.id],n=x?.packages;
+  if(!g||unique.has(x.id)||!Number.isSafeInteger(n)||n<1||n>24||!allowedAt(x.id,siteId))
+   return {ok:false,reason:'Invalid basket or goods unavailable at this stall.'};
+  unique.add(x.id);packages+=n;totalCents+=g.cents*n;
+  if(stock[g.id]<n)return {ok:false,reason:'Not enough '+g.label+' in stock.'};
+ }
+ if(packages>24||m.playerBag.length+packages>24)return {ok:false,reason:'The 24-package shopping bag is full.'};
+ if(!Number.isSafeInteger(totalCents)||totalCents>Math.round(Number(save.personalCash||0)*100))
+  return {ok:false,reason:'Not enough personal cash for this basket.'};
+ return {ok:true,packages,totalCents,lines:lines.map(x=>({id:x.id,packages:x.packages}))};
+}
+function purchaseBasket(save,siteId,lines,opts={}){
+ const q=quoteBasket(save,siteId,lines),date=opts.date||save.gameDate;
+ if(!q.ok)return q;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return {ok:false,reason:'Invalid date.'};
+ const m=ensure(save),stock=siteId?m.siteStocks[siteId]:m.stock,receipts=[];
+ save.personalCash=(Math.round(Number(save.personalCash||0)*100)-q.totalCents)/100;
+ for(const line of q.lines){
+  const good=BY_GOOD[line.id],account=siteId?siteId+':'+good.vendor:good.vendor;
+  stock[good.id]-=line.packages;m.accounts[account]=(m.accounts[account]||0)+good.cents*line.packages;
+  for(let i=0;i<line.packages;i++){
+   const receipt={id:++m.nextPurchase,date,buyer:'player',good:good.id,
+    label:good.label,units:good.units,cents:good.cents,vendor:good.vendor,batch:true,
+    ...(siteId?{siteId}:{})};
+   receipts.push(receipt);m.purchases.push(receipt);
+   const t=save.worldCalendar?.worldMinute,p=root.FE_FOOD_CATALOG?.find?.(good.id);
+   m.playerBag.push({id:'purchase-'+receipt.id,good:good.id,label:good.label,
+    units:good.units,date,boughtAt:Number.isSafeInteger(t)?t:null,
+    expiresAt:Number.isSafeInteger(t)&&Number.isFinite(p?.shelfDays)?t+p.shelfDays*1440:null});
+  }
+ }
+ if(m.purchases.length>1300)m.purchases.splice(0,m.purchases.length-1300);
+ return {ok:true,receipts,packages:q.packages,totalCents:q.totalCents};
 }
 function consume(save,id){
  const m=ensure(save),index=m.playerBag.findIndex(x=>x.id===id);
@@ -176,7 +223,7 @@ function settleSaturday(save){
  m.settlements[date]=receipt;
  return {...receipt,repeated:false};
 }
-const api=Object.freeze({RENT_CENTS,GOODS,STARTING_GOODS,SITES,allowedAt,ensure,purchase,consume,deliveryForCalendar,settleSaturday});
+const api=Object.freeze({RENT_CENTS,GOODS,STARTING_GOODS,SITES,allowedAt,ensure,purchase,quoteBasket,purchaseBasket,consume,deliveryForCalendar,settleSaturday});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_WASHINGTON_COMMERCE=api;
 })(typeof window!=='undefined'?window:globalThis);

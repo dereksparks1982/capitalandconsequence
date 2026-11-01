@@ -20,6 +20,7 @@ function state(save){
  const s=save.homeDeliveries;
  if(!s.orders||typeof s.orders!=='object')s.orders={};
  if(!Array.isArray(s.receipts))s.receipts=[];
+ if(!Array.isArray(s.failedRounds))s.failedRounds=[];
  return s;
 }
 function setOrder(save,key,packages){
@@ -62,7 +63,7 @@ function tick(save){
   }
   // Validate capacity before transaction so a full icebox doesn't eat cash.
   const target=kitchen.ledger(save);
-  if(!target||target.k.goods.length+n>350){results.push({key,ok:false,reason:'Kitchen full'});continue;}
+  if(!target||target.k.goods.length+(key==='ice'?0:n)>350){results.push({key,ok:false,reason:'Kitchen full'});continue;}
   const oldCash=save.personalCash,oldStock=stock[good.id],oldCount=target.k.goods.length,oldIce=target.k.iceUntil;
   try{
    if(key==='ice'){
@@ -86,6 +87,11 @@ function tick(save){
    results.push({key,ok:false,reason:String(e.message||e)});
   }
  }
+ for(const failure of results.filter(x=>!x.ok)){
+  if(!data.failedRounds.some(x=>x.date===date&&x.key===failure.key&&x.reason===failure.reason))
+   data.failedRounds.push({date,key:failure.key,reason:failure.reason,minute:now});
+ }
+ data.failedRounds=data.failedRounds.slice(-120);
  data.lastCheckedDate=date;
  return {ok:true,processed:results};
 }

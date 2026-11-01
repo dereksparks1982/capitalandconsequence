@@ -4,8 +4,15 @@
  */
 (function(root){'use strict';
 const recipes=()=>root.FE_RECIPES, kitchen=()=>root.FE_KITCHEN;
-const atMarket=s=>['oldChinatown','easternMarket','georgetownMarketHouse','centerMarket'].includes(s?.currentLocation?.locationId)||
- (s?.currentLocation?.locationId==='hillsdale'&&s?.currentLocation?.roomId==='hillsdale-market');
+function marketSite(save){
+ const {locationId,roomId}=save?.currentLocation||{};
+ if(locationId==='oldChinatown'&&roomId==='market-street')return '';
+ if(locationId==='hillsdale'&&roomId==='hillsdale-market')return 'hillsdale-market';
+ if(['easternMarket','georgetownMarketHouse'].includes(locationId)&&roomId==='market-hall')return locationId;
+ if(locationId==='centerMarket'&&['market-hall','wholesale-counter'].includes(roomId))return locationId;
+ return null;
+}
+const atMarket=s=>marketSite(s)!==null;
 function state(save){
  if(!save||typeof save!=='object')return null;
  if(save.householdCookery?.version!==1)save.householdCookery={version:1,known:[],booksRead:[],purchases:[],
@@ -109,7 +116,7 @@ function sell(save,mealId,servings){
  if(sold+servings>40)return {ok:false,reason:'The market is finished buying baked goods for today.'};
  const merchant=root.FE_WASHINGTON_COMMERCE?.ensure?.(save);
  const centsEach=Math.max(2,Math.round(recipe.difficulty*.7+recipe.minutes*.07));
- const cents=centsEach*servings,account='bakery';
+ const cents=centsEach*servings,site=marketSite(save),account=site?site+':bakery':'bakery';
  if(!merchant||Number(merchant.accounts[account]||0)<cents)
   return {ok:false,reason:'The market bakery has insufficient cash to buy your goods.'};
  merchant.accounts[account]-=cents;
@@ -117,11 +124,11 @@ function sell(save,mealId,servings){
  meal.servings-=servings;
  if(meal.servings===0)data.k.carriedMeals=data.k.carriedMeals.filter(m=>m!==meal);
  const receipt={minute:save.worldCalendar?.worldMinute||null,date,recipe:recipe.id,
-  servings,amountCents:cents};
+  servings,amountCents:cents,site:site||'oldChinatown'};
  s.sales.push(receipt);s.soldByDate[date]=sold+servings;s.sales=s.sales.slice(-200);
  return {ok:true,receipt};
 }
-const api=Object.freeze({state,bakingLevel,canCook,buyBook,canRead,learn,complete,eat,sell,atMarket});
+const api=Object.freeze({state,bakingLevel,canCook,buyBook,canRead,learn,complete,eat,sell,atMarket,marketSite});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_COOKERY=api;
 })(typeof window!=='undefined'?window:globalThis);

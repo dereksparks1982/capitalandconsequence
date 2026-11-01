@@ -54,7 +54,9 @@ function store(save,id,container){
  const bag=data.commerce.playerBag[index],p=catalog(bag.good);
  if(!p)return {ok:false,reason:'This is not an item from the grocery catalog.'};
  if(data.k.goods.length>=350)return {ok:false,reason:'The kitchen is full.'};
+ if(Number.isFinite(bag.expiresAt)&&bag.expiresAt<=t)return {ok:false,reason:'Carried food has spoiled.'};
  const entry=packaged(data.k,bag.good,bag.units||p.units,container,t,'market:'+id);
+ if(entry&&Number.isFinite(bag.expiresAt))entry.expires=Math.min(entry.expires,bag.expiresAt);
  if(!entry)return {ok:false,reason:'Invalid grocery package.'};
  data.commerce.playerBag.splice(index,1);
  data.k.history.push({action:'store',id:entry.id,minute:t,container});
@@ -78,7 +80,7 @@ function take(save,id){
  if(data.commerce.playerBag.length>=24)return {ok:false,reason:'Shopping bag full.'};
  const entry=data.k.goods[i];if(entry.spoiled)return {ok:false,reason:'Spoiled goods must be discarded.'};
  data.commerce.playerBag.push({id:entry.id,good:entry.good,
-  label:catalog(entry.good)?.label||entry.good,units:entry.units,date:save.gameDate||''});
+  label:catalog(entry.good)?.label||entry.good,units:entry.units,date:save.gameDate||'',boughtAt:entry.storedAt,expiresAt:entry.expires});
  data.k.goods.splice(i,1);
  return {ok:true,entry};
 }
@@ -102,6 +104,33 @@ function ice(save,blocks){
   return {ok:false,reason:'Invalid ice block count.'};
  data.k.iceUntil=Math.max(t,Number.isFinite(data.k.iceUntil)?data.k.iceUntil:t)+blocks*1440;
  return {ok:true,until:data.k.iceUntil};
+}
+function loadIce(save,id){
+ if(!atKitchen(save))return {ok:false,reason:'Load ice in your own kitchen.'};
+ const data=ledger(save),t=minute(save);if(!data||t===null)return {ok:false,reason:'Clock unavailable.'};
+ sync(save);
+ const b=data.commerce.playerBag.findIndex(x=>x.id===id&&x.good==='ice-block');
+ const g=data.k.goods.findIndex(x=>x.id===id&&x.good==='ice-block');
+ const carried=b>=0?data.commerce.playerBag[b]:null,stored=g>=0?data.k.goods[g]:null;
+ if(!carried&&!stored)return {ok:false,reason:'Buy ice and bring it home first.'};
+ if((carried&&Number.isFinite(carried.expiresAt)&&carried.expiresAt<=t)||stored?.spoiled)
+  return {ok:false,reason:'That ice already melted.'};
+ const cooled=ice(save,1);if(!cooled.ok)return cooled;
+ if(carried){if(carried.units>1)carried.units--;else data.commerce.playerBag.splice(b,1);}
+ else {if(stored.units>1)stored.units--;else data.k.goods.splice(g,1);}
+ data.k.history.push({action:'load-ice',id,minute:t});data.k.history=data.k.history.slice(-150);
+ return {ok:true,until:cooled.until};
+}
+function clearSpoiled(save){
+ if(!atKitchen(save))return {ok:false,reason:'Return to your kitchen.'};
+ const x=sync(save);if(!x.ok)return x;
+ const {k}=ledger(save),before=k.goods.length+k.meals.length+k.carriedMeals.length;
+ k.goods=k.goods.filter(x=>!x.spoiled);k.meals=k.meals.filter(x=>!x.spoiled);
+ k.carriedMeals=k.carriedMeals.filter(x=>!x.spoiled);
+ const discarded=before-k.goods.length-k.meals.length-k.carriedMeals.length;
+ if(!discarded)return {ok:false,reason:'There is no spoiled food to discard.'};
+ k.history.push({action:'clean',discarded,minute:minute(save)});k.history=k.history.slice(-150);
+ return {ok:true,discarded};
 }
 function available(save,ingredients){
  const o=sync(save);if(!o.ok)return {ok:false,reason:o.reason,missing:[]};
@@ -145,7 +174,7 @@ function addMeal(save,recipe,servings,expiresAfterMinutes=2880){
  const meal={id:next(data.k),recipe,servings,created:t,expires:t+expiresAfterMinutes,spoiled:false};
  data.k.meals.push(meal);data.k.meals=data.k.meals.slice(-100);return meal;
 }
-const api=Object.freeze({CONTAINERS,ledger,atKitchen,sync,stock,store,storeAll,take,discard,acceptDelivery,ice,available,consume,packMeal,addMeal,minute});
+const api=Object.freeze({CONTAINERS,ledger,atKitchen,sync,stock,store,storeAll,take,discard,acceptDelivery,ice,loadIce,clearSpoiled,available,consume,packMeal,addMeal,minute});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_KITCHEN=api;
 })(typeof window!=='undefined'?window:globalThis);
