@@ -1173,6 +1173,11 @@ function claimCircusPrizes(){
  if(out.length)save(true);
  return out;
 }
+function tarotSharedWorld(){
+ if(!S.sharedWorldId)return null;
+ try{return window.FE_SHARED_WORLD?.read?.(localStorage,S.sharedWorldId)||null}
+ catch(error){return null}
+}
 function requestFortuneReading(){
  const circus=window.FE_CIRCUS_TOUR?.active?.(S),current=currentCityLocation();
  if(!circus||current.locationId!==circus.locationId||cityRoomSession.dev||S.paused||window.FE_MEDICAL_RECORDS?.pending?.(S))
@@ -1180,7 +1185,7 @@ function requestFortuneReading(){
  const encounterId='circus-reading-'+circus.id+'-'+S.gameDate;
  const prior=(S.tarotSessions||[]).find(x=>x.encounterId===encounterId);
  if(prior){
-  window.FE_TAROT_INTERPRETATION?.interpret?.(S,prior);
+  window.FE_TAROT_INTERPRETATION?.interpret?.(S,prior,{sharedWorld:tarotSharedWorld()});
   return {ok:true,replayed:true,session:prior};
  }
  if(Math.round(Number(S.personalCash||0)*100)<10)
@@ -1193,7 +1198,7 @@ function requestFortuneReading(){
   readerId:'visiting-fortune-teller',encounterId,spread:'three',feeCents:10
  });
  if(!result?.ok)return result||{ok:false,reason:'The deck is unavailable.'};
- window.FE_TAROT_INTERPRETATION?.interpret?.(S,result.session);
+ window.FE_TAROT_INTERPRETATION?.interpret?.(S,result.session,{sharedWorld:tarotSharedWorld()});
  window.FE_NPC_DISCOVERY?.learn?.(S,'visiting-fortune-teller','encounter','circus wagon');
  save(true);return result;
 }
