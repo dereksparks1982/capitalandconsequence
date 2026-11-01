@@ -4476,7 +4476,21 @@ window.FE_BOOTSTRAP_READY=(async()=>{
 })();
 $('#skillFilter')?.addEventListener('change',()=>window.FE_SKILLS?.render?.(S));
 marketTimer=setInterval(()=>{if(bootstrapReady&&!document.hidden&&!S.paused&&!capitalTravelBusy&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||capitalTravelBusy||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();window.FE_WORLD_BANNER?.sync?.()},1000);
+let lastNeedsUiMinute=null;
+clockTimer=setInterval(()=>{
+ if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||capitalTravelBusy||titleDevFreezeTime||titleScreenBlocksSimulation())return;
+ advanceWorldSimulation(1,false,'tick');
+ $('#dayClock').textContent=clockText();
+ $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();
+ window.FE_WORLD_BANNER?.sync?.();
+ const now=window.FE_CHARACTER_NEEDS?.minute?.(S);
+ if(now!==null&&now!==undefined&&now!==lastNeedsUiMinute){
+  lastNeedsUiMinute=now;
+  window.FE_CAREER_SHELL?.refreshBreakStatus?.();
+  renderFactoryBreakRoom();
+  window.FE_CHARACTER_NEEDS_UI?.render?.(S);
+ }
+},1000);
 autosaveTimer=setInterval(()=>{if(bootstrapReady)save(true)},5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
