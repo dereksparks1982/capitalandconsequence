@@ -4359,8 +4359,10 @@ function buildTitleMapMarkers(){
  marker.querySelector('.title-map-marker-label').textContent=pinDisplayName(location);
   window.FE_LOCATION_ICONS?.decorate?.(marker,S,location.id);
   marker.addEventListener('pointerdown',e=>{
+   // Right-clicking over a pin must still pan the map, not swallow the drag.
+   if(e.button!==0)return;
    e.stopPropagation();
-   if(capitalTravelBusy||!titleMapPinEdit||e.button!==0)return;
+   if(capitalTravelBusy||!titleMapPinEdit)return;
    titleMapPinDrag={id:location.id,pointerId:e.pointerId,
     before:{x:location.x,y:location.y,userPlaced:!!location.userPlaced}};
    marker.setPointerCapture(e.pointerId);
@@ -4639,11 +4641,11 @@ function initTitleMapViewer(){
  },{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
  viewport.addEventListener('contextmenu',e=>{
-  if(e.target?.closest?.('#titleMapLocationCard,button,input,select,textarea,a'))return;
-  e.preventDefault(); // Right drag pans instead of opening Firefox's menu.
+  if(e.target?.closest?.('#titleMapLocationCard'))return;
+  e.preventDefault(); // Even the right click on a pin pans instead of a menu.
  });
  viewport.addEventListener('pointerdown',e=>{
-  if(e.target?.closest?.('button,input,select,textarea,a,#titleMapLocationCard'))return;
+  if(e.target?.closest?.('#titleMapLocationCard,input,select,textarea,a'))return;
   if(e.button!==2)return; // The LEFT mouse button belongs to editing/clicking.
   titleMapState.pointerId=e.pointerId;titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
   viewport.setPointerCapture(e.pointerId);viewport.classList.add('is-dragging');e.preventDefault();
