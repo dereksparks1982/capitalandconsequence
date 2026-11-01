@@ -145,6 +145,30 @@
    output.appendChild(button);
   }
  }
+ function refreshDeskNeedsControls(){
+  const panel=desk.querySelector('#careerDeskCoffee');
+  if(!panel)return;
+  const position=window.FE_CITY?.currentLocation?.();
+  const atDesk=position?.locationId==='factory'&&position?.roomId==='executive-office';
+  const service=window.FE_CHARACTER_NEEDS;
+  for(const button of panel.querySelectorAll('button[data-desk-refreshment]')){
+   const kind=button.dataset.deskRefreshment;
+   const available=service?.availability?.(S,kind);
+   const base=button.dataset.baseLabel||button.textContent;
+   button.dataset.baseLabel=base;
+   button.disabled=!atDesk||S.paused||S.phase!=='day'||available?.ok===false||
+     (window.FE_WASHINGTON_TIME?.secondsUntilBusinessClose?.(S)||0)<300;
+   button.textContent=base+(available?.remaining?' · '+service.formatClock(available.availableAt):'');
+   button.title=!atDesk?'Return to the executive office to take a break.':
+    available?.remaining?'Ready again at '+service.formatClock(available.availableAt):'';
+  }
+  const rest=desk.querySelector('#careerDeskCoffeeNext');
+  if(rest){
+   const state=service?.availability?.(S,'rest');
+   rest.textContent=state?.remaining?'Next break: '+service.formatClock(state.availableAt):'Break available';
+  }
+  window.FE_CHARACTER_NEEDS_UI?.render?.(S);
+ }
  function refreshDesk(){
   const route=routes.get(S.characterRoute)||routes.get('industrialist');
   document.body.dataset.career=route.id;
@@ -165,7 +189,7 @@
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
     ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
-    ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button></div><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
+    ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button><button type="button" data-desk-refreshment="rest">Rest Break</button></div><p id="careerDeskNeeds" class="character-needs-meter"></p><p id="careerDeskCoffeeNext" class="career-desk-coffee-next"></p><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
    window.FE_DESK_COLLECTION?.attach?.(desk);
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
@@ -177,7 +201,7 @@
      const panel=desk.querySelector('#careerDeskCoffee');
      panel.hidden=!panel.hidden;
      desk.querySelector('#careerDeskWait').setAttribute('aria-expanded',String(!panel.hidden));
-     if(!panel.hidden)refreshCoffeeVisitors();
+     if(!panel.hidden){refreshCoffeeVisitors();refreshDeskNeedsControls();}
      return;
     }
     if(S.paused||S.phase==='report')return;
@@ -192,21 +216,32 @@
     coffee.setAttribute('aria-expanded','false');
     panel.querySelector('.career-desk-coffee-actions').addEventListener('click',event=>{
      const choice=event.target.closest('[data-desk-refreshment]')?.dataset.deskRefreshment;
-     if(!['coffee','water','snack'].includes(choice))return;
+     if(!['coffee','water','snack','rest'].includes(choice))return;
      const status=panel.querySelector('#careerDeskCoffeeStatus');
-     if(S.paused||S.phase==='report'){
-      status.textContent='The break is unavailable while time is paused.';return;
+     const here=window.FE_CITY?.currentLocation?.();
+     if(!here||here.locationId!=='factory'||here.roomId!=='executive-office'){
+      status.textContent='A break at the executive desk requires being in the office.';return;
+     }
+     if(S.paused||S.phase!=='day'){
+      status.textContent='The break is unavailable while time is paused or the business day is closed.';return;
+     }
+     const access=window.FE_CHARACTER_NEEDS?.availability?.(S,choice);
+     if(!access?.ok){status.textContent=access?.reason||'Break unavailable.';refreshDeskNeedsControls();return;}
+     if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,300)){
+      status.textContent='Five minutes were unavailable. No break was taken.';return;
      }
      const spent=window.advanceWorldTime(300,true);
      if(spent!==300){
-      status.textContent='Five minutes were unavailable. No refreshment was taken.';return;
+      status.textContent='Five minutes were unavailable. No break was taken.';return;
      }
-     const label={coffee:'a cup of coffee',water:'a glass of water',snack:'a small snack'}[choice];
+     const outcome=window.FE_CHARACTER_NEEDS?.take?.(S,choice,'executive-office');
+     if(!outcome?.ok){status.textContent=outcome?.reason||'Break record unavailable.';return;}
+     const label={coffee:'a cup of coffee',water:'a glass of water',snack:'a small snack',rest:'a short rest break'}[choice];
      if(Array.isArray(S.notes))S.notes.push({date:S.gameDate,source:'Office break',
        text:'Took five minutes in the office for '+label+'.'});
      save(true);render();
-     status.textContent='Enjoyed '+label+'. Five minutes have passed.';
-     refreshCoffeeVisitors();
+     status.textContent='Enjoyed '+label+'. Five minutes have passed. Next break in 90 minutes.';
+     refreshCoffeeVisitors();refreshDeskNeedsControls();
     });
     panel.querySelector('#careerDeskCoffeePeople').addEventListener('click',event=>{
      const button=event.target.closest('button[data-coffee-npc]');if(!button)return;
@@ -231,7 +266,7 @@
   }
   const d=desk.querySelector('#careerDeskDate');
   if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase);
-  if(route.id==='industrialist'){refreshCoffeeVisitors();window.FE_DESK_COLLECTION?.refresh?.();}
+  if(route.id==='industrialist'){refreshCoffeeVisitors();refreshDeskNeedsControls();window.FE_DESK_COLLECTION?.refresh?.();}
   window.FE_PATROL_UI?.refresh?.();
   window.FE_DOORMAN_UI?.refresh?.();
   window.FE_ORDERLY_UI?.refresh?.();
@@ -269,6 +304,6 @@
  },true);
  // Clicking an old title hotspot cannot reveal the former front page;
  // the old office remains solely in the archive, not in any playable desk.
- window.FE_CAREER_SHELL=Object.freeze({open,refreshDesk,renderMenu});
+ window.FE_CAREER_SHELL=Object.freeze({open,refreshDesk,refreshBreakStatus:refreshDeskNeedsControls,renderMenu});
  refreshDesk();renderMenu();pauseTitleAudio();
 })();
