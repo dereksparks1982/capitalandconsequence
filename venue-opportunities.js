@@ -6,7 +6,7 @@ function get(id){const o=ITEMS.find(v=>v.id===id);return o?{...o}:null}
 function entries(id){return ITEMS.filter(o=>o.locationId===id).map(o=>({...o}))}
 function canEnterLocation(id){
  const l=window.FederalElectricCity?.getLocation(id);
- if(!l||l.plannedOnly||(l.availableFrom&&S.gameDate<l.availableFrom))return false;
+ if(!l||(l.plannedOnly&&!l.map))return false;
  if(!l.hiddenFromDirectory)return true;
  if(id==='privateFightHall')return !!S.underworld?.privateFightsUnlocked;
  if(id==='cockfightingDen')return !!S.underworld?.cockfightsUnlocked;

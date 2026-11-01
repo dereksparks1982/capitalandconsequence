@@ -4,8 +4,8 @@ const oval=fs.readFileSync(path.join(__dirname,'../oval-racing.js'),'utf8');
 const registry=fs.readFileSync(path.join(__dirname,'../city.js'),'utf8');
 const cityCtx={window:{}};vm.runInNewContext(registry,cityCtx);
 const city=cityCtx.window.FederalElectricCity;
-assert.equal(city.getLocation('potomacKennelTrack').availableFrom,'1919-01-01');
-assert.equal(city.getLocation('capitalSpeedway').availableFrom,'1933-01-01');
+assert.equal(city.getLocation('potomacKennelTrack').availableFrom,undefined);
+assert.equal(city.getLocation('capitalSpeedway').availableFrom,undefined);
 function run(date){
  const S={gameDate:date,phase:'day',dayRemaining:3600,personalCash:500,notes:[]};
  const document={hidden:true,getElementById:()=>null,addEventListener(){}};
@@ -14,11 +14,11 @@ function run(date){
  return S;
 }
 const start=run('1878-01-02');
-assert.equal(start.dogRacing,undefined);assert.equal(start.midgetCarRacing,undefined);
+assert.equal(start.dogRacing.roster.length,16);assert.equal(start.midgetCarRacing.roster.length,16);
 const middle=run('1920-01-02');
-assert.equal(middle.dogRacing.roster.length,16);assert.equal(middle.midgetCarRacing,undefined);
+assert.equal(middle.dogRacing.roster.length,16);assert.equal(middle.midgetCarRacing.roster.length,16);
 const later=run('1938-01-02');
 assert.equal(later.dogRacing.roster.length,16);
 assert.equal(later.midgetCarRacing.roster.length,16);
 assert.equal(later.midgetCarRacing.roster[0].driver,'Eddie Marsh');
-console.log('PASS future-only dog/midget competitions and permanent unchanged map');
+console.log('PASS alternate-era dog/midget competitions available from 1878, unchanged printed map');

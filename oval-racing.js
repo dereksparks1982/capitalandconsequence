@@ -3,8 +3,9 @@ const CFG={
  dog:{key:'dogRacing',activity:'dog',venue:'Potomac Kennel Track',module:'dogRacingModule',meta:'dogRacingMeta',bank:'dogRacingBankroll',board:'dogRacingBoard',live:'dogRacingLive',ledger:'dogRacingLedger',note:'dogRacingNote',names:['Fleet Shadow','Potomac Flash','Blue Streak','Capitol Dash','Copper Rocket','Night Whistle','District Flyer','Liberty Lad','Silver Arrow','Red Signal','Chesapeake Joe','Federal Queen','River Bolt','Union Scout','White Comet','Market Prince'],schedule:[{id:'D1',label:'Heat 1',threshold:2400,distance:'440 yards',laps:2,stage:'heat'},{id:'D2',label:'Heat 2',threshold:1400,distance:'440 yards',laps:2,stage:'heat'},{id:'DF',label:'Final',threshold:420,distance:'550 yards',laps:3,stage:'final'}]},
  car:{key:'midgetCarRacing',activity:'car',venue:'Capital Speedway',module:'midgetCarRacingModule',meta:'midgetCarRacingMeta',bank:'midgetCarRacingBankroll',board:'midgetCarRacingBoard',live:'midgetCarRacingLive',ledger:'midgetCarRacingLedger',note:'midgetCarRacingNote',names:['Red Comet','Blue Bullet','Federal Special','Potomac Flyer','Copper Head','Capitol Ace','Silver Spark','District Special','Liberty No. 9','Washington Flyer','Tungsten Special','Union Rocket','Commerce Kid','Foundry Flash','Columbia Special','Electric Ace'],schedule:[{id:'C1',label:'Heat 1',threshold:2600,distance:'10 laps',laps:10,stage:'heat'},{id:'C2',label:'Heat 2',threshold:1600,distance:'10 laps',laps:10,stage:'heat'},{id:'CF',label:'Feature Race',threshold:500,distance:'20 laps',laps:20,stage:'final'}]}
 };
-const ERA_START=Object.freeze({dog:'1919-01-01',car:'1933-01-01'});
-function canRace(kind){return !!ERA_START[kind]&&typeof S.gameDate==='string'&&S.gameDate>=ERA_START[kind]}
+// Our Washington diverges from real-world chronology. Both mapped venues
+// are playable at the game's 1878 opening; race schedules still use game dates.
+function canRace(kind){return kind==='dog'||kind==='car'}
 const DRIVERS=['Eddie Marsh','Tom Vale','Ray Collins','Frank Dwyer','Sam Burke','Johnny Hale','Mickey Dean','Arthur Cole','Bill Mercer','Lou Grant','Harry Webb','Joe Pike'];
 const $o=id=>document.getElementById(id),rand=(a,b)=>a+Math.random()*(b-a),avg=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
 const fmt=n=>{n=Math.max(0,Math.ceil(n));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
