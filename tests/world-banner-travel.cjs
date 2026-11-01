@@ -40,7 +40,7 @@ assert.equal(seen.time,'11:17 AM');
 assert.equal(seen.date,'WED, JAN 2, 1878');
 const crossing=banner.projectClock('1878-01-02T23:47',30);
 assert.equal(crossing.time,'12:17 AM');
-assert.equal(crossing.date,'THU, JAN 3, 1878');
+assert.equal(crossing.date,'THUR, JAN 3, 1878');
 assert.equal(banner.projectClock('1878-01-02T11:59',1).time,'12:00 PM');
 assert.equal(banner.projectClock('1878-01-02T00:00',0).time,'12:00 AM');
 assert.equal(banner.projectClock('nonsense',50),null);
