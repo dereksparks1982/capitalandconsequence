@@ -12,6 +12,7 @@ const ICONS=Object.freeze({
  hospital:Object.freeze({name:'Hospital',glyph:'✚'}),
  circus:Object.freeze({name:'Circus tent',glyph:'△'}),
  club:Object.freeze({name:'Clubhouse',glyph:'♧'}),
+ theatre:Object.freeze({name:'Theatre',glyph:'♫'}),
  market:Object.freeze({name:'Market building',glyph:'▦'}),
  home:Object.freeze({name:'House',glyph:'⌂'}),
  government:Object.freeze({name:'Government building',glyph:'▰'}),
