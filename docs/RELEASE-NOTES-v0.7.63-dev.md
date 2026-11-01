@@ -10,7 +10,7 @@
 - In-room acquaintance is recorded only if the person was actually at the location when the player visited, rather than based solely on a public circus date.
 
 ## Regression and release status
-New `tests/touring-visitors-wagons.cjs` passed a focused JavaScript replay: date-bound visits, wagon routes from existing registered pins, calculated transit duration, no unknown traveler map icon, presence only after arrival, and leaving after the tent disappears.
+New `tests/touring-visitors-wagons.cjs` and `tests/touring-visitor-dialogue.cjs` passed focused JavaScript replays, as did the prior discovery-gated map-marker interaction test. The wagon test covers: date-bound visits, wagon routes from existing registered pins, calculated transit duration, no unknown traveler map icon, presence only after arrival, and leaving after the tent disappears.
 
 Separately, the six failures in the user's last log came from a local **0.7.58** checkout. On more recent GitHub source, focused checks for map travel departures, interrupted travel, Go There, horse custody and character needs passed in isolated JavaScript. The package/version source contract is currently aligned. This is **not** proof of a fully passing offline 195+ test suite or a working Linux executable.
 
