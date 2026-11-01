@@ -39,6 +39,8 @@ function buyBook(save,id,award){
  let received;
  try{received=typeof award==='function'?award(item):null}catch(_){received={ok:false}}
  if(!received?.ok){save.personalCash=old;return {ok:false,reason:received?.reason||'No room to carry the book.'}}
+ const merchant=root.FE_WASHINGTON_COMMERCE?.ensure?.(save);
+ if(merchant)merchant.accounts.bookshop=(merchant.accounts.bookshop||0)+book.cents;
  const receipt={id,minute:save.worldCalendar?.worldMinute||null,cents:book.cents};
  s.purchases.push(receipt);return {ok:true,book,receipt};
 }
@@ -97,7 +99,7 @@ function eat(save,mealId){
  return {ok:true,recipe:meal.recipe,meters:res.meters};
 }
 function sell(save,mealId,servings){
- const data=kitchen()?.ledger?.(save),meal=data?.k.meals.find(m=>m.id===mealId);
+ const data=kitchen()?.ledger?.(save),meal=data?.k.carriedMeals?.find(m=>m.id===mealId);
  const recipe=recipes()?.byId?.[meal?.recipe],s=state(save);
  if(!meal||!recipe||!s||!atMarket(save)||meal.spoiled||recipe.kind!=='baking')
   return {ok:false,reason:'Bring a baked product to a market to sell it.'};
@@ -113,7 +115,7 @@ function sell(save,mealId,servings){
  merchant.accounts[account]-=cents;
  save.personalCash=(Math.round(Number(save.personalCash||0)*100)+cents)/100;
  meal.servings-=servings;
- if(meal.servings===0)data.k.meals=data.k.meals.filter(m=>m!==meal);
+ if(meal.servings===0)data.k.carriedMeals=data.k.carriedMeals.filter(m=>m!==meal);
  const receipt={minute:save.worldCalendar?.worldMinute||null,date,recipe:recipe.id,
   servings,amountCents:cents};
  s.sales.push(receipt);s.soldByDate[date]=sold+servings;s.sales=s.sales.slice(-200);
