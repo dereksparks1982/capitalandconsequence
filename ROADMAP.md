@@ -1,3 +1,13 @@
+## 31 October 2026 · v0.7.43-dev: visible world clock and real return journey
+- [x] Remove instant long-distance `Return to Executive Desk` travel shortcut. Only Charles, while physically at Federal Electric, sees this button; other rooms have `Return to Map` and proper map travel.
+- [x] Same-factory desk return still records one minute, refuses failed debit, and never changes location before a successful room move.
+- [x] Re-check return-button visibility after map's dev-render bridge commits a real arrival, so returning to the factory still exposes the local desk button.
+- [x] Add original desk-style **digital world clock/status banner** inside Washington map header and city-room shell: phase, live date, time, weather, exchange, company/personal cash, Pause/Play.
+- [x] Street-following pawn animation now projects the trip's in-game minutes live in the map banner. One official journey debit is charged on completed arrival; cancellation discards the visual projection and restores the saved clock. No extra ambient second/market ticks during animations.
+- [x] Add `tests/world-banner-travel.cjs`, update README and `docs/RELEASE-NOTES-v0.7.43-dev.md`. No map art or pin coordinates modified.
+- [ ] Pending: complete local Node suite, Ubuntu Electron walkthrough, travel cancellation testing across route and dates, and owner acceptance. Source integration does **not** mean packaged gameplay tested.
+- [ ] Continue building the room editor and executive office first. Defer asylum visuals and story expansion until reusable scene systems are accepted. No GitHub Actions or terminal commands for the owner.
+
 ## 31 October 2026 · ACTIVE v0.7.42-dev source checkpoint: reusable visual Room Builder
 - [x] Developer DEV panel opens a 32×32 pixel **Pandora's Box-inspired original Room Builder** with the already tracked 69 generic sprites; no new artwork style or Washington map changes.
 - [x] First room targets Charles's real `factory/executive-office` registry ID. Tile paint, solid doors/walls, mouse furniture placement, drag, rotation, duplication/deletion, undo/redo, spawn selection and collision-aware preview are committed as source.
