@@ -10,7 +10,7 @@ el.id='boxingPractice';el.className='sheet boxing-practice';
 el.innerHTML='<h3>Top-Down Sparring Ring · Practice</h3>'+
 '<p>WASD: move and face your opponent · LEFT CLICK: punch forward · HOLD RIGHT CLICK: block. Dodge the marked punch line. Footwork and blocking cost stamina. Only partial recovery between rounds.</p>'+
 '<div class="boxing-practice-buttons"><button type="button" data-ring="start">Start Practice</button> <button type="button" data-ring="stop" disabled>End Practice</button></div>'+
-'<div class="boxing-practice-stats" aria-live="off"><span id="ringRound">NO BOUT</span><span id="ringSeconds">00:00</span><span id="ringHealth">HEALTH 100</span><span id="ringStamina">STAMINA 100</span><span id="ringOpponent">OPPONENT 100</span></div>'+
+'<div class="boxing-practice-stats" aria-live="off"><span id="ringRound">NO BOUT</span><span id="ringSeconds">00:00</span><span id="ringHealth">HEALTH 100</span><span id="ringStamina">STAMINA 100</span><span id="ringOpponent">OPPONENT 100</span><span id="ringOpponentStamina">OPPONENT STAMINA 98</span></div>'+
 '<div class="boxing-practice-viewport"><canvas id="ringCanvas" width="448" height="320" tabindex="0" aria-label="Top-down boxing ring. Use WASD, left click to punch, hold right click to block."></canvas></div>'+
 '<p id="ringMessage" role="status" aria-live="polite">Practice only. No money, championship, health or game-time changes.</p>'+ 
 '<div id="ringScorecards" class="boxing-practice-scorecards" aria-live="polite">Round scores will appear here after the bell.</div>';
@@ -53,6 +53,7 @@ function stats(){
  v('ringHealth').textContent='HEALTH '+Math.ceil(s.player.health);
  v('ringStamina').textContent='STAMINA '+Math.floor(s.player.stamina)+' / '+s.player.maxStamina;
  v('ringOpponent').textContent='OPPONENT '+Math.ceil(s.opponent.health);
+ v('ringOpponentStamina').textContent='OPPONENT STAMINA '+Math.floor(s.opponent.stamina)+' / '+s.opponent.maxStamina;
  v('ringMessage').textContent=s.message;
  const result=s.scorecards.map(r=>'Round '+r.round+': You '+r.player+' / Opponent '+r.opponent).join(' · ');
  v('ringScorecards').textContent=(result||'Round scores will appear here after the bell.')+(s.phase==='finished'?' · '+s.message:'');
@@ -80,7 +81,7 @@ stop.addEventListener('click',()=>{
  cancel();s=null;stop.disabled=true;start.textContent='Start Practice';
  v('ringRound').textContent='NO BOUT';v('ringSeconds').textContent='00:00';
  v('ringHealth').textContent='HEALTH 100';v('ringStamina').textContent='STAMINA 100';
- v('ringOpponent').textContent='OPPONENT 100';v('ringMessage').textContent='Practice ended; career and wagers unchanged.';
+ v('ringOpponent').textContent='OPPONENT 100';v('ringOpponentStamina').textContent='OPPONENT STAMINA 98';v('ringMessage').textContent='Practice ended; career and wagers unchanged.';
  v('ringScorecards').textContent='Round scores will appear here after the bell.';draw();
 });
 canvas.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if('wasd'.includes(k)&&k.length===1){e.preventDefault();held.add(k);}});
