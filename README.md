@@ -1,3 +1,17 @@
+# Capital & Consequence
+
+**One city. Countless lives. Every choice has consequences.**
+
+*Capital & Consequence* is a single-player, alternate-history life simulation set in Washington, D.C., beginning in **1878**. Build a life in a changing city where your work, money, relationships, reputation, and decisions can affect what happens next.
+
+The parlor-game register has Chess and **American Checkers (Draughts)**, with a real overhead board, bundled MIT-licensed alpha-beta computer opponent, selectable difficulty, compulsory jumps, playable named NPCs at five authentic in-game room locations, a recent-move journal and shared-world results. Checkers is source development pending Linux tests, not a newly verified package.
+
+Choose from different lives, including a businessman building **Federal Electric**, a police patrolman, a criminal-world doorman, and an asylum worker. **Each character has a distinct five-act main-campaign plan**, alongside jobs and side stories. A main-story page in the private book tracks verified milestones. Eli's second act now features a three-night branching encounter at the Golden Peacock and Edmund's documented confinement hearing advances his fourth act. Later acts remain in development. Each life experiences Washington from a different perspective. Eli has a fourth branching chapter dealing with debts and criminal contacts; source updates can now be installed inside the existing Ubuntu game executable without replacing the launcher. Edmund Wardman’s asylum storyline now includes dangerous misconduct, family confinement, independent appeals, a verifiable family-settlement letter showing possible financial incentives, and a possible irreversible experimental lobotomy in its fictional 1878 timeline.
+
+Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
+
+The Washington map includes optional developer tools for laying out streets and painting buildings blue as movement obstacles. Approved streets and buildings are stored as editable overlays rather than altering the original city illustration. The map also supports a saved road directory, route previews, walking, horseback travel and carriage travel.
+
 ## Personal desk objects and carried possessions (development)
 
 The executive desk's original wooden surround is unchanged. Its green felt now
@@ -20,19 +34,6 @@ game autosave, without any prior-save migration.
 This is a source-development milestone; Linux gameplay acceptance remains
 pending a direct run of the updated executable.
 
-# Capital & Consequence
-
-**One city. Countless lives. Every choice has consequences.**
-
-*Capital & Consequence* is a single-player, alternate-history life simulation set in Washington, D.C., beginning in **1878**. Build a life in a changing city where your work, money, relationships, reputation, and decisions can affect what happens next.
-
-The parlor-game register has Chess and **American Checkers (Draughts)**, with a real overhead board, bundled MIT-licensed alpha-beta computer opponent, selectable difficulty, compulsory jumps, playable named NPCs at five authentic in-game room locations, a recent-move journal and shared-world results. Checkers is source development pending Linux tests, not a newly verified package.
-
-Choose from different lives, including a businessman building **Federal Electric**, a police patrolman, a criminal-world doorman, and an asylum worker. **Each character has a distinct five-act main-campaign plan**, alongside jobs and side stories. A main-story page in the private book tracks verified milestones. Eli's second act now features a three-night branching encounter at the Golden Peacock and Edmund's documented confinement hearing advances his fourth act. Later acts remain in development. Each life experiences Washington from a different perspective. Eli has a fourth branching chapter dealing with debts and criminal contacts; source updates can now be installed inside the existing Ubuntu game executable without replacing the launcher. Edmund Wardman’s asylum storyline now includes dangerous misconduct, family confinement, independent appeals, a verifiable family-settlement letter showing possible financial incentives, and a possible irreversible experimental lobotomy in its fictional 1878 timeline.
-
-Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
-
-The Washington map includes optional developer tools for laying out streets and painting buildings blue as movement obstacles. Approved streets and buildings are stored as editable overlays rather than altering the original city illustration. The map also supports a saved road directory, route previews, walking, horseback travel and carriage travel.
 
 ## Linux sandbox compatibility (local ZIP/extracted game)
 
