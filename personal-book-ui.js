@@ -4,7 +4,7 @@
  */
 (function(root){
 'use strict';
-let access=null,overlay=null,spread=0,pages=[],turning=false,returnFocus=null,flash='';
+let access=null,overlay=null,spread=0,pages=[],turning=false,returnFocus=null,flash='',selectedPage=0;
 const $=id=>document.getElementById(id);
 const isOpen=()=>!!overlay&&!overlay.hidden;
 function elt(tag,cls,content){
@@ -22,7 +22,7 @@ function create(){
  <h2 id="personalBookHeading">Personal Records</h2></div>
  <button id="personalBookClose" type="button" aria-label="Close personal book">×</button></header>
  <div class="personal-book-toolbar"><label>Section <select id="personalBookSection" aria-label="Jump to a book section"></select></label>
- <output id="personalBookPosition" aria-live="polite"></output></div>
+ <button id="personalBookWriteJump" type="button">My Writing</button><output id="personalBookPosition" aria-live="polite"></output></div>
  <div id="personalBookSpread" class="personal-book-spread" aria-label="Open book with two facing pages">
  <article id="personalBookLeft" class="personal-book-page"></article>
  <article id="personalBookRight" class="personal-book-page"></article></div>
@@ -36,6 +36,7 @@ function create(){
  $('personalBookPrev').addEventListener('click',()=>turn(-1));
  $('personalBookNext').addEventListener('click',()=>turn(1));
  $('personalBookSection').addEventListener('change',e=>jump(Number(e.target.value)));
+ $('personalBookWriteJump').addEventListener('click',()=>jump(pages.length-1));
  overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
  document.addEventListener('keydown',e=>{
   if(!isOpen())return;
@@ -73,7 +74,7 @@ function build(page,node){
   area.id='personalBookNote';area.maxLength=4000;
   area.value=page.note||'';area.placeholder='Write your own dated observations and recollections…';
   label.appendChild(area);
-  const saveButton=elt('button','personal-book-save','Save My Notes');
+  const saveButton=elt('button','personal-book-save','Save Entry to Ledger');
   saveButton.type='button';
   saveButton.addEventListener('click',persistNotes);
   node.append(label,saveButton);
@@ -88,20 +89,34 @@ function persistNotes(){
  const save=access.getSave?.();
  if(!save)return false;
  const newNote=area.value.slice(0,4000);
- if(save.personalBookNotes===newNote)return true;
- const previous=save.personalBookNotes;
- save.personalBookNotes=newNote;
+ if(!newNote.trim())return true;
+ // New writing is append-only, dated, and private to the selected character.
+ // Do not destroy the old personalBookNotes field from earlier versions.
+ const previous=save.personalBookEntries;
+ const entries=Array.isArray(previous)?previous.slice():[];
+ const stamp=typeof save.gameDate==='string'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(save.gameDate)?save.gameDate:'Undated';
+ const entry={id:'entry-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9),date:stamp,text:newNote};
+ save.personalBookEntries=[...entries,entry];
  let ok=false;
  try{ok=access.save?.()===true}catch(error){ok=false}
  if(!ok){
-  save.personalBookNotes=previous;
-  flash='The note could not be saved. Your writing is still visible here.';
+  if(previous===undefined)delete save.personalBookEntries;
+  else save.personalBookEntries=previous;
+  flash='SAVE FAILED. Your text remains visible. Nothing was erased.';
   $('personalBookMessage').textContent=flash;
   return false;
  }
- const item=pages.find(p=>p.id==='notes');if(item)item.note=newNote;
- flash='Private notes saved to this character.';
- $('personalBookMessage').textContent=flash;
+ const oldNotesIndex=pages.findIndex(p=>p.id==='notes');
+ const refreshed=root.FE_PERSONAL_BOOK_PAGES?.buildPages?.(save,{
+  publicFile:raw=>root.FE_MURDER_CASES?.publicFile?.(raw)||null
+ });
+ if(Array.isArray(refreshed)&&refreshed.length){
+  pages=refreshed;
+  selectedPage=Math.min(Math.max(0,oldNotesIndex),pages.length-1);
+  spread=selectedPage-selectedPage%2;
+ }
+ flash='Saved to this character’s ledger as page '+(selectedPage+1)+' · '+stamp+'.';
+ render();
  return true;
 }
 function render(){
@@ -114,12 +129,25 @@ function render(){
   Math.min(spread+2,pages.length)+' of '+pages.length;
  $('personalBookMessage').textContent=flash;
  const select=$('personalBookSection');
- select.value=String(spread);
+ // The index lists *every* page, including the right-hand folio.
+ // Rebuild when a saved private entry creates a new permanent page.
+ if(select.options.length!==pages.length){
+  select.replaceChildren();
+  pages.forEach((p,i)=>{
+   const option=elt('option','', 'Page '+(i+1)+' · '+(p.section||'Private Papers')+' · '+(p.title||'Record'));
+   option.value=String(i);select.append(option);
+  });
+ }
+ select.value=String(Math.min(selectedPage,pages.length-1));
+ $('personalBookNext').textContent=spread+2>=pages.length?'End of Ledger':'Next Pages ▶';
 }
 function jump(index){
  if(turning||!Number.isInteger(index)||index<0||index>=pages.length)return false;
  if(!persistNotes())return false;
- spread=index-index%2;flash='';render();return true;
+ spread=index-index%2;selectedPage=index;flash='';render();
+ const target=index%2?$('personalBookRight'):$('personalBookLeft');
+ if(target)target.scrollTop=0;
+ return true;
 }
 function turn(direction){
  if(turning||!isOpen()||![-1,1].includes(direction))return false;
@@ -134,7 +162,7 @@ function turn(direction){
  oldPage.removeAttribute('id');
  oldPage.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
  leaf.appendChild(oldPage);view.appendChild(leaf);
- spread=next;flash='';render();
+ spread=next;selectedPage=next;flash='';render();
  let finished=false;
  const finish=()=>{
   if(finished)return;
@@ -151,15 +179,10 @@ function open(){
   publicFile:raw=>root.FE_MURDER_CASES?.publicFile?.(raw)||null
  });
  if(!Array.isArray(pageData)||!pageData.length)return false;
- create();pages=pageData;spread=0;turning=false;flash='';
+ create();pages=pageData;spread=0;selectedPage=0;turning=false;flash='';
  const def=root.FE_PERSONAL_BOOK_PAGES.DATA[save.characterRoute];
  $('personalBookHeading').textContent=def?.title||'Private Records';
  const choices=$('personalBookSection');choices.replaceChildren();
- pages.forEach((p,i)=>{
-  if(i%2!==0)return;
-  const option=elt('option','',p.section+' · '+p.title);
-  option.value=String(i);choices.append(option);
- });
  overlay.hidden=false;
  returnFocus=document.activeElement;
  render();$('personalBookClose').focus();
