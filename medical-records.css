@@ -1,0 +1,13 @@
+/* Medical ledger: plain paper, deliberately generic period UI. */
+.cc-medical-book[hidden],.cc-medical-emergency[hidden]{display:none!important}
+.cc-medical-book,.cc-medical-emergency{position:fixed;inset:0;z-index:2600500;background:#08090bbd;display:grid;place-items:center;padding:16px}
+.cc-medical-paper{position:relative;background:#efe6d1;border:5px double #766449;box-shadow:0 10px 45px #000b;color:#2e281f;font:14px/1.5 Georgia,'Times New Roman',serif;max-width:min(640px,96vw);width:100%;padding:23px 28px;max-height:88vh;overflow:auto}
+.cc-medical-paper>small{display:block;font:700 11px 'Courier New',monospace;letter-spacing:.08em}
+.cc-medical-paper h2{font:700 24px Georgia,serif;margin:10px 0 15px}
+.cc-medical-paper h3{font:700 17px Georgia,serif;border-bottom:1px solid #9a8669;padding-bottom:5px}
+.cc-medical-pages article{border-bottom:1px solid #c3b69d;padding:6px 0}
+.cc-medical-pages p{margin:6px 0}
+.cc-medical-close{position:absolute;right:12px;top:9px;font:700 24px Georgia,serif;background:transparent;border:0;color:#64332d;cursor:pointer}
+.cc-medical-wake{display:block;margin-top:18px;padding:9px 14px;font:bold 13px 'Courier New',monospace;color:#fff;background:#713026;border:2px solid #4f241e;cursor:pointer}
+.character-medical-link{font:inherit;letter-spacing:inherit;cursor:pointer;color:inherit;background:none;border:0;padding:0;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px}
+.character-medical-link:focus-visible{outline:2px solid #fff}
