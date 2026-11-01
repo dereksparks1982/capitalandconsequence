@@ -1,0 +1,103 @@
+/* 1878 Metropolitan Ledger: printed broadsheet, not a modern article dashboard.
+ * All selectors are local to #news so other in-game ledgers retain their
+ * approved layouts. Uses existing real edition data, never fake headlines.
+ */
+#news.newspaper{background:#ded1b6;padding:14px 10px 28px;color:#241c14;font:16px/1.42 Georgia,'Times New Roman',serif}
+#news .newspaper-nav{max-width:1120px;margin:0 auto 12px;background:#b7a584;border-color:#87785d}
+#news .newspaper-nav button{background:#eee5d0;color:#221a11;border-color:#51432e}
+#news .metropolitan-issue{width:min(100%,1060px);margin:0 auto;padding:clamp(13px,2.2vw,31px);
+ background:repeating-linear-gradient(0deg,rgba(83,56,31,.012) 0,rgba(83,56,31,.012) 1px,transparent 1px,transparent 5px),
+ #f3e8cc;border:1px solid #88775a;color:#251b12;
+ box-shadow:0 7px 23px rgba(41,24,9,.23),inset 0 0 44px rgba(100,75,36,.10);
+ font-family:Georgia,'Times New Roman',serif}
+#news .metropolitan-topline{display:flex;justify-content:space-between;gap:20px;
+ border-top:2px solid #302419;border-bottom:1px solid #302419;padding:5px 2px;
+ font:700 10px/1.35 Georgia,serif;letter-spacing:.06em}
+#news .metropolitan-masthead{text-align:center;padding:4px 0 6px;border-bottom:4px double #302419;position:relative}
+#news .metropolitan-masthead h2{border:none;margin:3px 0;line-height:1.02;text-align:center;
+ font:bold clamp(30px,5.2vw,68px)/1.06 'Times New Roman',Georgia,serif;
+ letter-spacing:-.045em;color:#1c160f;text-transform:uppercase}
+#news .metropolitan-masthead .metropolitan-seal{display:block;font-size:13px;line-height:1;color:#4a3622}
+#news .metropolitan-masthead p{font:700 10px/1.4 Georgia,serif;margin:5px 0 0;
+ letter-spacing:.12em;color:#4d3825;text-align:center}
+#news .metropolitan-dateline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+ border-bottom:2px solid #302419;padding:8px 2px;font:700 11px/1.35 'Courier New',monospace;
+ letter-spacing:.025em}
+#news .metropolitan-strap{text-align:center;text-transform:uppercase;letter-spacing:.22em;
+ font:700 11px/1.45 Georgia,serif;padding:7px 2px;border-bottom:1px solid #5d4d38}
+#news .metropolitan-lead{padding:18px 18px 23px;text-align:center;border-bottom:5px double #302419}
+#news .metropolitan-kicker{font:bold 11px/1.25 'Courier New',monospace;letter-spacing:.12em}
+#news .metropolitan-lead #headline{margin:7px auto 12px;max-width:910px;
+ font:700 clamp(30px,4.65vw,58px)/1.05 Georgia,'Times New Roman',serif;
+ text-transform:uppercase;letter-spacing:-.025em;color:#1d170f;border:0}
+#news .metropolitan-lead #story{margin:0;text-align:justify;
+ font:17px/1.5 Georgia,serif;hyphens:auto}
+#news .metropolitan-lead-story::first-letter{font-weight:700;font-size:2.55em;
+ float:left;line-height:.86;margin:.07em .11em 0 0}
+#news .metropolitan-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding-top:11px}
+#news .metropolitan-column{min-width:0;padding:3px 18px 6px 18px;
+ border-right:1px solid #786750;text-align:justify;overflow-wrap:anywhere}
+#news .metropolitan-column:first-child{padding-left:0}
+#news .metropolitan-column:last-child{padding-right:0;border-right:0}
+#news .metropolitan-section-rule{border-top:3px double #302419;padding-top:6px}
+#news .metropolitan-column h4{font:700 clamp(17px,2vw,22px)/1.15 Georgia,serif;text-align:left;
+ color:#251b12;text-transform:uppercase;margin:2px 0 10px;letter-spacing:-.02em}
+#news .metropolitan-column p{font:14px/1.52 Georgia,'Times New Roman',serif;
+ color:#241c14;text-align:justify;hyphens:auto;margin:0 0 15px}
+#news .metropolitan-minor-rule{border-top:1px solid #87765a;padding-top:8px}
+#news .metropolitan-column .metropolitan-colophon{font:italic 12px/1.5 Georgia,serif;color:#5e4b33}
+#news .metropolitan-dispatches{font:13px/1.45 Georgia,serif}
+#news .metropolitan-dispatches *{color:#251b12}
+#news .metropolitan-dispatches button{background:#efe0bf;border:1px solid #817356}
+#news .metropolitan-dispatches .empty{font:italic 13px/1.45 Georgia,serif;text-align:left!important}
+#news .metropolitan-bottomline{border-top:3px double #302419;margin-top:12px;padding:6px 0 2px;
+ display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+ font:700 10px/1.4 'Courier New',monospace;letter-spacing:.05em}
+#news .metropolitan-edition-controls{max-width:1060px;margin:10px auto 18px;
+ display:flex;gap:12px;align-items:center;flex-wrap:wrap;font:13px/1.3 Georgia,serif}
+#news .metropolitan-edition-controls button,
+#news .metropolitan-archive button{background:#eee3c9;color:#281c12;
+ border:1px solid #6a5231;padding:9px 13px;cursor:pointer;font:700 13px Georgia,serif}
+#news .metropolitan-edition-controls button:hover,#news .metropolitan-archive button:hover,
+#news .metropolitan-edition-controls button:focus-visible,
+#news .metropolitan-archive button:focus-visible{background:#fff2d7;outline:2px solid #7a5030}
+#news .metropolitan-archive{max-width:1060px;margin:0 auto;padding:16px;
+ background:#e8d8ba;border:1px solid #8a7756}
+#news .metropolitan-archive h3{margin:0 0 12px;font:700 23px Georgia,serif;color:#281e13;
+ border-bottom:3px double #655036;padding-bottom:8px}
+#news .metropolitan-archive-index{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px}
+#news .metropolitan-archive-index .archive-entry{background:#f7eacc;border:1px solid #9e8867;padding:8px;
+ font:14px/1.35 Georgia,serif;min-width:0}
+#news .metropolitan-archive-index .empty{grid-column:1/-1}
+#news .metropolitan-archive-preview{margin:18px 0 0;padding:18px;background:#f2e6ca;
+ border:2px double #584632}
+#news .metropolitan-archive-preview[hidden]{display:none}
+#news .metropolitan-archive-preview .metropolitan-archive-date{text-align:center;border-bottom:3px double #322416;
+ padding:6px;font:700 12px 'Courier New',monospace}
+#news .metropolitan-archive-preview h4{font:700 30px/1.07 Georgia,serif;
+ text-align:center;text-transform:uppercase;margin:15px 0}
+#news .metropolitan-archive-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+#news .metropolitan-archive-columns section{min-width:0;border-right:1px solid #8b7758;padding-right:10px}
+#news .metropolitan-archive-columns section:last-child{border:0}
+#news .metropolitan-archive-columns h5{font:700 16px Georgia,serif;margin:4px 0 8px}
+#news .metropolitan-archive-columns p{font:14px/1.5 Georgia,serif;text-align:justify}
+@media(max-width:760px){
+ #news .metropolitan-issue{padding:12px}
+ #news .metropolitan-strap{letter-spacing:.05em;font-size:10px}
+ #news .metropolitan-topline,#news .metropolitan-dateline{font-size:10px}
+ #news .metropolitan-lead{padding:13px 2px 16px}
+ #news .metropolitan-lead #headline{font-size:clamp(25px,7vw,38px)}
+ #news .metropolitan-lead #story{font-size:15px}
+ #news .metropolitan-columns{grid-template-columns:1fr}
+ #news .metropolitan-column,#news .metropolitan-column:first-child,#news .metropolitan-column:last-child{
+  padding:10px 0;border-right:0;border-bottom:2px solid #8c7656}
+ #news .metropolitan-column:last-child{border-bottom:0}
+ #news .metropolitan-archive-columns{grid-template-columns:1fr}
+ #news .metropolitan-archive-columns section{border:0;border-bottom:1px solid #8c7656;padding:0}
+}
+@media print{
+ #news .newspaper-nav,#news .metropolitan-edition-controls,#news .metropolitan-archive{display:none!important}
+ #news .metropolitan-issue{box-shadow:none;border:none;width:100%;background:white}
+ #news .metropolitan-columns{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #news .metropolitan-column{padding:0 10px;border-right:1px solid #444}
+}
