@@ -1960,3 +1960,22 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .cc-circus-big-top [data-big-top-status],.cc-traveling-salesman [data-peddler-status]{
  font-weight:bold;margin:8px 0;padding:4px 0;min-height:1.2em
 }
+
+/* Player's current Washington location is ALWAYS labeled, including when the
+ * temporary location information card is closed or "Show Names" is off.
+ * Existing map pins and their saved geometries are not moved. */
+#titleMapMarkers:not(.show-all-names) .title-map-marker.is-current-location .title-map-marker-label{
+ display:block!important;
+ background:#1e3426;color:#fff2d1;
+ border-color:#e8ca79;
+ box-shadow:0 3px 10px #050706c9,0 0 0 2px #314b35;
+ font-weight:800;
+}
+#titleMapMarkers .title-map-marker.is-current-location{z-index:24}
+#titleMapMarkers .title-map-marker.is-current-location .title-map-marker-label::before{
+ content:"YOU ARE HERE · ";
+ font:800 9px/1.2 'Courier New',monospace;
+ color:#d5e9b0;
+}
+#titleMapMarkers .title-map-marker.is-current-location:hover,
+#titleMapMarkers .title-map-marker.is-current-location:focus-visible{z-index:32}
