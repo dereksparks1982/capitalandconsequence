@@ -88,10 +88,18 @@
   const state=engine.verify(S.componentWorks),panel=document.getElementById('componentWorkshop');
   if(!panel)return;
   const bulbChoice=panel.querySelector('#cwOrder [name="productId"]');
-  if(bulbChoice&&engine.eligibility(state,'incandescent-lamp').ok&&
-     ![...bulbChoice.options].some(o=>o.value==='incandescent-lamp')){
-   const opt=document.createElement('option');opt.value='incandescent-lamp';
-   opt.textContent='Experimental incandescent lamps';bulbChoice.appendChild(opt);
+  // The form survives profile switching: never show lamp rights inherited
+  // from a different character's workshop or an earlier save.
+  if(bulbChoice){
+   const eligible=engine.eligibility(state,'incandescent-lamp').ok;
+   const old=[...bulbChoice.options].find(o=>o.value==='incandescent-lamp');
+   if(eligible&&!old){
+    const opt=document.createElement('option');opt.value='incandescent-lamp';
+    opt.textContent='Experimental incandescent lamps';bulbChoice.appendChild(opt);
+   }else if(!eligible&&old){
+    if(bulbChoice.value==='incandescent-lamp')bulbChoice.selectedIndex=0;
+    old.remove();
+   }
   }
   panel.querySelector('#componentBalance').textContent='Company balance: $'+S.companyCash.toFixed(2)+
    ' · Workstations: '+state.stations.bench+' bench, '+state.stations.winder+' winder · Materials: '+

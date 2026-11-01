@@ -155,6 +155,9 @@
   if(!job||!positive(units)||units>job.quantity-job.delivered)
    return {ok:false,reason:'invalid shipment'};
   if(job.special)return {ok:false,reason:'Municipal orders use their own verified physical dispatch register'};
+  // Physical goods cannot be invoiced for a second customer's unmade order.
+  if(!Number.isSafeInteger(job.made)||!Number.isSafeInteger(job.delivered)||job.made-job.delivered<units)
+   return {ok:false,reason:'order has not manufactured enough undelivered goods'};
   if(!Number.isSafeInteger(state.warehouse[job.productId])||state.warehouse[job.productId]<units)
    return {ok:false,reason:'insufficient finished warehouse stock'};
   const grossCents=units*job.priceCents;

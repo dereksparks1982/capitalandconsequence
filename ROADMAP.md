@@ -1,3 +1,13 @@
+## November 1, 2026 · v0.7.72-dev · Contract integrity and electric-workshop safeguards
+- [x] Protect customer order balances: shared warehouse inventory alone cannot justify a second unpaid or unmade delivery.
+- [x] District wire/contact/insulator dispatch requires actual manufacturing against the awarded District orders; Fair lamp dispatch requires sound units manufactured against its awarded order.
+- [x] Independent seeded rival bids span below the cheapest player offer for both streetlighting and the Fair; low prices improve competitiveness but no longer guarantee victory.
+- [x] Each experimental carbon/glass/vacuum/endurance trial consumes its specified raw material stock, even on a failed experiment; insufficient stock rejects the trial before money, clock or save mutations.
+- [x] Late streetlight inspection and Fair shipment record the existing 10% contract delay deduction explicitly as gross, penalty and net receipt. No hidden cancellation of unfinished contracts.
+- [x] Show workshop research ingredients and delivery deadlines; prevent lamp-product choices from leaking between unlicensed game profiles.
+- [x] Focused V8 regression groups: legacy component orders, revised municipal and Fair gameplay, and new no-phantom-stock / losable-cheapest-bid / late-payment cases passed.
+- [ ] Full offline Node source suite and actual Ubuntu Electron gameplay acceptance still pending; no GitHub Actions, tagged release or executable produced.
+
 ## November 1, 2026 · v0.7.71-dev · 1878 municipal streetlighting and incandescent production
 - [x] Competitive February–June streetlighting tender with real eligibility (shipped component customer order), rival bid, outcomes and 50-site physical component obligations.
 - [x] Awarded order creates actual wire, switch contact and insulator jobs in existing Component Works; Saturday dispatch consumes real warehouse stock; weekday inspection pays the contract incrementally.

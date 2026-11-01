@@ -11,10 +11,10 @@ if(!works||!ops)throw Error('1878 component works and workshop operations requir
 const STREET_SITES=50,FAIR_BULBS=100;
 const STREET_INPUTS=Object.freeze({'insulated-wire':1,'switch-contact':1,'insulator':1});
 const RESEARCH=Object.freeze([
- Object.freeze({name:'Carbon-filament trials',minutes:180,costCents:2800}),
- Object.freeze({name:'Glass envelopes and lead seals',minutes:180,costCents:3500}),
- Object.freeze({name:'Vacuum-pump experiments',minutes:240,costCents:4800}),
- Object.freeze({name:'Burn-life and failure testing',minutes:180,costCents:4000})
+ Object.freeze({name:'Carbon-filament trials',minutes:180,costCents:2800,materials:Object.freeze({carbon:2,copper:1})}),
+ Object.freeze({name:'Glass envelopes and lead seals',minutes:180,costCents:3500,materials:Object.freeze({glass:3,copper:1})}),
+ Object.freeze({name:'Vacuum-pump experiments',minutes:240,costCents:4800,materials:Object.freeze({glass:2,brass:2,insulation:1})}),
+ Object.freeze({name:'Burn-life and failure testing',minutes:180,costCents:4000,materials:Object.freeze({carbon:1,glass:2,copper:1})})
 ]);
 const CASH={ 'street-bid':1000,'street-dispatch':0,'street-certify':0,
  research:null,license:9000,'prototype-line':22500,'hire-crew':5000,
@@ -66,6 +66,7 @@ function transact(save,kind,args,token,spend,finishAtBell){
  if(!Number.isSafeInteger(cashCents))return fail('Invalid company cash precision.');
  const data=JSON.parse(JSON.stringify(old)),inventory=JSON.parse(JSON.stringify(save.componentWorks.warehouse));
  const orders=JSON.parse(JSON.stringify(save.componentWorks.orders));
+ const materials=JSON.parse(JSON.stringify(save.componentWorks.materials));
  const lamps=data.lamps,street=data.street,fair=data.fair,seed=save.npcSimulation?.seed||0;
  let minutes=MINUTES[kind],costCents=CASH[kind],incomeCents=0,outcome={},inputs={};
  if(kind==='street-bid'){
@@ -74,7 +75,7 @@ function transact(save,kind,args,token,spend,finishAtBell){
   if(!shippedComponents(save))return fail('First deliver a real Federal Electric component order.');
   const bid=Number(args?.priceCents);
   if(![1450,1650,1850].includes(bid))return fail('Choose an official bid price.');
-  street.rivalBidCents=1520+hash('street|'+seed)%340;
+  street.rivalBidCents=1320+hash('street|'+seed)%600;
   street.playerBidCents=bid;
   street.status=bid<=street.rivalBidCents?'awarded':'lost';
   street.deadline='1878-09-30';
@@ -92,6 +93,7 @@ function transact(save,kind,args,token,spend,finishAtBell){
   for(const [id,used] of Object.entries(inputs)){
    const order=orders.find(o=>o.special==='street-1878'&&o.productId===id);
    if(!order||order.delivered+qty>order.quantity)return fail('The District production order is missing or overdrawn: '+id);
+   if(!integer(order.made,0,order.quantity)||order.made-order.delivered<qty) return fail('District order not manufactured: '+id);
    inventory[id]-=used;order.delivered+=qty;
    order.status=order.delivered===order.quantity?'delivered':'partial';
   }
@@ -103,14 +105,22 @@ function transact(save,kind,args,token,spend,finishAtBell){
   const qty=Number(args?.quantity);
   if(!integer(qty,1,10)||qty>street.shipped-street.certified)return fail('Inspect 1–10 dispatched but unapproved lighting sites.');
   street.certified+=qty;
-  incomeCents=qty*street.playerBidCents;
+  const grossCents=qty*street.playerBidCents;
+  const latePenaltyCents=clock.date>street.deadline?Math.round(grossCents*.10):0;
+  incomeCents=grossCents-latePenaltyCents;
   if(street.certified===street.sites)street.status='completed';
-  outcome={quantity:qty,certified:street.certified,message:'City inspector accepted '+qty+' installed lights. Only accepted work is paid.'};
+  outcome={quantity:qty,certified:street.certified,grossCents,latePenaltyCents,
+   message:'City inspector accepted '+qty+' installed lights. Only accepted work is paid.'+
+    (latePenaltyCents?' Late completion reduced payment by $'+(latePenaltyCents/100).toFixed(2)+'.':'')};
  }
  else if(kind==='research'){
   const eligible=canResearch(save,data,clock.date);if(!eligible.ok)return eligible;
   if(lamps.stage>=RESEARCH.length)return fail('Lamp research is complete; obtain the rights and install a prototype line.');
   const step=RESEARCH[lamps.stage];minutes=step.minutes;costCents=step.costCents;
+  for(const [id,qty] of Object.entries(step.materials)){
+   if(!integer(materials[id],0,100000)||materials[id]<qty)return fail('Insufficient research stock: '+id);
+  }
+  for(const [id,qty] of Object.entries(step.materials))materials[id]-=qty;
   lamps.attempts++;
   const passed=hash('lamp-research|'+seed+'|'+lamps.stage+'|'+lamps.attempts)%5!==0;
   if(passed)lamps.stage++;
@@ -142,7 +152,7 @@ function transact(save,kind,args,token,spend,finishAtBell){
    return fail('A working specialist line and five verified lamps are needed to qualify.');
   const bid=Number(args?.priceCents);
   if(![240,285,330].includes(bid))return fail('Choose a valid Fair supply price.');
-  fair.rivalBidCents=250+hash('fair|'+seed)%65;fair.playerBidCents=bid;
+  fair.rivalBidCents=215+hash('fair|'+seed)%165;fair.playerBidCents=bid;
   fair.status=bid<=fair.rivalBidCents?'awarded':'lost';
   outcome={won:fair.status==='awarded',rivalBidCents:fair.rivalBidCents,
    message:fair.status==='awarded'?'Fair supply contract awarded for 100 tested lamps. Manufacture and dispatch them.':'A competing exhibitor supplied the Fair. The Fair still takes place.'};
@@ -155,11 +165,17 @@ function transact(save,kind,args,token,spend,finishAtBell){
   if((inventory['incandescent-lamp']||0)<qty)return fail('Not enough passed incandescent bulbs in the actual warehouse.');
   const order=orders.find(o=>o.special==='fair-1878'&&o.productId==='incandescent-lamp');
   if(!order||order.delivered+qty>order.quantity)return fail('The Fair manufacturing order is missing or overdrawn.');
+  if(!integer(order.made,0,order.quantity)||order.made-order.delivered<qty)return fail('Fair order not manufactured.');
   inventory['incandescent-lamp']-=qty;
   order.delivered+=qty;order.status=order.delivered===order.quantity?'delivered':'partial';
-  fair.shipped+=qty;incomeCents=qty*fair.playerBidCents;
+  fair.shipped+=qty;
+  const grossCents=qty*fair.playerBidCents;
+  const latePenaltyCents=clock.date>order.deadline?Math.round(grossCents*.10):0;
+  incomeCents=grossCents-latePenaltyCents;
   fair.status=fair.shipped===fair.bulbs?'completed':'in-progress';
-  outcome={quantity:qty,shipped:fair.shipped,message:'Dispatched and invoiced '+qty+' tested Fair lamps.'};
+  outcome={quantity:qty,shipped:fair.shipped,grossCents,latePenaltyCents,
+   message:'Dispatched and invoiced '+qty+' tested Fair lamps.'+
+    (latePenaltyCents?' Late shipment reduced payment by $'+(latePenaltyCents/100).toFixed(2)+'.':'')};
  }
  else return fail('Unsupported contract action.');
  const balance=cashCents-costCents+incomeCents;
@@ -172,6 +188,7 @@ function transact(save,kind,args,token,spend,finishAtBell){
   return fail('The real game clock could not record this work.');
  // Commit only after payment, inventory and time have all passed preflight.
  save.componentWorks.warehouse=inventory;
+ save.componentWorks.materials=materials;
  // Awarded municipal contracts generate actual, unpaid factory orders, not stock.
  if(kind==='street-bid'&&street.status==='awarded'){
   for(const id of Object.keys(STREET_INPUTS))orders.push({

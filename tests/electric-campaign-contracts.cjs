@@ -35,7 +35,16 @@ date('1878-02-09',6);
 const noStock=JSON.stringify(save);
 assert.equal(act('street-dispatch',{quantity:5},'street:nostock').ok,false);
 assert.equal(JSON.stringify(save),noStock,'Failed shipment is atomic');
+// Stock belonging to unrelated orders cannot satisfy the District factory jobs.
 for(const id of ['insulated-wire','switch-contact','insulator'])save.componentWorks.warehouse[id]=10;
+assert.equal(act('street-dispatch',{quantity:10},'street:unmade').ok,false,
+ 'Unmade District orders cannot ship even when a shared warehouse has stock');
+for(const id of ['insulated-wire','switch-contact','insulator']){
+ save.componentWorks.warehouse[id]=0;
+ const assigned=save.componentWorks.orders.find(o=>o.special==='street-1878'&&o.productId===id);
+ const made=works.assemble(save.componentWorks,assigned.id,10,'street:factory:'+id);
+ assert.equal(made.ok,true,'District component must be physically made');
+}
 const dispatched=act('street-dispatch',{quantity:10},'street:dispatch');
 assert.equal(dispatched.ok,true);assert.equal(dispatched.shipped,10);
 for(const id of ['insulated-wire','switch-contact','insulator']){
@@ -52,6 +61,8 @@ assert.equal(Math.round((save.companyCash-beforeInspection)*100),14500);
 assert.equal(act('street-certify',{quantity:1},'street:overinspect').ok,false,'Cannot invoice unshipped city equipment');
 // Four multi-hour experimental R&D stages; failed tests spend costs/time but cannot advance.
 date('1878-03-04',1);
+// Research begins with actual purchased carbon in the inventory fixture.
+save.componentWorks.materials.carbon=30;
 let trials=0;
 while(electric.read(save).lamps.stage<electric.RESEARCH.length&&trials<25){
  clock.minuteOfDay=540;
@@ -97,6 +108,10 @@ save.componentWorks.materials.carbon+=40;
 const completed=works.assemble(save.componentWorks,fairOrder.id,10,'fair:manufacture');
 assert.equal(completed.ok,true);
 assert.ok(completed.goodUnits<10,'Defective bulk lamps are rejected');
+// Failed lamps are scrap; make a replacement before promising ten delivered bulbs.
+const replacement=works.assemble(save.componentWorks,fairOrder.id,10-completed.goodUnits,'fair:replacement');
+assert.equal(replacement.ok,true);
+assert.equal(replacement.goodUnits,10-completed.goodUnits);
 date('1878-08-03',6);
 assert.equal(act('fair-dispatch',{quantity:10},'fair:premature').ok,false,'Cannot deliver to Fair before Q4 window');
 date('1878-10-05',6);

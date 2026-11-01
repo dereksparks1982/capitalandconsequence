@@ -84,17 +84,18 @@ function render(){
   ' · Working stock: '+(stock['insulated-wire']||0)+' wires, '+(stock['switch-contact']||0)+
   ' contacts, '+(stock.insulator||0)+' insulators, '+(stock['incandescent-lamp']||0)+' accepted lamps.';
  panel.querySelector('#ecStreet').textContent='Tender '+st.status+' · dispatched '+st.shipped+'/'+st.sites+
-  ' · inspected and paid '+st.certified+'/'+st.sites+
+  ' · inspected and paid '+st.certified+'/'+st.sites+' · contract deadline '+(st.deadline||'1878-09-30')+
   (st.rivalBidCents!=null?' · rival price $'+(st.rivalBidCents/100).toFixed(2):'');
  const step=engine.RESEARCH[lab.stage];
  const development=S.componentWorks.lampDevelopment||{};
  panel.querySelector('#ecResearch').textContent='Lab stages '+lab.stage+'/'+engine.RESEARCH.length+
-  (step?' · Next: '+step.name+' · '+step.minutes+' min · $'+(step.costCents/100).toFixed(2):' · all experimental stages recorded')+
+  (step?' · Next: '+step.name+' · '+step.minutes+' min · $'+(step.costCents/100).toFixed(2)+
+   ' + '+Object.entries(step.materials).map(([id,qty])=>qty+' '+id).join(', '):' · all experimental stages recorded')+
   ' · Rights '+(lab.license?'secured':'missing')+' · Prototype bench '+(lab.prototype?'installed':'missing')+
   ' · Specialist crew '+lab.crew+' · Batch line '+(lab.upgraded?'running':'not installed')+
   ' · sound bulbs '+(development.good||0)+' · scrapped '+(development.rejected||0)+
   ' · outstanding specialist wages $'+(e.payroll.owedCents/100).toFixed(2)+'.';
- panel.querySelector('#ecFair').textContent='Fair supply contract '+f.status+
+ panel.querySelector('#ecFair').textContent='Fair supply contract '+f.status+' · shipment deadline 1878-12-31'+
   ' · bulbs physically dispatched '+f.shipped+'/'+f.bulbs+
   (f.rivalBidCents!=null?' · rival bulb price $'+(f.rivalBidCents/100).toFixed(2):'');
  for(const button of panel.querySelectorAll('[data-electric-action]')){
@@ -113,6 +114,8 @@ function render(){
   if(kind==='fair-bid')eligible=eligible&&day>='1878-08-01'&&day<='1878-11-30'&&f.status==='not-open'&&lab.upgraded&&(development.good||0)>=5;
   if(kind==='fair-dispatch')eligible=eligible&&day>='1878-10-01'&&(f.status==='awarded'||f.status==='in-progress');
   button.disabled=!eligible;
+  if(!eligible)button.title='The contract, materials, workshop shift, qualification or calendar date does not allow this action yet.';
+  else button.removeAttribute('title');
  }
 }
 root.FE_ELECTRIC_CAMPAIGN_UI=Object.freeze({render});
