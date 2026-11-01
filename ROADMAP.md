@@ -5,7 +5,7 @@
 - [x] Exclude the visitors from ordinary resident payroll, workplaces and weekly routines; do not duplicate wages or simulate imaginary employment.
 - [x] Prevent the circus tent from remaining visible during departures; preserve the historical engagement in the save only long enough for the real wagon ride to finish.
 - [x] Ensure a visitor's room conversation and discovery depend on the character actually being at the same location.
-- [x] Add a source-only regression covering real travel clock, map discovery, room-only NPC encounters and departure.
+- [x] Add focused source regressions covering real travel clock, map discovery, actual same-room NPC conversation, and departure.
 - [ ] Native Linux visual acceptance, complete Node regression suite, original painted cards and full wooden wagon interiors still outstanding.
 - [ ] Add merchant bargaining, meaningful item effects, more crimes with witnesses and victims, and full animated carnival physics in future substantive builds.
 
