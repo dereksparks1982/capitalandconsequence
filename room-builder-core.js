@@ -55,7 +55,9 @@ function sanitize(raw,locationId='factory',roomId='executive-office'){
   room.objects.push({id:obj.id,spriteId:obj.spriteId,x:obj.x,y:obj.y,rotation:rot});
  }
  const pos=raw.spawns?.player;
- if(!pos||!inBounds(room,pos.x,pos.y)||blocked(room,pos.x,pos.y))throw Error('Player spawn is obstructed');
+ if(!pos||!inBounds(room,pos.x,pos.y)||blocked(room,pos.x,pos.y)||
+  room.objects.some(o=>asset(o.spriteId)?.category==='people'&&contains(o,pos.x,pos.y)))
+  throw Error('Player spawn is obstructed');
  room.spawns={player:{x:pos.x,y:pos.y}};
  room.updatedAt=typeof raw.updatedAt==='string'?raw.updatedAt:null;
  return room;
@@ -110,7 +112,7 @@ function relocate(room,id,x,y,rotation=null,duplicate=false){
  const [w,h]=dims(s,r);
  if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&overlapsSolid(room,x,y,w,h,duplicate?null:id))return null;
  if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
- if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
+ if((s.solid||s.category==='people')&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
  if(duplicate)return placeRotated(room,obj.spriteId,x,y,r);
  obj.x=x;obj.y=y;obj.rotation=r;return obj;
 }
@@ -121,13 +123,16 @@ function placeRotated(room,spriteId,x,y,rotation){
  const [w,h]=dims(s,rotation);
  if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&overlapsSolid(room,x,y,w,h))return null;
  if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
- if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&
+ if((s.solid||s.category==='people')&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&
   y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
  const uid='obj_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
  const obj={id:uid,spriteId,x,y,rotation};room.objects.push(obj);return obj;
 }
 function remove(room,id){const i=room.objects.findIndex(o=>o.id===id);if(i<0)return false;room.objects.splice(i,1);return true}
-function setSpawn(room,x,y){if(blocked(room,x,y))return false;room.spawns.player={x,y};return true}
+function setSpawn(room,x,y){
+ if(blocked(room,x,y)||room.objects.some(o=>asset(o.spriteId)?.category==='people'&&contains(o,x,y)))return false;
+ room.spawns.player={x,y};return true;
+}
 function walk(room,position,dx,dy){
  if(!Number.isInteger(dx)||!Number.isInteger(dy)||Math.abs(dx)+Math.abs(dy)!==1)return position;
  const x=position.x+dx,y=position.y+dy;
