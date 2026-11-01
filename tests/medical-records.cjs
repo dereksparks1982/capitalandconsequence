@@ -80,7 +80,7 @@ assert.ok(app.includes("kind!=='medical'&&window.FE_MEDICAL_RECORDS?.pending?.(S
 assert.ok(app.includes("let productive=factoryCollapse?0:delta"),'factory production must stop during emergency');
 assert.ok(app.includes('S.medicalRecords.factory.minutesLost+=delta/60'),'measure actual open shift downtime');
 assert.ok(app.includes('medical.wake(S,elapsed)'));
-assert.ok(app.includes('window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode)'));
+assert.ok(app.includes('window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome)'));
 assert.ok(banner.includes('Open your personal medical file'));
 assert.ok(html.includes('medical-records.js?v='));
 assert.ok(html.includes('medical-records-ui.js?v='));
