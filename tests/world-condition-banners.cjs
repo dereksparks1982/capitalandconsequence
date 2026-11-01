@@ -16,6 +16,6 @@ assert.match(css,/title-map-card \.cc-world-banner-row--primary\{padding-right:6
 assert.match(b,/original=\$\('condition-'\+key\)/);
 assert.match(b,/panel\.needs\[key\]/);
 assert.doesNotMatch(b,/setInterval\(|setTimeout\(/);
-assert.match(html,/world-banner\.js\?v=20261101-v0758-two-rows/);
+assert.match(html,/world-banner\.js\?v=20261101-v0759-medbook/);
 assert.match(html,/world-banner\.css\?v=20261101-v0758-two-rows/);
 console.log('PASS persistent two-row map/room status with condition HUD mirroring and no extra clock');
