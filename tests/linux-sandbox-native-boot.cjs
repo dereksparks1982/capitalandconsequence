@@ -1,7 +1,9 @@
 'use strict';
 /* Full native startup regression: execute the actual bundled ELF, not just
  * assert a no-sandbox string is present in Electron's main script.
- * /bin/echo acts as a harmless stand-in for the packaged Electron binary.
+ * A real ELF is used to verify packaging, then replaced with a test-only
+ * argument-printing script. Some Ubuntu coreutils dispatch on argv[0]
+ * and reject /bin/echo when renamed capitalandconsequence-runtime.
  */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const os=require('node:os'),cp=require('node:child_process');
@@ -20,11 +22,17 @@ try{
  assert.equal(build.validElf(runtime),true,'Complete Electron-style game binary is retained');
  assert.equal(fs.readFileSync(filename).compare(build.launcherBytes()),0,
   'Packager installs exactly the audited, checksum-verified native ELF');
+ // The /bin/echo executable on some distros is coreutils multicall: its
+ // behavior changes with argv[0], causing a false failure after rename.
+ // After verifying the full ELF packaging contract, replace ONLY this
+ // temporary test fixture with a name-agnostic argument recorder.
+ // This shell fixture is never packaged or used as the game's launcher.
+ fs.writeFileSync(runtime,'#!/bin/sh\n'+'printf "%s\\n" "$@"\n',{mode:0o755});
  const run=env=>cp.spawnSync(filename,['--smoke-test'],{
   cwd:directory,env:{...process.env,...env},encoding:'utf8',timeout:5000});
  const normal=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'0'});
  assert.equal(normal.status,0,normal.stderr||'Native launcher cannot exec the bundled runtime');
- assert.equal(normal.stdout.trim(),'--no-sandbox --smoke-test',
+ assert.deepEqual(normal.stdout.trim().split(/\r?\n/),['--no-sandbox','--smoke-test'],
   'Chromium sandbox option MUST be injected before Electron starts, not from JS');
  const configured=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'1'});
  assert.equal(configured.status,0,configured.stderr||'Cannot opt into configured Chromium sandbox');
