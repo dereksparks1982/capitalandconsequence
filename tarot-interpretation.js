@@ -99,12 +99,14 @@ function interpret(save,session){
  if(!session||!Array.isArray(session.cards)||!session.cards.length)return {ok:false,reason:'There are no cards on the table.'};
  if(session.interpretation)return {ok:true,reading:session.interpretation};
  const current=facts(save);
+ const vision=root.FE_TAROT_SECOND_SIGHT?.vision?.(save,session)||null;
  const positions=session.cards.map((card,i)=>{
   const concern=current[i%current.length];
   const symbol=cardMeaning(card);
   const posture=card.reversed?'The card lies reversed, warning against mistaking the sign for a promise.':'The card stands upright, asking you to consider its meaning.';
   const text=card.position+': '+card.name+(card.reversed?' (reversed)':'')+
-   '. I see '+symbol+'. '+posture+' '+concern.observe+' '+concern.advice;
+   '. I see '+symbol+'. '+posture+' '+concern.observe+' '+concern.advice+
+   (vision?.cardIndex===i?' The reader leans forward. '+vision.saying:'');
   return {cardId:card.id,position:card.position,meaning:text,focusId:concern.id};
  });
  const closing='These cards speak in possibilities, not certainties. Your next choices will matter more than my table.';
