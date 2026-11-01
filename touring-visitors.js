@@ -35,12 +35,8 @@ function road(save,from,to){
 function state(save,person,event,minute){
  const from=person.approach,to=event.locationId;
  const arrival=event.startMinute,leave=event.endMinute;
- // First wagon appears on the road two hours before its public engagement.
- // It is present on the actual registered grounds for the show, then leaves.
- const inboundStart=arrival-120,outboundEnd=leave+120;
  const base={id:person.id,name:person.name,activity:null,locationId:null,roomId:null,
-  status:'off-duty',vehicle:person.vehicle,relationships:{},memories:[],energy:70};
- if(minute<inboundStart||minute>=outboundEnd)return base;
+  status:'off-duty',vehicle:person.vehicle,journey:null,relationships:{},memories:[],energy:70};
  if(minute>=arrival&&minute<leave)return {...base,status:'present',locationId:to,
   roomId:root.FederalElectricCity?.getLocation?.(to)?.defaultRoom||'grounds',
   activity:person.activity};
@@ -48,7 +44,11 @@ function state(save,person,event,minute){
  const planned=road(save,inbound?from:to,inbound?to:from);
  // No printable road route means NO fabricated moving person or diagonal.
  if(!planned)return base;
- const start=inbound?inboundStart:leave,end=inbound?arrival:outboundEnd;
+ // Actual street distance controls transit, not an invented two-hour journey.
+ // Wagon pace is a modest improvement over the road engine's walking estimate.
+ const duration=Math.max(5,Math.min(240,Math.round(planned.minutes*.85)));
+ const start=inbound?arrival-duration:leave,end=inbound?arrival:leave+duration;
+ if(minute<start||minute>=end)return base;
  const journey={version:1,from:inbound?from:to,to:inbound?to:from,
   vehicle:person.vehicle,departedAt:start,arrivesAt:end,
   routeType:planned.routeType,routePoints:planned.routePoints};
