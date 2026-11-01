@@ -55,8 +55,9 @@ function target(round,index){
 function preview(round){
  if(!round||!GAMES[round.key])return null;
  const attempt=round.plays.length;
+ const mark=target(round,attempt),zone=mark<=1?'left side':mark===2?'middle':'right side';
  return {game:GAMES[round.key],step:attempt+1,total:GAMES[round.key].attempts,
-  score:round.score,lanes:5,done:attempt>=GAMES[round.key].attempts};
+  score:round.score,lanes:5,zone,done:attempt>=GAMES[round.key].attempts};
 }
 function throwAt(save,choice,award){
  const state=ensure(save),round=state?.active;
