@@ -48,11 +48,29 @@
 .career-desk-heading p{margin:0 0 12px}
 .career-desk-seal{border:2px solid #7d705e;border-radius:50%;width:82px;height:82px;display:grid;place-items:center;font-size:12px;text-align:center;flex:0 0 auto;font-variant:small-caps}
 .career-desk-art{background:linear-gradient(90deg,#3c281b,var(--desk) 16%,#93694b 50%,var(--desk) 84%,#3c281b);border:8px ridge #68452d;box-shadow:inset 0 4px 10px #25170f7a;min-height:220px;display:flex;align-items:center;justify-content:space-evenly;gap:12px;padding:25px 16px;position:relative;overflow:hidden}
-.career-desk-ledger{width:35%;min-height:154px;background:#f2e5c4;color:#172d49;font-family:Georgia,serif;border:2px solid #877657;box-shadow:4px 5px 0 #301c1455;display:flex;flex-direction:column;align-items:center;justify-content:space-around;text-align:center;padding:9px;transform:rotate(-4deg);cursor:pointer;appearance:none}
-.career-desk-ledger:focus-visible,.career-desk-ledger:hover{outline:3px solid #bd9135;outline-offset:3px}
-.career-desk-ledger strong{font-size:clamp(15px,2.4vw,24px);text-transform:uppercase}
-.career-desk-ledger small,.career-desk-ledger span{font-size:10px}
-.career-desk-blotter{width:50%;min-height:168px;padding:15px;background:var(--blotter);border:5px solid #392c24;box-shadow:inset 0 0 15px #22160e6b;display:flex;gap:16px;align-items:center;justify-content:flex-end;transform:rotate(2deg)}
+/* A compact hardcover volume, NOT the former oversized left-hand sign. */
+.career-desk .career-desk-ledger{
+ position:relative;flex:0 0 112px;width:112px;height:132px;min-height:0;
+ padding:12px 7px 12px 16px;margin:0;display:flex;align-items:center;justify-content:center;
+ text-align:center;background:linear-gradient(95deg,#352117 0 8%,#5c3427 13%,#70412c 40%,#583122 100%);
+ color:#eedc9e;border:3px solid #38231b;border-radius:4px 8px 8px 4px;
+ box-shadow:2px 4px 0 #d6c8a6,3px 6px 0 #2f231a,6px 8px 7px #20160f88;
+ transform:rotate(4deg);cursor:pointer;appearance:none;font-family:Georgia,serif;
+}
+.career-desk .career-desk-ledger:before{
+ content:'';position:absolute;inset:5px 6px 5px 11px;pointer-events:none;
+ border:1px solid #c7a45b;border-radius:1px 4px 4px 1px;
+}
+.career-desk .career-desk-book-spine{
+ position:absolute;left:6px;top:0;bottom:0;width:7px;border-right:1px solid #b88f56;
+ background:linear-gradient(90deg,#261911,#563529 75%,#38251c);pointer-events:none;
+}
+.career-desk .career-desk-ledger strong{
+ position:relative;z-index:1;font-size:12px;line-height:1.35;font-weight:700;
+ letter-spacing:.045em;text-transform:uppercase;overflow-wrap:normal;
+}
+.career-desk-ledger:hover,.career-desk-ledger:focus-visible{outline:3px solid #d4ad69;outline-offset:4px;filter:brightness(1.08)}
+.career-desk-blotter{width:50%;min-height:168px;padding:15px;background:var(--blotter);border:5px solid #392c24;box-shadow:inset 0 0 15px #22160e6b;display:flex;gap:24px;align-items:center;justify-content:flex-end;transform:rotate(2deg);margin-left:auto}
 .career-desk .career-desk-map{background:#efe4c9;border:2px solid #6b5840;color:#352e25;font-weight:700;min-width:96px;min-height:88px;cursor:pointer;transform:rotate(-2deg)}
 .career-desk-pencil{position:absolute;bottom:32px;left:17%;width:115px;height:6px;border:1px solid #281c15;background:linear-gradient(90deg,#b9a094 0 10%,#b78b38 10% 92%,#382419 92%);transform:rotate(26deg)}
 .career-desk-summary{font-size:15px;margin:14px 0 4px;font-weight:700}
@@ -65,7 +83,7 @@ body[data-career]:not([data-career=industrialist]) .daybar b:has(+ #headerCompan
 /* Old illustrated title is an inert compatibility scaffold. It is NEVER a visible room or menu. */
 #titleScreen,#titleScreen.desk-interior,#titleScreen:not([hidden]){display:none!important;visibility:hidden!important;pointer-events:none!important;}
 @media(max-width:800px){.career-menu-routes{grid-template-columns:repeat(2,minmax(0,1fr))}.career-menu-route{min-height:130px}.career-menu-paper{padding:16px}.career-desk-art{min-height:190px}.career-desk-heading{align-items:flex-start}.career-desk-seal{width:64px;height:64px}}
-@media(max-width:430px){.career-main-menu{padding:8px}.career-menu-paper{border-width:5px}.career-menu-route{padding:9px}.career-menu-route b{font-size:17px}.career-menu-profile{flex-wrap:wrap}.career-desk-blotter{width:59%;padding:8px;gap:7px}.career-desk-ledger{width:38%;padding:5px}.career-desk .career-desk-map{min-width:70px;min-height:70px;font-size:12px}}
+@media(max-width:430px){.career-main-menu{padding:8px}.career-menu-paper{border-width:5px}.career-menu-route{padding:9px}.career-menu-route b{font-size:17px}.career-menu-profile{flex-wrap:wrap}.career-desk-blotter{width:70%;padding:7px;gap:10px}.career-desk .career-desk-ledger{flex-basis:77px;width:77px;height:98px;padding:6px 4px 6px 12px}.career-desk .career-desk-ledger strong{font-size:9px}.career-desk .career-desk-map{min-width:70px;min-height:70px;font-size:12px}}
 
 /* An autosave error must remain visible even above modal records. */
 .save-failure-banner{z-index:4000000!important}
@@ -209,4 +227,24 @@ body > #titleDevPanel.title-dev-panel[hidden]{display:none!important}
 }
 .career-desk .career-desk-map:hover,.career-desk .career-desk-map:focus-visible{
  filter:brightness(1.12);outline:2px solid #d8b669;outline-offset:2px;
+}
+
+/* Desktop has no left-hand paper banner. The pencil may rest on bare wood;
+   the fixed Washington artwork stays on the green blotter next to one book. */
+.career-desk-art>.career-desk-ledger{display:none!important}
+.career-desk .career-desk-map{flex:0 1 200px;max-width:205px}
+.career-desk-coffee{margin-top:10px;padding:12px 15px;background:#f4eddc;border:1px solid #806a48;color:#30271e}
+.career-desk-coffee[hidden]{display:none!important}
+.career-desk-coffee h3{font:700 16px Georgia,serif;margin:0 0 6px}
+.career-desk-coffee p{margin:5px 0 9px}
+.career-desk-coffee-actions,.career-desk-coffee-people{display:flex;flex-wrap:wrap;gap:8px}
+.career-desk-coffee-actions button,.career-desk-coffee-people button{cursor:pointer;padding:7px 10px;background:#fff8e7;color:#382a1c;border:1px solid #807057;font:700 13px Georgia,serif}
+.career-desk-coffee-people{margin-top:8px}
+.career-desk-coffee-status{display:block;margin-top:8px;min-height:1.2em;font-size:12px}
+@media(max-width:710px){
+ .career-desk-art{padding:14px 8px}
+ .career-desk-blotter{width:75%;gap:12px}
+ .career-desk .career-desk-ledger{flex-basis:88px;width:88px;height:112px}
+ .career-desk .career-desk-ledger strong{font-size:10px}
+ .career-desk .career-desk-map{min-width:70px}
 }

@@ -125,6 +125,25 @@
   showNew=false;menu.hidden=false;message();
   renderMenu();
  }
+ function refreshCoffeeVisitors(){
+  const panel=desk.querySelector('#careerDeskCoffee');
+  const output=panel?.querySelector('#careerDeskCoffeePeople');
+  if(!output||panel.hidden)return;
+  output.replaceChildren();
+  const loc=window.FE_CITY?.currentLocation?.();
+  const people=loc?.locationId==='factory'?
+   (window.FE_NPC_AI?.visibleAt?.('factory')||[]).filter(v=>v.roomId===loc.roomId):[];
+  if(!people.length){
+   const note=document.createElement('p');note.textContent='Nobody else is in this room right now.';
+   output.appendChild(note);return;
+  }
+  for(const person of people){
+   const button=document.createElement('button');button.type='button';
+   button.dataset.coffeeNpc=person.id;
+   button.textContent='Speak with '+person.name;
+   output.appendChild(button);
+  }
+ }
  function refreshDesk(){
   const route=routes.get(S.characterRoute)||routes.get('industrialist');
   document.body.dataset.career=route.id;
@@ -133,31 +152,81 @@
    desk.dataset.route=route.id;
    const bookTitle=route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal';
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
-    <div class="career-desk-art" aria-label="${escape(route.name)} desk, period-style placeholder">
-      <button type="button" id="careerDeskLedger" class="career-desk-ledger" title="Open ${escape(bookTitle)}" aria-label="Open ${escape(bookTitle)}"><small>${escape(route.name.toUpperCase())} · ${escape(route.deskTitle.toUpperCase())}</small><strong>${escape(bookTitle)}</strong><span>WASHINGTON · PRIVATE PAPERS</span></button>
-      <div class="career-desk-blotter"><button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button></div>
+    <div class="career-desk-art" aria-label="${escape(route.name)} desk with paper map and record book">
+      <div class="career-desk-blotter">
+       <button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
+       <button type="button" id="careerDeskLedger" class="career-desk-ledger" title="Open ${escape(bookTitle)}" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
+      </div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
     ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
-    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">Spend 5 Minutes</button><button type="button" id="careerDeskMenu">Main Menu</button></div>`;
+    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
+    ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button></div><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskEnterLocation').onclick=()=>window.FE_CITY?.openRoom?.(S.currentLocation.locationId,S.currentLocation.roomId);
    desk.querySelector('#careerDeskLedger').onclick=()=>window.FE_PERSONAL_BOOK?.open?.();
    desk.querySelector('#careerDeskMenu').onclick=open;
    desk.querySelector('#careerDeskWait').onclick=()=>{
-    if(S.paused)return;
-    if(S.phase==='report')return;
+    if(route.id==='industrialist'){
+     const panel=desk.querySelector('#careerDeskCoffee');
+     panel.hidden=!panel.hidden;
+     desk.querySelector('#careerDeskWait').setAttribute('aria-expanded',String(!panel.hidden));
+     if(!panel.hidden)refreshCoffeeVisitors();
+     return;
+    }
+    if(S.paused||S.phase==='report')return;
     const spent=window.advanceWorldTime(300,true);
-    save(true);render();
-    const note=document.getElementById('careerDeskDate');
-    if(note&&spent===0)note.textContent+=' · No time remains in this phase';
+    if(spent){save(true);render();}
+    else{const note=desk.querySelector('#careerDeskDate');if(note)note.textContent+=' · No time remains in this phase';}
    };
+   if(route.id==='industrialist'){
+    const panel=desk.querySelector('#careerDeskCoffee');
+    const coffee=desk.querySelector('#careerDeskWait');
+    coffee.setAttribute('aria-controls','careerDeskCoffee');
+    coffee.setAttribute('aria-expanded','false');
+    panel.querySelector('.career-desk-coffee-actions').addEventListener('click',event=>{
+     const choice=event.target.closest('[data-desk-refreshment]')?.dataset.deskRefreshment;
+     if(!['coffee','water','snack'].includes(choice))return;
+     const status=panel.querySelector('#careerDeskCoffeeStatus');
+     if(S.paused||S.phase==='report'){
+      status.textContent='The break is unavailable while time is paused.';return;
+     }
+     const spent=window.advanceWorldTime(300,true);
+     if(spent!==300){
+      status.textContent='Five minutes were unavailable. No refreshment was taken.';return;
+     }
+     const label={coffee:'a cup of coffee',water:'a glass of water',snack:'a small snack'}[choice];
+     if(Array.isArray(S.notes))S.notes.push({date:S.gameDate,source:'Office break',
+       text:'Took five minutes in the office for '+label+'.'});
+     save(true);render();
+     status.textContent='Enjoyed '+label+'. Five minutes have passed.';
+     refreshCoffeeVisitors();
+    });
+    panel.querySelector('#careerDeskCoffeePeople').addEventListener('click',event=>{
+     const button=event.target.closest('button[data-coffee-npc]');if(!button)return;
+     const id=button.dataset.coffeeNpc;
+     const here=window.FE_CITY?.currentLocation?.();
+     const valid=()=>!!here&&here.locationId==='factory'&&
+      (window.FE_NPC_AI?.visibleAt?.('factory')||[]).some(v=>v.id===id&&v.roomId===here.roomId);
+     if(!valid()){refreshCoffeeVisitors();return;}
+     const npc=(window.FE_NPC_AI?.visibleAt?.('factory')||[]).find(v=>v.id===id);
+     const person=window.FE_NPC_AI?.list?.().find(v=>v.id===id);
+     if(!npc)return;
+     window.FE_NPC_CARD?.open?.({id,name:npc.name,
+      occupation:person?.occupation||'Factory employee',
+      sex:['madamStar','chenMei','annaPetrovna'].includes(id)?'woman':'man',
+      history:window.FE_NPC_DIALOGUE?.history?.(S,id)||[],valid,
+      onQuick:topic=>window.FE_NPC_AI?.talkAtLocation?.(id,topic),
+      onSpeak:words=>window.FE_NPC_AI?.converseAtLocation?.(id,words)});
+    });
+   }
   }
   const d=desk.querySelector('#careerDeskDate');
-  if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase)+' · '+clockText()+' remaining';
+  if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase);
+  if(route.id==='industrialist')refreshCoffeeVisitors();
   window.FE_PATROL_UI?.refresh?.();
   window.FE_DOORMAN_UI?.refresh?.();
   window.FE_ORDERLY_UI?.refresh?.();
