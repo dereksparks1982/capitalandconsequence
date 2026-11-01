@@ -34,7 +34,7 @@ const SITES=Object.freeze({
  'easternMarket':new Set(GOODS.filter(g=>g.markets!=='chinatown').map(g=>g.id)),
  'georgetownMarketHouse':new Set(GOODS.filter(g=>g.markets!=='chinatown').map(g=>g.id)),
  'centerMarket':new Set(GOODS.map(g=>g.id)),
- 'oldChinatown':new Set(GOODS.filter(g=>g.markets==='chinatown'||g.vendor==='provisions'||g.vendor==='grocer'||g.vendor==='fishmonger').map(g=>g.id))
+ 'oldChinatown':new Set(GOODS.filter(g=>g.markets==='chinatown'||['provisions','grocer','fishmonger','bakery'].includes(g.vendor)).map(g=>g.id))
 });
 function allowedAt(id,site){
  if(!BY_GOOD[id])return false;
@@ -117,7 +117,7 @@ function quoteBasket(save,siteId,lines){
  let packages=0,totalCents=0;const unique=new Set();
  for(const x of lines){
   const g=BY_GOOD[x?.id],n=x?.packages;
-  if(!g||unique.has(x.id)||!Number.isSafeInteger(n)||n<1||n>24||!allowedAt(x.id,siteId))
+  if(!g||unique.has(x.id)||!Number.isSafeInteger(n)||n<1||n>24||!(siteId===''?SITES.oldChinatown.has(x.id):allowedAt(x.id,siteId)))
    return {ok:false,reason:'Invalid basket or goods unavailable at this stall.'};
   unique.add(x.id);packages+=n;totalCents+=g.cents*n;
   if(stock[g.id]<n)return {ok:false,reason:'Not enough '+g.label+' in stock.'};

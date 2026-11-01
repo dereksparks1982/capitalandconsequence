@@ -14,3 +14,9 @@
 .cc-household-food .cc-food-container{margin:5px 0;padding:5px;border:1px solid #857454}
 .cc-household-food .cc-food-container .cc-food-row{margin-top:5px}
 .cc-household-food [data-food-status]:empty{display:none}
+
+.cc-household-food select{min-width:155px;max-width:100%}
+.cc-household-food .cc-food-actions{align-items:center}
+.cc-household-food .cc-food-actions button{min-height:27px}
+.cc-household-food input[type=search]{display:block;width:100%;margin:7px 0}
+.cc-household-food [role=status]{font-weight:600;min-height:1em}

@@ -19,11 +19,21 @@ function permitted(){
 function buy(id){
  if(!permitted()){message='The market is closed or you are not at its counter.';render();return;}
  const model=commerce(),m=model.ensure(S),site=marketSite(),stock=site?m.siteStocks[site]:m.stock,good=model.GOODS.find(x=>x.id===id);
- if(!good||!model.allowedAt(id,site)||stock[id]<1){message='Sold out. Await the next physical delivery.';render();return;}
+ if(!good||!(site===''?model.SITES.oldChinatown.has(id):model.allowedAt(id,site))||stock[id]<1){message='Sold out. Await the next physical delivery.';render();return;}
  if(Math.round(S.personalCash*100)<good.cents){message='Not enough personal cash.';render();return;}
  if(window.advanceWorldTime(300)!==300){message='Trading hours ended before the purchase.';render();return;}
  const sale=model.purchase(S,'player',id,{date:S.gameDate,...(site?{siteId:site}:{})});
  message=sale.ok?'Purchased '+good.label+' for '+good.cents+'¢. Merchant stock and cash updated.':sale.reason;
+ save(true);render();
+}
+function buyThree(id){
+ if(!permitted()){message='Visit the open market counter.';render();return;}
+ const site=marketSite(),model=commerce(),quote=model.quoteBasket(S,site,[{id,packages:3}]);
+ if(!quote.ok){message=quote.reason;render();return;}
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,900)){message='Not enough Washington time.';render();return;}
+ if(window.advanceWorldTime(900)!==900){message='Purchase was interrupted.';render();return;}
+ const result=model.purchaseBasket(S,site,[{id,packages:3}],{date:S.gameDate});
+ message=result.ok?'Bought 3 packages for '+result.totalCents+'¢.':result.reason;
  save(true);render();
 }
 function use(id){
@@ -32,16 +42,16 @@ function use(id){
  if(!item){message='This item is no longer in your shopping bag.';render();return;}
  const needs=window.FE_CHARACTER_NEEDS;
  const food=needs?.PROVISIONS?.[item.good];
- const available=food?needs.provisionAvailability(S,item.good):null;
+ if(!food){message='Take this purchase home for storage or cooking; it cannot be used up here.';render();return;}
+ const available=needs.provisionAvailability(S,item.good);
  if(available&&!available.ok){message=available.reason;render();return;}
- const duration=food?600:60;
+ const duration=600;
  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,duration)){message='Not enough time for this action.';render();return;}
  if(window.advanceWorldTime(duration)!==duration){message='Could not complete this action.';render();return;}
  const consumed=model.consume(S,id);
  if(!consumed.ok){message=consumed.reason;render();return;}
- const outcome=food?needs.eatProvision(S,consumed.good.good):null;
- message=food?(outcome?.ok?'Ate '+consumed.good.label+'. Hunger and thirst updated.':outcome?.reason||'Meal not recorded.'):
-  'Used '+consumed.good.label+'.';
+ const outcome=needs.eatProvision(S,consumed.good.good);
+ message=outcome?.ok?'Ate '+consumed.good.label+'. Hunger and thirst updated.':outcome?.reason||'Meal not recorded.';
  save(true);render();
 }
 function render(){
@@ -72,6 +82,7 @@ function render(){
   select.onchange=()=>{category=select.value;render()};
   tools.append(input,select);list.appendChild(tools);
   const goods=commerce().GOODS.filter(item=>commerce().allowedAt(item.id,site)&&
+   (site!==''||commerce().SITES.oldChinatown.has(item.id))&&
    (category==='all'||(window.FE_FOOD_CATALOG?.find?.(item.id)?.section||'Miscellaneous')===category)&&
    (!filter||(item.label+' '+item.id).toLowerCase().includes(filter)));
   const note=document.createElement('p');note.textContent=goods.length+' goods listed · merchant stocks are finite';list.append(note);
@@ -79,7 +90,10 @@ function render(){
    const row=document.createElement('div'),text=document.createElement('span'),button=document.createElement('button');
    text.textContent=g.label+' · '+g.cents+'¢ · '+stock[g.id]+' in stock';
    button.type='button';button.textContent='Buy';button.disabled=!open||stock[g.id]<1||Math.round(S.personalCash*100)<g.cents||m.playerBag.length>=24;
-   button.onclick=()=>buy(g.id);row.append(text,button);list.appendChild(row);
+   button.onclick=()=>buy(g.id);row.append(text,button);
+   const multi=document.createElement('button');multi.type='button';multi.textContent='Buy 3';
+   multi.disabled=!open||stock[g.id]<3||Math.round(S.personalCash*100)<g.cents*3||m.playerBag.length+3>24;
+   multi.onclick=()=>buyThree(g.id);row.append(multi);list.appendChild(row);
   }
  }
  if(bag){
@@ -89,7 +103,7 @@ function render(){
    const row=document.createElement('div'),text=document.createElement('span'),button=document.createElement('button');
    text.textContent=item.label+' · '+item.date;button.type='button';const food=window.FE_CHARACTER_NEEDS?.PROVISIONS?.[item.good];
    const permission=food?window.FE_CHARACTER_NEEDS.provisionAvailability(S,item.good):null;
-   button.textContent=food?'Eat / Drink':'Use';button.disabled=!open||permission?.ok===false;
+   button.textContent=food?'Eat / Drink':'Take Home';button.disabled=!open||!food||permission?.ok===false;
    if(permission?.remaining)button.title=permission.reason;button.onclick=()=>use(item.id);
    row.append(text,button);bag.appendChild(row);
   }
