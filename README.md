@@ -1,4 +1,4 @@
-# Capital & Consequence
+Opponent boxing AI now spends stamina on footwork and blocking, slows its pursuit when exhausted, and shows its stamina in the practice ring. See `docs/RELEASE-NOTES-v0.7.58-dev.md`.\n\n# Capital & Consequence
 
 **One city. Countless lives. Every choice has consequences.**
 
