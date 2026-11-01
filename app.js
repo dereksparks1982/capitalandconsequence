@@ -3826,9 +3826,10 @@ function mapTravelRestriction(location){
  const entry=cityLocation(location.id);
  if(!entry)return 'This location has no registered entrance.';
  if(titleDevUnlockAllRooms)return '';
- if(entry.plannedOnly)return 'This location is planned but not yet open.';
- if(entry.availableFrom&&S.gameDate<entry.availableFrom)return 'Not open until '+entry.availableFrom+'.';
- if(entry.availableUntil&&S.gameDate>entry.availableUntil)return 'This historic location no longer exists after '+entry.availableUntil+'.';
+ // Capital & Consequence uses an alternate-history Washington. Places
+ // visibly mapped are accessible in every game year; calendar dates never
+ // remove a printed-map landmark. Permission and story restrictions remain.
+ if(entry.plannedOnly&&!entry.map)return 'This location is planned but not yet open.';
  if(S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient')
   return 'Edmund is confined in District Asylum. Petition for release from the patient ward.';
  const dutyRestriction=window.FE_PATROL?.travel?.(S,entry.id);
@@ -4542,8 +4543,8 @@ function initMapShortcut(){
 function renderUnpinnedCityDirectory(){
  const out=document.getElementById('titleMapUnpinnedDirectory'),city=federalCity();if(!out||!city)return;
  out.innerHTML='';
- const active=!!activeProfileId(),year=S.gameDate;
- for(const loc of city.listLocations().filter(loc=>!loc.map&&(titleDevUnlockAllRooms||(!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id))&&(!loc.availableFrom||year>=loc.availableFrom))))){
+ const active=!!activeProfileId();
+ for(const loc of city.listLocations().filter(loc=>!loc.map&&(titleDevUnlockAllRooms||(!loc.plannedOnly&&(!loc.hiddenFromDirectory||window.FE_VENUES?.canEnterLocation?.(loc.id)))))){
   const button=document.createElement('button');button.type='button';button.textContent=loc.name;button.disabled=!active;
   button.title=active?'Visit '+loc.name:'Create or load a profile to visit';
   button.onclick=()=>enterMapDestination(loc.id);
