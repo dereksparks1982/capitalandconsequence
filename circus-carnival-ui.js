@@ -48,7 +48,7 @@ function refresh(){
   list.hidden=true;game.hidden=false;game.replaceChildren();
   const header=document.createElement('h5');header.textContent=details.game.name+' · '+details.game.theme;
   const stats=document.createElement('p');stats.textContent='Turn '+details.step+'/'+details.total+' · Score '+details.score;
-  const help=document.createElement('p');help.textContent=details.game.action+'. Choose one of five positions. The booth decides whether your attempt connects.';
+  const help=document.createElement('p');help.textContent=details.game.action+'. The attendant points toward the '+details.zone+' of the stall. Choose one of five positions.';
   const targets=document.createElement('div');targets.className='cc-midway-targets';
   for(let i=0;i<5;i++){
    const button=document.createElement('button');button.type='button';button.dataset.midwayThrow=String(i);
