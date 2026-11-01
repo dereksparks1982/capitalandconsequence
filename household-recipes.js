@@ -35,7 +35,7 @@ add('bean-pot','Slow-cooked beans',95,5,{'dried-beans':3,onions:2,'salt-pork':2}
 add('fried-catfish','Fried catfish',32,2,{catfish:2,cornmeal:2,lard:1},'southern-cookery');
 add('turnip-mash','Mashed turnips',25,3,{turnips:3,butter:1,salt:1},'household-cookery');
 add('potato-mash','Mashed potatoes',25,3,{potatoes:4,butter:1,milk:1});
-add('roast-chicken','Sunday roast chicken',100,5,{'whole-chicken':1,potatoes:3,carrots:2,rosemary:1},'household-cookery');
+add('roast-chicken','Sunday roast chicken',100,5,{'whole-chicken':1,potatoes:3,carrots:2,'dried-rosemary':1},'household-cookery');
 add('rabbit-pie','Rabbit pie',85,4,{rabbit:1,'wheat-flour':2,butter:2,onions:1},'household-cookery');
 add('corn-chowder','Corn chowder',48,4,{corn:4,milk:2,potatoes:2},'southern-cookery');
 add('greens-and-ham','Ham and greens',35,3,{ham:2,collards:3,onions:1},'southern-cookery');
