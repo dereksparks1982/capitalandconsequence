@@ -523,6 +523,7 @@
   if(!def||isPlayer(def)||!a||!position||shown?.locationId!==position.locationId||(position.roomId&&shown.roomId&&position.roomId!==shown.roomId)||shown?.status!=='present')
    return {ok:false,reason:'That person is not here now.'};
   const route=S.characterRoute||'industrialist',date=observedDate();
+  window.FE_NPC_DISCOVERY?.learn?.(S,id,'encounter',position.locationId);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
   // Quick questions obey precisely the same language barrier as free speech.
   // Hearing an untranslated response never counts as earning acquaintance.
@@ -584,6 +585,7 @@
    shown.locationId!==position.locationId||shown.roomId!==position.roomId)
    return {ok:false,reason:'That resident is not in this room.'};
   const date=observedDate(),route=S.characterRoute||'industrialist';
+  window.FE_NPC_DISCOVERY?.learn?.(S,id,'encounter',position.locationId);
   const temperament=window.FE_NPC_PERSONALITY?.approach?.(def,actor,{id:route},{date,topic:'conversation',
    occupied:/reviewing|working|preparing|serving|meeting/i.test(String(actor.activity||''))});
   if(temperament&&!temperament.allowed){
@@ -616,6 +618,7 @@
     latest.locationId!==position.locationId||latest.roomId!==position.roomId)
    return {ok:false,reason:'The meeting ended before the reply arrived. No conversation was saved.'};
   dev.record(S,id,{date,user:utterance.trim(),reply:spoken,place:position.locationId});
+  window.FE_NPC_DISCOVERY?.fromText?.(S,spoken,'conversation',list());
   window.FE_NPC_MEMORY?.remember?.(S,id,{date,kind:'conversation',withId:route,place:position.locationId,source:'player-speech',verified:false,
    text:'The visitor asked: '+utterance.trim().slice(0,205)});
   window.FE_NPC_MEMORY?.reflect?.(S,id,date,route);
@@ -670,6 +673,10 @@
   list.replaceChildren();
   const current=window.FE_CITY?.currentLocation?.();
   for(const visitor of visibleAt(locationId).filter(v=>current?.roomId&&v.roomId===current.roomId)){
+   // A real same-room sighting is enough to discover that this person exists.
+   // A developer preview alone must never unlock anyone on the player's map.
+   if(!window.FE_CITY?.isDevRoom?.())
+    window.FE_NPC_DISCOVERY?.learn?.(S,visitor.id,'encounter',locationId);
    const def=BY_ID.get(visitor.id);
    const row=document.createElement('div');row.className='fe-npc-visitor';
    const select=document.createElement('button');select.type='button';select.className='fe-npc-select';
