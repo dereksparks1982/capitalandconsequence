@@ -24,8 +24,31 @@ function schedule(save,{id,startMinute,endMinute,locationId,name='The Traveling 
  data.engagement={id:id.slice(0,100),startMinute,endMinute,locationId,name:String(name).slice(0,100)};
  return {ok:true,engagement:data.engagement};
 }
+function seasonal(save){
+ const now=minute(save),data=ensure(save);
+ if(now===null||!data)return null;
+ if(data.engagement&&now>=data.engagement.startMinute&&now<data.engagement.endMinute)
+  return data.engagement;
+ // A small real calendar, not a circus painted permanently into the map.
+ // In this alternate Washington, touring engagements use the registered
+ // Capital Race Grounds, whose printed map coordinates never change.
+ const currentYear=new Date(now*60000).getUTCFullYear();
+ const months=[4,6,8]; // May, July, September, three visits each year
+ for(const year of [currentYear,currentYear+1]){
+  for(const month of months){
+   const begin=Date.UTC(year,month,3,9)/60000;
+   const end=Date.UTC(year,month,9,20)/60000;
+   if(now>=end)continue;
+   const id='capital-circus-'+year+'-'+(month+1);
+   if(data.engagement?.id!==id)
+    schedule(save,{id,startMinute:begin,endMinute:end,locationId:'races',name:'The Washington Traveling Circus'});
+   return data.engagement;
+  }
+ }
+ return null;
+}
 function active(save){
- const now=minute(save),event=ensure(save)?.engagement;
+ const now=minute(save),event=seasonal(save);
  if(now===null||!event||now<event.startMinute||now>=event.endMinute)return null;
  return event;
 }
@@ -60,7 +83,7 @@ function render(save,viewport,project,visible,onVisit){
  button.addEventListener('pointerdown',e=>e.stopPropagation());
  viewport.appendChild(button);icon=button;return true;
 }
-const api=Object.freeze({ensure,schedule,active,attended,attend,render,clear});
+const api=Object.freeze({ensure,schedule,seasonal,active,attended,attend,render,clear});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_CIRCUS_TOUR=api;
 })(typeof window!=='undefined'?window:globalThis);
