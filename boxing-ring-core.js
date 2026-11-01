@@ -3,7 +3,7 @@
 const C=root.FE_ROOM_BUILDER_CORE;
 const limit=(v,min,max)=>Math.max(min,Math.min(max,v));
 const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
-const RULES=Object.freeze({rounds:3,roundMs:35000,breakMs:3000,punchCost:12,punchDelay:440,windup:680});
+const RULES=Object.freeze({rounds:3,roundMs:35000,breakMs:3000,punchCost:12,punchDelay:440,windup:680,stepCost:.45,exhaustedStepDelay:270});
 function character(x,y,max,face){return {x,y,face,health:100,stamina:max,maxStamina:max,moveWait:0,punchWait:0};}
 function create(energy=80){
  if(!C)throw Error('Room engine missing');
@@ -78,7 +78,14 @@ function step(s,ms,keys={}){
  if(p.stamina<2)s.blocking=false;
  if(p.moveWait===0){
   const dx=Math.sign(keys.dx||0),dy=Math.sign(keys.dy||0);
-  if(dx||dy){if(move(s,p,dx,0)||move(s,p,0,dy))p.moveWait=140;}
+  if(dx||dy){
+   const moved=(dx&&move(s,p,dx,0))||(dy&&move(s,p,0,dy));
+   if(moved){
+    const tired=p.stamina<8;
+    p.stamina=Math.max(0,p.stamina-RULES.stepCost);
+    p.moveWait=tired?RULES.exhaustedStepDelay:140;
+   }
+  }
  }
  let distance=dist(p,o);
  if(distance>1&&a.moveWait===0){
@@ -102,7 +109,7 @@ function step(s,ms,keys={}){
      s.blocks++;s.roundPoints.player+=1;s.message='Blocked! Guard absorbed most of the punch.';}
     else{p.health=Math.max(0,p.health-9);s.opponentHits++;s.roundPoints.opponent+=3;s.message='Opponent connected.';}
     if(p.health===0){finish(s,'referee stoppage','opponent');return s;}
-   }else s.message='Opponent missed.';
+   }else s.message='Opponent missed. You moved out of reach.';
    a.cooldown=950;
   }
  }else{

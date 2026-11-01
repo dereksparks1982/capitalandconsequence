@@ -8,7 +8,7 @@ const B=root.FE_TOPDOWN_BOXING,s=B.create(80);
 assert.equal(s.player.maxStamina,94);
 assert.equal(B.punch(s),true);assert.equal(s.player.stamina,82);
 assert.equal(B.punch(s),false,'Punch cooldown prevents repeated clicks');
-B.step(s,200,{dx:1});assert.equal(s.player.x,5);
+B.step(s,200,{dx:1});assert.equal(s.player.x,5);assert.ok(s.player.stamina<82,'Footwork uses finite round stamina');
 s.player.x=8;s.opponent.x=9;s.ai.cooldown=0;s.ai.windup=0;
 B.step(s,50,{});assert.ok(s.ai.windup>0,'Opponent must telegraph');
 B.step(s,100,{block:true});B.step(s,100,{block:true});B.step(s,100,{block:true});
@@ -31,6 +31,18 @@ assert.equal(unanimous.winner,'opponent','Scorecards must be able to award oppon
 assert.equal(unanimous.scorecards.length,3);
 const tied=B.create();for(let n=0;n<3;n++){tied.roundMs=1;B.step(tied,10,{});if(n<2)for(let i=0;i<30;i++)B.step(tied,100,{});}
 assert.equal(tied.winner,'draw','Equal rounds yield a draw');
+const evasive=B.create();
+evasive.player.x=8;evasive.player.y=5;evasive.opponent.x=9;evasive.opponent.y=5;
+evasive.ai.cooldown=0;B.step(evasive,50,{});
+assert.ok(evasive.ai.windup>0);
+evasive.player.x=2;evasive.player.y=2;
+for(let n=0;n<7;n++)B.step(evasive,100,{});
+assert.equal(evasive.player.health,100,'Moving out of reach must dodge a telegraphed punch');
+const spentMoving=B.create();spentMoving.player.stamina=0;
+B.step(spentMoving,150,{dx:1});
+assert.equal(spentMoving.player.x,5,'Exhausted fighters can still move');
+assert.equal(spentMoving.player.moveWait,B.RULES.exhaustedStepDelay,'Exhausted movement slows instead of trapping players');
+assert.equal(B.punch(spentMoving),false,'Exhausted fighters cannot throw an unlimited punch');
 const edge=B.create();edge.player.x=1;edge.player.y=1;
 assert.equal(B.move(edge,edge.player,-1,0),false);
 console.log('PASS boxing practice movement, guard, punches, round fatigue, endings and collision');

@@ -7,3 +7,5 @@
 #ringCanvas{display:block;max-width:100%;width:672px;height:auto;margin:auto;image-rendering:pixelated;touch-action:none;cursor:crosshair}
 #ringCanvas:focus-visible{outline:3px solid #d5a54d;outline-offset:-3px}
 #ringMessage{font:13px 'Courier New',monospace;min-height:24px}
+
+.boxing-practice-scorecards{font:700 12px/1.6 'Courier New',monospace;border-top:1px solid #77654d;padding:8px 0;min-height:20px;color:#3b2f21}

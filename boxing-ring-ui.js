@@ -8,11 +8,12 @@ const intro=box.querySelector('.boxing-head');if(!intro)return;
 const el=document.createElement('section');
 el.id='boxingPractice';el.className='sheet boxing-practice';
 el.innerHTML='<h3>Top-Down Sparring Ring · Practice</h3>'+
-'<p>WASD: move · LEFT CLICK: punch · HOLD RIGHT CLICK: block. Three rounds; stamina recovers only partly between bells.</p>'+
+'<p>WASD: move and sidestep punches · LEFT CLICK: punch · HOLD RIGHT CLICK: block. Footwork and blocking cost stamina. Only partial recovery between rounds.</p>'+
 '<div class="boxing-practice-buttons"><button type="button" data-ring="start">Start Practice</button> <button type="button" data-ring="stop" disabled>End Practice</button></div>'+
 '<div class="boxing-practice-stats" aria-live="off"><span id="ringRound">NO BOUT</span><span id="ringSeconds">00:00</span><span id="ringHealth">HEALTH 100</span><span id="ringStamina">STAMINA 100</span><span id="ringOpponent">OPPONENT 100</span></div>'+
 '<div class="boxing-practice-viewport"><canvas id="ringCanvas" width="448" height="320" tabindex="0" aria-label="Top-down boxing ring. Use WASD, left click to punch, hold right click to block."></canvas></div>'+
-'<p id="ringMessage" role="status" aria-live="polite">Practice only. No money, championship, health or game-time changes.</p>';
+'<p id="ringMessage" role="status" aria-live="polite">Practice only. No money, championship, health or game-time changes.</p>'+ 
+'<div id="ringScorecards" class="boxing-practice-scorecards" aria-live="polite">Round scores will appear here after the bell.</div>';
 intro.after(el);
 const canvas=el.querySelector('canvas'),ctx=canvas.getContext('2d');
 const start=el.querySelector('[data-ring="start"]'),stop=el.querySelector('[data-ring="stop"]');
@@ -51,6 +52,8 @@ function stats(){
  v('ringStamina').textContent='STAMINA '+Math.floor(s.player.stamina)+' / '+s.player.maxStamina;
  v('ringOpponent').textContent='OPPONENT '+Math.ceil(s.opponent.health);
  v('ringMessage').textContent=s.message;
+ const result=s.scorecards.map(r=>'Round '+r.round+': You '+r.player+' / Opponent '+r.opponent).join(' · ');
+ v('ringScorecards').textContent=(result||'Round scores will appear here after the bell.')+(s.phase==='finished'?' · '+s.message:'');
  stop.disabled=s.phase==='finished';
 }
 function cancel(){if(raf)cancelAnimationFrame(raf);raf=0;last=0;held.clear();block=false;}
@@ -75,7 +78,8 @@ stop.addEventListener('click',()=>{
  cancel();s=null;stop.disabled=true;start.textContent='Start Practice';
  v('ringRound').textContent='NO BOUT';v('ringSeconds').textContent='00:00';
  v('ringHealth').textContent='HEALTH 100';v('ringStamina').textContent='STAMINA 100';
- v('ringOpponent').textContent='OPPONENT 100';v('ringMessage').textContent='Practice ended; career and wagers unchanged.';draw();
+ v('ringOpponent').textContent='OPPONENT 100';v('ringMessage').textContent='Practice ended; career and wagers unchanged.';
+ v('ringScorecards').textContent='Round scores will appear here after the bell.';draw();
 });
 canvas.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if('wasd'.includes(k)&&k.length===1){e.preventDefault();held.add(k);}});
 canvas.addEventListener('keyup',e=>held.delete(e.key.toLowerCase()));
