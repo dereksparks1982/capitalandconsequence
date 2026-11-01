@@ -1,0 +1,35 @@
+/* Persist the existing digital world status across Washington map + interiors.
+ * Small independent bar, not a second simulation. All map graphics and pin
+ * geometry retain the previously approved layout.
+ */
+.cc-world-banner{position:relative;z-index:8;background:#851e2b;color:#fff3e6;border-bottom:2px solid #bdac7a;
+ font:700 12px/1.35 'Courier New',monospace;letter-spacing:.01em;flex:none}
+.cc-world-banner-items{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px 9px;padding:6px 10px}
+.cc-world-banner-item{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.cc-world-banner-item>b{font:700 11px/1.25 Georgia,serif;color:#fff7e2}
+.cc-world-banner-value{display:inline-flex;align-items:center;justify-content:center;min-height:25px;max-width:100%;
+ background:#f9f4e9;color:#142b4a;border:1px solid #c9c3b7;padding:3px 6px;
+ font:700 13px/1.2 'Courier New',monospace;text-align:center}
+.cc-world-dayClock .cc-world-banner-value{font-size:15px;min-width:85px;font-variant-numeric:tabular-nums}
+.cc-world-businessDate .cc-world-banner-value{font-size:12px;font-variant-numeric:tabular-nums}
+.cc-world-banner-item.cc-world-washingtonSky .cc-world-banner-value{gap:5px}
+.cc-world-banner .cc-world-pause{min-height:28px;padding:4px 10px;margin:0 0 0 3px;border:2px solid #fff8e9;
+ background:#142b4a;color:#fff7ec;font:bold 13px 'Courier New',monospace;cursor:pointer}
+.cc-world-banner .cc-world-pause:disabled{opacity:.6;cursor:default}
+.cc-world-travel-notice{margin:0;padding:4px 10px 6px;background:#342b21;color:#fff3c7;text-align:center;
+ font:700 12px/1.3 'Courier New',monospace;letter-spacing:.02em}
+.cc-world-travel-notice[hidden]{display:none}
+.title-map-card.cc-world-banner-layout{grid-template-rows:auto auto minmax(0,1fr) auto}
+.title-map-card.cc-world-banner-layout>.cc-world-banner{grid-row:1}
+.title-map-card.cc-world-banner-layout>.title-map-head{grid-row:2}
+.title-map-card.cc-world-banner-layout>.title-map-viewport{grid-row:3}
+.title-map-card.cc-world-banner-layout>.title-map-bottom{grid-row:4}
+.city-room-shell>.cc-world-banner{width:100%;position:sticky;top:0}
+@media(max-width:700px){
+ .cc-world-banner-items{gap:4px 6px;padding:5px 6px;justify-content:flex-start}
+ .cc-world-banner-item>b{font-size:10px}
+ .cc-world-banner-value{padding:2px 4px;font-size:12px;min-height:23px}
+ .cc-world-dayClock .cc-world-banner-value{font-size:13px;min-width:76px}
+ .cc-world-businessDate .cc-world-banner-value{font-size:11px}
+ .cc-world-banner .cc-world-pause{font-size:12px;padding:3px 7px}
+}
