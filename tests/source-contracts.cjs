@@ -14,7 +14,7 @@ const housingSource=read('housing.js'),effectsSource=read('personal-effects.js')
 const dollSource=read('paper-doll.js'),index=read('index.html');
 let checks=0;
 function check(condition,message){assert.ok(condition,message);checks++;}
-for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishing-engine.js','fishing-ui.js','market-ui.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','corporate-governance.js','corporate-governance-ui.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','horse-stable-ui.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
+for(const rel of ['murder-cases.js','detective-cases.js','npc-economy.js','fishing-engine.js','fishing-ui.js','market-ui.js','city-access.js','npc-mobility.js','time-transactions.js','npc-agency.js','npc-itinerary.js','npc-calendar.js','city.js','national-districts.js','patrol-duty.js','patrol-ui.js','doorman-duty.js','doorman-ui.js','brokerage.js','corporate-governance.js','corporate-governance-ui.js','app.js','npc-daybook.js','npc-knowledge.js','npc-ai.js','npc-dialogue.js','component-works-live.js','component-works-panel.js','workshop-staff.js','washington-commerce.js','workshop-operations.js','workshop-presence.js','horse-care.js','horse-custody.js','horse-stable-ui.js','livery-trade.js','livery-ui.js','world-canon.js','sky-cycle.js','washington-time.js','world-clock.js','calendar-bridge.js','map-leads.js','housing.js','personal-effects.js','desk-collection.js','venue-opportunities.js','institution-ventures.js','character-routes.js','living-characters.js','mobility.js','journey-planner.js','paper-doll.js','career-shell.js','desktop/main.cjs']){
  new vm.Script(read(rel),{filename:rel});
  checks++;
 }
@@ -44,6 +44,8 @@ const image='assets/artwork/characters/paperdolls/paperdoll.png';
 check(fs.statSync(path.join(root,image)).size>0,'Approved original paper doll is tracked');
 check(dollSource.includes(image),'Paper doll uses uploaded approved artwork');
 check(index.indexOf('app.js?v=')<index.indexOf('personal-effects.js?v='),'Personal effects load after app state');
+check(index.indexOf('personal-effects.js?v=')<index.indexOf('desk-collection.js?v='),'Desk collection loads after carried effects');
+check(index.indexOf('desk-collection.js?v=')<index.indexOf('career-shell.js?v='),'Movable desk registers before live career scene');
 check(index.indexOf('personal-effects.js?v=')<index.indexOf('housing.js?v='),'Housing follows game state');
 check(index.indexOf('housing.js?v=')<index.indexOf('paper-doll.js?v='),'Pocket UI loads after container API');
 const oldLoose=fs.readdirSync(path.join(root,'assets')).filter(n=>/\.(png|webp|gif|svg|jpg|jpeg)$/i.test(n));
