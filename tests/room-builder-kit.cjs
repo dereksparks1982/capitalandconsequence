@@ -36,6 +36,17 @@ assert.equal(K.pick(office,6,5).objectId,desk.id);
 const descriptor=K.describe('desk_oak');
 assert.equal(descriptor.kind,'workstation');assert.equal(descriptor.action,'use-executive-desk');
 assert.equal(K.describe('door_closed').kind,'door');assert.equal(K.describe('floor_planks').category,'floors');
+const furnished=C.sampleOffice();
+const audit=K.auditStations(furnished);
+assert.ok(audit.stations.length>=3,'an office has multiple defined work/storage/seating anchors');
+assert.ok(audit.reachable>=1,'at least some stations can be approached');
+const sealed=C.makeRoom();
+const trappedDesk=C.place(sealed,'desk_oak',6,4);assert.ok(trappedDesk);
+for(const tile of [[6,3],[7,3],[6,5],[7,5],[5,4],[8,4]])
+ assert.equal(C.paint(sealed,tile[0],tile[1],'wall_horizontal'),true);
+const inaccessible=K.auditStations(sealed);
+assert.equal(inaccessible.stations.find(x=>x.objectId===trappedDesk.id).reachable,false,
+ 'cannot claim a workstation is usable if no adjacent access tile is reachable');
 const storageMap=new Map();
 const storage={getItem:k=>storageMap.get(k)||null,setItem:(k,v)=>storageMap.set(k,v)};
 assert.equal(K.listDrafts(storage).length,0);
