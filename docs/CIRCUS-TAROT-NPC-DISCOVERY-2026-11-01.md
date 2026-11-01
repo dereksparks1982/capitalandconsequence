@@ -18,9 +18,9 @@ Proposed special character: a distinct roaming Romani woman (user calls her the 
 - Cards are shuffled once per real sitting, recorded with upright/reversed orientation, charged no more than once, and saved on the player's own profile. No magical access to unsolved murder truths or future event rolls. In-world interpretations may draw subtly on what she actually knows, her voice, trust and the player's circumstances.
 - Her stall and tarot interaction remain **future world/room and menu UI**, not claim to be playable merely because deck math exists.
 - Useful **reference projects**, evaluated rather than bundled:
-  - urlTarot.js2 (MIT)https://github.com/MarketingPip/Tarot.js2 provides JavaScript deck/spread/reading architecture.
-  - urlTarot Card Data (CC0)https://github.com/smallcat419/tarot-card-data provides 78 card names and meanings, convenient as offline data after license/source verification.
-  - urlTouchy Tarot (MIT)https://github.com/rbrutherford3/Tarot offers a drag-to-shuffle interaction worth inspecting but not necessarily reusing.
+  - [Tarot.js2 (MIT)](https://github.com/MarketingPip/Tarot.js2) provides JavaScript deck/spread/reading architecture.
+  - [Tarot Card Data (CC0)](https://github.com/smallcat419/tarot-card-data) provides 78 card names and meanings, convenient as offline data after license/source verification.
+  - [Touchy Tarot (MIT)](https://github.com/rbrutherford3/Tarot) offers a drag-to-shuffle interaction worth inspecting but not necessarily reusing.
 - User's original tarot art will supersede any sample/reference imagery. Rider–Waite–Smith art dates after the game's 1870s start; alternate-history divergence is allowed but the art should be original.
 
 ## Traveling salesman / confidence man
