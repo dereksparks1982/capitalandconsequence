@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 if(typeof document==='undefined')return;
-let panel=null,blackout=null,handler=null,busy=false,lastSave=null;
+let panel=null,blackout=null,handler=null,busy=false,lastSave=null,persist=null;
 const el=id=>document.getElementById(id);
 function create(){
  if(panel?.isConnected)return panel;
@@ -31,7 +31,7 @@ function create(){
   const service=root.FE_WINDUP_SLEEP,parts=el('ccAlarmTime')?.value?.split(':')||[];
   const result=service?.configure?.(lastSave,{enabled:!!el('ccAlarmEnabled')?.checked,
    hour:Number(parts[0]),minute:Number(parts[1])});
-  if(result?.ok){root.save?.(true);status();}
+  if(result?.ok){persist?.();status();}
  }
  function status(){
   if(!lastSave)return;
@@ -50,7 +50,7 @@ function create(){
  el('ccAlarmWind').addEventListener('click',()=>{
   const result=root.FE_WINDUP_SLEEP?.wind?.(lastSave);
   el('ccSleepStatus').textContent=result?.ok?'You wind the clock key. Remember to switch on the bell.':result?.reason||'Unable to wind the alarm.';
-  root.save?.(true);status();
+  persist?.();status();
  });
  panel._status=status;
  return panel;
@@ -88,8 +88,9 @@ function sleep(hours){
   },550);
  },310);
 }
-function render(save,onSleep,room=null){
+function render(save,onSleep,room=null,onSave=null){
  lastSave=save;handler=onSleep;
+ if(typeof onSave==='function')persist=onSave;
  const node=create(),overlay=el('cityRoomOverlay');
  const inBedroom=room?room.locationId==='home'&&room.roomId==='bedroom':
   overlay?.dataset.locationId==='home'&&el('cityRoomName')?.textContent==='Bedroom';
