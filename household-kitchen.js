@@ -12,7 +12,7 @@ function ledger(save){
  if(!commerce.kitchen||commerce.kitchen.version!==1)
   commerce.kitchen={version:1,serial:0,goods:[],meals:[],iceUntil:null,history:[]};
  const k=commerce.kitchen;if(!Array.isArray(k.goods))k.goods=[];
- if(!Array.isArray(k.meals))k.meals=[];if(!Array.isArray(k.history))k.history=[];
+ if(!Array.isArray(k.meals))k.meals=[];if(!Array.isArray(k.carriedMeals))k.carriedMeals=[];if(!Array.isArray(k.history))k.history=[];
  if(!Number.isSafeInteger(k.serial))k.serial=0;
  return {commerce,k};
 }
@@ -32,7 +32,7 @@ function sync(save){
   }else if(g.container==='icebox'&&k.iceUntil>t)g.uncooledAt=null;
   if(g.expires!==null&&g.expires<=t)g.spoiled=true;
  }
- for(const meal of k.meals)if(meal.expires!==null&&meal.expires<=t)meal.spoiled=true;
+ for(const meal of [...k.meals,...k.carriedMeals])if(meal.expires!==null&&meal.expires<=t)meal.spoiled=true;
  return {ok:true,goods:k.goods,meals:k.meals,iceUntil:k.iceUntil};
 }
 function stock(save,container){
@@ -128,12 +128,24 @@ function consume(save,ingredients){
  k.goods=k.goods.filter(g=>g.units>0);
  return {ok:true};
 }
+function packMeal(save,id,servings){
+ if(!atKitchen(save))return {ok:false,reason:'Pack baked goods from your home kitchen.'};
+ const data=ledger(save),meal=data?.k.meals.find(m=>m.id===id);
+ if(!meal||meal.spoiled||!Number.isSafeInteger(servings)||servings<1||meal.servings<servings)
+  return {ok:false,reason:'No fresh prepared servings available to pack.'};
+ if(data.k.carriedMeals.length>=24)return {ok:false,reason:'Your food basket is full.'};
+ const moved={...meal,id:next(data.k),servings,packedAt:minute(save)};
+ meal.servings-=servings;
+ if(meal.servings===0)data.k.meals=data.k.meals.filter(x=>x!==meal);
+ data.k.carriedMeals.push(moved);
+ return {ok:true,meal:moved};
+}
 function addMeal(save,recipe,servings,expiresAfterMinutes=2880){
  const data=ledger(save),t=minute(save);if(!data||t===null)return null;
  const meal={id:next(data.k),recipe,servings,created:t,expires:t+expiresAfterMinutes,spoiled:false};
  data.k.meals.push(meal);data.k.meals=data.k.meals.slice(-100);return meal;
 }
-const api=Object.freeze({CONTAINERS,ledger,atKitchen,sync,stock,store,storeAll,take,discard,acceptDelivery,ice,available,consume,addMeal,minute});
+const api=Object.freeze({CONTAINERS,ledger,atKitchen,sync,stock,store,storeAll,take,discard,acceptDelivery,ice,available,consume,packMeal,addMeal,minute});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_KITCHEN=api;
 })(typeof window!=='undefined'?window:globalThis);
