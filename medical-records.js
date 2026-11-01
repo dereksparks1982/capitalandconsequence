@@ -114,11 +114,8 @@ function wake(save,secondsSpent){
  if(!event||!needs)return {ok:false,reason:'No collapse to recover from.'};
  const spent=Math.max(0,Math.floor(Number(secondsSpent)||0));
  const missed=Math.min(event.minutesLost*60,spent);
- if(event.setting==='work'&&event.locationId==='factory'&&save.characterRoute==='industrialist'){
-  // Time that falls within an open shift is production downtime; never
-  // subtract invented profits from the books. Production itself did not run.
-  ledger.factory.minutesLost+=Math.ceil(missed/60);
- }
+ // Actual staffed factory downtime is accumulated by the existing production
+ // clock, not guessed from elapsed unconscious time outside the shift.
  needs.meters.energy=Math.min(energyCap(save),event.setting==='home'?12:18);
  needs.lastMinute=minute(save);
  const patient=player(save);
