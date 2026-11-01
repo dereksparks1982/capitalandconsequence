@@ -52,6 +52,7 @@ function punch(s){
  if(!p||s.phase!=='fighting'||s.blocking||p.punchWait>0||p.stamina<RULES.punchCost)return false;
  p.punchWait=RULES.punchDelay;p.stamina-=RULES.punchCost;
  if(dist(p,o)>2||!facingTarget(p,o)){s.message='Punch missed. Face your opponent and get closer.';return true;}
+ if(s.ai.guard)o.stamina=Math.max(0,o.stamina-4);
  o.health=Math.max(0,o.health-(s.ai.guard?2:10));
  s.hits++;s.roundPoints.player+=s.ai.guard?1:3;s.message=s.ai.guard?'Opponent blocked your punch.':'Punch landed.';
  if(o.health<=0)finish(s,'knockout','player');
@@ -104,10 +105,14 @@ function step(s,ms,keys={}){
    const route=C.path(s.room,{x:o.x,y:o.y},goal);
    if(route?.length&&(!best||route.length<best.length))best=route;
   }
-  if(best&&move(s,o,best[0].x-o.x,best[0].y-o.y))a.moveWait=310;
+  if(best&&move(s,o,best[0].x-o.x,best[0].y-o.y)){
+   const exhausted=o.stamina<8;
+   o.stamina=Math.max(0,o.stamina-RULES.stepCost);
+   a.moveWait=exhausted?RULES.exhaustedStepDelay*2:310;
+  }
  }
  distance=dist(p,o);
- a.guard=distance<=2&&a.windup===0&&Math.floor(s.elapsed/1100)%5===3;
+ a.guard=distance<=2&&a.windup===0&&o.stamina>=2&&Math.floor(s.elapsed/1100)%5===3;
  if(a.windup>0){
   a.windup=Math.max(0,a.windup-dt);
   if(a.windup===0){
