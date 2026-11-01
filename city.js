@@ -374,6 +374,21 @@
    ]
   },
   {
+   id:'fordsTheatre',name:'Ford’s Theatre',
+   area:'511 10th Street NW · Washington, D.C.',category:'theatre',
+   description:'A major Washington theatre with public performances, a ticket office, backstage workers and a troubled historical reputation. In the game’s alternate Washington, performances and visits remain possible regardless of the calendar year.',
+   // Provisional addition near downtown. Adjust this pin with Edit Pins if the
+   // printed guide shows Ford’s Theatre more precisely. No existing pin moves.
+   map:{n:41,x:.535,y:.438},defaultRoom:'theatre-lobby',
+   rooms:[
+    {id:'theatre-lobby',name:'Ford’s Theatre Lobby',description:'Public admission desk, playbills, social introductions and theatre notices.'},
+    {id:'auditorium',name:'Ford’s Theatre Auditorium',description:'Audience seating and stage. Programmes and performances will receive a shared theatre calendar.'},
+    {id:'stage-door',name:'Stage Door',description:'A busy service entrance for cast, technicians and theatre staff.'},
+    {id:'backstage',name:'Backstage and Dressing Rooms',restricted:true,description:'Wardrobes, props, dressing tables and access reserved for cast and staff.'},
+    {id:'theatre-office',name:'Theatre Manager’s Office',restricted:true,description:'Private booking records and correspondence. Ordinary tickets do not grant entry.'}
+   ]
+  },
+  {
    id:'nationalTheatre',name:'National Theatre',
    area:'1321 Pennsylvania Avenue NW · Washington, D.C.',category:'theatre',
    description:'Washington’s National Theatre, under proprietor William W. Rapley. In this alternate history the city is home to actors Edwin Booth, Joseph Jefferson, John McCullough, Clara Morris, John T. Raymond and young Charles B. Hanford, all with independent local routines. Theatrical attendance and private rooms require actual visits or permission.',
@@ -411,7 +426,7 @@
   }
  ];
 
- // 40 city locations have numbered pins on the ORIGINAL unchanged artwork. Sites
+ // Registered city places have numbered pins OVER the ORIGINAL unchanged artwork. Sites
  // with no established address remain directory-only, not claimed as verified.
  // Future/hidden/planned venues remain subject to their original access gates.
  const PROVISIONAL_MAP_PINS=Object.freeze({
@@ -433,7 +448,7 @@
   'hillsdale','oldChinatown','universityMaryland','governmentHospital',
   'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
   'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing',
-  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse','nationalTheatre'
+  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse','nationalTheatre','fordsTheatre'
  ]);
  // Pin anchors read against the owner's actual, unchanged 2048 x 1159
  // Washington In and Out Guide image (A-R rows / 1-30 columns).
