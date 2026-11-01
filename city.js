@@ -374,6 +374,17 @@
    ]
   },
   {
+   id:'centerMarket',name:'Center Market',
+   area:'Pennsylvania Avenue and 7th Street NW · central Washington',
+   category:'commerce',
+   description:'Washington’s great central provisions market, with butcher, fishmonger, grocer and baker stalls serving households and commercial kitchens. The date and room are adapted for the alternate-history setting.',
+   map:{n:42,x:.518,y:.461},defaultRoom:'market-hall',
+   rooms:[
+    {id:'market-hall',name:'Center Market Hall',description:'A large, busy public market selling meat, flour, vegetables, dairy, fruit, fish, preserved provisions and cookbooks.'},
+    {id:'wholesale-counter',name:'Wholesale Produce Counter',description:'Flour, grain and other food supplies offered in quantity for commercial bakers.'}
+   ]
+  },
+  {
    id:'fordsTheatre',name:'Ford’s Theatre',
    area:'511 10th Street NW · Washington, D.C.',category:'theatre',
    description:'A major Washington theatre with public performances, a ticket office, backstage workers and a troubled historical reputation. In the game’s alternate Washington, performances and visits remain possible regardless of the calendar year.',
@@ -448,7 +459,7 @@
   'hillsdale','oldChinatown','universityMaryland','governmentHospital',
   'whiteHouse','washingtonAirport','potomacFishingBank','babcockLake',
   'fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing',
-  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse','nationalTheatre','fordsTheatre'
+  'metropolitanPolice','franciscanMonastery','easternMarket','georgetownMarketHouse','centerMarket','nationalTheatre','fordsTheatre'
  ]);
  // Pin anchors read against the owner's actual, unchanged 2048 x 1159
  // Washington In and Out Guide image (A-R rows / 1-30 columns).
