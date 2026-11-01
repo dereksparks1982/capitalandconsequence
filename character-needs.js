@@ -43,7 +43,7 @@ function ensure(save){
  if(!save||typeof save!=='object')return null;
  const at=minute(save);
  if(at===null)return null;
- if(!save.characterNeeds||save.characterNeeds.version!==1)save.characterNeeds=sanitize(save.characterNeeds,at);
+ if(!save.characterNeeds||save.characterNeeds.version!==1||!Number.isFinite(save.characterNeeds.meters?.health)||!save.characterNeeds.deprivation)save.characterNeeds=sanitize(save.characterNeeds,at);
  return save.characterNeeds;
 }
 function sync(save){
