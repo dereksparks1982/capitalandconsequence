@@ -1,3 +1,15 @@
+## 1 November 2026 · v0.7.60-dev: playable circus midway, bedroom chest and in-world readings
+- [x] Recurring seasonal circus weeks at existing Capital Race Grounds, public temporary tent icon.
+- [x] Six paid physical midway booths: ring toss, balloon darts, tin duck gallery, cans, high striker and penny peg drop. Each has a playable five-position selection, aim clue, fee, finite attempts and score.
+- [x] Real physical prize awards and historical-style carnival collectibles, rare items on exceptional scores, saved unclaimed receipts.
+- [x] Real bedroom chest with 64 item positions; deposit/withdraw between pockets and the saved belongings register; restrict access to the room.
+- [x] A fortune-teller at her visiting pitch draws cards herself and reads about the character's recorded Washington life. She never treats the player's actual life as input.
+- [x] Evaluate existing MIT and unlicensed GitHub examples and build a self-contained implementation without copying their assets/code.
+- [ ] Improve carnival games with full target animation and more tactile minigame physics.
+- [ ] Full standalone Gypsy wagon, named roaming character, self-contained residence and original tarot illustration artwork.
+- [ ] Write traveling conman's inventory, actual goods provenance, pricing, interrogations and trickery.
+- [ ] Full Node regression suite and native Linux game UI acceptance. No GitHub Actions or release before acceptance.
+
 ## 1 November 2026 · v0.7.59-dev: character discovery, public circus, tarot and bedroom rest
 - [x] Hide moving NPCs until learned through actual encounters, newspaper names or in-person accounts. Preserve their unknown destinations.
 - [x] Public traveling circus date/venue model and only-when-in-town map tent, with optional NPC circus conversation that observes actual attendance.
