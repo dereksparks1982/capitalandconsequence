@@ -126,7 +126,26 @@ function toggleDoor(room,x,y){
  if(id==='door_open'&&!(room.spawns.player.x===x&&room.spawns.player.y===y)&&!room.objects.some(o=>contains(o,x,y))){room.walls[i]='door_closed';return true;}
  return false;
 }
-const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sanitize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,clone};
+/* Grow/shrink a floorplan without silently discarding furniture or invalidating
+   the player spawn. Exterior boundary walls/door are reconstructed at new edges. */
+function resize(room,widthTiles,heightTiles){
+ if(!Number.isSafeInteger(widthTiles)||!Number.isSafeInteger(heightTiles)||
+  widthTiles<MIN||heightTiles<MIN||widthTiles>MAX||heightTiles>MAX)return null;
+ if(widthTiles===room.widthTiles&&heightTiles===room.heightTiles)return clone(room);
+ const next=makeRoom(room.locationId,room.roomId,widthTiles,heightTiles);
+ const w=Math.min(room.widthTiles,widthTiles),h=Math.min(room.heightTiles,heightTiles);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const outer=x===0||y===0||x===widthTiles-1||y===heightTiles-1;
+  const oldOuter=x===0||y===0||x===room.widthTiles-1||y===room.heightTiles-1;
+  next.floor[index(next,x,y)]=room.floor[index(room,x,y)];
+  // Preserve interior partitions, never leave orphaned old exterior walls inside.
+  if(!outer&&!oldOuter)next.walls[index(next,x,y)]=room.walls[index(room,x,y)];
+ }
+ next.objects=clone(room.objects);next.spawns=clone(room.spawns);
+ try{return sanitize(next,room.locationId,room.roomId);}
+ catch(error){return null;}
+}
+const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sanitize,resize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,clone};
 root.FE_ROOM_BUILDER_CORE=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
