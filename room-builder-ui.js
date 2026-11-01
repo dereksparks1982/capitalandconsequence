@@ -19,7 +19,7 @@ panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPI
 '<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
 '<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Select / Drag moves a placed object. Grid tiles are 32px.</p><dl id="rbInspector"></dl></aside>'+
 '<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
-'<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
+'<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="backup">Restore Backup</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
 const status=s=>{$('rbStatus').textContent=s};
@@ -150,8 +150,21 @@ canvas.addEventListener('pointerup',e=>{
 });
 canvas.addEventListener('pointercancel',()=>{drag=null;dragLast='';});
 function save(){
- try{const data=C.sanitize(room,locationId,roomId);data.updatedAt=new Date().toISOString();
-  localStorage.setItem(STORAGE,JSON.stringify(data));room=data;dirty=false;loaded=true;render();status('Saved locally: Federal Electric / Executive Office.');root.FE_ROOM_BUILDER?.refreshScene?.();return true;
+ try{
+  const data=C.sanitize(room,locationId,roomId);data.updatedAt=new Date().toISOString();
+  const serialized=JSON.stringify(data);
+  const previous=localStorage.getItem(STORAGE);
+  // Preserve an earlier valid revision before overwriting. Recoverable from
+  // the editor rather than silently replacing the previous room design.
+  if(previous&&previous!==serialized){
+   try{C.sanitize(JSON.parse(previous),locationId,roomId);
+    localStorage.setItem(STORAGE+':backup',previous);}
+   catch(e){/* invalid source is left untouched; never back it up as valid */}
+  }
+  localStorage.setItem(STORAGE,serialized);
+  room=data;dirty=false;loaded=true;render();
+  status('Saved locally: Federal Electric / Executive Office. Previous valid version kept as a backup.');
+  root.FE_ROOM_BUILDER?.refreshScene?.();return true;
  }catch(e){status('Save failed: '+e.message);return false;}
 }
 function open(){
@@ -205,6 +218,16 @@ panel.addEventListener('click',e=>{
  if(action==='nudge-up')nudge(0,-1);if(action==='nudge-down')nudge(0,1);
  if(action==='inspect')inspect();
  if(action==='save')save();
+ if(action==='backup'){
+  if(dirty&&!root.confirm('Discard current unsaved changes and load the earlier saved room design?'))return;
+  try{
+   const raw=localStorage.getItem(STORAGE+':backup');
+   if(!raw){status('No earlier saved layout is available.');return;}
+   const older=C.sanitize(JSON.parse(raw),locationId,roomId);
+   snapshot();room=older;dirty=true;selectedId=null;preview=false;testRoom=null;
+   render();status('Previous design loaded as an UNSAVED draft. Choose Save to replace the active version.');
+  }catch(e){status('Backup unreadable; the current saved layout has not changed. '+e.message);}
+ }
  if(action==='test'){
   if(!preview){const outcome=inspect();
    if(outcome.errors.length){status('Fix room errors before testing: '+outcome.errors.join(' '));return;}
