@@ -1890,3 +1890,46 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
   font:21px/1.1 'Segoe UI Emoji',sans-serif;cursor:pointer;pointer-events:auto}
 .cc-circus-map-token:focus-visible{outline:3px solid #f9e4ab;outline-offset:2px}
 .cc-circus-map-token:hover{background:#fff0c5}
+
+/* 1878 circus: plain booth cards, not a new city-map art style. */
+.cc-circus-midway,.cc-tarot-wagon,.cc-bedroom-chest{
+  position:relative;width:min(680px,95%);max-height:min(54vh,540px);overflow:auto;
+  margin:8px auto;padding:11px 14px;border:3px double #695133;
+  background:#eadbbd;color:#312516;text-align:left;
+  box-shadow:2px 3px 0 #877452;font:13px/1.4 Georgia,'Times New Roman',serif;
+}
+.cc-circus-midway[hidden],.cc-tarot-wagon[hidden],.cc-bedroom-chest[hidden]{display:none!important}
+.cc-circus-midway h4,.cc-tarot-wagon h4,.cc-bedroom-chest h4{
+  margin:2px 0 6px;font:700 16px 'Courier New',monospace;letter-spacing:.02em
+}
+.cc-circus-midway p,.cc-tarot-wagon p,.cc-bedroom-chest p{margin:7px 0}
+.cc-midway-games{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px}
+.cc-midway-booth{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px;background:#d6c2a2;border:2px solid #9e8764}
+.cc-circus-midway button,.cc-tarot-wagon button,.cc-bedroom-chest button{
+  border:2px solid #463321;background:#463a2a;color:#fff6dd;
+  min-height:30px;padding:4px 9px;font:bold 12px 'Courier New',monospace;cursor:pointer
+}
+.cc-midway-booth button:hover,.cc-circus-midway button:focus-visible,
+.cc-tarot-wagon button:focus-visible,.cc-bedroom-chest button:focus-visible{
+  outline:3px solid #a93e2b;outline-offset:2px
+}
+.cc-midway-active h5{margin:4px 0;font:700 15px Georgia,serif}
+.cc-midway-targets{display:flex;justify-content:space-around;gap:6px;padding:12px 0}
+.cc-midway-targets button{font-size:27px;width:16%;min-height:58px;background:#80512f}
+.cc-midway-targets button:hover{background:#b47436}
+.cc-tarot-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.cc-tarot-card{border:3px double #775a36;padding:9px;background:#f3e9d7;min-height:190px}
+.cc-tarot-card b,.cc-tarot-card small{display:block}
+.cc-tarot-card small{font:10px 'Courier New',monospace;margin:7px 0}
+.cc-tarot-card p{font-size:12px}
+.cc-tarot-card-glyph{text-align:center;font-size:36px;border:2px solid #b19970;background:#e0d4b8}
+.cc-chest-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cc-chest-columns>div{background:#dfd0b4;border:2px solid #ae9976;padding:8px}
+.cc-chest-columns ul{list-style:none;margin:7px 0;padding:0}
+.cc-chest-columns li{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #ae9976;padding:6px 0;overflow-wrap:anywhere}
+.cc-chest-columns li button{white-space:nowrap}
+@media(max-width:640px){
+ .cc-tarot-cards{grid-template-columns:1fr}
+ .cc-chest-columns{grid-template-columns:1fr}
+ .cc-circus-midway,.cc-tarot-wagon,.cc-bedroom-chest{width:100%}
+}
