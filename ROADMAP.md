@@ -1,3 +1,15 @@
+## 31 October 2026 · ACTIVE v0.7.42-dev source checkpoint: reusable visual Room Builder
+- [x] Developer DEV panel opens a 32×32 pixel **Pandora's Box-inspired original Room Builder** with the already tracked 69 generic sprites; no new artwork style or Washington map changes.
+- [x] First room targets Charles's real `factory/executive-office` registry ID. Tile paint, solid doors/walls, mouse furniture placement, drag, rotation, duplication/deletion, undo/redo, spawn selection and collision-aware preview are committed as source.
+- [x] Layout resizes 8–40 tiles and rejects destructive clipping; separate versioned developer save/load and JSON import/export added.
+- [x] Saved office scene viewer added inside the existing location overlay, with keyboard walking and doors; old business desk and room travel remain the actual gameplay authority.
+- [x] Ledger fourth/right-hand page now selectable, and handwritten notes append to dated permanent private pages. Older single-field notes remain readable as Earlier Private Notes.
+- [x] Added `tests/room-builder-core.cjs` and `tests/private-book-writing.cjs`; 18 focused JavaScript parse/model/source checks passed in development inspection.
+- [ ] **NOT ACCEPTED:** Complete offline Node suite, Linux Electron gameplay review, packaged executable tests, and owner visual acceptance remain outstanding.
+- [ ] **NEXT:** Improve editor interaction reliability and real room/desk integration, accept the Charles office layout, then extend the same tool to other factory rooms.
+- [ ] Only later: other city locations, streets and District Asylum scene building. Inspiration and stories parked in `docs/DISTRICT-ASYLUM-FUTURE-DESIGN-2026-10-31.md`, without movie spoilers.
+- [ ] No GitHub Actions, terminal requests to the owner, or new release/tag. See `docs/RELEASE-NOTES-v0.7.42-dev.md` and `docs/PANDORAS-BOX-ROOM-EDITOR-2026-10-31.md`.
+
 ## October 28, 2026 · stacked source checkpoint v0.6.93-dev (owner-approved build continuation)
 - [x] Player-visible provisional inter-location travel and room movement remain unchanged; the approved 40-pin map and artwork are immutable.
 - [x] NPC calendar transitions can create thirty-minute saved in-transit journeys rather than always switching location instantly.
