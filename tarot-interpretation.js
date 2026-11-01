@@ -73,15 +73,15 @@ function facts(save){
  const recentNotes=Array.isArray(save?.notes)?save.notes.slice(-12):[];
  const witnessed=recentNotes.map(n=>String(n?.source||'')+' '+String(n?.text||'')).join(' ');
  const headline=String(save?.headline||'')+' '+String(save?.societyStory||'');
- if(/\\b(?:murder|corpse|dead body|homicide|investigation)\\b/i.test(witnessed))
+ if(/\b(?:murder|corpse|dead body|homicide|investigation)\b/i.test(witnessed))
   out.unshift({id:'inquiry',name:'troubling events witnessed',
    observe:'A dark event has unsettled the ordinary course of your days.',
    advice:'Attend to what can be proved; fear and rumor are poor witnesses.'});
- if(/\\b(?:raid|scandal|disgrace|accusation)\\b/i.test(headline)&&route!=='wardman')
+ if(/\b(?:raid|scandal|disgrace|accusation)\b/i.test(headline)&&route!=='wardman')
   out.unshift({id:'scandal',name:'public unrest in Washington',
    observe:'Washington is speaking loudly of scandal and uncertainty.',
    advice:'Not every public accusation points to a private truth.'});
- if(/\\b(?:factory shutdown|strike|production suspended|labor unrest)\\b/i.test(witnessed)&&route==='industrialist')
+ if(/\b(?:factory shutdown|strike|production suspended|labor unrest)\b/i.test(witnessed)&&route==='industrialist')
   out.unshift({id:'interruption',name:'recent disruption at the works',
    observe:'The work of many hands was lately interrupted.',
    advice:'A sound enterprise relies on people as surely as on machinery.'});
@@ -95,11 +95,11 @@ function cardMeaning(card){
  if(card.arcana==='major')return MEANINGS[card.name]||'a turning point';
  return SUITS[card.suit]||'the ordinary burdens of life';
 }
-function interpret(save,session){
+function interpret(save,session,context=null){
  if(!session||!Array.isArray(session.cards)||!session.cards.length)return {ok:false,reason:'There are no cards on the table.'};
  if(session.interpretation)return {ok:true,reading:session.interpretation};
  const current=facts(save);
- const vision=root.FE_TAROT_SECOND_SIGHT?.vision?.(save,session)||null;
+ const vision=root.FE_TAROT_SECOND_SIGHT?.vision?.(save,session,context?.sharedWorld)||null;
  const positions=session.cards.map((card,i)=>{
   const concern=current[i%current.length];
   const symbol=cardMeaning(card);
@@ -111,7 +111,8 @@ function interpret(save,session){
  });
  const closing='These cards speak in possibilities, not certainties. Your next choices will matter more than my table.';
  session.interpretation={intro:'The fortune-teller shuffles, cuts the deck and draws the cards herself. She studies them a moment before speaking.',
-  passages:positions,closing,focus:current.map(x=>x.id),characterRoute:save?.characterRoute||'industrialist'};
+  passages:positions,closing,focus:current.map(x=>x.id),characterRoute:save?.characterRoute||'industrialist',
+  visionKey:vision?.key||null};
  return {ok:true,reading:session.interpretation};
 }
 const api=Object.freeze({MEANINGS,SUITS,CONCERNS,facts,interpret});
