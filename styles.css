@@ -1979,3 +1979,31 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 }
 #titleMapMarkers .title-map-marker.is-current-location:hover,
 #titleMapMarkers .title-map-marker.is-current-location:focus-visible{z-index:32}
+
+/* v0.7.64 rail planner and selected physical landmark symbols.
+ * The approved Washington JPG and anchor coordinates remain untouched.
+ * Numbered pins remain the default unless a profile chooses a physical icon. */
+.title-map-rail-canvas{position:absolute;inset:0;z-index:6;pointer-events:none}
+.title-map-rail-canvas.editing{pointer-events:auto;cursor:crosshair;touch-action:none}
+.title-map-rail-canvas canvas{display:block;pointer-events:none}
+#titleMapRailEdit[aria-pressed="true"]{background:#725535;color:#fff0b3;border-color:#ccb16b}
+#titleMapRailStatus{display:block;flex:1 1 100%;border-left:3px solid #bba06b;padding:5px 7px;color:#eedcbd}
+.title-map-physical-choice{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:8px 0;font:700 12px 'Courier New',monospace}
+#titleMapPhysicalIcon{max-width:min(220px,95%);min-height:30px;background:#f5e7cb;color:#2d251b}
+.title-map-marker[data-physical-icon]:not([data-physical-icon="number"]) .title-map-marker-pin{
+ width:34px;height:32px;flex-basis:34px;border-radius:3px;transform:none;
+ background:#4b422f;border:2px solid #dfc68a;box-shadow:0 2px 5px #0009;
+}
+.title-map-marker .title-map-physical-icon{display:none}
+.title-map-marker[data-physical-icon]:not([data-physical-icon="number"]) .title-map-physical-icon{
+ display:block;font:900 24px/1 'DejaVu Sans','Courier New',monospace;transform:none;
+ text-shadow:1px 1px #0009;color:#f7e9bd;
+}
+.title-map-marker[data-physical-icon="station"] .title-map-marker-pin,
+.title-map-marker[data-physical-icon="railway"] .title-map-marker-pin{background:#433c38}
+.title-map-marker[data-physical-icon="hospital"] .title-map-marker-pin{background:#73382e}
+.title-map-marker[data-physical-icon="police"] .title-map-marker-pin{background:#294254}
+.title-map-marker[data-physical-icon="factory"] .title-map-marker-pin{background:#5b543e}
+.title-map-marker[data-physical-icon="circus"] .title-map-marker-pin{background:#773b32}
+.title-map-marker[data-physical-icon="park"] .title-map-marker-pin{background:#315d38}
+.title-map-marker[data-physical-icon]:not([data-physical-icon="number"]) .title-map-marker-pin b{display:none!important}
