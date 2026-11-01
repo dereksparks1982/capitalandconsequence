@@ -3593,13 +3593,7 @@ function titleMapApply(){
  if(img.naturalWidth&&viewport)
   window.FE_NPC_STREET_TRAVEL?.render?.(S,viewport,
    p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
-     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),!viewer?.hidden,
-   destination=>{
-    // A moving NPC can be inspected and its actual destination selected.
-    // Player travel still uses the existing Go There authorization/clock.
-    if(TITLE_MAP_LOCATIONS.some(place=>place.id===destination))
-     openTitleMapLocation(destination);
-   });
+     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),!viewer?.hidden);
 }
 // Pins stay at their saved map coordinates at every zoom level. Off-print
 // provisional pins remain edge-docked solely to keep their directory entries
