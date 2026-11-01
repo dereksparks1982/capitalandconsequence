@@ -55,9 +55,9 @@ vm.runInNewContext(citySource,cityCtx,{filename:'city.js'});
 const city=cityCtx.window.FederalElectricCity;
 const pins=city.mapLocations();
 const ids=pins.map(p=>p.id),nums=pins.map(p=>p.n);
-check(pins.length===40,'All 40 city destinations have distinct map pins');
-check(new Set(ids).size===40,'No duplicate map location identifiers');
-check(new Set(nums).size===40&&Math.max(...nums)===40,'Map marker numbers 1-40');
+check(pins.length===42,'All 42 city destinations have distinct map pins');
+check(new Set(ids).size===42,'No duplicate map location identifiers');
+check(new Set(nums).size===42&&Math.max(...nums)===42,'Map marker numbers 1-42');
 check(city.getLocation('franciscanMonastery').map.n===35&&city.getLocation('franciscanMonastery').category==='religious','Franciscan Monastery is historical marker 35');
 check(city.mapLocations().find(v=>v.n===35).origin==='historical','Monastery uses a red historical marker');
 check(city.getLocation('cobblerShop').map.n===36&&city.mapLocations().find(v=>v.n===36).origin==='fictional','Cobbler uses blue marker 36');
@@ -66,6 +66,8 @@ check(city.getLocation('brokerOffice').map.n===14,'Broker is marker 14');
 check(city.getLocation('secondNightclub').name==='Le Paon d’Or'&&city.getLocation('secondNightclub').map.n===15,'Lui retains original nightclub pin 15 with new French name');
 check(city.getLocation('nationalTheatre').map.n===39,'National Theatre gets new pin 39');
 check(city.getLocation('districtBank').map.n===40,'Optional bank gets new pin 40');
+check(city.getLocation('fordsTheatre').map.n===41,'Ford’s Theatre gets map pin 41 without moving any earlier pins');
+check(city.getLocation('centerMarket').map.n===42,'Center Market gets map pin 42 without moving any earlier pins');
 check(city.getRoom('hillsdale','hillsdale-butcher').name==='Hillsdale Butcher'&&
  city.getRoom('hillsdale','hillsdale-market').name==='Hillsdale Market','Hillsdale stores are rooms on existing pin 13');
 check(!pins.some(p=>p.id==='hillsdale-butcher'||p.id==='hillsdale-market'),'Hillsdale shops are not separate map pins');
@@ -127,7 +129,7 @@ current={locationId:'home',roomId:'bedroom'};
 check(!vc.window.FE_VENUES.canUse('horse-racing'),'No remote horse racing');
 check(!vc.window.FE_VENUES.canEnterLocation('licensedGamingHall'),'Unapproved casino locked');
 check(!vc.window.FE_VENUES.canEnterLocation('cockfightingDen'),'Undiscovered illegal site locked');
-check(!vc.window.FE_VENUES.canEnterLocation('capitalSpeedway'),'Motor track closed in 1890');
+check(vc.window.FE_VENUES.canEnterLocation('capitalSpeedway'),'Mapped motor track is open in 1878 alternate history');
 const institutionSource=read('institution-ventures.js');
 const instOut={textContent:''};
 const ic={window:{},S:{institutionInterests:{version:1,investments:[],appointments:[]}},document:{getElementById:id=>id==='asylumVentureStatus'?instOut:null}};
@@ -374,7 +376,7 @@ const npcCtx={window:{FE_NPC_AGENCY:require('../npc-agency.js'),FE_NPC_LANGUAGE:
  activeProfileId:()=>profile,save:()=>{npcSaved++},document:{getElementById:()=>null}};
 vm.runInNewContext(read('npc-ai.js'),npcCtx,{filename:'npc-ai.js'});
 const npc=npcCtx.window.FE_NPC_AI;
-check(npc.list().length===22,'Nineteen named Washington residents and exactly three unselected playable protagonists have autonomous agents');
+check(npc.list().length===24,'Twenty-one Washington residents and exactly three unselected playable protagonists have autonomous agents');
  check(!npc.list().some(v=>v.id==='charlieWhitcomb'),'Selected industrialist is never also an NPC');
  check(['samHarlan','eliCrowe','edmundWardman'].every(id=>npc.list().some(v=>v.id===id)),'The other three protagonists receive independent AI definitions');
 check(npc.list().some(v=>v.id==='samuelTilden'),'President Tilden is a historically based resident');
@@ -552,7 +554,7 @@ check(clock.calendar(JSON.parse(JSON.stringify(futureClock))).iso==='1890-01-07T
 check(appSource.includes('function initTitleMapFilters()')&&appSource.includes('function syncTitleMapFilters()'),'Map category filters and Show Names controls are wired');
 check(appSource.includes("marker.hidden=!location||!titleMapMatchesFilters(location)")&&
  appSource.includes("titleMapCategory==='all'||location.category===titleMapCategory"),
- 'All 40 map markers visible by default; only chosen filters hide them');
+ 'All 42 map markers visible by default; only chosen filters hide them');
 check(appSource.includes('select.onchange=()=>{titleMapCategory=select.value;syncTitleMapFilters()}'),'Changing categories updates map without relocating player');
 check(appSource.includes('names.onchange=()=>{titleMapShowNames=names.checked;syncTitleMapFilters()}'),'Names toggle controls map labels');
 check(index.includes('id="titleMapShowNames"')&&index.includes('id="titleMapCategory"'),'Map controls are present');
@@ -655,7 +657,7 @@ check(index.includes('id="titleDevUnlockAllRooms"')&&read('career-shell.js').inc
 check(read('career-shell.css').includes('z-index:4000000')&&read('career-shell.css').includes('display:block!important'),'Floating dev panel stays above full-screen menus and narrow screens');
 check(appSource.includes('titleDevUnlockAllRooms=false;\n restoreNormalCityRoomAccess();'),'Reset revokes dev door access');
 check(mandatoryTest('tests/dev-room-access.cjs'),'New developer room access regression suite is mandatory');
-check(city.mapLocations().length===40,'All forty numbered locations include broker 14 and future theatre/bank sites');
+check(city.mapLocations().length===42,'All 42 mapped locations include Ford’s Theatre, Center Market and established venues');
 check(livingCtx.S.otherLives.actors.wardman.locationId!==null,'Wardman lives at a registered Washington site');
 check(['governmentHospital','universityMaryland','metropolitanPolice','home','star'].includes(livingCtx.S.otherLives.actors.wardman.locationId),'Wardman site comes from a known Washington location');
 const wardmanSave={otherLives:{version:1,seed:null,lastProcessedTurn:80,actors:{},history:[]},characterRoute:'investigator',turnSerial:80};
@@ -698,7 +700,7 @@ check(city.getLocation('potomacFishingBank')?.map?.n===29&&city.getRoom('potomac
 check(city.getLocation('potomacFishingBank')?.category==='leisure','Existing Potomac fishing spot now uses Leisure rather than racing');
 
 check(['potomacFishingBank','babcockLake','fletchersCove','georgetownCanal','easternBranchFishing','chainBridgeFishing'].every(id=>city.getLocation(id)?.category==='leisure'),'All six fishing sites belong to Leisure, not sport or gaming');
-check(city.getLocation('babcockLake').availableUntil==='1888-12-31','Babcock Lake closes after historic filling rather than surviving indefinitely');
+check(city.getLocation('babcockLake').availableUntil===undefined,'Mapped Babcock Lake is accessible in the alternate-history game');
 check(appSource.includes("leisure:'Leisure & Outdoors'")&&appSource.includes("sport:'Recreation & Competition'"),'Fishing and competitive racing have separate map filters');
 check(index.includes('id="titleMapPinRename"')&&index.includes('id="titleMapPinResetName"'),'Player can set or reset names from map UI');
 check(mandatoryTest('tests/map-fishing-locations.cjs'),'Fishing map filters and pin names have real regression tests');
@@ -777,5 +779,5 @@ check(appSource.includes('function titleMapPositionMarkers(){')&&
  appSource.includes("marker.style.left=(titleMapState.x+point.x*scale)+'px';")&&
  appSource.includes("marker.style.top=(titleMapState.y+point.y*scale)+'px';")&&
  mandatoryTest('tests/map-all-pins.cjs'),
- 'Map pin anchoring and all 40 directory locations retain source regression coverage');
+ 'Map pin anchoring and all 42 directory locations retain source regression coverage');
 console.log('SOURCE_CONTRACTS_OK: '+checks+' checks');
