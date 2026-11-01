@@ -13,7 +13,7 @@ function create(energy=80){
  return {room,phase:'fighting',round:1,roundMs:RULES.roundMs,breakMs:0,elapsed:0,
   player:character(4,5,max,'right'),opponent:character(9,5,98,'left'),
   ai:{windup:0,cooldown:1000,moveWait:0,guard:false},
-  blocking:false,hits:0,blocks:0,final:null,message:'Round 1. Watch the opponent.'};
+  blocking:false,hits:0,blocks:0,opponentHits:0,roundPoints:{player:0,opponent:0},scorecards:[],winner:null,final:null,message:'Round 1. Watch the opponent.'};
 }
 function move(s,actor,dx,dy){
  if(!Number.isInteger(dx)||!Number.isInteger(dy)||Math.abs(dx)+Math.abs(dy)!==1)return false;
@@ -23,20 +23,35 @@ function move(s,actor,dx,dy){
  actor.x=x;actor.y=y;actor.face=dx>0?'right':dx<0?'left':dy>0?'front':'back';
  return true;
 }
-function finish(s,method){s.phase='finished';s.final=method;s.blocking=false;s.message='Bout complete: '+method+'.';}
+function recordRound(s){
+ const p=s.roundPoints.player,o=s.roundPoints.opponent;
+ const playerScore=p===o?10:p>o?10:9;
+ const opponentScore=p===o?10:o>p?10:9;
+ s.scorecards.push({round:s.round,player:playerScore,opponent:opponentScore});
+ s.roundPoints={player:0,opponent:0};
+}
+function decisionWinner(s){
+ const totals=s.scorecards.reduce((a,r)=>({player:a.player+r.player,opponent:a.opponent+r.opponent}),{player:0,opponent:0});
+ return totals.player===totals.opponent?'draw':totals.player>totals.opponent?'player':'opponent';
+}
+function finish(s,method,winner=null){
+ s.phase='finished';s.final=method;s.winner=winner;s.blocking=false;
+ const outcome=winner==='player'?'You win':winner==='opponent'?'Opponent wins':winner==='draw'?'Draw':'Bout over';
+ s.message=outcome+' by '+method+'.';
+}
 function punch(s){
  const p=s?.player,o=s?.opponent;
  if(!p||s.phase!=='fighting'||s.blocking||p.punchWait>0||p.stamina<RULES.punchCost)return false;
  p.punchWait=RULES.punchDelay;p.stamina-=RULES.punchCost;
  if(dist(p,o)>2){s.message='Punch missed. Move closer.';return true;}
  o.health=Math.max(0,o.health-(s.ai.guard?2:10));
- s.hits++;s.message=s.ai.guard?'Opponent blocked your punch.':'Punch landed.';
- if(o.health<=0)finish(s,'knockout');
+ s.hits++;s.roundPoints.player+=s.ai.guard?1:3;s.message=s.ai.guard?'Opponent blocked your punch.':'Punch landed.';
+ if(o.health<=0)finish(s,'knockout','player');
  return true;
 }
 function newRound(s){
  s.round++;
- if(s.round>RULES.rounds){finish(s,'decision');return;}
+ if(s.round>RULES.rounds){finish(s,'decision',decisionWinner(s));return;}
  for(const f of [s.player,s.opponent]){
   const cap=Math.max(42,f.maxStamina-10);
   f.stamina=Math.min(cap,f.stamina+(cap-f.stamina)*.55);
@@ -84,9 +99,9 @@ function step(s,ms,keys={}){
    if(distance<=2&&o.stamina>=6){
     o.stamina-=6;
     if(s.blocking){p.health=Math.max(0,p.health-1);p.stamina=Math.max(0,p.stamina-4);
-     s.blocks++;s.message='Blocked! Guard absorbed most of the punch.';}
-    else{p.health=Math.max(0,p.health-9);s.message='Opponent connected.';}
-    if(p.health===0){finish(s,'referee stoppage');return s;}
+     s.blocks++;s.roundPoints.player+=1;s.message='Blocked! Guard absorbed most of the punch.';}
+    else{p.health=Math.max(0,p.health-9);s.opponentHits++;s.roundPoints.opponent+=3;s.message='Opponent connected.';}
+    if(p.health===0){finish(s,'referee stoppage','opponent');return s;}
    }else s.message='Opponent missed.';
    a.cooldown=950;
   }
@@ -99,13 +114,14 @@ function step(s,ms,keys={}){
  }
  s.roundMs=Math.max(0,s.roundMs-dt);
  if(s.roundMs===0){
-  if(s.round>=RULES.rounds)finish(s,'decision');
+  recordRound(s);
+  if(s.round>=RULES.rounds)finish(s,'decision',decisionWinner(s));
   else{s.phase='break';s.breakMs=RULES.breakMs;s.blocking=false;
    s.message='End of round '+s.round+'. Partial stamina recovery at the bell.';}
  }
  return s;
 }
-const api=Object.freeze({RULES,create,move,punch,step,dist});
+const api=Object.freeze({RULES,create,move,punch,step,dist,decisionWinner});
 root.FE_TOPDOWN_BOXING=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -22,8 +22,15 @@ assert.equal(s.round,2);assert.ok(s.player.stamina>19);assert.ok(s.player.stamin
 const cap=s.player.maxStamina;s.ai.cooldown=100000;s.roundMs=10;B.step(s,30,{});
 for(let i=0;i<30;i++)B.step(s,100,{});
 assert.equal(s.round,3);assert.ok(s.player.maxStamina<cap);
-s.ai.cooldown=100000;s.roundMs=10;B.step(s,30,{});assert.equal(s.final,'decision');
-const ko=B.create();ko.player.x=8;ko.opponent.x=9;ko.opponent.health=4;B.punch(ko);assert.equal(ko.final,'knockout');
+s.ai.cooldown=100000;s.roundMs=10;B.step(s,30,{});assert.equal(s.final,'decision');assert.equal(s.winner,'player');assert.equal(s.scorecards.length,3);
+const ko=B.create();ko.player.x=8;ko.opponent.x=9;ko.opponent.health=4;B.punch(ko);assert.equal(ko.final,'knockout');assert.equal(ko.winner,'player');
+const unanimous=B.create();
+for(let n=0;n<3;n++){unanimous.roundPoints.opponent=5;unanimous.roundMs=1;B.step(unanimous,10,{});
+ if(n<2)for(let i=0;i<30;i++)B.step(unanimous,100,{});}
+assert.equal(unanimous.winner,'opponent','Scorecards must be able to award opponent victory');
+assert.equal(unanimous.scorecards.length,3);
+const tied=B.create();for(let n=0;n<3;n++){tied.roundMs=1;B.step(tied,10,{});if(n<2)for(let i=0;i<30;i++)B.step(tied,100,{});}
+assert.equal(tied.winner,'draw','Equal rounds yield a draw');
 const edge=B.create();edge.player.x=1;edge.player.y=1;
 assert.equal(B.move(edge,edge.player,-1,0),false);
 console.log('PASS boxing practice movement, guard, punches, round fatigue, endings and collision');

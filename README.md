@@ -2,7 +2,7 @@
 
 **One city. Countless lives. Every choice has consequences.**
 
-An optional **top-down sparring ring** now runs with the existing 32x32 art and room model. WASD moves, left click punches and hold right click blocks; stamina only partially returns between rounds. It is practice-only with no cash, injury, world-time or championship effects. See docs/RELEASE-NOTES-v0.7.47-dev.md.
+The boxing practice ring now records each round and awards a **win, loss, or draw** by decision, rather than ending with an unexplained result. A knockout or referee stoppage also identifies the winner. This is still isolated practice, not a championship, wager, or career result. See `docs/RELEASE-NOTES-v0.7.48-dev.md`.\n\nAn optional **top-down sparring ring** now runs with the existing 32x32 art and room model. WASD moves, left click punches and hold right click blocks; stamina only partially returns between rounds. It is practice-only with no cash, injury, world-time or championship effects. See docs/RELEASE-NOTES-v0.7.47-dev.md.
 
 *Capital & Consequence* is a single-player, alternate-history life simulation set in Washington, D.C., beginning in **1878**. Build a life in a changing city where your work, money, relationships, reputation, and decisions can affect what happens next.
 
