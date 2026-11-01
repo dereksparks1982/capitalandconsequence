@@ -1462,6 +1462,7 @@ const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCo
  if(!treasuryHandlingTime(out))return;
  const result=window.FE_CASH_CUSTODY?.transfer?.(S,'irregularDraw',amount,currentCityLocation().locationId,S.characterRoute);
  if(!result?.ok)return out.textContent=result?.reason||'Company cash may only be collected at Federal Electric.';
+ window.FE_TAROT_SECOND_SIGHT?.record?.(S,{id:'unreported-company-draw-'+(S.worldCalendar?.worldMinute??S.gameDate),kind:'fraud',actorId:S.characterRoute});
  S.notes.push({date:displayDate(),text:cash(amount)+' of Federal Electric funds were diverted to personal use, creating an unexplained corporate shortfall.',source:'private financial record'});
  out.textContent='Company funds diverted: '+cash(amount)+' moved to personal cash. Accounting exposure is now '+accountingExposure()+'.';save();render();
 };
