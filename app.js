@@ -3634,6 +3634,11 @@ function syncTitleMapFilters(){
  if(titleMapSelectedLocationId&&!TITLE_MAP_LOCATIONS.some(v=>v.id===titleMapSelectedLocationId&&titleMapMatchesFilters(v)))closeTitleMapLocation();
  renderTitleMapDirectory();
 }
+window.FE_RAIL_EDITOR_SETUP=()=>window.FE_RAIL_EDITOR?.mount?.({
+  getSave:()=>S,persist:()=>save(true),
+  getView:()=>({x:titleMapState.x,y:titleMapState.y,scale:titleMapState.scale}),
+  pinEdit:()=>titleMapPinEdit,busy:()=>capitalTravelBusy
+});
 window.FE_ROAD_EDITOR_SETUP=()=>window.FE_ROAD_EDITOR?.mount?.({
   getSave:()=>S,persist:()=>save(true),
   refresh:()=>{window.FE_ROAD_LAYOUT?.load?.(S.customRoadLayout);renderCapitalTravelPreview();},
@@ -3643,6 +3648,13 @@ window.FE_ROAD_EDITOR_SETUP=()=>window.FE_ROAD_EDITOR?.mount?.({
  });
 function initTitleMapFilters(){
  window.FE_ROAD_EDITOR_SETUP?.();
+ window.FE_RAIL_EDITOR_SETUP?.();
+ const appearance=$('#titleMapPhysicalIcon');
+ if(appearance&&!appearance.options.length){
+  for(const [id,entry] of Object.entries(window.FE_LOCATION_ICONS?.ICONS||{})){
+   const opt=new Option(entry.name,id);appearance.add(opt);
+  }
+ }
  const select=document.getElementById('titleMapCategory'),names=document.getElementById('titleMapShowNames');
  const search=$('#titleMapSearch'),origin=$('#titleMapOrigin');
  if(!select||!names||!search||!origin)return;
@@ -3738,7 +3750,7 @@ function updateTitleMapPinEditor(){
  if(help)help.textContent=titleMapPinEdit?'Drag pin to correct A–R / 1–30 grid position · confirm before saving; cancel restores it':'Mouse wheel to zoom · click and drag to move';
 }
 function toggleTitleMapPinEditor(){
- if(capitalTravelBusy||window.FE_ROAD_EDITOR?.isEditing?.())return;
+ if(capitalTravelBusy||window.FE_ROAD_EDITOR?.isEditing?.()||window.FE_RAIL_EDITOR?.isEditing?.())return;
  titleMapPinEdit=!titleMapPinEdit;
  titleMapPinDrag=null;
  closeTitleMapLocation();
@@ -3751,6 +3763,7 @@ function titleMapApply(){
  img.style.transform='translate('+titleMapState.x+'px,'+titleMapState.y+'px) scale('+titleMapState.scale+')';
  titleMapPositionMarkers();
  window.FE_ROAD_EDITOR?.sync?.();
+ window.FE_RAIL_EDITOR?.sync?.();
  renderCapitalTravelPreview();
  const viewport=$('#titleMapViewport'),viewer=$('#titleMapViewer');
  if(img.naturalWidth&&viewport)
@@ -3787,6 +3800,7 @@ function titleMapPositionMarkers(){
   const point=titleMapDisplayCoordinate(location,img);
   marker.classList.toggle('is-edge-provisional',point.outside);
   marker.classList.toggle('is-current-location',!!activeProfileId()&&currentCityLocation().locationId===location.id);
+  window.FE_LOCATION_ICONS?.decorate?.(marker,S,location.id);
   marker.title=(window.FE_MAP_PIN_PALETTE?.info(location)?.name||'Washington location')+
    ' · '+pinDisplayName(location)+' · #'+location.n+
    ' · printed grid '+titleMapGridAt(location.x,location.y)+
@@ -4003,6 +4017,14 @@ function openTitleMapLocation(id){
  $('#titleMapLocationName').textContent=pinDisplayName(location);
  const nameField=$('#titleMapPinName');
  if(nameField)nameField.value=pinDisplayName(location);
+ const appearance=$('#titleMapPhysicalIcon');
+ if(appearance){
+  appearance.value=window.FE_LOCATION_ICONS?.selected?.(S,id)||'number';
+  appearance.onchange=()=>{
+   const changed=window.FE_LOCATION_ICONS?.choose?.(S,id,appearance.value);
+   if(changed?.ok){save(true);titleMapPositionMarkers()}
+  };
+ }
  const nameNotice=$('#titleMapPinNameNotice');if(nameNotice)nameNotice.textContent='Original place: '+location.name;
  $('#titleMapLocationArea').textContent=location.area;
  const grid=$('#titleMapLocationGrid');
@@ -4334,6 +4356,7 @@ function buildTitleMapMarkers(){
   marker.setAttribute('aria-label',pinDisplayName(location)+' — '+location.area);
   marker.innerHTML='<span class="title-map-marker-pin"><b>'+location.n+'</b></span><span class="title-map-marker-label"></span>';
  marker.querySelector('.title-map-marker-label').textContent=pinDisplayName(location);
+  window.FE_LOCATION_ICONS?.decorate?.(marker,S,location.id);
   marker.addEventListener('pointerdown',e=>{
    e.stopPropagation();
    if(capitalTravelBusy||!titleMapPinEdit||e.button!==0)return;
