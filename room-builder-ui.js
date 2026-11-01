@@ -8,7 +8,7 @@ const SPRITES='assets/artwork/spritesheet.png';
 const locationId='factory',roomId='executive-office',STORAGE=C.key(locationId,roomId);
 let room=C.makeRoom(),mode='stamp',assetId='desk_oak',selectedId=null,preview=false;
 let position={...room.spawns.player},dirty=false,zoom=1,grid=true,history=[],future=[];
-let lastFocus=null,drag=null,dragLast='',loaded=false;
+let lastFocus=null,drag=null,dragLast='',loaded=false,testRoom=null;
 const art=new Image();art.src=SPRITES;
 const names={floors:'Floors',construction:'Walls / Doors',furniture:'Furniture',small_props:'Small Props',people:'People'};
 const panel=document.createElement('section');
@@ -16,10 +16,10 @@ panel.id='roomBuilderEditor';panel.className='room-builder-editor';panel.hidden=
 panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
 panel.setAttribute('aria-label','Room Builder, Federal Electric Executive Office');
 panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>ROOM BUILDER</h2><p>Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
-'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
+'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
 '<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Select / Drag moves a placed object. Grid tiles are 32px.</p><dl id="rbInspector"></dl></aside>'+
 '<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
-'<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
+'<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
 const status=s=>{$('rbStatus').textContent=s};
@@ -89,9 +89,11 @@ function render(){
  const w=room.widthTiles*C.TILE,h=room.heightTiles*C.TILE;
  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  canvas.style.width=(w*zoom)+'px';canvas.style.height=(h*zoom)+'px';
- drawRoom(ctx,room,{showGrid:grid&&!preview,showSpawn:!preview,player:preview?position:null,selected:selectedId});
+ drawRoom(ctx,preview&&testRoom?testRoom:room,{showGrid:grid&&!preview,showSpawn:!preview,player:preview?position:null,selected:selectedId});
  for(const btn of panel.querySelectorAll('[data-rb-mode]'))btn.classList.toggle('active',btn.dataset.rbMode===mode&&!preview);
- for(const btn of panel.querySelectorAll('[data-rb]'))if(['rotate','duplicate','delete'].includes(btn.dataset.rb))btn.disabled=!selectedId||preview;
+ for(const btn of panel.querySelectorAll('[data-rb]'))
+  if(['rotate','duplicate','delete','nudge-left','nudge-right','nudge-up','nudge-down'].includes(btn.dataset.rb))
+   btn.disabled=!selectedId||preview;
  panel.querySelector('[data-rb="test"]').textContent=preview?'Back to Edit ◀':'Test Walk ▶';
  $('rbDirty').textContent=dirty?'UNSAVED CHANGES':loaded?'Saved layout':'Unsaved starter template';$('rbDirty').classList.toggle('dirty',dirty);
  const sel=room.objects.find(o=>o.id===selectedId),s=sel&&C.asset(sel.spriteId),selectedSprite=C.asset(assetId);
@@ -121,12 +123,14 @@ canvas.addEventListener('pointerdown',e=>{
  const p=coords(e);if(!p)return;
  canvas.focus();e.preventDefault();
  if(preview){
-  if(Math.abs(p.x-position.x)+Math.abs(p.y-position.y)<=1&&C.toggleDoor(room,p.x,p.y)){dirty=true;render();}
+  if(testRoom&&Math.abs(p.x-position.x)+Math.abs(p.y-position.y)<=1&&C.toggleDoor(testRoom,p.x,p.y)){
+   status('Door toggled for this test only. Your saved office remains unchanged.');render();
+  }
   return;
  }
  if(mode==='select'){
   const obj=C.findObject(room,p.x,p.y);selectedId=obj?.id||null;
-  drag=obj?{id:obj.id,start:p}:null;
+  drag=obj?{id:obj.id,offsetX:p.x-obj.x,offsetY:p.y-obj.y}:null;
   if(drag)canvas.setPointerCapture?.(e.pointerId);
   render();return;
  }
@@ -141,7 +145,7 @@ canvas.addEventListener('pointermove',e=>{
  if(k===dragLast)return;dragLast=k;paintAt(p);
 });
 canvas.addEventListener('pointerup',e=>{
- if(drag?.id&&!preview){const p=coords(e);if(p)mutate(()=>C.relocate(room,drag.id,p.x,p.y));}
+ if(drag?.id&&!preview){const p=coords(e);if(p)mutate(()=>C.relocate(room,drag.id,p.x-drag.offsetX,p.y-drag.offsetY));}
  drag=null;dragLast='';
 });
 canvas.addEventListener('pointercancel',()=>{drag=null;dragLast='';});
@@ -163,6 +167,19 @@ function close(){
  panel.hidden=true;preview=false;lastFocus?.focus?.();
 }
 function rotate(){if(!selectedId)return;const o=room.objects.find(v=>v.id===selectedId);if(o)mutate(()=>C.relocate(room,o.id,o.x,o.y,(o.rotation+1)%4));}
+function nudge(dx,dy){
+ if(preview||!selectedId)return;
+ const o=room.objects.find(v=>v.id===selectedId);
+ if(o)mutate(()=>C.relocate(room,o.id,o.x+dx,o.y+dy));
+}
+function inspect(){
+ const result=C.analyze(room);
+ const message='Room check: '+result.area+' tiles, '+result.furniture+' objects, '+
+  result.reachableDoors+'/'+result.doors+' reachable doors. '+
+  (result.errors.concat(result.warnings).join(' ')||'Charles can reach an open exit.');
+ status(message);
+ return result;
+}
 function duplicate(){if(!selectedId)return;const o=room.objects.find(v=>v.id===selectedId);if(o)mutate(()=>{const a=C.relocate(room,o.id,o.x+1,o.y+1,o.rotation,true);if(a)selectedId=a.id;return a;});}
 function del(){if(!selectedId)return;mutate(()=>C.remove(room,selectedId));selectedId=null;render();}
 function download(){
@@ -184,13 +201,27 @@ panel.addEventListener('click',e=>{
  }
  if(action==='undo')undo();if(action==='redo')redo();
  if(action==='rotate')rotate();if(action==='duplicate')duplicate();if(action==='delete')del();
+ if(action==='nudge-left')nudge(-1,0);if(action==='nudge-right')nudge(1,0);
+ if(action==='nudge-up')nudge(0,-1);if(action==='nudge-down')nudge(0,1);
+ if(action==='inspect')inspect();
  if(action==='save')save();
- if(action==='test'){preview=!preview;position={...room.spawns.player};status(preview?'Walk with WASD / arrows. Adjacent doors toggle by click.':'Back in editor.');render();canvas.focus();}
+ if(action==='test'){
+  if(!preview){const outcome=inspect();
+   if(outcome.errors.length){status('Fix room errors before testing: '+outcome.errors.join(' '));return;}
+   testRoom=C.clone(room);preview=true;position={...room.spawns.player};
+  }else{preview=false;testRoom=null;position={...room.spawns.player};}
+  status(preview?'Testing an isolated copy. Walk with WASD / arrows; doors may be toggled.':'Back in editor. No test changes saved.');
+  render();canvas.focus();
+ }
  if(action==='export')download();
  if(action==='reload'){
   if(dirty&&!root.confirm('Replace the unsaved draft with the last saved layout?'))return;
   if(loadSaved()){dirty=false;history=[];future=[];position={...room.spawns.player};render();status('Saved layout reopened.');}
   else status('No valid saved layout found.');
+ }
+ if(action==='sample'&&root.confirm('Load the crude demonstration office? This only replaces your unsaved draft; your last saved layout stays intact until you Save.')){
+  snapshot();room=C.sampleOffice();selectedId=null;preview=false;testRoom=null;dirty=true;
+  render();status('Example office draft loaded. This is not a final approved layout. Use Save only if you want it.');
  }
  if(action==='reset'&&root.confirm('Start a fresh executive office layout? Your saved layout remains until you press Save.')){
   snapshot();room=C.makeRoom();selectedId=null;dirty=true;preview=false;render();status('New empty office draft. Save to replace the previous design.');
@@ -207,10 +238,10 @@ $('rbImport').addEventListener('change',async e=>{
  catch(err){status('Import refused: '+err.message);}
 });
 function movePlayer(dx,dy){
- const next=C.walk(room,position,dx,dy);
+ const next=C.walk(testRoom||room,position,dx,dy);
  if(next===position){status('Blocked. Furniture and walls are solid.');return;}
  position=next;render();
- if(room.walls[C.index(room,position.x,position.y)]==='door_open')status('At doorway. Use the existing Return to Map / room menu to travel.');
+ if((testRoom||room).walls[C.index(testRoom||room,position.x,position.y)]==='door_open')status('At doorway. Game travel continues to use the real room/location system.');
 }
 document.addEventListener('keydown',e=>{
  if(panel.hidden)return;
@@ -224,6 +255,10 @@ document.addEventListener('keydown',e=>{
   const dirs={arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1],arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0]};
   if(dirs[k]){e.preventDefault();movePlayer(...dirs[k]);}
   return;
+ }
+ if(!preview&&!ctrl&&['arrowup','arrowdown','arrowleft','arrowright'].includes(k)&&selectedId){
+  e.preventDefault();const dirs={arrowup:[0,-1],arrowdown:[0,1],arrowleft:[-1,0],arrowright:[1,0]};
+  nudge(...dirs[k]);return;
  }
  if(k==='delete'||k==='backspace'){e.preventDefault();del();}
  if(k==='r'){e.preventDefault();rotate();}
