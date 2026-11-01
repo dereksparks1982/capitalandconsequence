@@ -21,7 +21,10 @@ function create(place){
  bar.className='cc-world-banner';
  bar.setAttribute('role','group');
  bar.setAttribute('aria-label','Washington world status, persistent digital clock');
- const row=document.createElement('div');row.className='cc-world-banner-items';
+ const rows=document.createElement('div');rows.className='cc-world-banner-rows';
+ const topRow=document.createElement('div');topRow.className='cc-world-banner-items cc-world-banner-row cc-world-banner-row--primary';
+ const bottomRow=document.createElement('div');bottomRow.className='cc-world-banner-items cc-world-banner-row cc-world-banner-row--secondary';
+ const primaryFields=new Set(['phaseName','businessDate','dayClock','washingtonSky']);
  const refs={};
  for(const [id,label] of fields){
   const item=document.createElement('div');
@@ -30,7 +33,7 @@ function create(place){
   const value=document.createElement('span');
   value.className='cc-world-banner-value';
   value.setAttribute('data-world-copy',id);
-  item.append(name,value);row.appendChild(item);
+  item.append(name,value);(primaryFields.has(id)?topRow:bottomRow).appendChild(item);
   refs[id]=value;
  }
  const pause=document.createElement('button');
@@ -42,7 +45,8 @@ function create(place){
   if(original&&!original.disabled)original.click();
   sync();
  });
- row.appendChild(pause);bar.appendChild(row);
+ bottomRow.appendChild(pause);
+ rows.append(topRow,bottomRow);bar.appendChild(rows);
  const condition=document.createElement('div');condition.className='cc-world-condition';
  const needs={};
  for(const [key,label] of [['health','Health'],['hunger','Hunger'],['thirst','Thirst'],['energy','Energy']]){
