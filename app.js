@@ -1156,7 +1156,7 @@ function startCircusBooth(key){
  if(elapsed!==conf.seconds)return {ok:false,reason:'The game clock interrupted this booth.'};
  const result=service.start(S,key);
  if(!result.ok)return result;
- window.FE_CIRCUS_TOUR?.attend?.(S,window.FE_CIRCUS_TOUR?.active?.(S)?.id);
+ // A midway stall is NOT evidence that the character watched the show.
  save(true);return result;
 }
 function throwAtCircusBooth(choice){
@@ -1196,6 +1196,54 @@ function requestFortuneReading(){
  window.FE_TAROT_INTERPRETATION?.interpret?.(S,result.session);
  window.FE_NPC_DISCOVERY?.learn?.(S,'visiting-fortune-teller','encounter','circus wagon');
  save(true);return result;
+}
+function attendCircusShow(){
+ const show=window.FE_CIRCUS_BIG_TOP?.slot?.(S);
+ if(!show?.ok||cityRoomSession.dev||S.paused||S.phase==='report')
+  return show?.ok?{ok:false,reason:'You must attend the show in person.'}:show||{ok:false,reason:'There is no show.'};
+ if(Math.round(Number(S.personalCash||0)*100)<show.feeCents)
+  return {ok:false,reason:'Admission is twenty cents.'};
+ const seconds=show.waitMinutes*60+show.durationSeconds;
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds))
+  return {ok:false,reason:'Not enough game time for this performance.'};
+ if(advanceWorldSimulation(seconds,true,'action')!==seconds)
+  return {ok:false,reason:'The performance was interrupted.'};
+ const result=window.FE_CIRCUS_BIG_TOP?.perform?.(S,show);
+ if(!result?.ok)return result||{ok:false,reason:'No show was recorded.'};
+ S.personalCash=(Math.round(Number(S.personalCash||0)*100)-show.feeCents)/100;
+ if(Array.isArray(S.notes))S.notes.push({date:S.gameDate,source:'Big Top',text:result.report.description});
+ save(true);
+ return result;
+}
+function inspectPeddlerGood(id){
+ const stall=window.FE_TRAVELING_SALESMAN;
+ if(cityRoomSession.dev||S.paused||S.phase==='report'||!stall?.present?.(S))
+  return {ok:false,reason:'You must visit Silas Pike in person.'};
+ if(!stall.GOODS.some(x=>x.id===id))return {ok:false,reason:'This item is not here.'};
+ const item=stall.stock(S).find(x=>x.id===id);
+ if(!item?.examined){
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
+   advanceWorldSimulation(60,true,'action')!==60)
+    return {ok:false,reason:'No time to examine the goods.'};
+ }
+ const result=stall.examine(S,id);
+ if(result.ok){window.FE_NPC_DISCOVERY?.learn?.(S,'silasPike','encounter','traveling peddler at the circus');save(true)}
+ return result;
+}
+function buyPeddlerGood(id){
+ const stall=window.FE_TRAVELING_SALESMAN;
+ if(cityRoomSession.dev||S.paused||S.phase==='report'||!stall?.present?.(S))
+  return {ok:false,reason:'The traveling peddler is not here.'};
+ const item=stall.stock(S).find(x=>x.id===id);
+ if(!item||item.owned)return {ok:false,reason:'That item is not on the stall.'};
+ if(Math.round(Number(S.personalCash||0)*100)<item.priceCents)
+  return {ok:false,reason:'Not enough personal cash.'};
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
+    advanceWorldSimulation(60,true,'action')!==60)
+  return {ok:false,reason:'There is no time to complete the purchase.'};
+ const result=stall.buy(S,id,good=>window.FE_PERSONAL_EFFECTS?.acquire?.(good));
+ if(result.ok){window.FE_NPC_DISCOVERY?.learn?.(S,'silasPike','encounter','trading in person');save(true)}
+ return result;
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
@@ -2704,6 +2752,11 @@ function openCityRoom(locationId,roomId,options={}){
    start:startCircusBooth,throwAt:throwAtCircusBooth,claim:claimCircusPrizes
   },{locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('fortune-teller',()=>window.FE_TAROT_WAGON_UI?.render?.(S,requestFortuneReading,
+   {locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('Big Top',()=>window.FE_CIRCUS_BIG_TOP_UI?.render?.(S,attendCircusShow,
+   {locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('traveling peddler',()=>window.FE_TRAVELING_SALESMAN_UI?.render?.(S,
+   {inspect:inspectPeddlerGood,buy:buyPeddlerGood},
    {locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
    const location=currentCityLocation();
