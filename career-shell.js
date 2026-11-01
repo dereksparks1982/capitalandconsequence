@@ -208,9 +208,11 @@
     panel.querySelector('#careerDeskCoffeePeople').addEventListener('click',event=>{
      const button=event.target.closest('button[data-coffee-npc]');if(!button)return;
      const id=button.dataset.coffeeNpc;
-     const here=window.FE_CITY?.currentLocation?.();
-     const valid=()=>!!here&&here.locationId==='factory'&&
-      (window.FE_NPC_AI?.visibleAt?.('factory')||[]).some(v=>v.id===id&&v.roomId===here.roomId);
+     const valid=()=>{
+      const here=window.FE_CITY?.currentLocation?.();
+      return !!here&&here.locationId==='factory'&&
+       (window.FE_NPC_AI?.visibleAt?.('factory')||[]).some(v=>v.id===id&&v.roomId===here.roomId);
+     };
      if(!valid()){refreshCoffeeVisitors();return;}
      const npc=(window.FE_NPC_AI?.visibleAt?.('factory')||[]).find(v=>v.id===id);
      const person=window.FE_NPC_AI?.list?.().find(v=>v.id===id);
