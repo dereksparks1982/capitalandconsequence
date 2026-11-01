@@ -59,6 +59,14 @@ assert.equal(C.place(clutter,'sam_front',3,3),null,'NPC cannot occupy a wall');
 const furniture=C.place(clutter,'desk_oak',4,4);
 assert.ok(furniture);
 assert.equal(C.place(clutter,'sam_front',4,4),null,'NPC cannot occupy a solid desk');
+const other=C.makeRoom();const person=C.place(other,'sam_front',3,3);
+assert.ok(person,'NPC can be positioned on empty floor');
+assert.equal(C.place(other,'desk_oak',3,3),null,'desk cannot be placed over existing NPC');
+assert.equal(C.place(other,'edmund_front',3,3),null,'actors cannot stack in one tile');
+const cloned=JSON.parse(JSON.stringify(other));
+cloned.objects.push({id:'obj_laterdesk',spriteId:'desk_oak',x:3,y:3,rotation:0});
+assert.throws(()=>C.sanitize(cloned),'import rejects furniture overlapping earlier actor');
+
 assert.equal(C.place(clutter,'sam_front',clutter.spawns.player.x,clutter.spawns.player.y)!==null,false,'NPC may not occupy Charles spawn');
 const restored=C.sanitize(JSON.parse(JSON.stringify(room)),'factory','executive-office');
 assert.equal(restored.objects.length,1);
