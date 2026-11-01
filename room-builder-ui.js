@@ -64,7 +64,7 @@ function drawSprite(g,s,x,y,rotation=0){
  g.save();g.translate((x+w/2)*C.TILE,(y+h/2)*C.TILE);g.rotate(rotation*Math.PI/2);
  g.drawImage(art,sx,sy,sw,sh,-raw[0]*C.TILE/2,-raw[1]*C.TILE/2,raw[0]*C.TILE,raw[1]*C.TILE);g.restore();
 }
-function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,selected=null}={}){
+function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,playerFacing='front',selected=null}={}){
  const w=data.widthTiles,h=data.heightTiles;g.imageSmoothingEnabled=false;
  g.fillStyle='#413b34';g.fillRect(0,0,w*C.TILE,h*C.TILE);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
@@ -73,7 +73,7 @@ function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,selected=nu
  }
  for(const o of data.objects)drawSprite(g,C.asset(o.spriteId),o.x,o.y,o.rotation);
  const pos=player||showSpawn&&data.spawns.player;
- if(pos)drawSprite(g,C.asset('charles_front'),pos.x,pos.y);
+ if(pos)drawSprite(g,C.asset('charles_'+(playerFacing||'front')),pos.x,pos.y);
  if(showGrid){g.beginPath();g.strokeStyle='rgba(11,10,9,.25)';g.lineWidth=1;
   for(let x=0;x<=w;x++){g.moveTo(x*C.TILE+.5,0);g.lineTo(x*C.TILE+.5,h*C.TILE)}
   for(let y=0;y<=h;y++){g.moveTo(0,y*C.TILE+.5);g.lineTo(w*C.TILE,y*C.TILE+.5)}g.stroke();}
@@ -92,7 +92,7 @@ function render(){
  for(const btn of panel.querySelectorAll('[data-rb-mode]'))btn.classList.toggle('active',btn.dataset.rbMode===mode&&!preview);
  for(const btn of panel.querySelectorAll('[data-rb]'))if(['rotate','duplicate','delete'].includes(btn.dataset.rb))btn.disabled=!selectedId||preview;
  panel.querySelector('[data-rb="test"]').textContent=preview?'Back to Edit ◀':'Test Walk ▶';
- $('rbDirty').textContent=dirty?'UNSAVED CHANGES':'Saved layout';$('rbDirty').classList.toggle('dirty',dirty);
+ $('rbDirty').textContent=dirty?'UNSAVED CHANGES':loaded?'Saved layout':'Unsaved starter template';$('rbDirty').classList.toggle('dirty',dirty);
  const sel=room.objects.find(o=>o.id===selectedId),s=sel&&C.asset(sel.spriteId),selectedSprite=C.asset(assetId);
  $('rbInspector').replaceChildren();
  const values=sel?[['Selected',s?.name],['Grid',sel.x+', '+sel.y],['Rotation',sel.rotation*90+'°'],['Solid',s?.solid?'Yes':'No']]:[
@@ -125,7 +125,9 @@ canvas.addEventListener('pointerdown',e=>{
  }
  if(mode==='select'){
   const obj=C.findObject(room,p.x,p.y);selectedId=obj?.id||null;
-  drag=obj?{id:obj.id,start:p}:null;render();return;
+  drag=obj?{id:obj.id,start:p}:null;
+  if(drag)canvas.setPointerCapture?.(e.pointerId);
+  render();return;
  }
  drag={mode,stamp:assetId};dragLast='';paintAt(p);dragLast=p.x+','+p.y;
  canvas.setPointerCapture?.(e.pointerId);
