@@ -469,7 +469,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -1070,10 +1070,10 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
    if(humanCondition?.events?.length)window.FE_CHARACTER_NEEDS_UI?.notify?.(humanCondition.events);
    // Collapse is recorded once, after real world-minute depletion. The wake
    // button later spends the unconscious time on this SAME authoritative clock.
-   if(kind!=='medical'&&humanCondition?.ok&&S.characterNeeds?.meters?.energy<=0){
+   if(kind!=='medical'&&kind!=='sleep'&&humanCondition?.ok&&S.characterNeeds?.meters?.energy<=0){
     const episode=window.FE_MEDICAL_RECORDS?.collapse?.(S,currentCityLocation().locationId);
     if(episode?.ok){
-     save(true);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode);
+     save(true);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);
      break;
     }
    }
@@ -1100,6 +1100,28 @@ function recoverMedicalEpisode(){
  S.notes.push({date:displayDate(),source:'medical record',text:aftermath});
  note(aftermath);save(true);render();
  return true;
+}
+function sleepAtHome(){
+ const p=currentCityLocation();
+ if(p.locationId!=='home'||p.roomId!=='bedroom')
+  return {ok:false,reason:'Sleep requires your own bedroom.'};
+ if(S.paused||S.phase!=='night')
+  return {ok:false,reason:'Your bedroom is available for overnight rest after the 5 PM closing bell.'};
+ if(window.FE_MEDICAL_RECORDS?.pending?.(S))
+  return {ok:false,reason:'You must regain consciousness before you can go to bed.'};
+ const seconds=window.FE_WASHINGTON_TIME?.secondsUntilMorning?.(S);
+ if(!Number.isSafeInteger(seconds)||seconds<=0)
+  return {ok:false,reason:'The next morning is unavailable.'};
+ S.sleepingAtHome=true;
+ try{
+  const elapsed=advanceWorldSimulation(seconds,true,'sleep');
+  if(elapsed!==seconds){
+   S.sleepingAtHome=false;save(true);render();
+   return {ok:false,reason:'Your sleep was interrupted by the Washington clock.'};
+  }
+ }finally{S.sleepingAtHome=false}
+ save(true);render();
+ return {ok:true,reason:'You wake after proper bed rest. Your Energy has been restored within your medical limits.'};
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
@@ -1213,7 +1235,12 @@ function beginNextDay(){
  if(S.phase!=='report')return;
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
  archiveToday();const old=S.gameDate,next=window.FE_WASHINGTON_TIME?.now?.(S)?.date||window.FE_WASHINGTON_TIME.nextCivilDay(S.gameDate);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;const takeoverNotice=window.FE_CORPORATE?.advanceDay?.(S);payMonthlyDividends(old,S.gameDate);window.FE_EMPIRE?.advance?.(S);window.FE_FISHING_VESSELS?.advance?.(S);
- window.FE_CHARACTER_NEEDS?.overnight?.(S);
+ // Only an actual bed-rest action restores the Energy meter. Merely skipping
+ // the Washington night clock does NOT count as sleeping.
+ if(S.sleepingAtHome===true&&currentCityLocation().locationId==='home'&&
+    currentCityLocation().roomId==='bedroom')
+  window.FE_CHARACTER_NEEDS?.overnight?.(S);
+ S.sleepingAtHome=false;
  S.phase='day';S.dayRemaining=window.FE_WASHINGTON_TIME.phaseSecondsRemaining(S);S.phaseBudgetRemainder=0;window.FE_NPC_AI?.syncClock?.();
  for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
@@ -3961,6 +3988,7 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  if(map)map.hidden=true;
  document.body.classList.remove('title-map-open');
  overlay.focus?.();
+ window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);
  return true;
 }
 // Keep the moving pawn in view when the player starts a trip zoomed in.
