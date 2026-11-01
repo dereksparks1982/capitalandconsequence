@@ -131,7 +131,35 @@
   storage.setItem(LIBRARY_KEY,JSON.stringify(filtered));
   return true;
  }
- const api=Object.freeze({pick,tilesFor,apply,describe,listDrafts,saveDraft,openDraft,deleteDraft,libraryKey:LIBRARY_KEY});
+ /* Port the useful architectural idea, not another game's code:
+  * furniture has explicit interactions and must be reachable by a person. */
+ function auditStations(room){
+  const result=[];
+  for(const obj of room.objects){
+   const definition=describe(obj.spriteId);
+   if(!definition||!['workstation','seating','storage','utility'].includes(definition.kind))continue;
+   const [width,height]=C.dims(C.asset(obj.spriteId),obj.rotation);
+   const candidates=[];
+   for(let x=obj.x;x<obj.x+width;x++){
+    candidates.push({x,y:obj.y-1},{x,y:obj.y+height});
+   }
+   for(let y=obj.y;y<obj.y+height;y++){
+    candidates.push({x:obj.x-1,y},{x:obj.x+width,y});
+   }
+   let steps=null;
+   for(const tile of candidates){
+    if(!C.inBounds(room,tile.x,tile.y)||C.blocked(room,tile.x,tile.y))continue;
+    const route=C.path(room,room.spawns.player,tile);
+    if(route&&(!steps||route.length<steps))steps=route.length;
+    if(route?.length===0){steps=0;break;}
+   }
+   result.push({objectId:obj.id,spriteId:obj.spriteId,
+    label:definition.label,kind:definition.kind,reachable:steps!==null,steps});
+  }
+  return {stations:result,reachable:result.filter(x=>x.reachable).length,
+   inaccessible:result.filter(x=>!x.reachable).map(x=>x.label)};
+ }
+ const api=Object.freeze({pick,tilesFor,apply,describe,auditStations,listDrafts,saveDraft,openDraft,deleteDraft,libraryKey:LIBRARY_KEY});
  root.FE_ROOM_BUILDER_KIT=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
