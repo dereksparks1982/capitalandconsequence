@@ -1,3 +1,14 @@
+## 1 November 2026 · v0.7.59-dev: character discovery, public circus, tarot and bedroom rest
+- [x] Hide moving NPCs until learned through actual encounters, newspaper names or in-person accounts. Preserve their unknown destinations.
+- [x] Public traveling circus date/venue model and only-when-in-town map tent, with optional NPC circus conversation that observes actual attendance.
+- [x] Art-independent 78-card offline tarot deck and reading history foundation; original card art and actual fortune-teller visit pending.
+- [x] Home bedroom nap/full/custom sleep, blackout transition and 1878-style wind-up ringing alarm with uncommon oversleeping.
+- [x] DEV toggle always available in room view.
+- [ ] Author specific circus dates, campsite, tickets, performances and actual visitor interactions before claiming it has arrived.
+- [ ] Name and author the traveling fortune-teller, verified horse-drawn wagon and playable tarot sitting with original art.
+- [ ] Design the roaming confidence man, real goods, inspection and provenance; no placeholder goods granted without receipts.
+- [ ] Full native Linux Electron smoke, audio and multi-day game-clock QA outstanding. No GitHub Actions.
+ 
 ## 1 November 2026 · v0.7.59-dev: medical records, energy consequences, interactive street NPCs
 - [x] Record player/NPC private medical histories; track collapses, long-term exhaustion, house-call and hospital expense.
 - [x] Zero-energy collapse with setting-dependent consequences: home recovery, factory emergency shutdown, street hospital transport, risky neighborhood cash loss chances.
