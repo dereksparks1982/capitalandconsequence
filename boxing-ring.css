@@ -1,0 +1,9 @@
+.boxing-practice{background:#e4d7b7;border:2px solid #534634;margin:12px 0}
+.boxing-practice h3{font-family:Georgia,serif;margin:0 0 6px}
+.boxing-practice>p{font-size:13px;margin:5px 0 10px}
+.boxing-practice-stats{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0;font:700 12px 'Courier New',monospace}
+.boxing-practice-stats span{background:#28292b;color:#f8ead0;padding:6px 8px}
+.boxing-practice-viewport{max-width:100%;overflow:auto;background:#262424;border:3px ridge #77654d}
+#ringCanvas{display:block;max-width:100%;width:672px;height:auto;margin:auto;image-rendering:pixelated;touch-action:none;cursor:crosshair}
+#ringCanvas:focus-visible{outline:3px solid #d5a54d;outline-offset:-3px}
+#ringMessage{font:13px 'Courier New',monospace;min-height:24px}

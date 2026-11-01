@@ -2,6 +2,8 @@
 
 **One city. Countless lives. Every choice has consequences.**
 
+An optional **top-down sparring ring** now runs with the existing 32x32 art and room model. WASD moves, left click punches and hold right click blocks; stamina only partially returns between rounds. It is practice-only with no cash, injury, world-time or championship effects. See docs/RELEASE-NOTES-v0.7.47-dev.md.
+
 *Capital & Consequence* is a single-player, alternate-history life simulation set in Washington, D.C., beginning in **1878**. Build a life in a changing city where your work, money, relationships, reputation, and decisions can affect what happens next.
 
 The character condition system now tracks **hunger, thirst, and energy** against Washington's actual saved game clock. Characters receive brief non-modal alerts when they become hungry, thirsty, or tired, without being offered a destination menu or teleported anywhere. Charles's coffee, water, snack, and rest breaks now have shared and individual in-game cooldowns, and the factory break room follows the same rules. Home meals and restaurant/café service are future location-based systems, not falsely advertised as playable. The factory screen is planned to show its **top-down production room first**, with existing production and management tools in collapsible sections beneath it; that visual redesign is not yet implemented. See `docs/RELEASE-NOTES-v0.7.46-dev.md`.
