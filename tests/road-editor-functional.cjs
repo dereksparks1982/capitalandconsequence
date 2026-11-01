@@ -81,7 +81,25 @@ assert.equal(editor.isEditing(),false);
 assert.equal(node('titleMapRoadEdit').attrs['aria-expanded'],'false');
 event('titleMapRoadEdit','click');
 assert.equal(editor.getStatus().streets,1,'Editor reloads existing streets');
-assert.ok(node('titleMapRoadStatus').textContent.includes('FREEHAND STREET: LEFT-drag to draw. RIGHT-drag to pan.'),
- 'Road editor displays the actual manual-paint mode on reopening');
+assert.equal(editor.getStatus().mode,'line','Reopening preserves the selected precise-line tool');
+assert.ok(node('titleMapRoadStatus').textContent.includes('PRECISE STREET: left-click two endpoints. RIGHT-drag to pan.'),
+ 'Reopened editor explains the selected two-click line tool');
 assert.equal(editor.getStatus().blocks,0);
+node('titleMapRoadMode').value='road';event('titleMapRoadMode','change');
+assert.ok(node('titleMapRoadStatus').textContent.includes('FREEHAND STREET: LEFT-drag to draw. RIGHT-drag to pan.'),
+ 'Switching to freehand displays the proper left-drag / right-pan instructions');
+const beforeFreehand=saved.customRoadLayout.segments.length;
+event('titleMapRoadCanvas','pointerdown',{button:2,clientX:340,clientY:190});
+event('titleMapRoadCanvas','pointermove',{button:2,clientX:455,clientY:220});
+event('titleMapRoadCanvas','pointerup',{button:2,clientX:455,clientY:220});
+assert.equal(saved.customRoadLayout.segments.length,beforeFreehand,'Right mouse never paints streets');
+event('titleMapRoadCanvas','pointerdown',{clientX:340,clientY:190});
+event('titleMapRoadCanvas','pointermove',{clientX:455,clientY:220});
+event('titleMapRoadCanvas','pointerup',{clientX:455,clientY:220});
+assert.ok(saved.customRoadLayout.segments.length>beforeFreehand,'Left drag actually saves freehand streets');
+const firstPoint=saved.customRoadLayout.segments[beforeFreehand].a;
+assert.ok(Math.abs(firstPoint.x-340/900)<.000001&&Math.abs(firstPoint.y-190/500)<.000001,
+ 'Freehand street begins at exact initial mouse location, not an offset');
+event('titleMapRoadUndo','click');
+assert.equal(saved.customRoadLayout.segments.length,beforeFreehand,'Undo removes entire painted stroke');
 console.log('PASS native Canvas2D road editor, manual freehand plus precise line, brush ('+many+'), rectangle, erase, undo, street save, panel controls');
