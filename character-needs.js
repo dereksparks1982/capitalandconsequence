@@ -54,7 +54,7 @@ function sync(save){
  if(passed>0){
   for(const [key,rate] of Object.entries(RATES)){
    const previousMeter=state.meters[key];
-   const nextMeter=clamp(previousMeter-passed*rate);
+   const nextMeter=clamp(previousMeter-(key==='energy'&&save.sleepingAtHome===true?0:passed*rate));
    state.meters[key]=nextMeter;
    if(key==='hunger'||key==='thirst'){
     const depleted=rate>0?Math.max(0,passed-Math.max(0,previousMeter)/rate):0;
@@ -85,6 +85,19 @@ function sync(save){
   events.push({kind:'health',minute:now,text:'Your health is poor. You need medical attention.'});
  }else if(state.meters.health>50)state.warned.health=false;
  return {ok:true,events,meters:{...state.meters},minute:now};
+}
+function finishSleep(save,sleptMinutes){
+ const clock=sync(save);
+ if(!clock.ok)return {ok:false,reason:clock.reason};
+ const minutes=Math.max(0,Math.floor(Number(sleptMinutes)||0)),state=ensure(save);
+ if(minutes<1)return {ok:false,reason:'No rest was completed.'};
+ // A substantive period of sleep, not a fifteen-minute nap, contributes to
+ // recovery from repeated exhaustion. Once per saved calendar date at most.
+ if(minutes>=240)root.FE_MEDICAL_RECORDS?.onSleep?.(save);
+ const limit=root.FE_MEDICAL_RECORDS?.energyCap?.(save)??100;
+ state.meters.energy=Math.max(0,Math.min(limit,state.meters.energy+minutes/60*14));
+ if(state.meters.energy>THRESHOLDS.energy+15)state.warned.energy=false;
+ return {ok:true,minutes,energy:state.meters.energy,cap:limit};
 }
 function overnight(save){
  const at=minute(save),state=ensure(save);
@@ -197,7 +210,7 @@ function status(save,key){
  if(!result.ok&&result.remaining)return 'Available at '+formatClock(result.availableAt)+' ('+formatDuration(result.remaining)+')';
  return result.reason||'Unavailable';
 }
-const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,PROVISIONS,minute,sanitize,ensure,sync,overnight,take,eatProvision,provisionAvailability,applyInjury,treat,availability,status,formatDuration,formatClock});
+const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,PROVISIONS,minute,sanitize,ensure,sync,finishSleep,overnight,take,eatProvision,provisionAvailability,applyInjury,treat,availability,status,formatDuration,formatClock});
 root.FE_CHARACTER_NEEDS=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
