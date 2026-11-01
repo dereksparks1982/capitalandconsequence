@@ -1,3 +1,15 @@
+## 31 October 2026 · v0.7.46-dev: saved hunger/thirst, real breaks and future room-first factory
+- [x] Human needs accrue with the authoritative Washington world calendar. Character hunger, thirst and energy persist with profile saves; crossing a threshold produces one non-modal notification until that need has been meaningfully restored.
+- [x] **No destination-choice buttons:** alerts never force travel, provide a teleporter or ask the player to choose home/café/restaurant. Food and drink must eventually be accessed through genuine physical locations.
+- [x] Four desk activities: coffee, water, small snack and rest. Separate per-item locks plus **90-minute shared lock**; disabled choices display the actual next available game time.
+- [x] Factory refreshments including tea and biscuit share these limits with the desk. Individual purchases still use personal funds; existing factory duration/cost rules remain intact.
+- [x] Handle negative pre-1970 worldMinute timestamps correctly for 1878. The condition remains frozen when the Washington simulation is frozen, and survives save/load without a second clock.
+- [x] Add `character-needs.js`, `character-needs-ui.js`, `character-needs.css`, and two source tests. Focused source QA passed.
+- [x] Document proposed **top-down factory production room first, existing management functions below in independently collapsible panels**, with disclosure states persisted. See `docs/FACTORY-ROOM-FIRST-MANAGEMENT-BELOW-2026-10-31.md`.
+- [ ] The factory-screen redesign, home cooking, café/restaurant dining, household meals, purchasable provisions and NPC needs integration are **future work**, not implemented in this checkpoint.
+- [ ] Full local Node suite, Linux Electron visual/play regression, and owner acceptance remain outstanding; no GitHub Actions, terminal commands, executable or release tag.
+- [ ] See `docs/RELEASE-NOTES-v0.7.46-dev.md`.
+
 ## 31 October 2026 · v0.7.45-dev: original tile-toolkit build and license-aware source study
 - [x] Verify Project Porcupine and Open World Builder are **GPL-3.0**, while Ogmo Editor 3 CE, 2dtiler, and Space Station 14 content code advertise **MIT**; their artworks and engines require separate file-by-file analysis. Never import GPL code or unreviewed sprites into this game's existing license.
 - [x] Document what to learn versus what not to integrate in `docs/OPEN-SOURCE-TILE-GAME-LESSONS-2026-10-31.md`, including original engineering equivalents and remaining game-system gaps.
