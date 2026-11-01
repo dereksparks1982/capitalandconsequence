@@ -1,3 +1,14 @@
+## 1 November 2026 · v0.7.63-dev: real touring wagons and NPC encounters
+- [x] Register the visiting tarot reader and Silas Pike as special NPCs with saved identity, ordinary conversation cards and actual physical presence, not another phantom list of map markers.
+- [x] Schedule a horse-drawn wagon approach and departure for each during the recurring circus engagement; route only on valid streets and calculate trip time from the actual road distance.
+- [x] Show wagon silhouettes only to characters who have already heard about or met the traveler, and never reveal their private destinations.
+- [x] Exclude the visitors from ordinary resident payroll, workplaces and weekly routines; do not duplicate wages or simulate imaginary employment.
+- [x] Prevent the circus tent from remaining visible during departures; preserve the historical engagement in the save only long enough for the real wagon ride to finish.
+- [x] Ensure a visitor's room conversation and discovery depend on the character actually being at the same location.
+- [x] Add a source-only regression covering real travel clock, map discovery, room-only NPC encounters and departure.
+- [ ] Native Linux visual acceptance, complete Node regression suite, original painted cards and full wooden wagon interiors still outstanding.
+- [ ] Add merchant bargaining, meaningful item effects, more crimes with witnesses and victims, and full animated carnival physics in future substantive builds.
+
 ## 1 November 2026 · v0.7.62-dev: genuine second sight and persistent map location
 - [x] The fortune-teller may rarely read a genuine hidden event even if nobody told her; her saved cards and words stay fixed.
 - [x] Record underworld wagers and unreported company withdrawals only when actual gameplay actions succeed; never fabricate crimes.
