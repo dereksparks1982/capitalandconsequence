@@ -1,3 +1,16 @@
+## 1 November 2026 · v0.7.44-dev: printed broadsheet + navigable office editor
+- [x] The Metropolitan Ledger live page now uses a date-stamped, three-column 1878 printed-newspaper design, large masthead and period rules; no published story or public dispatch content replaced.
+- [x] Archive cards reopen stored prior issues, with frozen financial narrative for newly saved editions. Legacy missing fields are disclosed rather than fabricated. Original archives remain intact.
+- [x] Optional crude 16×12 demonstration office available in the room editor, but does not override any saved/approved owner design.
+- [x] Room reachability/exit inspector, tile pathfinder, mouse grab-offset preservation, keyboard furniture nudges, non-destructive door and walking tests, backup and restore.
+- [x] Block characters from walls, solid furniture and Charles's occupied spawn in placement, import and move operations.
+- [x] Saved executive office scene supports proximity-bound **E / click desk** to open Charles's real desk; real character/location/session checks, no additional travel or teleport.
+- [x] New `tests/metropolitan-newspaper-print.cjs`, `tests/office-scene-interaction.cjs`; expanded `tests/room-builder-core.cjs`. Four focused compatibility-harness checks passed without GitHub Actions.
+- [ ] Still requires full local Linux Electron and mouse/UI acceptance. No executable/release or owner test requested yet.
+- [ ] After approved office layout: expand shared tile tools to factory rooms; then eventually other locations and District Asylum (documented separately, spoiler-free).
+- [ ] No approved Washington map geometry, 40 pins, executive UI or old 69-sprite appearance moved.
+- [ ] See `docs/RELEASE-NOTES-v0.7.44-dev.md`.
+
 ## 31 October 2026 · v0.7.43-dev: visible world clock and real return journey
 - [x] Remove instant long-distance `Return to Executive Desk` travel shortcut. Only Charles, while physically at Federal Electric, sees this button; other rooms have `Return to Map` and proper map travel.
 - [x] Same-factory desk return still records one minute, refuses failed debit, and never changes location before a successful room move.
