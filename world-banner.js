@@ -51,7 +51,13 @@ function create(place){
  const needs={};
  for(const [key,label] of [['health','Health'],['hunger','Hunger'],['thirst','Thirst'],['energy','Energy']]){
   const item=document.createElement('div');item.className='cc-world-condition-item';
-  const heading=document.createElement('b');heading.textContent=label;
+  const heading=document.createElement(key==='health'?'button':'b');heading.textContent=label;
+  if(key==='health'){
+   heading.type='button';heading.className='character-medical-link';
+   heading.title='Open your personal medical file';
+   heading.setAttribute('aria-label','Open medical file');
+   heading.addEventListener('click',()=>root.FE_MEDICAL_UI?.open?.());
+  }
   const meter=document.createElement('progress');meter.max=100;meter.value=100;
   meter.setAttribute('aria-label',label);
   const output=document.createElement('span');output.textContent='100';
