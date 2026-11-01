@@ -52,3 +52,9 @@
 #roomBuilderLiveScene .rb-live-view{overflow:auto;max-width:100%;padding:6px;background:#121411}
 #roomBuilderLiveScene canvas{display:block;max-width:100%;height:auto;image-rendering:pixelated;margin:auto;outline-offset:3px}
 #roomBuilderLiveScene p{margin:5px 0;font-size:12px}
+
+.room-builder-editor .rb-canvas-tools input[type=number]{
+ width:54px;min-height:31px;padding:4px;background:#e9dec3;color:#262119;
+ border:1px solid #8a7858;margin-left:5px
+}
+.room-builder-editor .rb-canvas-tools button{min-height:32px;padding:4px 8px;font-size:12px}
