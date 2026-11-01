@@ -19,6 +19,8 @@ async function run(change){
   capitalTravelMode:mode,titleMapTravelNote:{textContent:''}};
  const ctx={
   S:save,titleMapPinEdit:false,titleMapSelectedLocationId:'star',
+  $:id=>widgets[id.replace(/^#/,'')]||{textContent:''},
+  clockText:()=> '9:00 AM',displayHeaderDate:()=> '2 January 1878',displayHeaderTurn:()=> 'Day 1',
   capitalTravelBusy:false,TITLE_MAP_LOCATIONS:[origin,dest],
   titleMapState:{x:0,y:0,scale:1},
   document:{getElementById:key=>widgets[key]||null},
