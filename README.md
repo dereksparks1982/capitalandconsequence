@@ -41,6 +41,24 @@ This compatibility mode has not yet passed the actual packaged desktop smoke
 test; successful local Linux build and download-ZIP QA remain prerequisites
 for claiming a release.
 
+## Clean project folder (no rebuild)
+
+The project root contains two current Linux binaries: `capitalandconsequence`
+(the native launcher) and `capitalandconsequence-runtime` (the full Electron
+application). Both are required. All bundled Chromium support files,
+`resources/`, `locales/`, assets, source code, docs, and player saves must
+remain untouched.
+
+`python3 scripts/clean-project.py` safely moves obsolete legacy
+executables (`capital-consequence`, `capital-consequence-bin`) and temporary
+build folders, old Linux packages and logs into a dated
+`~/DKLab/Archives/Capital-Consequence-cleanup-*/` folder. It checks both
+current ELF files and the packaged resources before touching anything. Other
+unrecognized user files stay put and are reported. For a preview, use
+`python3 scripts/clean-project.py --dry-run`. A successful local executable
+build also performs this cleanup automatically. No network, sudo, password,
+additional build or GitHub Actions is needed once the script is present.
+
 ## Linux runnable-game acceptance rule
 
 The requested game format is a self-contained Linux x64 root-level **ELF executable named `capitalandconsequence`**, with its complete `resources/`, `locales/` and other Electron runtime files at the top level of the **same repository**. Players must be able to extract GitHub's repository ZIP and double-click that executable. An AppImage, a source-only checkout, a shell wrapper, or a downloader does **not** meet the requirement.

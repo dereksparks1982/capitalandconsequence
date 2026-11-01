@@ -182,6 +182,18 @@ function run(){
  }
  install(dir);
  const final=inspect(root);
+ // Clean obsolete copies after a successful installation without touching the
+ // current paired ELFs or root runtime. A cleanup warning never uninstalls a
+ // valid game or invents a passing packaged smoke test.
+ const cleaner=path.join(root,'scripts','clean-project.py');
+ if(fs.existsSync(cleaner)){
+  const sweep=cp.spawnSync('python3',[cleaner],{
+   cwd:root,encoding:'utf8',timeout:120000,maxBuffer:2*1024*1024
+  });
+  if(sweep.status===0&&sweep.stdout)console.log(sweep.stdout.trim());
+  else console.warn('Project cleanup was skipped: '+
+   (sweep.error?.message||sweep.stderr||'Exit '+sweep.status).slice(-600));
+ }
  console.log('LINUX GAME EXECUTABLE INSTALLED: '+final.executable);
  console.log(smokePassed?'PACKAGED ELECTRON SMOKE TEST PASSED.':
   'PACKAGED SMOKE TEST DID NOT PASS. The runnable ELF and complete runtime are installed for manual gameplay testing. This is NOT an accepted/released build.');

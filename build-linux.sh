@@ -8,10 +8,10 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const crypto=require('node:crypto'),vm=require('node:vm');
 async function main(){
  const root=process.cwd(),archive=path.join(root,'resources/app.asar');
- const launcher=path.join(root,'capital-consequence');
+ const launcher=path.join(root,'capitalandconsequence');
  if(process.platform!=='linux'||process.arch!=='x64')throw Error('Ubuntu/Linux x64 is required.');
  if(!fs.existsSync(launcher)||!(fs.statSync(launcher).mode&0o111))
-  throw Error('Existing capital-consequence executable not found in project root.');
+  throw Error('Existing capitalandconsequence executable not found in project root.');
  if(!fs.existsSync(archive))throw Error('Existing resources/app.asar not found.');
  const asar=require('@electron/asar');
  const files=fs.readdirSync(root,{withFileTypes:true})
