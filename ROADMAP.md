@@ -1,3 +1,15 @@
+## 31 October 2026 · v0.7.45-dev: original tile-toolkit build and license-aware source study
+- [x] Verify Project Porcupine and Open World Builder are **GPL-3.0**, while Ogmo Editor 3 CE, 2dtiler, and Space Station 14 content code advertise **MIT**; their artworks and engines require separate file-by-file analysis. Never import GPL code or unreviewed sprites into this game's existing license.
+- [x] Document what to learn versus what not to integrate in `docs/OPEN-SOURCE-TILE-GAME-LESSONS-2026-10-31.md`, including original engineering equivalents and remaining game-system gaps.
+- [x] Add `room-builder-kit.js` as the original, dependency-free 32×32 toolkit: connected-region flood fill, rectangular construction/floor painting, eyedropper, atomic collision-validated edits, visual layer awareness.
+- [x] Expand DEV Room Builder UI with painting mode controls, named blueprint save/open/delete (separate from active career and current office), category-aware object descriptions, and clickable/keyboard-accessible tools.
+- [x] Define truthful furniture behavior metadata and a room-path audit of approachable workstations/storage/seating. Existing real executive desk action remains the only concrete furniture gameplay interaction; no fictitious NPC wages or inventories.
+- [x] Repair solid furniture/actor overlap in **both placement orders**, movement, and import validation; keep existing approved map, office UI geometry and sprites unchanged.
+- [x] New `tests/room-builder-kit.cjs`; expanded room-builder core regressions. Focused editor core/toolkit checks passed using fetched GitHub source, not a live Electron run.
+- [ ] **Not accepted:** complete offline Node suite, live Ubuntu Electron mouse/keyboard pass, updated newspaper visual acceptance, named blueprint restore in the actual app.
+- [ ] Next after owner-approved Charles office: connect object positions to real NPC work slots and factory operations. Other factory rooms and asylum art remain later.
+- [ ] No GitHub Actions, new executable/release/tag, third-party dependency, user testing command, or unauthorized map/UI movement.
+
 ## 1 November 2026 · v0.7.44-dev: printed broadsheet + navigable office editor
 - [x] The Metropolitan Ledger live page now uses a date-stamped, three-column 1878 printed-newspaper design, large masthead and period rules; no published story or public dispatch content replaced.
 - [x] Archive cards reopen stored prior issues, with frozen financial narrative for newly saved editions. Legacy missing fields are disclosed rather than fabricated. Original archives remain intact.
