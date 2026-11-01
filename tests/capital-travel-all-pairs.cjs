@@ -5,7 +5,7 @@ const travel=require('../capital-travel-system.js');
 const ctx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../city.js'),'utf8'),ctx);
 const pins=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(pins.length,40,'All approved Washington destinations remain registered');
+assert.equal(pins.length,42,'All 42 approved Washington destinations remain registered');
 const original=JSON.stringify(pins);
 let checked=0;
 for(let i=0;i<pins.length;i++)for(let j=0;j<pins.length;j++){
@@ -27,7 +27,7 @@ for(let i=0;i<pins.length;i++)for(let j=0;j<pins.length;j++){
  }
  checked++;
 }
-assert.equal(checked,1560,'All 40 x 39 ordered destination pairs checked');
+assert.equal(checked,pins.length*(pins.length-1),'All 42 x 41 ordered destination pairs checked');
 assert.equal(JSON.stringify(pins),original,'No routing operation may rewrite approved pin defaults');
 assert.ok(global.FE_CAPITAL_STREETS.diagnostic().cachedTrees<=48,'Road cache has a strict upper bound');
-console.log('PASS all 1560 directed Washington journeys, reverse-distance agreement, stable pins and bounded cache');
+console.log('PASS all 1722 directed Washington journeys, reverse-distance agreement, stable pins and bounded cache');

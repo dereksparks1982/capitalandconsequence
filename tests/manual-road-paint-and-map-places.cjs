@@ -76,9 +76,10 @@ assert.equal(editor.getStatus().editing,true);
 assert.ok(saved>0,'manual roads and building marks are persisted');
 const window={};vm.runInNewContext(citySrc,{window});
 const city=window.FederalElectricCity,places=city.listLocations();
-assert.equal(places.filter(x=>x.map).length,41);
+assert.equal(places.filter(x=>x.map).length,42);
 const ford=city.getLocation('fordsTheatre');
 assert.equal(ford.map.n,41);
+assert.equal(city.getLocation('centerMarket').map.n,42,'Center Market is independently numbered and visitable');
 assert.ok(ford.rooms.some(r=>r.id==='theatre-lobby'));
 for(const p of places.filter(p=>p.map)){
  assert.equal(p.availableFrom,undefined,'map-visible places never have starting-year gates');

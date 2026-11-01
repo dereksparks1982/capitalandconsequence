@@ -7,8 +7,8 @@ const patrol=require('../patrol-duty.js');
 assert.equal(patrol.travel({characterRoute:'investigator'},'oldChinatown').ok,true,'Off-duty Sam can go to Chinatown');
 assert.equal(patrol.travel({characterRoute:'investigator',patrolDuty:{onDuty:true}},'oldChinatown').ok,false,'Duty-bound Sam cannot leave his beat');
 const day='1890-01-03',employee={kind:'npc',id:'foremanSullivan',workplaceId:'factory',onDuty:true};
-assert.equal(city.listLocations().length,40);
-assert.equal(city.mapLocations().length,40);
+assert.equal(city.listLocations().length,42);
+assert.equal(city.mapLocations().length,42);
 assert.equal(access.canRoom(city,{route:'industrialist'},'factory','executive-office',day).ok,true);
 assert.equal(access.canRoom(city,{route:'industrialist'},'factory','production-floor',day).ok,true);
 assert.equal(access.canRoom(city,{route:'investigator'},'factory','executive-office',day).ok,false);
@@ -28,9 +28,9 @@ assert.equal(access.canRoom(city,{route:'industrialist'},'potomacFishingBank','r
 assert.equal(access.canRoom(city,{route:'industrialist'},'franciscanMonastery','monastery-grounds','1878-01-02').ok,true,'Historical monastery grounds accessible as a city destination');
 for(const id of ['cobblerShop','easternMarket','georgetownMarketHouse']){const loc=city.getLocation(id);assert.ok(loc);assert.equal(loc.category,'commerce');assert.equal(access.canRoom(city,{route:'industrialist'},id,loc.defaultRoom,'1878-01-02').ok,true,id+' open to visitors')}
 assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1878-01-02').ok,true);
-assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1889-01-02').ok,false,'Filled-in Babcock Lake is inaccessible');
+assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1889-01-02').ok,true,'Mapped Babcock Lake is accessible in the alternate-history game');
 assert.equal(access.canRoom(city,{kind:'npc',id:'visitor'},'home','front-room',day).ok,false);
-assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'capitalSpeedway','1878-01-02').ok,false);
+assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'capitalSpeedway','1878-01-02').ok,true,'Mapped motor track is open regardless of calendar year');
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'licensedGamingHall',day).ok,false);
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'privateFightHall',day).ok,false);
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor',invitations:['privateFightHall']},'privateFightHall',day).ok,true);
@@ -43,4 +43,4 @@ assert.deepEqual(mobility.visit(city,employee,c),result);
 const outsider=mobility.visit(city,{kind:'npc',id:'visitor'},c);
 assert.notEqual(outsider.roomId,'executive-office');
 for(const loc of city.listLocations())assert.ok(loc.rooms.length,'Addressable room required: '+loc.id);
-console.log('PASS city access, 40 locations, staff workrooms and deterministic NPC presence');
+console.log('PASS city access, 42 locations, staff workrooms and deterministic NPC presence');

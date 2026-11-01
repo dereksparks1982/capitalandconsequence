@@ -21,11 +21,11 @@ assert.ok(road.accessPixels>=0);
 const ctx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../city.js'),'utf8'),ctx);
 const pins=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(pins.length,40);
+assert.equal(pins.length,42);
 for(const p of pins){
  if(p.id==='factory')continue;
  const r=travel.route(a,{x:p.x,y:p.y});
- assert.ok(r.length>=2,'All 40 pin locations obtain a modeled road journey: '+p.id);
+ assert.ok(r.length>=2,'All 42 pin locations obtain a modeled road journey: '+p.id);
  assert.ok(r.routeType.startsWith('provisional-street-'),
   'Road model must not silently fall back for a known Washington pin: '+p.id);
  const m=travel.estimate(r);
@@ -40,4 +40,4 @@ for(let i=1;i<whiteHouseCrossing.length;i++){
   midpoint.y<=rect.y0||midpoint.y>=rect.y1,
   'Transit avoids central landmark instead of walking through its building');
 }
-console.log('PASS integrated graph across all 40 pins, diagonal roads, landmark avoidance and dynamic time');
+console.log('PASS integrated graph across all 42 pins, diagonal roads, landmark avoidance and dynamic time');
