@@ -1,0 +1,16 @@
+/* Intentionally primitive in-room food panels; original map and room geometry unchanged. */
+.cc-household-food{padding:12px;margin:10px 0;border:2px solid #584b38;background:#e5d7b7;color:#362d21;max-height:55vh;overflow:auto}
+.cc-household-food[hidden]{display:none}
+.cc-household-food h4,.cc-household-food h5{margin:9px 0 6px}
+.cc-household-food .cc-food-grid,.cc-household-food .cc-food-recipes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.cc-household-food .cc-food-row{border:1px solid #857454;background:#f2e4c8;display:flex;flex-direction:column;gap:6px;padding:7px;min-width:0}
+.cc-household-food .cc-food-description{display:grid;gap:3px;overflow-wrap:anywhere}
+.cc-household-food .cc-food-description small{font-size:.82em}
+.cc-household-food .cc-food-actions{display:flex;gap:5px;flex-wrap:wrap}
+.cc-household-food button,.cc-household-food select,.cc-household-food input{font:inherit;max-width:100%}
+.cc-household-food button{border:1px solid #594630;background:#d9c79e;color:#29231b;padding:4px 8px;cursor:pointer}
+.cc-household-food button:disabled{opacity:.5;cursor:default}
+.cc-household-food :focus-visible{outline:3px solid #32646b;outline-offset:2px}
+.cc-household-food .cc-food-container{margin:5px 0;padding:5px;border:1px solid #857454}
+.cc-household-food .cc-food-container .cc-food-row{margin-top:5px}
+.cc-household-food [data-food-status]:empty{display:none}

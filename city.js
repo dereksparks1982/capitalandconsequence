@@ -198,7 +198,7 @@
    rooms:[
     {id:'front-room',name:'Front Room',description:'An unfurnished placeholder for the sitting room of the player’s Washington home.'},
     {id:'bedroom',name:'Bedroom',description:'A private room with a plain wooden belongings chest, a sleeping place and an old wind-up bell alarm.'},
-    {id:'kitchen',name:'Kitchen',description:'A household kitchen shell, awaiting period-accurate furnishings and domestic routines.'},
+    {id:'kitchen',name:'Kitchen',description:'A simple kitchen with working pantry, larder, icebox, cookbooks and timed food preparation.'},
     {id:'storage',name:'Household Storage',description:'An addressable storage room. Personal possessions will remain here only when a storage system is implemented.'},
     {id:'private-stable',name:'Private Stable and Carriage House',restricted:true,description:'The modest rear outbuilding holds Charlie’s own horses, wagons, feed, harness and a covered carriage bay. Initially empty; animals only arrive through actual trips.'}
    ]
