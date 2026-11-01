@@ -141,10 +141,23 @@ function buildPages(save,{publicFile}={}){
  pages.push(...(root.FE_MISSIONS?.pages?.(save)||[]));
  pages.push(...(root.FE_LIFE_HISTORY?.pages?.(save)||[]));
  pages.push(...fromNotes(save));
- pages.push({id:'notes',section:'Private Writing',title:'My Own Words',
-  kicker:'Handwritten notes · saved only with this playable life',
-  paragraphs:['These words belong to the player. They do not become NPC evidence, a police report, or a completed mission.'],
-  items:[],editable:true,note:txt(save.personalBookNotes||'',4000)});
+ // Preserve older single-field notes without silently overwriting them.
+ // Each new entry occupies a permanent dated page in this *character's* book.
+ const legacy=txt(save.personalBookNotes||'',4000);
+ if(legacy.trim())pages.push(page('private-legacy','Private Writing','Earlier Private Notes',
+  'Retained from the original single-page notebook',
+  [legacy]));
+ const written=Array.isArray(save.personalBookEntries)?save.personalBookEntries:[];
+ written.filter(entry=>entry&&typeof entry.text==='string'&&entry.text.trim())
+  .slice(-250).forEach((entry,i)=>{
+   const date=txt(entry.date||'Undated',40);
+   pages.push(page('private-entry:'+(entry.id||i),'Private Writing',
+    'My Own Words · Entry '+(i+1),date,[txt(entry.text,4000)]));
+  });
+ pages.push({id:'notes',section:'Private Writing',title:'Write a New Entry',
+  kicker:'New private page · saved only with this playable life',
+  paragraphs:['Write, then choose Save Entry. The completed entry becomes a dated page you can return to. Private writing does not become NPC evidence or an official report.'],
+  items:[],editable:true,note:''});
  return pages;
 }
 const api=Object.freeze({buildPages,DATA});
