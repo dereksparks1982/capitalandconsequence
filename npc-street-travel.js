@@ -150,7 +150,7 @@ function render(save,viewport,project,visible,onSelectDestination){
  }
  return count;
 }
-const api=Object.freeze({plan,progress,valid,render,clear});
+const api=Object.freeze({plan,progress,valid,render,clear,iconKind});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_NPC_STREET_TRAVEL=api;
 })(typeof window!=='undefined'?window:globalThis);
