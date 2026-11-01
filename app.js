@@ -3070,12 +3070,6 @@ function initTitleDevPanel(){
  };
  handle.addEventListener('pointerup',release);
  handle.addEventListener('pointercancel',release);
- document.getElementById('titleDevCollapse')?.addEventListener('click',()=>{
-  panel.classList.toggle('is-collapsed');
-  const collapsed=panel.classList.contains('is-collapsed');
-  document.getElementById('titleDevCollapse').textContent=collapsed?'+':'−';
-  document.getElementById('titleDevCollapse').setAttribute('aria-label',collapsed?'Expand developer panel':'Collapse developer panel');
- });
  document.getElementById('titleDevDayNight').onclick=toggleTitleEnvironmentDev;
  document.getElementById('titleDevInfiniteMoney').onclick=toggleTitleDevInfiniteMoney;
  document.getElementById('titleDevUnlockAllRooms').onclick=toggleTitleDevUnlockAllRooms;
