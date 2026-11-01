@@ -1,0 +1,26 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'..','app.js'),'utf8');
+const medical=fs.readFileSync(path.join(__dirname,'..','medical-records-ui.js'),'utf8');
+const needs=require('../character-needs.js');
+const start=Math.floor(Date.parse('1878-01-02T08:00:00Z')/60000);
+const save={worldCalendarStatus:'ready',worldCalendar:{worldMinute:start},characterRoute:'industrialist',phase:'night'};
+const initial=needs.ensure(save);
+assert.equal(initial.meters.energy,80,'new players start alert, not magically fully rested');
+assert.equal(needs.RATES.energy>0,true,'energy falls throughout active game time');
+save.worldCalendar.worldMinute+=60;
+needs.sync(save);
+assert.equal(save.characterNeeds.meters.energy,74.9,'energy declines with elapsed in-game minutes');
+assert.equal(needs.CONFIG.coffee.effects.energy>0,true,'coffee provides real temporary energy');
+assert.equal(needs.CONFIG.rest.effects.energy>0,true,'rest breaks provide temporary energy');
+assert.match(app,/if\(S\.sleepingAtHome===true&&currentCityLocation\(\)\.locationId==='home'/,
+ 'only deliberate overnight sleep restores energy');
+assert.match(app,/S\.sleepingAtHome=false;/,'bedtime is never permanent after midnight');
+assert.match(app,/function sleepAtHome\(\)/);
+assert.match(app,/p\.locationId!=='home'\|\|p\.roomId!=='bedroom'/,'bedroom required');
+assert.match(app,/S\.phase!=='night'/,'bedtime uses the existing night phase');
+assert.match(app,/advanceWorldSimulation\(seconds,true,'sleep'\)/,'sleep passes through authoritative world clock');
+assert.match(app,/kind!=='medical'&&kind!=='sleep'&&humanCondition\?\.ok/,'sleep itself does not cause a fictitious collapse');
+assert.match(med,/Sleep Until 8 AM/);
+assert.match(med,/save\.phase==='night'/);
+console.log('PASS deliberate home bed rest, world-time energy depletion, no free overnight recovery, coffee remains temporary');
