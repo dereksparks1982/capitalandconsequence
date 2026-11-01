@@ -61,10 +61,16 @@ function scenario(route){
  assert.ok(ids.includes('boyMercer'),'Boy Mercer is simulated as a separate Washington resident');
  assert.equal(npc.inspect('boyMercer')?.economy?.earnedCents,0,'Boy earns no invented wages');
  assert.equal(Object.values(main).filter(id=>ids.includes(id)).length,3);
- assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
+ // Touring visitors have a separate wagon itinerary, never a fictional
+ // resident physiology or permanent employment file.
+ const residents=ids.filter(id=>!!S.npcSimulation.agents[id]);
+ assert.equal(residents.length,22,'22 independent resident agents; two visitors follow touring schedules');
+ assert.equal(S.npcSimulation.agents['visiting-fortune-teller'],undefined);
+ assert.equal(S.npcSimulation.agents.silasPike,undefined);
+ assert.ok(residents.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
    S.npcSimulation.agents[id]?.needs?.version===1),
   'Every currently eligible simulated character keeps saved individual needs');
- assert.ok(ids.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
+ assert.ok(residents.every(id=>S.npcSimulation.agents[id]?.status==='inactive'||
    S.npcSimulation.agents[id]?.lifePlan?.version===1),
   'Every currently active resident keeps a separate saved personal plan');
  assert.equal(S.npcSimulation.agents[main[route]],undefined,

@@ -81,6 +81,7 @@ assert.equal(editor.isEditing(),false);
 assert.equal(node('titleMapRoadEdit').attrs['aria-expanded'],'false');
 event('titleMapRoadEdit','click');
 assert.equal(editor.getStatus().streets,1,'Editor reloads existing streets');
-assert.ok(node('titleMapRoadStatus').textContent.includes('Editor open'));
+assert.ok(node('titleMapRoadStatus').textContent.includes('FREEHAND STREET: LEFT-drag to draw. RIGHT-drag to pan.'),
+ 'Road editor displays the actual manual-paint mode on reopening');
 assert.equal(editor.getStatus().blocks,0);
 console.log('PASS native Canvas2D road editor, manual freehand plus precise line, brush ('+many+'), rectangle, erase, undo, street save, panel controls');

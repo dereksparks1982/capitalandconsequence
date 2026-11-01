@@ -21,10 +21,12 @@ const onShift=mobility.visit(city,{...actor,onDuty:true,workplaceId:'races'},bas
 assert.equal(onShift.locationId,'races','Shift cannot be overridden by personal intent');
 const priority=mobility.visit(city,actor,{...base,priorityDestination:true});
 assert.equal(priority.locationId,'races','A settled wager has location priority');
-for(const forbidden of ['home','licensedGamingHall','privateFightHall','notAPlace']){
+for(const forbidden of ['home','privateFightHall','notAPlace']){
  const result=mobility.visit(city,actor,{...base,preferredDestination:forbidden});
  assert.notEqual(result.locationId,forbidden,'Intentions cannot bypass '+forbidden);
 }
+assert.equal(access.canLocation(city,actor,'licensedGamingHall',date).ok,true,
+ 'Mapped public gaming hall is visitable, but proposed casino games remain unavailable');
 assert.equal(access.canRoom(city,actor,'factory','executive-office',date).ok,false);
 assert.equal(city.mapLocations().length,42);
 console.log('PASS NPC goal destinations, work and wager precedence, restricted doors and stable replay');
