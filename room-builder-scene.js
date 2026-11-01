@@ -1,0 +1,73 @@
+/* Saved-room renderer for the existing registered Executive Office.
+   Uses the same art and collision model as the editor, while preserving
+   original city-room navigation, permissions, and game-state accounting. */
+(function(root){
+'use strict';
+const api=root.FE_ROOM_BUILDER,C=root.FE_ROOM_BUILDER_CORE;
+if(!api||!C||typeof document==='undefined')return;
+const overlay=document.getElementById('cityRoomOverlay');
+const name=document.getElementById('cityRoomName');
+const description=document.getElementById('cityRoomDescription');
+if(!overlay||!name||!description)return;
+const section=document.createElement('section');section.id='roomBuilderLiveScene';
+section.setAttribute('aria-label','Walkable Federal Electric executive office');
+section.hidden=true;
+section.innerHTML='<h4>Federal Electric · Executive Office Floorplan</h4>'+
+ '<div class="rb-live-view"><canvas tabindex="0" aria-label="Walk Charles in the executive office with arrows or WASD"></canvas></div>'+
+ '<p class="rb-scene-status" role="status">Click the room, then walk with WASD or arrow keys. Click adjacent doors to toggle them.</p>'+
+ '<p class="rb-scene-help">This room uses your saved editor design. The game’s existing location and room menus still handle travel.</p>';
+description.after(section);
+const canvas=section.querySelector('canvas'),ctx=canvas.getContext('2d'),out=section.querySelector('.rb-scene-status');
+let layout=null,pos=null,activeKey='',facing='front';
+function isOffice(){
+ return !overlay.hidden&&overlay.dataset.locationId==='factory'&&name.textContent.trim()==='Executive Office';
+}
+function draw(){
+ if(!layout||!pos)return;
+ canvas.width=layout.widthTiles*C.TILE;canvas.height=layout.heightTiles*C.TILE;
+ api.drawRoom(ctx,layout,{player:pos,playerFacing:facing});
+}
+function refresh(){
+ if(!isOffice()){section.hidden=true;activeKey='';return;}
+ const data=api.getSaved();
+ if(!data){section.hidden=true;activeKey='';return;}
+ const fingerprint=JSON.stringify(data);
+ if(activeKey!==fingerprint){
+  layout=data;pos={...data.spawns.player};activeKey=fingerprint;facing='front';
+  out.textContent='Room loaded. Click the floorplan, then use arrows or WASD to walk.';
+ }
+ section.hidden=false;draw();
+}
+canvas.addEventListener('keydown',e=>{
+ if(!layout||section.hidden)return;
+ const dirs={arrowup:[0,-1,'back'],w:[0,-1,'back'],arrowdown:[0,1,'front'],s:[0,1,'front'],
+  arrowleft:[-1,0,'left'],a:[-1,0,'left'],arrowright:[1,0,'right'],d:[1,0,'right']};
+ const step=dirs[e.key.toLowerCase()];if(!step)return;
+ e.preventDefault();
+ facing=step[2];
+ const next=C.walk(layout,pos,step[0],step[1]);
+ if(next===pos)out.textContent='Blocked by a wall, door, or solid furniture.';
+ else{
+  pos=next;
+  const tile=layout.walls[C.index(layout,pos.x,pos.y)];
+  out.textContent=tile==='door_open'?
+   'You reached an open doorway. Use the existing room directory or Return to Map to travel.':
+   'Position: '+(pos.x+1)+', '+(pos.y+1)+'.';
+ }
+ draw();
+});
+canvas.addEventListener('click',e=>{
+ if(!layout||section.hidden)return;
+ canvas.focus();
+ const r=canvas.getBoundingClientRect();
+ const x=Math.floor((e.clientX-r.left)/r.width*layout.widthTiles);
+ const y=Math.floor((e.clientY-r.top)/r.height*layout.heightTiles);
+ if(Math.abs(pos.x-x)+Math.abs(pos.y-y)!==1)return;
+ if(C.toggleDoor(layout,x,y)){out.textContent='Door '+(layout.walls[C.index(layout,x,y)]==='door_open'?'opened.':'closed.')+' Design unchanged on disk.';draw();}
+});
+root.FE_ROOM_BUILDER.refreshScene=refresh;
+const observer=new MutationObserver(()=>queueMicrotask(refresh));
+observer.observe(overlay,{attributes:true,attributeFilter:['hidden','data-location-id']});
+observer.observe(name,{childList:true,characterData:true,subtree:true});
+refresh();
+})(window);
