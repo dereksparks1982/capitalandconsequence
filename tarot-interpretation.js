@@ -68,6 +68,27 @@ function facts(save){
  if(meters&&Number(meters.health)<45)out.unshift({id:'health',name:'recent illness or injury',
   observe:'A bodily weakness has made ordinary tasks harder than before.',
   advice:'Even a strong will must answer to an injured body.'});
+ // Refer only to stories the character actually encountered or public
+ // headlines; do NOT read another NPC's secret memories or the murder solver.
+ const recentNotes=Array.isArray(save?.notes)?save.notes.slice(-12):[];
+ const witnessed=recentNotes.map(n=>String(n?.source||'')+' '+String(n?.text||'')).join(' ');
+ const headline=String(save?.headline||'')+' '+String(save?.societyStory||'');
+ if(/\\b(?:murder|corpse|dead body|homicide|investigation)\\b/i.test(witnessed))
+  out.unshift({id:'inquiry',name:'troubling events witnessed',
+   observe:'A dark event has unsettled the ordinary course of your days.',
+   advice:'Attend to what can be proved; fear and rumor are poor witnesses.'});
+ if(/\\b(?:raid|scandal|disgrace|accusation)\\b/i.test(headline)&&route!=='wardman')
+  out.unshift({id:'scandal',name:'public unrest in Washington',
+   observe:'Washington is speaking loudly of scandal and uncertainty.',
+   advice:'Not every public accusation points to a private truth.'});
+ if(/\\b(?:factory shutdown|strike|production suspended|labor unrest)\\b/i.test(witnessed)&&route==='industrialist')
+  out.unshift({id:'interruption',name:'recent disruption at the works',
+   observe:'The work of many hands was lately interrupted.',
+   advice:'A sound enterprise relies on people as surely as on machinery.'});
+ if(save?.circusPerformances?.length)
+  out.push({id:'spectacle',name:'recent public spectacle',
+   observe:'You have lately seen how a crowd can be carried away by spectacle.',
+   advice:'The loudest performance is not always the one that deserves belief.'});
  return out.slice(0,4);
 }
 function cardMeaning(card){
