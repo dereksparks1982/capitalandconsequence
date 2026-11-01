@@ -5,7 +5,7 @@
 'use strict';
 if(typeof document==='undefined')return;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let activeSave=null,resume=null,book=null,emergency=null;
+let activeSave=null,resume=null,bedtime=null,book=null,emergency=null,sleepAction=null;
 function paper(){
  if(book?.isConnected)return book;
  book=document.createElement('section');book.id='ccMedicalBook';book.className='cc-medical-book';book.hidden=true;
@@ -49,12 +49,29 @@ function open(){
  renderFile();paper().hidden=false;paper().querySelector('.cc-medical-close').focus();
  return true;
 }
-function render(save,onWake){
- activeSave=save;resume=onWake;
+function render(save,onWake,onSleep){
+ activeSave=save;resume=onWake;bedtime=onSleep;
+ const overlay=document.getElementById('cityRoomOverlay');
+ const home=save?.currentLocation?.locationId==='home'&&
+  save?.currentLocation?.roomId==='bedroom'&&save.phase==='night'&&
+  !root.FE_MEDICAL_RECORDS?.pending?.(save);
+ if(overlay){
+  const holder=overlay.querySelector('.city-room-placeholder');
+  if(holder&&!sleepAction){
+   sleepAction=document.createElement('section');sleepAction.className='cc-home-sleep';sleepAction.hidden=true;
+   sleepAction.innerHTML='<b>BEDROOM · NIGHT REST</b><p>Proper sleep restores Energy. Skipping the night elsewhere does not.</p><button type="button">Sleep Until 8 AM</button><p class="cc-sleep-status" role="status"></p>';
+   holder.prepend(sleepAction);
+   sleepAction.querySelector('button').addEventListener('click',()=>{
+    const result=typeof bedtime==='function'?bedtime():{ok:false,reason:'Bedtime unavailable.'};
+    sleepAction.querySelector('.cc-sleep-status').textContent=result?.reason||'';
+   });
+  }
+  if(sleepAction)sleepAction.hidden=!home||overlay.hidden;
+ }
  const event=root.FE_MEDICAL_RECORDS?.pending?.(save),popup=incident();
  if(!event){popup.hidden=true;return}
  const where={
-  home:'You awaken later on the floor at home, still exhausted. You need a proper bed.',
+  home:'You collapsed at home. When you regain consciousness, you will be on the floor, still exhausted. A proper bed is essential.',
   work:'Workers stopped what they were doing to attend to you. A physician was summoned and production was suspended.',
   street:'A passerby found you and summoned medical help. You were taken to the hospital.',
   danger:'You collapsed in a dangerous neighborhood. You were taken for treatment, but your possessions may not be intact.'
