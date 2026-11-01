@@ -3602,7 +3602,11 @@ function syncTitleMapFilters(){
   // Display ALL forty numbered registry pins when filters are clear.
   // Unverified and off-print locations keep their placement warnings instead
   // of disappearing from an otherwise unfiltered map.
-  marker.hidden=!location||!titleMapMatchesFilters(location);
+  // Current position is a persistent landmark, not a dismissible map-card
+  // selection. It must remain identifiable even when the filters are active.
+  const isHere=!!location&&!!activeProfileId()&&currentCityLocation().locationId===location.id;
+  marker.hidden=!location||(!isHere&&!titleMapMatchesFilters(location));
+  marker.classList.toggle('is-current-location',isHere);
   marker.classList.toggle('is-selected',!!location&&titleMapSelectedLocationId===location.id);
   marker.classList.toggle('is-priority',!!location&&!!window.FE_MAP_LEADS?.highlighted?.(S,location.id));
   marker.classList.toggle('is-owned',!!location&&!!window.FE_EMPIRE?.ownedLocation?.(S,location.id));
@@ -3774,6 +3778,7 @@ function titleMapPositionMarkers(){
   if(!location)continue;
   const point=titleMapDisplayCoordinate(location,img);
   marker.classList.toggle('is-edge-provisional',point.outside);
+  marker.classList.toggle('is-current-location',!!activeProfileId()&&currentCityLocation().locationId===location.id);
   marker.title=(window.FE_MAP_PIN_PALETTE?.info(location)?.name||'Washington location')+
    ' · '+pinDisplayName(location)+' · #'+location.n+
    ' · printed grid '+titleMapGridAt(location.x,location.y)+
