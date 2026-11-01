@@ -5,7 +5,7 @@
 (function(root){
 'use strict';
 const VERSION=1;
-const WORK=new Set(['factory','metropolitanPolice','blackwoodAsylum','secondNightclub']);
+const WORK=Object.freeze({industrialist:'factory',investigator:'metropolitanPolice',wardman:'blackwoodAsylum',criminal:'secondNightclub'});
 const DANGER=new Set(['hillsdale','oldChinatown','chinatown','blacktown']);
 const PLAYER_NAMES=Object.freeze({industrialist:'Charles Whitcomb',investigator:'Samuel Harlan',criminal:'Elias Crowe',wardman:'Edmund Wardman'});
 const FEES=Object.freeze({home:0,work:400,street:1200,danger:1200});
@@ -56,7 +56,7 @@ function energyCap(save){
 function locationKind(save,locationId){
  if(locationId==='home')return 'home';
  if(DANGER.has(locationId))return 'danger';
- if(WORK.has(locationId))return 'work';
+ if(WORK[save?.characterRoute]===locationId)return 'work';
  return 'street';
 }
 function hash(s){let x=2166136261;for(const ch of s){x^=ch.charCodeAt(0);x=Math.imul(x,16777619)}return x>>>0;}
@@ -91,7 +91,7 @@ function collapse(save,locationId){
  const cashBefore=Math.max(0,Math.round((Number(save.personalCash)||0)*100));
  const stolenCents=robbed?Math.min(cashBefore,Math.max(50,Math.floor(cashBefore*.1))):0;
  save.personalCash=Math.round(cashBefore-stolenCents)/100;
- const payer=where==='work'?'company':'personal';
+ const payer=where==='work'&&locationId==='factory'&&save.characterRoute==='industrialist'?'company':'personal';
  const charge=bill(save,patient,FEES[where],payer);
  const record=append(patient,{kind:'collapse',minute:now,date:dateMinute(now),locationId,
   setting:where,minutesLost:MINUTES[where],doctorFeeCents:where==='work'?FEES[where]:0,
@@ -116,6 +116,11 @@ function wake(save,secondsSpent){
  const missed=Math.min(event.minutesLost*60,spent);
  // Actual staffed factory downtime is accumulated by the existing production
  // clock, not guessed from elapsed unconscious time outside the shift.
+ // Street collapses are emergency transports, not ordinary map travel.
+ // The location changes only after the hospital fee and unconscious time were
+ // recorded, never as a free user-controlled fast-travel option.
+ if((event.setting==='street'||event.setting==='danger')&&save.characterRoute!=='wardman')
+  save.currentLocation={locationId:'governmentHospital',roomId:'reception'};
  needs.meters.energy=Math.min(energyCap(save),event.setting==='home'?12:18);
  needs.lastMinute=minute(save);
  const patient=player(save);
