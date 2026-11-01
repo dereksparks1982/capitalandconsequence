@@ -1,3 +1,15 @@
+## 1 November 2026 · v0.7.65-dev: manual Washington painting and landmark access
+- [x] Pan entire Washington map by RIGHT mouse drag, leaving LEFT clicks and dragging free for road and blue-building painting and pin interaction.
+- [x] Fix painted first-point alignment with actual displayed map image bounds rather than incorrect viewport offset.
+- [x] Add real Paint-style LEFT-drag road strokes, precise two-click roads, building blue brush and rectangle, independent road/building erasers and brush sizes.
+- [x] Remove inaccurate auto suggested road and raster scan controls entirely; manual street marking is the chosen authoring method.
+- [x] Preserve 8,000 road sections / 4,000 blue obstacle marks in routing sanitization, with saved undo, import and export.
+- [x] Add Ford’s Theatre as provisional map pin #41 and a visitable theatre shell with public and private rooms.
+- [x] Ignore real-world year restrictions for all mapped city places, including World's Fair, airport and later-era entertainments, while preserving staff-only room permissions.
+- [x] Document additional printed-Washington-map destination candidates with verified/unverified status and development priorities.
+- [ ] Native Linux pointer precision, browser right-button drag and long-map painting performance need visual testing before accepting this build.
+- [ ] Add further user-identified landmarks, activities and accurate pin coordinates to the existing registry without moving approved locations.
+
 ## 1 November 2026 · v0.7.64-dev: painted railroad planning and landmark map icons
 - [x] Separate Rail Editor from Road Editor, preserving fixed printed Washington artwork and existing approved city pin placements.
 - [x] Click-to-paint saved rail segments and bends, undo or erase individual track sections; place named stations only beside connected track endpoints.
