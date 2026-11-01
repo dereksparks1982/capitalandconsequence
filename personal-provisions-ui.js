@@ -45,23 +45,22 @@ function refresh(save){
 host.addEventListener('click',event=>{
  const button=event.target.closest('button[data-purchase-id]');
  if(!button||button.disabled||!current)return;
- const save=current,model=root.FE_WASHINGTON_COMMERCE,needs=root.FE_CHARACTER_NEEDS;
- if(!permitted(save)){status.textContent='Food is unavailable right now.';return;}
- const id=button.dataset.purchaseId,item=model.ensure(save).playerBag.find(x=>x.id===id);
- if(!item||!Object.hasOwn(needs.PROVISIONS,item.good)){status.textContent='That provision is no longer carried.';refresh(save);return;}
- const allowed=needs.provisionAvailability(save,item.good);
- if(!allowed.ok){status.textContent=allowed.reason;refresh(save);return;}
- if(!root.FE_WASHINGTON_TIME?.canSpend?.(save,600)){status.textContent='Not enough Washington time to eat.';return;}
+ const state=current,model=root.FE_WASHINGTON_COMMERCE,needs=root.FE_CHARACTER_NEEDS;
+ if(!permitted(state)){status.textContent='Food is unavailable right now.';return;}
+ const id=button.dataset.purchaseId,item=model.ensure(state).playerBag.find(x=>x.id===id);
+ if(!item||!Object.hasOwn(needs.PROVISIONS,item.good)){status.textContent='That provision is no longer carried.';refresh(state);return;}
+ const allowed=needs.provisionAvailability(state,item.good);
+ if(!allowed.ok){status.textContent=allowed.reason;refresh(state);return;}
+ if(!root.FE_WASHINGTON_TIME?.canSpend?.(state,600)){status.textContent='Not enough Washington time to eat.';return;}
  if(root.advanceWorldTime(600,true)!==600){status.textContent='Could not spend time eating.';return;}
- const removed=model.consume(save,id);
- if(!removed.ok){status.textContent=removed.reason;refresh(save);return;}
- const outcome=needs.eatProvision(save,removed.good.good);
+ const removed=model.consume(state,id);
+ if(!removed.ok){status.textContent=removed.reason;refresh(state);return;}
+ const outcome=needs.eatProvision(state,removed.good.good);
  status.textContent=outcome.ok?'You ate '+removed.good.label+'. Your condition has changed.':outcome.reason;
- if(Array.isArray(save.notes))save.notes.push({date:save.gameDate,source:'Personal provisions',
+ if(Array.isArray(state.notes))state.notes.push({date:state.gameDate,source:'Personal provisions',
   text:'Ate food carried from the Washington market: '+removed.good.label+'.'});
  if(typeof save==='function')save(true);
- else if(typeof root.saveGame==='function')root.saveGame();
- refresh(save);
+ refresh(state);
  if(typeof render==='function')render();
 });
 root.FE_CARRIED_PROVISIONS=Object.freeze({refresh});
