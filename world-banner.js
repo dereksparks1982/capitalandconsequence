@@ -43,11 +43,22 @@ function create(place){
   sync();
  });
  row.appendChild(pause);bar.appendChild(row);
+ const condition=document.createElement('div');condition.className='cc-world-condition';
+ const needs={};
+ for(const [key,label] of [['health','Health'],['hunger','Hunger'],['thirst','Thirst'],['energy','Energy']]){
+  const item=document.createElement('div');item.className='cc-world-condition-item';
+  const heading=document.createElement('b');heading.textContent=label;
+  const meter=document.createElement('progress');meter.max=100;meter.value=100;
+  meter.setAttribute('aria-label',label);
+  const output=document.createElement('span');output.textContent='100';
+  item.append(heading,meter,output);condition.append(item);needs[key]={meter,output};
+ }
+ bar.append(condition);
  const notice=document.createElement('p');
  notice.className='cc-world-travel-notice';notice.hidden=true;
  notice.setAttribute('role','status');notice.setAttribute('aria-live','off');
  bar.appendChild(notice);
- return {bar,refs,pause,notice,place};
+ return {bar,refs,pause,notice,place,needs};
 }
 function init(){
  const map=$('titleMapViewer')?.querySelector('.title-map-card');
@@ -95,6 +106,14 @@ function sync(){
    const source=$(id),target=panel.refs[id];
    if(id==='washingtonSky'){copyWeather(target,source);continue;}
    target.textContent=source?.textContent?.trim()||'—';
+  }
+  for(const key of ['health','hunger','thirst','energy']){
+   const original=$('condition-'+key);
+   const source=original?Number(original.value):100;
+   const percent=Math.max(0,Math.min(100,Number.isFinite(source)?source:100));
+   const copy=panel.needs[key];
+   copy.meter.value=percent;copy.meter.classList.toggle('low',percent<=30);
+   copy.output.textContent=Math.round(percent)+'/100';
   }
   panel.pause.textContent=$('pauseToggle')?.textContent?.trim()||'PAUSE';
   panel.pause.disabled=!!travel||!!$('pauseToggle')?.disabled;

@@ -1,3 +1,9 @@
+## 31 October 2026 · v0.7.53-dev: physical condition visible in map and rooms
+- [x] Mirror the four existing health/hunger/thirst/energy meters in the map and room world-clock banners.
+- [x] Reuse the saved state and original per-minute source UI; no additional timer, object IDs, or simulation clock.
+- [x] Keep the approved map painting, pins, original time/status banner and all room navigation intact.
+- [ ] Linux Electron visual QA and smaller-screen acceptance remain outstanding.
+
 ## 31 October 2026 · v0.7.52-dev: real formal-duel health consequences
 - [x] Apply physical damage from actually resolved formal duel outcomes through the saved health service.
 - [x] Ensure duplicate duel reports cannot multiply an injury or invent another fight.

@@ -33,3 +33,11 @@
  .cc-world-businessDate .cc-world-banner-value{font-size:11px}
  .cc-world-banner .cc-world-pause{font-size:12px;padding:3px 7px}
 }
+
+/* Mirrored character needs. Read-only, sourced from the existing condition HUD. */
+.cc-world-condition{display:grid;grid-template-columns:repeat(4,minmax(115px,1fr));gap:5px;padding:3px 9px 6px;background:#352b26;border-top:1px solid #aa9477}
+.cc-world-condition-item{display:grid;grid-template-columns:auto minmax(25px,1fr) auto;align-items:center;gap:6px;font:700 10px/1.3 'Courier New',monospace}
+.cc-world-condition-item progress{width:100%;height:9px;accent-color:#dbc18c}
+.cc-world-condition-item progress.low{accent-color:#c95545}
+.cc-world-condition-item span{min-width:33px;text-align:right}
+@media(max-width:620px){.cc-world-condition{grid-template-columns:repeat(2,minmax(0,1fr))}}
