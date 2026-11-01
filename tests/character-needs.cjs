@@ -80,7 +80,7 @@ assert.equal(shopper.characterNeeds.meters.hunger,46);
 assert.equal(needs.provisionAvailability(shopper,'milk').ok,false,'cannot eat endless provisions in one minute');
 shopper.worldCalendar.worldMinute+=30;
 assert.equal(needs.eatProvision(shopper,'milk').ok,true);
-assert.equal(shopper.characterNeeds.meters.thirst,44);
+assert.ok(Math.abs(shopper.characterNeeds.meters.thirst-(20-30*needs.RATES.thirst+needs.PROVISIONS.milk.thirst))<1e-9,'Eating after 30 game minutes must account for elapsed thirst');
 assert.equal(needs.eatProvision(shopper,'lamp-fuel').ok,false,'nonfood may not satisfy hunger');
 const unmapped={worldCalendarStatus:'legacy-unmapped',worldCalendar:null};
 assert.equal(needs.availability(unmapped,'water').ok,false,'unknown calendar never fakes passage of time');
