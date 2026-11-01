@@ -33,6 +33,18 @@
    traits:{sociability:48,caution:80,ambition:68},places:['blackwoodAsylum','blackwoodAsylum',null,null],
    activities:['preparing the orderly station','attending to patients under supervision',null,null],
    goals:['perform-orderly-duties','earn-colleagues-trust','seek-independent-prospects']},
+  // Visiting specialists have saved street-wagon journeys, NOT the ordinary
+  // NPC payroll, weekly job planner or autonomous resident economy.
+  {id:'visiting-fortune-teller',name:'The Traveling Fortune-Teller',
+   occupation:'Traveling tarot reader',touring:true,ambition:'continue-the-circuit-and-read-for-visitors',
+   publicRemark:'The cards say what they will. I cannot promise they will say what you wish to hear.',
+   traits:{sociability:71,caution:81,ambition:50},places:[null,null,null,null],
+   activities:[null,null,null,null],goals:['read-the-cards','travel-with-her-wagon']},
+  {id:'silasPike',name:'Silas Pike',
+   occupation:'Traveling salesman',touring:true,ambition:'sell-his-stock-before-the-crowd-moves-on',
+   publicRemark:'Every article has a history. Whether you believe mine is your business.',
+   traits:{sociability:87,caution:66,ambition:84},places:[null,null,null,null],
+   activities:[null,null,null,null],goals:['trade-with-customers','follow-the-show']},
   {id:'samuelTilden',name:'President Samuel J. Tilden',
    occupation:'President of the United States (alternate election of 1876)',
    historical:true,availableFrom:'1877-03-04',availableUntil:'1887-03-03',
@@ -146,7 +158,7 @@
  // The selected protagonist is controlled by the player, NEVER by this AI.
  // The other three remain individual NPCs on this profile.
  function isPlayer(def){return !!def.route&&def.route===(S.characterRoute||'industrialist')}
- function autonomous(){return DEFINITIONS.filter(def=>!isPlayer(def))}
+ function autonomous(){return DEFINITIONS.filter(def=>!isPlayer(def)&&!def.touring)}
 
  const WORKPLACES={charlieWhitcomb:'factory',samHarlan:'hillsdale',eliCrowe:'secondNightclub',edmundWardman:'blackwoodAsylum',samuelTilden:'whiteHouse',madamStar:'star',luiDelacroix:'secondNightclub',foremanSullivan:'factory',boyMercer:'secondNightclub',eddieDoyle:'races',inspectorHayes:'metropolitanPolice',chenMei:'oldChinatown',liWen:'oldChinatown',pavelOrlov:'russianTradeHall',alexiRurik:'russianTradeHall',edwinBooth:'nationalTheatre',josephJefferson:'nationalTheatre',johnMcCullough:'nationalTheatre',claraMorris:'nationalTheatre',johnTRaymond:'nationalTheatre',charlesHanford:'nationalTheatre',williamRapley:'nationalTheatre'};
  const EMPTY={version:1,seed:null,lastStep:null,agents:{},events:[]};
@@ -178,6 +190,9 @@
    if(!Array.isArray(a.memories))a.memories=[];
    if(!Number.isFinite(+a.energy))a.energy=80;
   }
+  // The visiting wagons obey their own dated route plan. Their real arrival
+  // positions are mirrored into this roster solely for conversation cards.
+  window.FE_TOURING_VISITORS?.sync?.(S);
   return w;
  }
  function stepForState(){
@@ -511,8 +526,10 @@
  }
  function visibleAt(locationId){
   const w=ensure();if(!w||!locationId)return [];
-  return autonomous().filter(d=>observedPosition(d.id,w.agents[d.id])?.locationId===locationId)
+  const residents=autonomous().filter(d=>observedPosition(d.id,w.agents[d.id])?.locationId===locationId)
    .map(d=>{const a=observedPosition(d.id,w.agents[d.id]);return {id:d.id,name:d.name,roomId:a.roomId||null,activity:a.activity||'present'}});
+  const visitors=window.FE_TOURING_VISITORS?.visibleAt?.(S,locationId)||[];
+  return residents.concat(visitors);
  }
  // Face-to-face contact only. This uses the NPC's public routine, not
  // hidden personal goals, confidential motives or unscheduled future events.
@@ -701,7 +718,7 @@
    select.addEventListener('click',()=>{
     if(!valid())return;
     window.FE_NPC_CARD?.open?.({id:visitor.id,name:visitor.name,occupation:def?.occupation||'Washington resident',
-     sex:['madamStar','chenMei','annaPetrovna'].includes(visitor.id)?'woman':'man',
+     sex:['madamStar','chenMei','annaPetrovna','visiting-fortune-teller'].includes(visitor.id)?'woman':'man',
      history:window.FE_NPC_DIALOGUE?.history?.(S,visitor.id)||[],valid,
      circusInTown:!!window.FE_CIRCUS_TOUR?.active?.(S),
      onQuick:topic=>talkAtLocation(visitor.id,topic),
@@ -736,6 +753,6 @@
   return {id,name:def.name,occupation:def.occupation,ambition:def.ambition,
    traits:{...def.traits},...a,relationships:{...a.relationships},memories:a.memories.map(m=>({...m}))};
  }
- function list(){return autonomous().map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
+ function list(){return DEFINITIONS.filter(d=>!isPlayer(d)).map(d=>({id:d.id,name:d.name,occupation:d.occupation,language:d.language||'en'}));}
  window.FE_NPC_AI=Object.freeze({ensure,syncClock,visibleAt,renderRoomVisitors,renderContactItineraries,publicContacts,recordInteraction,talkAtLocation,converseAtLocation,inspect,list,stepForState,exchangeLocalRumors});
 })();
