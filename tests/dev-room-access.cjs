@@ -9,12 +9,12 @@ const fn=source.match(/function mapTravelRestriction\(location\)\{[\s\S]*?\n\}/)
 assert.ok(fn,'Map access guard exists');
 const ctx={S:{gameDate:'1890-01-03'},titleDevUnlockAllRooms:false,selected:true,
  activeProfileId:()=>ctx.selected?'profile-1':null,cityLocation:id=>city.getLocation(id),
- window:{FE_PATROL:{travel:()=>({ok:false,reason:'Patrol duty restricted'})},FE_VENUES:{canEnterLocation:()=>false}}};
+ window:{FE_PATROL:{travel:(_,id)=>id==='blackwoodAsylum'?{ok:false,reason:'Patrol duty restricted'}:{ok:true}},FE_VENUES:{canEnterLocation:()=>false}}};
 vm.runInNewContext(fn[0]+'\nthis.guard=mapTravelRestriction;',ctx);
 const ask=id=>ctx.guard({id});
 assert.equal(ask('blackwoodAsylum'),'Patrol duty restricted');
-assert.match(ask('licensedGamingHall'),/planned/);
-assert.match(ask('capitalSpeedway'),/Not open/);
+assert.match(ask('licensedGamingHall'),/not yet accessible/);
+assert.match(ask('capitalSpeedway'),/not yet accessible/);
 assert.match(ask('not-registered'),/no registered entrance/);
 ctx.titleDevUnlockAllRooms=true;
 for(const location of city.listLocations())assert.equal(ask(location.id),'',location.id+' available under developer override');

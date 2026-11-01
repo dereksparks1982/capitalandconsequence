@@ -1,13 +1,13 @@
 'use strict';
-/* Unfiltered Washington pins: every #1..#40 stays at its true image anchor.
+/* Unfiltered Washington pins: every #1..#42 stays at its true image anchor.
  * This is an offline source/DOM simulation; no Electron or Actions needed. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'..',name),'utf8');
 const city={window:{}};vm.runInNewContext(read('city.js'),city);
 vm.runInNewContext(read('map-pin-palette.js'),city);
 const pins=city.window.FederalElectricCity.mapLocations();
-assert.equal(pins.length,40,'The city registry contains 40 numbered locations');
-assert.deepEqual(Array.from(pins,v=>v.n).sort((a,b)=>a-b),Array.from({length:40},(_,i)=>i+1));
+assert.equal(pins.length,42,'The city registry contains 42 numbered locations');
+assert.deepEqual(Array.from(pins,v=>v.n).sort((a,b)=>a-b),Array.from({length:42},(_,i)=>i+1));
 const byN=n=>pins.find(x=>x.n===n);
 assert.equal(byN(12).id,'home','Pin #12 is Charlie’s own residence');
 assert.equal(byN(12).name,'Home','Pin #12 must be labeled Home, not Our Home');
@@ -21,6 +21,8 @@ assert.equal(byN(11).id,'universityMaryland');
 assert.equal(byN(14).id,'brokerOffice');
 assert.equal(byN(39).id,'nationalTheatre');
 assert.equal(byN(40).id,'districtBank');
+assert.equal(byN(41).id,'fordsTheatre');
+assert.equal(byN(42).id,'centerMarket');
 const palette=city.window.FE_MAP_PIN_PALETTE;
 assert.equal(palette.purpose(byN(14)),'commerce');
 assert.equal(palette.purpose(byN(40)),'commerce');
@@ -63,12 +65,12 @@ sandbox.testCode=snippets+`
   return layer.querySelectorAll('[data-map-location]').filter(m=>!m.hidden);
  }
  const all=checkPins('all','all','');
- if(all.length!==40)throw Error('Expected 40 visible unfiltered map markers, found '+all.length);
+ if(all.length!==42)throw Error('Expected 42 visible unfiltered map markers, found '+all.length);
  const coords=all.map(m=>({id:m.dataset.mapLocation,x:parseFloat(m.style.left),y:parseFloat(m.style.top),title:m.title}));
  for(const p of coords){
   if(!Number.isFinite(p.x)||!Number.isFinite(p.y))throw Error('No visible position for '+p.id);
  }
- // All forty markers are tied to one consistent image coordinate.
+ // All 42 markers are tied to one consistent image coordinate.
  // Overlap is intentional; the player explicitly rejected shifting pins.
  function expectedAnchor(id){
   const place=TITLE_MAP_LOCATIONS.find(v=>v.id===id);
@@ -91,7 +93,7 @@ sandbox.testCode=snippets+`
  }
  const finance=checkPins('finance','all','').map(m=>m.dataset.mapLocation);
  if(finance.join(',')!=='brokerOffice,districtBank')throw Error('Finance filter must show only broker and bank');
- if(checkPins('all','historical','').length!==17)throw Error('Historical filter must show 17');
+ if(checkPins('all','historical','').length!==19)throw Error('Historical filter must show 19');
  const broker=checkPins('all','all','broker').map(m=>m.dataset.mapLocation);
  if(broker.join(',')!=='brokerOffice')throw Error('Broker search must show broker #14');
  // Every fixed or area-located historical source retains its genuine
@@ -140,4 +142,4 @@ assert.ok(html.includes('src="assets/artwork/maps/title-map-1938.jpg?'),'Immutab
 assert.ok(css.includes('#titleMapClose.title-map-close')&&css.includes('position:absolute;right:9px;top:9px;z-index:12;'),
  'Red X is pinned inside the game window independent of horizontal toolbar overflow');
 assert.ok(!source.includes('titleMapPinTethers')&&!source.includes('title-map-pin-tether'),'White dots and pin tethers were removed');
-console.log('PASS 40 anchored map pins, card/zoom/pan stability, edge warnings, filters, red X and original artwork');
+console.log('PASS 42 anchored map pins, card/zoom/pan stability, edge warnings, filters, red X and original artwork');

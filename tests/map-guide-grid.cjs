@@ -6,9 +6,9 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const source=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const ctx={window:{}};vm.runInNewContext(source('city.js'),ctx);
 const sites=ctx.window.FederalElectricCity.mapLocations();
-assert.equal(sites.length,40,'all forty registered playable destinations have numbered pins');
-assert.equal(new Set(sites.map(s=>s.n)).size,40,'no duplicate numbered pins');
-assert.equal(sites.filter(s=>s.origin==='historical').length,17);
+assert.equal(sites.length,42,'all 42 registered playable destinations have numbered pins');
+assert.equal(new Set(sites.map(s=>s.n)).size,42,'no duplicate numbered pins');
+assert.equal(sites.filter(s=>s.origin==='historical').length,19);
 assert.equal(sites.filter(s=>s.origin==='fictional').length,23);
 for(const site of sites){
  if(site.origin==='historical'){
@@ -53,6 +53,8 @@ assert.equal(byId('cobblerShop').n,36,'Cobbler is pin 36');
 assert.equal(byId('cobblerShop').origin,'fictional','Cobbler storefront is blue');
 assert.equal(byId('easternMarket').n,37,'Eastern Market is pin 37');
 assert.equal(byId('georgetownMarketHouse').n,38,'Georgetown Market House is pin 38');
+assert.equal(byId('fordsTheatre').n,41,'Ford’s Theatre is a numbered mapped historical landmark');
+assert.equal(byId('centerMarket').n,42,'Center Market is a numbered mapped historical landmark');
 assert.equal(byId('easternMarket').origin,'historical','Eastern Market is red');
 assert.equal(byId('georgetownMarketHouse').origin,'historical','Georgetown Market House is red');
 assert.equal(byId('franciscanMonastery').origin,'historical','Monastery pin is red');
@@ -126,7 +128,7 @@ assert.ok(css.includes('background:rgba(155,48,48,.68)!important')&&
  css.includes('background:rgba(36,94,154,.68)!important'),
  'Only colored pin background is semitransparent; pin labels stay legible');
 
-assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,17,
+assert.equal(sites.filter(s=>s.origin==='historical'&&!!s.history).length,19,
  'every historical place has a separate non-fiction reading note');
 assert.equal(sites.filter(s=>s.origin==='fictional'&&!!s.history).length,0,
  'invented businesses cannot claim non-fiction reading metadata');
@@ -154,4 +156,4 @@ assert.ok(source('city.js').includes('mapGridReference,'),
 assert.ok(app.includes("return window.FederalElectricCity.mapGridReference(x,y);"),
  'Map and registry share one source of truth for grid letters and numbers');
 
-console.log('PASS Washington guide: 40 numbered pins, 17 non-fiction / 23 fictional story cards, grid placement, export, pin confirmation and translucent colors');
+console.log('PASS Washington guide: 42 numbered pins, 19 non-fiction / 23 fictional story cards, grid placement, export, pin confirmation and translucent colors');
