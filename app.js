@@ -4637,9 +4637,13 @@ function initTitleMapViewer(){
   e.preventDefault();titleMapZoom(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY);
  },{passive:false});
  viewport.addEventListener('dblclick',e=>{e.preventDefault();titleMapZoom(1.75,e.clientX,e.clientY)});
+ viewport.addEventListener('contextmenu',e=>{
+  if(e.target?.closest?.('#titleMapLocationCard,button,input,select,textarea,a'))return;
+  e.preventDefault(); // Right drag pans instead of opening Firefox's menu.
+ });
  viewport.addEventListener('pointerdown',e=>{
   if(e.target?.closest?.('button,input,select,textarea,a,#titleMapLocationCard'))return;
-  if(e.button!==0)return;
+  if(e.button!==2)return; // The LEFT mouse button belongs to editing/clicking.
   titleMapState.pointerId=e.pointerId;titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
   viewport.setPointerCapture(e.pointerId);viewport.classList.add('is-dragging');e.preventDefault();
  });
