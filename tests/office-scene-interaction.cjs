@@ -1,0 +1,31 @@
+'use strict';
+/* Developer checkpoint: walkable office furniture interaction and layout backup. */
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const base=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(base,'app.js'),'utf8');
+const scene=fs.readFileSync(path.join(base,'room-builder-scene.js'),'utf8');
+const editor=fs.readFileSync(path.join(base,'room-builder-ui.js'),'utf8');
+const core=fs.readFileSync(path.join(base,'room-builder-core.js'),'utf8');
+assert.match(scene,/function nearbyDesk\(/,'nearest physical desk should be located');
+assert.match(scene,/function nearObject\(/,'distance check must use desk footprint');
+assert.match(scene,/e\.key\.toLowerCase\(\)==='e'/,'E key activates the desk');
+assert.match(scene,/if\(touched\?\.spriteId==='desk_oak'\)/,'mouse click activates actual desk only');
+assert.match(scene,/root\.FE_ROOM_SCENE_ACTIONS\?\.useDesk/,'scene uses authenticated bridge');
+assert.match(app,/window\.FE_ROOM_SCENE_ACTIONS=Object\.freeze/,'desk entry bridge exposed');
+const bridge=app.slice(app.indexOf('window.FE_ROOM_SCENE_ACTIONS=Object.freeze('),
+ app.indexOf('function openSelectedTitleDevRoom()'));
+assert.match(bridge,/cityRoomSession\.dev/,'DEV preview cannot use actual office desk');
+assert.match(bridge,/S\.characterRoute!=='industrialist'/,'other playable careers cannot use Charles desk');
+assert.match(bridge,/position\.locationId!=='factory'/,'must physically be in the factory');
+assert.match(bridge,/position\.roomId!=='executive-office'/,'must physically be in correct room');
+assert.doesNotMatch(bridge,/S\.currentLocation\s*=/,'using furniture cannot teleport');
+assert.doesNotMatch(bridge,/recordProvisional/,'no double charge for already being in room');
+assert.match(editor,/testRoom=C\.clone\(room\)/,'walk test must use throwaway copy');
+assert.match(editor,/C\.toggleDoor\(testRoom/,'door test must never alter stored blueprint');
+assert.match(editor,/STORAGE\+':backup'/,'saved blueprint has recoverable previous version');
+assert.match(editor,/data-rb="backup"/,'backup button visible');
+assert.match(core,/function path\(room,start,goal\)/,'walking routes can be checked offline');
+assert.match(core,/function analyze\(room\)/,'door and start reachability can be checked');
+console.log('PASS physical desk interaction, separated editor preview, recovered saves and walkability guards');
