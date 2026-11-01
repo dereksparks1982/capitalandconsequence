@@ -1,300 +1,273 @@
-/* Capital & Consequence: editable street and blue-building overlay.
- * Native offline Canvas2D, not a dependency on Konva. Nothing writes to
- * the approved Washington JPEG or moves its registered pins.
+/* Washington manual road and building painter. Canvas overlay ONLY:
+ * never alters the approved printed map, its pins, or image coordinates.
+ * Left drag paints. Right drag pans at every zoom (handled by app viewport).
  */
 (function(root){
 'use strict';
-const W=2048,H=1159,MAX_ROADS=2200,MAX_BLOCKS=1200,BRUSH=18;
+const W=2048,H=1159,MAX_ROADS=8000,MAX_BLOCKS=4000;
+const $=id=>document.getElementById(id),clamp=v=>Math.max(0,Math.min(1,v));
 let config=null,host=null,canvas=null,ctx=null,draft=null;
-let editing=false,pending=null,mode='road',suggestions=[],painting=false,lastPaint=null,changed=false;
+let editing=false,mode='road',pending=null,painting=false,activePointer=null;
+let strokePoints=[],paintChanged=false,previous=null;
 const undoStack=[];
-const $=id=>document.getElementById(id);
-const clamp=n=>Math.min(1,Math.max(0,n));
-const info=s=>{const out=$('titleMapRoadStatus');if(out)out.textContent=s;};
-const valid=()=>!!root.FE_ROAD_LAYOUT?.sanitize;
-const clone=x=>JSON.parse(JSON.stringify(x));
-function markSnapshot(){undoStack.push(clone(draft));if(undoStack.length>35)undoStack.shift();}
-function reload(){
- if(!valid())return false;
+function clone(value){return JSON.parse(JSON.stringify(value))}
+function info(value){const out=$('titleMapRoadStatus');if(out)out.textContent=value}
+function snapshot(){undoStack.push(clone(draft));if(undoStack.length>50)undoStack.shift()}
+function restore(){
+ if(!root.FE_ROAD_LAYOUT?.sanitize)return false;
  draft=root.FE_ROAD_LAYOUT.sanitize(config?.getSave?.()?.customRoadLayout);
  return true;
 }
 function persist(message){
- const s=config?.getSave?.();
- if(!s||!draft)return false;
- s.customRoadLayout=root.FE_ROAD_LAYOUT.sanitize(draft);
- draft=root.FE_ROAD_LAYOUT.sanitize(s.customRoadLayout);
- root.FE_ROAD_LAYOUT.load(s.customRoadLayout);
+ const save=config?.getSave?.();
+ if(!save||!draft)return false;
+ save.customRoadLayout=root.FE_ROAD_LAYOUT.sanitize(draft);
+ draft=root.FE_ROAD_LAYOUT.sanitize(save.customRoadLayout);
+ root.FE_ROAD_LAYOUT.load(save.customRoadLayout);
  config.persist?.();config.refresh?.();
- if(message)info(message+' · '+draft.segments.length+' streets · '+draft.blocks.length+
-  ' blue marks · custom streets '+(draft.active?'ON':'OFF'));
+ if(message)info(message+' · '+draft.segments.length+' road sections · '+draft.blocks.length+
+  ' blue building marks · custom routes '+(draft.active?'ON':'OFF'));
  return true;
 }
-function screen(p,v){return {x:v.x+p.x*W*v.scale,y:v.y+p.y*H*v.scale};}
+function screen(p,v){return {x:v.x+p.x*W*v.scale,y:v.y+p.y*H*v.scale}}
 function coord(e){
- const v=config?.getView?.(),r=host?.getBoundingClientRect?.();
- if(!v||!r||!r.width||!r.height||!Number.isFinite(v.scale)||v.scale<=0)return null;
- return {x:clamp((e.clientX-r.left-v.x)/(W*v.scale)),
-  y:clamp((e.clientY-r.top-v.y)/(H*v.scale))};
+ // The rendered image is the ONLY authority for this transformation. Using
+ // an overlay or viewport offset alone misplaces the first cursor point when
+ // the map is fitted, zoomed, panned or the surrounding toolbars wrap.
+ const img=$('titleMapImage'),r=img?.getBoundingClientRect?.();
+ if(!r||r.width<=0||r.height<=0)return null;
+ const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+ if(x<0||x>1||y<0||y>1)return null;
+ return {x:clamp(x),y:clamp(y)};
 }
-function brush(p){
- return {x0:clamp(p.x-BRUSH/(2*W)),y0:clamp(p.y-BRUSH/(2*H)),
-  x1:clamp(p.x+BRUSH/(2*W)),y1:clamp(p.y+BRUSH/(2*H))};
+function distance(a,b){return Math.hypot((a.x-b.x)*W,(a.y-b.y)*H)}
+function brushSize(){const v=Number($('titleMapRoadBrush')?.value);return [6,12,18,30,48].includes(v)?v:12}
+function rect(p){const r=brushSize()/2;return {x0:clamp(p.x-r/W),y0:clamp(p.y-r/H),
+ x1:clamp(p.x+r/W),y1:clamp(p.y+r/H)}}
+function overlaps(a,b){return !(a.x1<b.x0||a.x0>b.x1||a.y1<b.y0||a.y0>b.y1)}
+function closeToSegment(p,a,b,radius){
+ const x=p.x*W,y=p.y*H,ax=a.x*W,ay=a.y*H,dx=(b.x-a.x)*W,dy=(b.y-a.y)*H;
+ const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy||1)));
+ return Math.hypot(x-ax-dx*t,y-ay-dy*t)<=radius;
 }
-function repaint(){
- if(!ctx||!host||!draft||!config)return;
+function render(){
+ if(!ctx||!canvas||!draft||!config)return;
  const v=config.getView?.(),vp=$('titleMapViewport');
  if(!v||!vp||!Number.isFinite(v.scale)||v.scale<=0)return;
- const width=Math.round(vp.clientWidth),height=Math.round(vp.clientHeight);
- if(width<1||height<1)return;
- const dpr=Math.min(2,Math.max(1,Number(root.devicePixelRatio)||1));
- const w=Math.round(width*dpr),h=Math.round(height*dpr);
- if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
- canvas.style.width=width+'px';canvas.style.height=height+'px';
- ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
- const line=(obj,color,dash)=>{
-  const a=screen(obj.a,v),b=screen(obj.b,v);
-  ctx.beginPath();ctx.lineWidth=3;ctx.strokeStyle=color;ctx.setLineDash(dash?[7,5]:[]);
-  ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.setLineDash([]);
- };
- for(const s of draft.segments)line(s,'#53d8aa',false);
- for(const s of suggestions)line(s,'#ffda59',true);
+ const w=vp.clientWidth,h=vp.clientHeight;if(!w||!h)return;
+ const ratio=Math.min(2,Math.max(1,Number(root.devicePixelRatio)||1));
+ canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);
+ canvas.style.width=w+'px';canvas.style.height=h+'px';
+ ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,h);
+ function line(a,b,color,width=2){
+  const pa=screen(a,v),pb=screen(b,v);ctx.beginPath();ctx.lineWidth=width;
+  ctx.strokeStyle=color;ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);ctx.stroke();
+ }
+ for(const s of draft.segments)line(s.a,s.b,'#53d8aa',2.8);
+ if(strokePoints.length>1)
+  for(let i=1;i<strokePoints.length;i++)line(strokePoints[i-1],strokePoints[i],'#fff0a9',3.5);
  for(const b of draft.blocks){
   const a=screen({x:b.x0,y:b.y0},v),z=screen({x:b.x1,y:b.y1},v);
-  ctx.fillStyle='rgba(34,103,220,.65)';
-  ctx.strokeStyle='#76caff';ctx.lineWidth=1;
-  ctx.fillRect(a.x,a.y,z.x-a.x,z.y-a.y);
-  ctx.strokeRect(a.x,a.y,z.x-a.x,z.y-a.y);
+  ctx.fillStyle='rgba(34,103,220,.62)';ctx.strokeStyle='#7cc4ff';ctx.lineWidth=1;
+  ctx.fillRect(a.x,a.y,z.x-a.x,z.y-a.y);ctx.strokeRect(a.x,a.y,z.x-a.x,z.y-a.y);
  }
- if(pending){
-  const p=screen(pending,v);ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);
-  ctx.fillStyle='#ffd35e';ctx.strokeStyle='#382812';ctx.fill();ctx.stroke();
+ if(pending||strokePoints.length){
+  const point=pending||strokePoints.at(-1),p=screen(point,v);
+  ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);
+  ctx.fillStyle='#ffde67';ctx.fill();
  }
 }
-function showOverlay(){
+function show(){
  if(!host||!draft)return;
- host.hidden=!editing&&!draft.blocks.length&&!draft.segments.length;
- host.classList.toggle('editing',editing);
- repaint();
+ host.hidden=!editing&&!draft.segments.length&&!draft.blocks.length;
+ host.classList.toggle('editing',editing);render();
 }
-function stroke(p){
- if(lastPaint&&Math.hypot((p.x-lastPaint.x)*W,(p.y-lastPaint.y)*H)<BRUSH*.5)return false;
- lastPaint=p;
- const b=brush(p);
+function markAt(p){
+ const b=rect(p);
  if(mode==='erase'){
   const n=draft.blocks.length;
-  draft.blocks=draft.blocks.filter(v=>v.x1<b.x0||v.x0>b.x1||v.y1<b.y0||v.y0>b.y1);
-  return draft.blocks.length!==n;
+  draft.blocks=draft.blocks.filter(v=>!overlaps(v,b));
+  return n!==draft.blocks.length;
  }
- if(draft.blocks.length>=MAX_BLOCKS){info('Blue building limit reached. Undo or erase some markings.');return false;}
+ if(mode==='erase-road'){
+  const n=draft.segments.length,r=brushSize()/2;
+  draft.segments=draft.segments.filter(v=>!closeToSegment(p,v.a,v.b,r));
+  return n!==draft.segments.length;
+ }
+ if(draft.blocks.length>=MAX_BLOCKS){info('Blue building mark limit reached. Use a larger brush.');return false}
  if(b.x0>=b.x1||b.y0>=b.y1)return false;
  draft.blocks.push(b);return true;
 }
+function along(from,to,fn,spacing){
+ const distancePx=distance(from,to),steps=Math.max(1,Math.min(600,Math.ceil(distancePx/spacing)));
+ for(let i=1;i<=steps;i++)fn({x:from.x+(to.x-from.x)*i/steps,y:from.y+(to.y-from.y)*i/steps});
+}
+function takeRoadPoint(p){
+ const last=strokePoints.at(-1);
+ if(!last||distance(last,p)>5)strokePoints.push(p);
+}
 function pointerDown(e){
- if(!editing||config?.busy?.()||!draft||e.button!==0)return;
+ if(!editing||config?.busy?.()||!draft||e.button!==0)return; // right goes to map pan
  const p=coord(e);if(!p)return;
- e.preventDefault();e.stopPropagation();
- if(mode==='road'||mode==='block'){
-  if(!pending){
-   pending=p;info(mode==='road'?'Street start selected. Click its next corner.':
-    'Building corner selected. Click its opposite corner to paint a blue rectangle.');
-  }else{
-   const a=pending;pending=null;
-   if(mode==='road'&&draft.segments.length<MAX_ROADS&&
-    Math.hypot((a.x-p.x)*W,(a.y-p.y)*H)>3){
-    markSnapshot();draft.segments.push({a,b:p});persist('Street saved');
-   }else if(mode==='block'&&draft.blocks.length<MAX_BLOCKS){
-    const box={x0:Math.min(a.x,p.x),y0:Math.min(a.y,p.y),
-     x1:Math.max(a.x,p.x),y1:Math.max(a.y,p.y)};
-    if(box.x1-box.x0>.001&&box.y1-box.y0>.001){
-     markSnapshot();draft.blocks.push(box);persist('Blue building saved');
-    }
+ e.stopPropagation();e.preventDefault();
+ if(mode==='line'||mode==='block'){
+  if(!pending){pending=p;info(mode==='line'?'First endpoint placed. Left-click the other endpoint.':
+    'First building corner placed. Left-click the opposite corner.');render();return}
+  const a=pending;pending=null;
+  if(mode==='line'&&distance(a,p)>3&&draft.segments.length<MAX_ROADS){
+   snapshot();draft.segments.push({a,b:p});persist('Precise road line saved.');
+  }else if(mode==='block'){
+   const b={x0:Math.min(a.x,p.x),y0:Math.min(a.y,p.y),
+    x1:Math.max(a.x,p.x),y1:Math.max(a.y,p.y)};
+   if((b.x1-b.x0)*W>=3&&(b.y1-b.y0)*H>=3&&draft.blocks.length<MAX_BLOCKS){
+    snapshot();draft.blocks.push(b);persist('Blue building rectangle saved.');
    }
   }
- }else{
-  markSnapshot();painting=true;lastPaint=null;changed=false;
-  changed=stroke(p)||changed;
-  try{host.setPointerCapture?.(e.pointerId);}catch(_){}
+  render();return;
  }
- repaint();
+ painting=true;activePointer=e.pointerId;paintChanged=false;previous=p;
+ strokePoints=mode==='road'?[p]:[];
+ snapshot();
+ if(mode!=='road')paintChanged=markAt(p)||paintChanged;
+ try{host.setPointerCapture?.(e.pointerId)}catch(_){}
+ render();
 }
 function pointerMove(e){
- if(!editing||!painting||!draft)return;
+ if(!editing||!painting||activePointer!==e.pointerId||!draft)return;
  const p=coord(e);if(!p)return;
- e.preventDefault();e.stopPropagation();
- if(lastPaint){
-  const a=lastPaint,dist=Math.hypot((p.x-a.x)*W,(p.y-a.y)*H);
-  const steps=Math.min(120,Math.ceil(dist/(BRUSH*.65)));
-  for(let j=1;j<=steps;j++){
-   const q={x:a.x+(p.x-a.x)*j/steps,y:a.y+(p.y-a.y)*j/steps};
-   changed=stroke(q)||changed;
-  }
- }else changed=stroke(p)||changed;
- repaint();
+ e.stopPropagation();e.preventDefault();
+ if(mode==='road'){
+  along(previous||p,p,takeRoadPoint,5);
+ }else{
+  along(previous||p,p,q=>{paintChanged=markAt(q)||paintChanged},Math.max(3,brushSize()*.6));
+ }
+ previous=p;render();
 }
 function pointerUp(e){
- if(!painting)return;
- painting=false;lastPaint=null;
+ if(!painting||e.pointerId!==activePointer)return;
  e.stopPropagation?.();
- try{host.releasePointerCapture?.(e.pointerId);}catch(_){}
- if(changed)persist(mode==='erase'?'Blue building erased':'Blue building painted');
+ const p=coord(e);
+ if(p&&mode==='road')takeRoadPoint(p);
+ painting=false;activePointer=null;previous=null;
+ try{host.releasePointerCapture?.(e.pointerId)}catch(_){}
+ if(mode==='road'){
+  // A stroke begins EXACTLY at the initial cursor point. Freehand samples
+  // are joined to make one continuous usable route, with no diagonal jump.
+  const points=strokePoints,available=Math.max(0,MAX_ROADS-draft.segments.length);
+  if(points.length>=2&&available){
+   for(let i=1;i<points.length&&i<=available;i++)
+    draft.segments.push({a:points[i-1],b:points[i]});
+   paintChanged=true;
+  }
+ }
+ strokePoints=[];
+ if(paintChanged)persist(mode==='road'?'Freehand road saved.':mode==='paint'?'Blue building painted.':'Map obstruction erased.');
  else undoStack.pop();
- changed=false;showOverlay();
+ paintChanged=false;show();
 }
 function ensureCanvas(){
  if(ctx)return true;
- host=$('titleMapRoadCanvas');
- if(!host)return false;
+ host=$('titleMapRoadCanvas');if(!host)return false;
  canvas=document.createElement('canvas');canvas.id='titleMapRoadBrushSurface';
  canvas.setAttribute('aria-hidden','true');
  canvas.style.cssText='display:block;pointer-events:none;width:100%;height:100%';
  host.appendChild(canvas);ctx=canvas.getContext('2d');
- if(!ctx){canvas.remove();canvas=null;info('Canvas2D was unavailable.');return false;}
+ if(!ctx){canvas.remove();canvas=null;info('Canvas2D is unavailable.');return false}
  host.addEventListener('pointerdown',pointerDown);
  host.addEventListener('pointermove',pointerMove);
  host.addEventListener('pointerup',pointerUp);
  host.addEventListener('pointercancel',pointerUp);
- host.addEventListener('touchstart',e=>{if(editing)e.stopPropagation();},{passive:true});
  return true;
 }
-function sync(){
- if(!config)return;
- if(!editing)reload();
- showOverlay();
+function sync(){if(!config)return;if(!editing)restore();show()}
+function selectMode(value){
+ const allowed=['road','line','block','paint','erase','erase-road'];
+ if(!allowed.includes(value))return;
+ mode=value;pending=null;strokePoints=[];painting=false;previous=null;
+ const selector=$('titleMapRoadMode');if(selector)selector.value=mode;
+ for(const id of ['road','paint','block','erase','erase-road']){
+  const btn=$('titleMapRoad'+id[0].toUpperCase()+id.slice(1).replace('-road','Road'));
+  if(btn)btn.setAttribute('aria-pressed',String(mode===id));
+ }
+ const hints={road:'FREEHAND STREET: LEFT-drag to draw. RIGHT-drag to pan. Wheel to zoom.',
+  line:'PRECISE STREET: left-click two endpoints. RIGHT-drag to pan.',
+  block:'BUILDING RECTANGLE: left-click two corners. Blue means impassable for pathfinding.',
+  paint:'BLUE BUILDING BRUSH: LEFT-drag over building footprints. RIGHT-drag to pan.',
+  erase:'ERASE BLUE BUILDINGS: LEFT-drag to clear obstacles.',
+  'erase-road':'ERASE STREETS: LEFT-drag across an incorrect road section.'};
+ info(hints[mode]);render();
 }
 function toggle(){
- if(!config){info('Road editor has not initialized.');return false;}
- if(config.busy?.()){info('Finish the current journey first.');return false;}
+ if(!config)return false;
+ if(config.busy?.()){info('Finish the current journey first.');return false}
  if(!editing&&(config.getPinEdit?.()||root.FE_RAIL_EDITOR?.isEditing?.())){
-  info('Finish Edit Pins or Rail Editor before painting streets or blue buildings.');return false;
+  info('Finish Edit Pins or Rail Editor before road painting.');return false;
  }
- if(!valid()){info('Local road routing module is unavailable.');return false;}
- if(!ensureCanvas())return false;
- editing=!editing;pending=null;painting=false;lastPaint=null;suggestions=[];
- reload();
- const controls=$('titleMapRoadTools'),button=$('titleMapRoadEdit');
- if(controls)controls.hidden=!editing;
- if(button){button.textContent=editing?'Finish Road Editor':'Road Editor';
-  button.setAttribute('aria-pressed',String(editing));
-  button.setAttribute('aria-expanded',String(editing));}
- const card=$('titleMapLocationCard');
- if(editing&&card)card.hidden=true;
- showOverlay();
- info(editing?'Editor open. Choose Street, Blue building rectangle, Paint blue building, or Erase. Paint with the mouse directly over the map.':
-  'Editor closed. Blue markings remain visible and affect routing; street drawings are preserved.');
+ if(!root.FE_ROAD_LAYOUT?.sanitize||!ensureCanvas()){info('Road editor is unavailable.');return false}
+ editing=!editing;pending=null;painting=false;strokePoints=[];activePointer=null;previous=null;
+ restore();
+ const tools=$('titleMapRoadTools'),button=$('titleMapRoadEdit');
+ if(tools)tools.hidden=!editing;
+ if(button){button.textContent=editing?'Finish Road Editor':'Road Editor';button.setAttribute('aria-pressed',String(editing));button.setAttribute('aria-expanded',String(editing))}
+ const card=$('titleMapLocationCard');if(editing&&card)card.hidden=true;
+ show();
+ if(editing)selectMode(mode);
+ else info('Editor closed. Your manually drawn streets and blue building obstacles are saved.');
  return true;
-}
-function scan(){
- const img=$('titleMapImage');if(!img?.naturalWidth)return [];
- const c=document.createElement('canvas');c.width=256;c.height=145;
- const x=c.getContext('2d',{willReadFrequently:true});if(!x)return [];
- let data;
- try{x.drawImage(img,0,0,256,145);data=x.getImageData(0,0,256,145).data;}
- catch(_){return [];}
- const lum=new Float32Array(256*145);
- for(let i=0;i<lum.length;i++)lum[i]=data[i*4]*.299+data[i*4+1]*.587+data[i*4+2]*.114;
- const at=(x,y)=>lum[y*256+x];
- const found=[];
- for(const axis of ['h','v']){
-  const outer=axis==='h'?145:256,inner=axis==='h'?256:145;
-  for(let k=10;k<outer-10;k+=3){
-   let start=-1,miss=0;
-   const flush=end=>{
-    if(start>=0&&end-start>=18&&found.length<320){
-     const a=axis==='h'?{x:start/255,y:k/144}:{x:k/255,y:start/144};
-     const b=axis==='h'?{x:end/255,y:k/144}:{x:k/255,y:end/144};
-     found.push({a,b});
-    }start=-1;miss=0;
-   };
-   for(let j=8;j<inner-8;j++){
-    const xx=axis==='h'?j:k,yy=axis==='h'?k:j;
-    if(xx<7||xx>248||yy<7||yy>137)continue;
-    const v=at(xx,yy),a=axis==='h'?at(xx,yy-4):at(xx-4,yy),b=axis==='h'?at(xx,yy+4):at(xx+4,yy);
-    if(v>=115&&v<=250&&v-Math.min(a,b)>13&&Math.abs(a-b)<75){if(start<0)start=j;miss=0;}
-    else if(start>=0&&++miss>=3)flush(j-3);
-   }flush(inner-8);
-  }
- }
- return found;
-}
-function suggest(kind){
- if(!editing)return info('Open Road Editor before requesting suggestions.');
- pending=null;suggestions=(kind==='grid'?root.FE_CAPITAL_STREETS?.draftSegments?.():scan())||[];
- info(suggestions.length+' yellow street suggestions, NOT activated. Review and choose Accept Suggestions.');repaint();
-}
-function accept(){
- if(!editing||!draft||!suggestions.length)return;
- const space=MAX_ROADS-draft.segments.length,n=Math.min(space,suggestions.length);
- if(!n)return info('Maximum road count reached.');
- markSnapshot();draft.segments.push(...suggestions.slice(0,n).map(s=>({a:s.a,b:s.b})));
- suggestions=[];pending=null;
- persist(n+' proposed streets accepted. Review connectivity before Activate Custom Routes.');
 }
 function undo(){
  if(!editing||!draft)return;
- if(pending){pending=null;info('Pending point canceled.');repaint();return;}
- if(!undoStack.length){info('Nothing to undo.');return;}
- draft=undoStack.pop();persist('Last edit undone');showOverlay();
+ if(pending){pending=null;render();return info('First point canceled.')}
+ if(!undoStack.length)return info('Nothing to undo.');
+ draft=undoStack.pop();persist('Last manual map edit undone.');show();
 }
 function activate(yes){
  if(!editing||!draft)return;
- if(yes&&draft.segments.length<2)return info('Draw or accept at least two street sections before activating custom routes.');
- markSnapshot();draft.active=yes;persist(yes?'Custom A* street routing enabled. Unconnected addresses cannot be reached.':
-  'Original street routing restored. Blue buildings remain obstacles.');
+ if(yes&&draft.segments.length<2)return info('Draw at least two connected street sections to activate manual routing.');
+ snapshot();draft.active=yes;persist(yes?'Manual A* street routing enabled. Disconnected places are inaccessible.':
+  'Original routing restored. Your manual drawing remains saved.');
 }
 function exportRoads(){
  if(!draft)return;
  const url=URL.createObjectURL(new Blob([JSON.stringify(root.FE_ROAD_LAYOUT.sanitize(draft),null,2)],{type:'application/json'}));
- const a=document.createElement('a');a.href=url;a.download='capital-washington-roads.json';a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
- info('Exported streets and blue building outlines; Washington map artwork not included.');
+ const link=document.createElement('a');link.href=url;link.download='capital-washington-manual-roads.json';link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);info('Exported manually painted streets and blue building obstacles.');
 }
 function importRoads(file){
- if(!file)return;
- if(file.size>1500000)return info('Road file exceeds 1.5 MB.');
+ if(!file)return;if(file.size>1800000)return info('Map file is too large.');
  const reader=new FileReader();
  reader.onload=()=>{try{
   const value=JSON.parse(reader.result);
-  if(value?.version!==1||!Array.isArray(value.segments)||!Array.isArray(value.blocks))
-   throw Error('Incorrect road-layout format');
-  markSnapshot();draft=root.FE_ROAD_LAYOUT.sanitize(value);
-  draft.active=false;suggestions=[];pending=null;
-  persist('Imported roads and buildings. Custom street routing remains OFF until enabled.');
- }catch(error){info('Could not import: '+error.message);}};
- reader.onerror=()=>info('File read failed.');
- reader.readAsText(file);
+  if(value?.version!==1||!Array.isArray(value.segments)||!Array.isArray(value.blocks))throw Error('Incorrect road layout format');
+  snapshot();draft=root.FE_ROAD_LAYOUT.sanitize(value);draft.active=false;pending=null;
+  persist('Manual map imported. Activate Custom Routes when ready.');
+ }catch(error){info('Could not import roads: '+error.message)}};
+ reader.onerror=()=>info('File read failed.');reader.readAsText(file);
 }
 function mount(args){
- if(config)return true;
- config=args;
+ if(config)return true;config=args;
  const on=(id,event,handler)=>$(id)?.addEventListener(event,handler);
  on('titleMapRoadEdit','click',toggle);
- on('titleMapRoadMode','change',e=>{
-  mode=e.target.value;pending=null;painting=false;
-  info(mode==='road'?'Click two street points.':
-   mode==='block'?'Click opposite building corners to paint blue.':
-   mode==='paint'?'Hold and drag to paint a blue building.':
-    'Hold and drag to erase blue building marks.');
-  repaint();
- });
- on('titleMapRoadFinish','click',()=>{pending=null;repaint();info('Pending street or building point cleared.');});
+ on('titleMapRoadMode','change',e=>selectMode(e.target.value));
+ for(const [id,m] of [['titleMapRoadRoad','road'],['titleMapRoadPaint','paint'],
+  ['titleMapRoadBlock','block'],['titleMapRoadErase','erase'],['titleMapRoadEraseRoad','erase-road']])
+  on(id,'click',()=>selectMode(m));
+ on('titleMapRoadBrush','change',()=>{info('Brush width '+brushSize()+' printed-map pixels.');render()});
+ on('titleMapRoadFinish','click',()=>{pending=null;strokePoints=[];render();info('Line finished. Choose a new place to start.')});
  on('titleMapRoadUndo','click',undo);
- on('titleMapRoadSeed','click',()=>suggest('grid'));
- on('titleMapRoadScan','click',()=>suggest('raster'));
- on('titleMapRoadAccept','click',accept);
  on('titleMapRoadEnable','click',()=>activate(true));
  on('titleMapRoadDisable','click',()=>activate(false));
  on('titleMapRoadExport','click',exportRoads);
- on('titleMapRoadImport','change',e=>{importRoads(e.target.files?.[0]);e.target.value='';});
+ on('titleMapRoadImport','change',e=>{importRoads(e.target.files?.[0]);e.target.value=''});
  on('titleMapRoadClear','click',()=>{
-  if(!root.confirm('Delete all custom streets and blue buildings for this profile?'))return;
-  markSnapshot();draft={version:1,active:false,segments:[],blocks:[]};
-  suggestions=[];pending=null;persist('Custom streets and blue buildings cleared.');showOverlay();
+  if(!root.confirm('Clear ALL manually drawn roads and blue building masks for this profile?'))return;
+  snapshot();draft={version:1,active:false,segments:[],blocks:[]};pending=null;
+  persist('Manual road map cleared; printed Washington artwork unchanged.');show();
  });
- reload();ensureCanvas();showOverlay();
- return true;
+ restore();ensureCanvas();show();return true;
 }
-root.FE_ROAD_EDITOR=Object.freeze({version:2,mount,sync,toggle,isEditing:()=>editing,
- scanRaster:scan,getStatus:()=>({editing,mode,streets:draft?.segments.length||0,blocks:draft?.blocks.length||0})});
+root.FE_ROAD_EDITOR=Object.freeze({version:3,mount,sync,toggle,selectMode,
+ isEditing:()=>editing,getStatus:()=>({editing,mode,streets:draft?.segments.length||0,blocks:draft?.blocks.length||0}),
+ cursorCoordinate:coord});
 root.FE_ROAD_EDITOR_SETUP?.();
 })(typeof window!=='undefined'?window:globalThis);
