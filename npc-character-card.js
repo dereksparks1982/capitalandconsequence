@@ -63,6 +63,7 @@
   // Every shortcut uses the SAME game-space speaker, access and language rules.
   if(typeof options.onQuick==='function'){
    const actions=[['greet','Greet'],['work','Ask About Work'],['city','Ask About Washington'],['today','Ask About Today']];
+   if(options.circusInTown)actions.push(['circus','Ask About the Circus']);
    const bar=element('div','npc-card-quick'),buttons=[];
    for(const [topic,label] of actions){
     const button=element('button','npc-card-quick-action',label);button.type='button';
