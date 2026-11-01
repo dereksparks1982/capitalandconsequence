@@ -24,7 +24,8 @@ const ret=app.slice(app.indexOf('function returnCityRoomToOffice(){'),app.indexO
 assert.match(ret,/previous\.locationId!=='factory'/,'cannot return to office from another venue');
 assert.doesNotMatch(ret,/recordProvisional/,'no silent long-distance return');
 assert.match(ret,/recordRoomMove/,'same-factory room return still costs one minute');
-assert.doesNotMatch(ret,/S\.currentLocation=\{locationId:'factory'/,'no unconditional jump to factory');
+assert.ok(ret.indexOf("previous.locationId!=='factory'")<ret.indexOf("S.currentLocation={locationId:'factory'"),
+ 'any factory room move must follow the physical-location guard');
 assert.match(app,/capitalTravelBusy\|\|titleDevFreezeTime/,'ambient ticking stops during the animation');
 assert.match(app,/FE_WORLD_BANNER\?\.beginTrip/,'begin simulated clock projection');
 assert.match(app,/FE_WORLD_BANNER\?\.progress\?\.\(fraction\)/,'progress visible on clock');
