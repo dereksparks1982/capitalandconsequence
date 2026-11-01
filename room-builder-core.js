@@ -203,7 +203,21 @@ function analyze(room){
   furniture:room.objects.length,solidFurniture:occupied,
   area:room.widthTiles*room.heightTiles,roomId:room.roomId};
 }
-const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sanitize,resize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,path,analyze,clone};
+/* Optional crude placeholder arrangement to demonstrate the editor's tools.
+   Never becomes an approved executive-office floorplan without owner consent. */
+function sampleOffice(){
+ const room=makeRoom();
+ for(let y=2;y<=7;y++)for(let x=3;x<=12;x++)
+  if(x>=4&&x<=11&&y>=3&&y<=6)room.floor[index(room,x,y)]='floor_rug_red';
+ const pieces=[
+  ['desk_oak',6,3],['chair_office',7,4],['file_cabinet',2,2],
+  ['bookshelf',13,2],['wood_cabinet',2,7],['plant_small',13,7],
+  ['oil_lamp',10,3],['coat_stand',13,9]
+ ];
+ for(const [id,x,y] of pieces)if(!place(room,id,x,y))throw Error('Invalid starter office furniture: '+id);
+ return sanitize(room,room.locationId,room.roomId);
+}
+const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sampleOffice,sanitize,resize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,path,analyze,clone};
 root.FE_ROOM_BUILDER_CORE=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
