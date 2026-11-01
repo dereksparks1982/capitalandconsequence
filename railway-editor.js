@@ -62,6 +62,11 @@ function click(e){
   const res=root.FE_RAILWAY?.addSegment?.(state(),first,p);
   if(res?.ok){first=p;commit('Track segment saved. Continue clicking bends, or select Finish Track.')}
   else{past.pop();notify(res?.reason||'Invalid track')}
+ }else if(mode==='erase'){
+  snapshot();
+  const result=root.FE_RAILWAY?.eraseAt?.(state(),p);
+  if(result?.ok)commit('Erased '+result.type+(result.name?' · '+result.name:'')+'.');
+  else{past.pop();notify(result?.reason||'Nothing found to erase')}
  }else if(mode==='station'){
   const name=root.prompt?.('Station name (up to 60 characters):','New Station');
   if(name===null||name===undefined)return;
@@ -107,7 +112,7 @@ function mount(args){
  overlay.addEventListener('pointerdown',click);
  const on=(id,ev,fn)=>$(id)?.addEventListener(ev,fn);
  on('titleMapRailEdit','click',enter);
- on('titleMapRailMode','change',e=>{mode=e.target.value;first=null;draw();notify(mode==='track'?'Click rail corners.':'Click an existing track endpoint to build a station.')});
+ on('titleMapRailMode','change',e=>{mode=e.target.value;first=null;draw();notify(mode==='track'?'Click rail corners.':mode==='station'?'Click a track endpoint to build a station.':'Click a track or station to erase it.')});
  on('titleMapRailFinish','click',()=>{first=null;draw();notify('Track ended. Click a new start to draw another line.')});
  on('titleMapRailUndo','click',()=>{if(first){first=null;draw();return notify('Pending endpoint cleared.')}
    if(!past.length)return notify('Nothing to undo.');
@@ -123,7 +128,16 @@ function mount(args){
   snapshot();state().railwayPlanner={version:1,segments:[],stations:[],trains:[]};
   first=null;commit('Rail plan cleared. Approved city map untouched.');
  });
- refreshOptions();draw();return true;
+ refreshOptions();draw();
+ // Rendering checks the AUTHORITATIVE game minute; this timer only repaints
+ // the visible symbol when that minute changes. It never advances game time.
+ let lastMinute=null;
+ root.setInterval?.(()=>{
+  const now=state()?.worldCalendar?.worldMinute;
+  const viewer=$('titleMapViewer');
+  if(!viewer?.hidden&&now!==lastMinute){lastMinute=now;draw()}
+ },500);
+ return true;
 }
 function sync(){if(!config)return;draw()}
 root.FE_RAIL_EDITOR=Object.freeze({mount,sync,isEditing:()=>editing});
