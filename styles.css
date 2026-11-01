@@ -2024,3 +2024,6 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
  background:#84532d;color:#fff;border-color:#e4b47e
 }
 #titleMapRoadStatus{flex-basis:100%;font-weight:700;white-space:normal}
+
+/* Distinct physical stage symbol for Ford's and National theatres. */
+.title-map-marker[data-physical-icon="theatre"] .title-map-marker-pin{background:#593f63}
