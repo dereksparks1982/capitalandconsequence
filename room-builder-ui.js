@@ -2,8 +2,8 @@
    Developer design state is deliberately separate from live career saves. */
 (function(root){
 'use strict';
-const C=root.FE_ROOM_BUILDER_CORE;
-if(!C||typeof document==='undefined')return;
+const C=root.FE_ROOM_BUILDER_CORE,Kit=root.FE_ROOM_BUILDER_KIT;
+if(!C||!Kit||typeof document==='undefined')return;
 const SPRITES='assets/artwork/spritesheet.png';
 const locationId='factory',roomId='executive-office',STORAGE=C.key(locationId,roomId);
 let room=C.makeRoom(),mode='stamp',assetId='desk_oak',selectedId=null,preview=false;
@@ -16,10 +16,10 @@ panel.id='roomBuilderEditor';panel.className='room-builder-editor';panel.hidden=
 panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
 panel.setAttribute('aria-label','Room Builder, Federal Electric Executive Office');
 panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>ROOM BUILDER</h2><p>Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
-'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
-'<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Select / Drag moves a placed object. Grid tiles are 32px.</p><dl id="rbInspector"></dl></aside>'+
+'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="fill" title="Flood fill connected matching tiles">Bucket Fill</button><button type="button" data-rb-mode="rectangle" title="Drag a rectangle of floors or walls">Rectangle</button><button type="button" data-rb-mode="pick">Eyedropper</button><button type="button" data-rb-mode="clear-wall">Remove Walls</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
+'<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Fill changes a connected region, Rectangle paints between two corners, Eyedropper selects existing art. Objects remain on their own layer.</p><dl id="rbInspector"></dl></aside>'+
 '<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
-'<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="backup">Restore Backup</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
+'<footer class="rb-footer"><label class="rb-draft-field">Draft name <input id="rbDraftName" type="text" maxlength="50" placeholder="Office layout A"></label><button type="button" data-rb="draft-save">Save Named Draft</button><label class="rb-draft-field">Saved drafts <select id="rbDraftList"><option value="">No saved drafts</option></select></label><button type="button" data-rb="draft-load">Open Draft</button><button type="button" data-rb="draft-delete">Delete Draft</button><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="backup">Restore Backup</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
 const status=s=>{$('rbStatus').textContent=s};
@@ -44,6 +44,18 @@ function thumb(canvas,sprite,scale=1){
  if(!art.complete||!art.naturalWidth)return;
  const [x,y,w,h]=sprite.atlas_rect,ratio=Math.min(canvas.width/w,canvas.height/h)*scale;
  p.imageSmoothingEnabled=false;p.drawImage(art,x,y,w,h,(canvas.width-w*ratio)/2,(canvas.height-h*ratio)/2,w*ratio,h*ratio);
+}
+function drafts(){
+ const list=$('rbDraftList'),selected=list.value;
+ list.replaceChildren();
+ const initial=document.createElement('option');initial.value='';initial.textContent='Select named layout';list.append(initial);
+ try{
+  for(const item of Kit.listDrafts(localStorage,locationId,roomId)){
+   const option=document.createElement('option');option.value=item.name;option.textContent=item.name;
+   list.append(option);
+  }
+  if(Array.from(list.options).some(o=>o.value===selected))list.value=selected;
+ }catch(error){status('Draft library: '+error.message);}
 }
 function palette(){
  const cat=$('rbCategory').value,host=$('rbPalette');host.replaceChildren();
@@ -98,8 +110,9 @@ function render(){
  $('rbDirty').textContent=dirty?'UNSAVED CHANGES':loaded?'Saved layout':'Unsaved starter template';$('rbDirty').classList.toggle('dirty',dirty);
  const sel=room.objects.find(o=>o.id===selectedId),s=sel&&C.asset(sel.spriteId),selectedSprite=C.asset(assetId);
  $('rbInspector').replaceChildren();
- const values=sel?[['Selected',s?.name],['Grid',sel.x+', '+sel.y],['Rotation',sel.rotation*90+'°'],['Solid',s?.solid?'Yes':'No']]:[
-  ['Brush',selectedSprite?.name||'None'],['Charles spawn',room.spawns.player.x+', '+room.spawns.player.y],['Room size',room.widthTiles+' × '+room.heightTiles]];
+ const info=Kit.describe(sel?sel.spriteId:assetId);
+ const values=sel?[['Selected',s?.name],['Grid',sel.x+', '+sel.y],['Rotation',sel.rotation*90+'°'],['Solid',s?.solid?'Yes':'No'],['Use',info?.kind],['Behavior',info?.hint]]:[
+  ['Brush',selectedSprite?.name||'None'],['Layer',info?.category||'None'],['Function',info?.hint||''],['Charles spawn',room.spawns.player.x+', '+room.spawns.player.y],['Room size',room.widthTiles+' × '+room.heightTiles]];
  for(const [name,value] of values){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name;dd.textContent=value; $('rbInspector').append(dt,dd);}
 }
 function coords(e){
@@ -108,10 +121,22 @@ function coords(e){
  const y=Math.floor((e.clientY-rect.top)/rect.height*room.heightTiles);
  return C.inBounds(room,x,y)?{x,y}:null;
 }
+function paintArea(tool,layer,id,p,other=p){
+ let result=null;
+ mutate(()=>{result=Kit.apply(room,tool,layer,id,p.x,p.y,other.x,other.y);return result.ok;});
+ if(result&&!result.ok)status(result.reason);
+ else if(result?.changes)status(result.changes+' '+layer+' tiles painted. Undo available.');
+}
 function paintAt(p){
  if(!p)return;
  if(mode==='spawn')mutate(()=>C.setSpawn(room,p.x,p.y));
  else if(mode==='erase')mutate(()=>C.erase(room,p.x,p.y));
+ else if(mode==='clear-wall')paintArea('single','construction',null,p);
+ else if(mode==='fill'){
+  const sprite=C.asset(assetId);
+  if(!sprite||!['floors','construction'].includes(sprite.category)){status('Choose a floor or construction sprite to use Bucket Fill.');return;}
+  paintArea('fill',sprite.category,assetId,p);
+ }
  else if(mode==='stamp'){
   const s=C.asset(assetId);if(!s)return;
   if(['floors','construction'].includes(s.category))mutate(()=>C.paint(room,p.x,p.y,assetId));
@@ -128,6 +153,21 @@ canvas.addEventListener('pointerdown',e=>{
   }
   return;
  }
+ if(mode==='pick'){
+  const item=Kit.pick(room,p.x,p.y);
+  if(!item){status('No tile to sample.');return;}
+  assetId=item.spriteId;
+  const sprite=C.asset(assetId);
+  if(sprite)$('rbCategory').value=sprite.category;
+  mode='stamp';palette();render();status('Eyedropper selected '+(sprite?.name||assetId)+'.');return;
+ }
+ if(mode==='rectangle'){
+  if(!['floors','construction'].includes(C.asset(assetId)?.category)){status('Rectangle requires a floor or wall sprite.');return;}
+  drag={mode:'rectangle',start:p};
+  canvas.setPointerCapture?.(e.pointerId);
+  status('Drag to the opposite corner, then release to paint the rectangle.');return;
+ }
+ if(mode==='fill'){paintAt(p);return;}
  if(mode==='select'){
   const obj=C.findObject(room,p.x,p.y);selectedId=obj?.id||null;
   drag=obj?{id:obj.id,offsetX:p.x-obj.x,offsetY:p.y-obj.y}:null;
@@ -145,6 +185,10 @@ canvas.addEventListener('pointermove',e=>{
  if(k===dragLast)return;dragLast=k;paintAt(p);
 });
 canvas.addEventListener('pointerup',e=>{
+ if(drag?.mode==='rectangle'&&!preview){
+  const corner=coords(e),sprite=C.asset(assetId);
+  if(corner&&sprite)paintArea('rectangle',sprite.category,assetId,drag.start,corner);
+ }
  if(drag?.id&&!preview){const p=coords(e);if(p)mutate(()=>C.relocate(room,drag.id,p.x-drag.offsetX,p.y-drag.offsetY));}
  drag=null;dragLast='';
 });
@@ -172,7 +216,7 @@ function open(){
  lastFocus=document.activeElement;
  if(!loaded)loadSaved();
  panel.hidden=false;preview=false;selectedId=null;position={...room.spawns.player};
- palette();render();panel.querySelector('[data-rb="close"]').focus();
+ palette();drafts();render();panel.querySelector('[data-rb="close"]').focus();
 }
 function close(){
  if(dirty&&!root.confirm('Discard unsaved editor changes?'))return;
@@ -218,6 +262,32 @@ panel.addEventListener('click',e=>{
  if(action==='nudge-up')nudge(0,-1);if(action==='nudge-down')nudge(0,1);
  if(action==='inspect')inspect();
  if(action==='save')save();
+ if(action==='draft-save'){
+  try{
+   const title=$('rbDraftName').value.trim();
+   if(Kit.listDrafts(localStorage,locationId,roomId).some(v=>v.name.toLowerCase()===title.toLowerCase())&&
+      !root.confirm('Replace the existing named draft '+title+'?'))return;
+   Kit.saveDraft(localStorage,room,title);
+   drafts();$('rbDraftList').value=title;
+   status('Named draft "'+title+'" stored separately. The active room design was not overwritten.');
+  }catch(error){status('Draft save failed: '+error.message);}
+ }
+ if(action==='draft-load'){
+  const name=$('rbDraftList').value;
+  if(!name){status('Select a named draft first.');return;}
+  if(dirty&&!root.confirm('Replace unsaved edits with the selected named draft?'))return;
+  try{
+   const next=Kit.openDraft(localStorage,locationId,roomId,name);
+   snapshot();room=next;selectedId=null;testRoom=null;preview=false;dirty=true;
+   render();status('Opened "'+name+'" as an unsaved draft. Save Layout to apply.');
+  }catch(error){status('Cannot open draft: '+error.message);}
+ }
+ if(action==='draft-delete'){
+  const name=$('rbDraftList').value;
+  if(!name||!root.confirm('Delete the named blueprint "'+name+'"? This does not change the active room.'))return;
+  try{Kit.deleteDraft(localStorage,locationId,roomId,name);drafts();status('Deleted named draft "'+name+'". Active room unchanged.');}
+  catch(error){status('Cannot delete draft: '+error.message);}
+ }
  if(action==='backup'){
   if(dirty&&!root.confirm('Discard current unsaved changes and load the earlier saved room design?'))return;
   try{
