@@ -116,7 +116,7 @@
   try{element.releasePointerCapture?.(event.pointerId)}catch(_){}
   if(moved){
    const p={x:drag.x,y:drag.y};
-   if(drag.id==='map'||drag.id==='ledger'){
+   if(element.dataset.deskMove){
     layout()[drag.id]=p;save();
    }else root.FE_PERSONAL_EFFECTS?.position?.(drag.id,p.x,p.y);
    suppress=element;

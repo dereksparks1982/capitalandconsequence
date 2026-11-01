@@ -46,3 +46,11 @@ The full source test runner and packaged Electron smoke check must run on a Linu
 - Repairs `run-linux.sh` and the old in-place source updater so they no longer direct users to deleted legacy binary names.
 - Runs cleanup automatically after future successful local game installation. Cleanups themselves never trigger compilation, sudo, GitHub Actions or a download.
 - Current desktop still requires one explicit local cleanup to remove existing stale files. Repository changes alone do not erase local files.
+
+## Full-width felt and movable collection (next source checkpoint)
+- Expanded the green felt across the entire existing wooden desk, leaving its outer shape intact; pencil, paper map and compact ledger retain their opening positions.
+- Map, ledger and physically collected items are pointer-draggable inside the felt. Normal clicks still open the original map or ledger, while releases save normalized positions to the current game state.
+- Shared pocket inventory and executive-desk storage are separate physical locations with validated item acquisition, inspect, deposit, retrieve and placement operations. No story keys or collectibles are fabricated at game start.
+- Uses the existing personal-effects saved items (instead of establishing a competing inventory); keys left on the desk are unavailable while traveling.
+- New game saves work normally; there is no retroactive save-file conversion or old-save preservation.
+- Commit provides source changes and focused checks; Ubuntu Electron visual verification is still outstanding.

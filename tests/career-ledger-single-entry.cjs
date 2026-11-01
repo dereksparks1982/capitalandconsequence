@@ -7,9 +7,9 @@ assert.ok(src.includes("const bookTitle=route.id==='industrialist'?'Business Led
  'Charles has one Business Ledger title on the physical desk book');
 assert.equal((src.match(/'Business Ledger'/g)||[]).length,1,
  'Business Ledger is defined once for the executive desk');
-assert.ok(src.includes('id="careerDeskLedger" class="career-desk-ledger"'),
+assert.ok(src.includes('id="careerDeskLedger" data-desk-move="ledger" class="career-desk-ledger career-desk-movable"'),
  'The desk book is a real semantic button, not inert decoration');
-assert.ok(src.includes('title="Open ${escape(bookTitle)}" aria-label="Open ${escape(bookTitle)}"'),
+assert.ok(src.includes('title="Click to open ${escape(bookTitle)}; drag to rearrange" aria-label="Open ${escape(bookTitle)}"'),
  'Accessible desk book explains its action');
 assert.ok(src.includes("desk.querySelector('#careerDeskLedger').onclick=()=>window.FE_PERSONAL_BOOK?.open?.()"),
  'Clicking the sole desk book opens the complete existing personal-book records');
@@ -18,7 +18,7 @@ assert.ok(!src.includes('careerDeskJournal') && !src.includes('career-desk-sheet
 assert.ok(src.includes('id="careerDeskMap"')&&src.includes('id="careerDeskMapButton"'),
  'Existing map controls and office navigation remain intact');
 const deskArt=src.slice(src.indexOf('<div class="career-desk-art"'),src.indexOf('<p class="career-desk-summary">'));
-const blotter=deskArt.slice(deskArt.indexOf('<div class="career-desk-blotter">'),deskArt.indexOf('</div>',deskArt.indexOf('<div class="career-desk-blotter">')));
+const blotter=deskArt.slice(deskArt.indexOf('id="careerDeskBlotter"'),deskArt.indexOf('</div>',deskArt.indexOf('id="careerDeskBlotter"')));
 assert.equal((deskArt.match(/id="careerDeskLedger"/g)||[]).length,1,'One and only one visible ledger on the desk');
 assert.ok(blotter.includes('id="careerDeskLedger"'),'Business Ledger must be a book ON the green blotter');
 assert.ok(blotter.includes('id="careerDeskMap"'),'Original Washington map remains beside that book');
@@ -28,7 +28,7 @@ assert.ok(deskArt.indexOf('id="careerDeskLedger"')>deskArt.indexOf('career-desk-
  'The old far-left oversized ledger banner is forbidden');
 assert.ok(!deskArt.includes('WASHINGTON · PRIVATE PAPERS')&&!deskArt.includes('<small>'),
  'No faux stationery poster or giant inscription competes with the book');
-assert.match(css,/flex:0 0 112px;width:112px;height:132px/,
+assert.match(css,/width:112px;height:132px/,
  'The ledger is compact, not a 35-percent-width paper placard');
 assert.ok(css.includes('career-desk-book-spine'),'The ledger is drawn as a bound book with a spine');
 assert.ok(src.includes("'Coffee Break':'Spend 5 Minutes'"),

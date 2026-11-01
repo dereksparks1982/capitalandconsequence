@@ -1,3 +1,25 @@
+## Personal desk objects and carried possessions (development)
+
+The executive desk's original wooden surround is unchanged. Its green felt now
+runs the full inside width and holds the same Washington paper guide and
+Business Ledger, initially at their previously approved right-hand positions.
+Click either object to use it. Drag with the pointer to reposition it anywhere
+inside the felt; release to store the new coordinates in that character's
+current-game state. The Washington map **image itself is never edited**.
+
+Collected physical items have two distinct homes: **On Your Person** (carried
+in pockets) and **On the Desk** (left in the executive office). Game events may
+call `FE_PERSONAL_EFFECTS.acquire({id,name,kind,description})` to award an item,
+such as a legitimately discovered key, letter or document. New games do not
+magically include keys. Acquired items can be inspected, put onto the felt,
+dragged, and retrieved into the carried inventory. A left-behind key is not
+available in the pockets; desktop items can be accessed only while physically
+at the executive office. All objects and coordinates are stored in the active
+game autosave, without any prior-save migration.
+
+This is a source-development milestone; Linux gameplay acceptance remains
+pending a direct run of the updated executable.
+
 # Capital & Consequence
 
 **One city. Countless lives. Every choice has consequences.**
