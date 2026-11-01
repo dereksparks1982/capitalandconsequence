@@ -1,3 +1,12 @@
+## 1 November 2026 · v0.7.59-dev: medical records, energy consequences, interactive street NPCs
+- [x] Record player/NPC private medical histories; track collapses, long-term exhaustion, house-call and hospital expense.
+- [x] Zero-energy collapse with setting-dependent consequences: home recovery, factory emergency shutdown, street hospital transport, risky neighborhood cash loss chances.
+- [x] A genuine bedroom sleep action; no automatic energy restoration just because the calendar reaches morning.
+- [x] Make moving NPC tokens clickable with distinct crude profession shapes and a documented wagon shape when actually traveling by wagon. Show actual identity/route and select real destination, with no remote NPC talking.
+- [ ] User-proposed traveling Gypsy wagon character identity still needs actual NPC/vehicle assignment before it can be labeled or rendered as such.
+- [ ] Full Linux runtime tests, payroll/emergency balances, more playable residences, lodging options and NPC in-world encounters require player acceptance. No GitHub Actions.
+- [ ] Accept/test a full build locally before tag and publish.
+
 ## 31 October 2026 · v0.7.58-dev: symmetric boxing stamina\n- [x] Opponent movement and guards consume the same finite round stamina as the player.\n- [x] Exhausted opponent pursuit slows instead of bypassing stamina limits.\n- [x] Opponent stamina visible in practice HUD.\n- [x] Tests added for exhausted pursuit, blocking cost, and empty-stamina guard prevention.\n- [ ] Career injuries, betting, standings and Linux UI acceptance remain separate. No GitHub Actions.\n\n## 31 October 2026 · v0.7.57-dev: directional punching and locked punch lines
 - [x] Strikes only connect while facing the opponent.
 - [x] AI marks an intended target tile and cannot automatically follow the dodging player during the windup.
