@@ -2636,6 +2636,23 @@ function returnCityRoomToOffice(){
  render();
  return true;
 }
+// Physical executive-office furniture interaction. A room preview does not
+// grant player controls, change permission or teleport from another location.
+window.FE_ROOM_SCENE_ACTIONS=Object.freeze({
+ useDesk(){
+  const position=currentCityLocation();
+  if(!activeProfileId()||cityRoomSession.dev||S.paused||
+     S.characterRoute!=='industrialist'||
+     position.locationId!=='factory'||position.roomId!=='executive-office'||
+     document.getElementById('cityRoomOverlay')?.hidden)return false;
+  closeCityRoom();
+  closeTitleMap(false);
+  showTab('desk');
+  window.FE_CAREER_SHELL?.refreshDesk?.();
+  render();
+  return true;
+ }
+});
 function openSelectedTitleDevRoom(){
  const locationId=document.getElementById('titleDevLocationSelect')?.value;
  const roomId=document.getElementById('titleDevRoomSelect')?.value;
