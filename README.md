@@ -10,6 +10,8 @@ Choose from different lives, including a businessman building **Federal Electric
 
 Explore the city on its illustrated Washington map, travel on foot, horseback, or by carriage, visit businesses and social clubs, meet residents, work, trade, invest, gamble, play poker, and pursue opportunities or trouble. Time passes, people follow schedules, and your actions can have lasting consequences. The game takes place in a fictional United States with its own political and social history.
 
+The game also includes a **visual room builder** using its original intentionally crude, 32×32 pixel-art furniture, floors, doors and character sprites. Construct, decorate, resize, save and test-walk the Federal Electric executive office first; the same tools are intended for other buildings after acceptance. The private books include dated, player-written pages in addition to recorded events. These features are development source pending Linux gameplay testing.
+
 The Washington map includes optional developer tools for laying out streets and painting buildings blue as movement obstacles. Approved streets and buildings are stored as editable overlays rather than altering the original city illustration. The map also supports a saved road directory, route previews, walking, horseback travel and carriage travel.
 
 ## Personal desk objects and carried possessions (development)
