@@ -1,3 +1,14 @@
+## 1 November 2026 · v0.7.64-dev: painted railroad planning and landmark map icons
+- [x] Separate Rail Editor from Road Editor, preserving fixed printed Washington artwork and existing approved city pin placements.
+- [x] Click-to-paint saved rail segments and bends, undo or erase individual track sections; place named stations only beside connected track endpoints.
+- [x] Demonstration locomotive dispatch and slow movement along validated connected segments from the authoritative Washington game clock; unconnected track offers no service.
+- [x] Replace an individual location's numbered pin with a profile-saved basic physical icon, or restore the numbered pin, without relocating it.
+- [x] Prevent simultaneous road, rail and pin edit modes from stealing each other's map interactions.
+- [x] Add isolated rail, station, train-clock and physical icon regression coverage.
+- [ ] Turn rail plans into OWNED, paid construction with land/rights-of-way, workers, maintenance, locomotives, passenger timetables, freight, station access, loans and operating revenue.
+- [ ] Connect purchasing, selling and closing a company to railroad ownership and independent character careers, without duplicating personal/company finances.
+- [ ] Visual Linux playtest, full local Node regression and finished native executable still required. No GitHub Actions.
+
 ## 1 November 2026 · v0.7.63-dev: real touring wagons and NPC encounters
 - [x] Register the visiting tarot reader and Silas Pike as special NPCs with saved identity, ordinary conversation cards and actual physical presence, not another phantom list of map markers.
 - [x] Schedule a horse-drawn wagon approach and departure for each during the recurring circus engagement; route only on valid streets and calculate trip time from the actual road distance.
