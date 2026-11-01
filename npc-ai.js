@@ -171,6 +171,9 @@
     };
    }
    const a=w.agents[def.id];
+   // Every resident has an independent private file; an empty file contains
+   // no invented treatment and grants the player no access to NPC secrets.
+   window.FE_MEDICAL_RECORDS?.ensurePatient?.(S,'npc:'+def.id,def.name,'npc');
    if(!a.relationships||typeof a.relationships!=='object')a.relationships={};
    if(!Array.isArray(a.memories))a.memories=[];
    if(!Number.isFinite(+a.energy))a.energy=80;
