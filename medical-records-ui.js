@@ -5,7 +5,7 @@
 'use strict';
 if(typeof document==='undefined')return;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let activeSave=null,resume=null,bedtime=null,book=null,emergency=null,sleepAction=null;
+let activeSave=null,resume=null,book=null,emergency=null;
 function paper(){
  if(book?.isConnected)return book;
  book=document.createElement('section');book.id='ccMedicalBook';book.className='cc-medical-book';book.hidden=true;
@@ -50,24 +50,10 @@ function open(){
  return true;
 }
 function render(save,onWake,onSleep){
- activeSave=save;resume=onWake;bedtime=onSleep;
- const overlay=document.getElementById('cityRoomOverlay');
- const home=save?.currentLocation?.locationId==='home'&&
-  save?.currentLocation?.roomId==='bedroom'&&save.phase==='night'&&
-  !root.FE_MEDICAL_RECORDS?.pending?.(save);
- if(overlay){
-  const holder=overlay.querySelector('.city-room-placeholder');
-  if(holder&&!sleepAction){
-   sleepAction=document.createElement('section');sleepAction.className='cc-home-sleep';sleepAction.hidden=true;
-   sleepAction.innerHTML='<b>BEDROOM · NIGHT REST</b><p>Proper sleep restores Energy. Skipping the night elsewhere does not.</p><button type="button">Sleep Until 8 AM</button><p class="cc-sleep-status" role="status"></p>';
-   holder.prepend(sleepAction);
-   sleepAction.querySelector('button').addEventListener('click',()=>{
-    const result=typeof bedtime==='function'?bedtime():{ok:false,reason:'Bedtime unavailable.'};
-    sleepAction.querySelector('.cc-sleep-status').textContent=result?.reason||'';
-   });
-  }
-  if(sleepAction)sleepAction.hidden=!home||overlay.hidden;
- }
+ activeSave=save;resume=onWake;
+ // One shared bedroom controller for every view, including developer
+ // previews. Its buttons are not limited to the old night-only shortcut.
+ root.FE_SLEEP_UI?.render?.(save,onSleep);
  const event=root.FE_MEDICAL_RECORDS?.pending?.(save),popup=incident();
  if(!event){popup.hidden=true;return}
  const where={
