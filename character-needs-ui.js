@@ -33,7 +33,12 @@ function mountHud(){
  hud.className='character-condition-hud';hud.setAttribute('aria-label','Character condition');hud.setAttribute('role','group');
  for(const key of ['health','hunger','thirst','energy']){
   const item=document.createElement('div');item.className='character-condition-item';
-  const heading=document.createElement('span');heading.textContent=key.toUpperCase();
+  const heading=document.createElement(key==='health'?'button':'span');heading.textContent=key.toUpperCase();
+  if(key==='health'){
+   heading.type='button';heading.className='character-medical-link';
+   heading.title='Open your private medical file';heading.setAttribute('aria-label','Open medical file');
+   heading.addEventListener('click',()=>root.FE_MEDICAL_UI?.open?.());
+  }
   const meter=document.createElement('progress');meter.max=100;meter.value=100;
   meter.id='condition-'+key;meter.setAttribute('aria-label',key);
   const value=document.createElement('output');value.id='condition-'+key+'-value';
