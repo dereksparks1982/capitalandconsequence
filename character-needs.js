@@ -92,7 +92,11 @@ function overnight(save){
  // Explicit report-to-morning transition; skipped hours are not simulated chores.
  // Sleeping restores energy only, never food, water or an injury.
  state.lastMinute=at;
- state.meters.energy=Math.min(100,Math.max(state.meters.energy,90));
+ // Sleep is restorative but not a magical cure for repeated collapse.
+ // Medical history reduces the next morning's maximum until recovery nights.
+ const recovery=root.FE_MEDICAL_RECORDS?.onSleep?.(save);
+ const cap=recovery?.energyCap??100;
+ state.meters.energy=Math.min(cap,Math.max(state.meters.energy,90));
  state.warned.energy=false;
  return {ok:true,minute:at,meters:{...state.meters}};
 }
