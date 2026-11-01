@@ -8,7 +8,7 @@
   const factory=document.getElementById('factory');if(!factory)return;
   const panel=document.createElement('section');
   panel.id='componentWorkshop';panel.className='sheet component-workshop';
-  panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph apparatus and electrical components. Incandescent lamps are not yet available.</p><p>Railway standing batch: 2 keys, 2 relays, 3 switch contacts. $30.80 sales, $5.40 materials (estimates). Mon-Fri 9 AM-5 PM production. Saturday 9 AM-5 PM shipments and weekly pay. Closed Sunday.</p>'+
+  panel.innerHTML='<h3>Federal Electric · 1878 Component Works</h3><p>Telegraph and electrical components first. Research and equip the factory to manufacture incandescent lamps later.</p><p>Railway standing batch: 2 keys, 2 relays, 3 switch contacts. $30.80 sales, $5.40 materials (estimates). Mon-Fri 9 AM-5 PM production. Saturday 9 AM-5 PM shipments and weekly pay. Closed Sunday.</p>'+
    '<p id="componentBalance"></p><p id="componentStaff"></p><p id="componentIncident" role="status"></p><button id="cwRepair" type="button">Charlie: repair stopped equipment · 45 minutes, $0.30</button>'+
    '<form id="cwOrder"><h4>Accept a customer order</h4><label>Customer <select name="customer"></select></label><label>Product <select name="productId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="4" required></label><button type="submit">Accept order · 5 min</button></form>'+
    '<form id="cwBuy"><h4>Buy stock</h4><label>Material <select name="materialId"></select></label><label>Units <input type="number" name="quantity" min="1" max="1000" value="20" required></label><button type="submit">Buy materials · 5 min</button></form>'+
@@ -143,6 +143,7 @@
   // Electric contract controls have their own physical-workshop and date gates.
   for(const b of panel.querySelectorAll(':scope > button, :scope > form button'))b.disabled=!allowed;
   root.FE_ELECTRIC_CAMPAIGN_UI?.render?.();
+  root.FE_FACTORY_CAPACITY_UI?.render?.();
  }
  root.FE_COMPONENT_PANEL=Object.freeze({render:renderPanel});
  if(typeof document!=='undefined'){

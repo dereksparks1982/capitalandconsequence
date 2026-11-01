@@ -1,3 +1,14 @@
+## November 1, 2026 · v0.7.73-dev · expandable 1878 component factory and procurement
+- [x] Hire one additional bench technician and one winding specialist on top of Charlie and the existing salaried foreman; specialists cost hiring fees and weekly company wages.
+- [x] Purchase and fit a second bench and second winding machine separately. **Worker plus machine** is required for each corresponding speed improvement, rather than creating imaginary output.
+- [x] Advanced specialist training uses real company cash and three game hours; basic worker/machine pairing reduces eligible component work to 75% of the original time, trained pairing to ~60%. Unrelated products and the separately unlocked incandescent lamp line retain their own rules.
+- [x] Use the existing assembly quotes and authoritative clock for capacity gains. The shift boundary, Sullivan’s physical attendance and machine breakdowns still block inappropriate production.
+- [x] Per-order raw-material planning shows unmet copper, glass, brass, iron, insulation, carbon and timber requirements, estimated manufacturing time and actual purchase cost. A single confirmed requisition uses shared factory bins and company cash without creating or completing any goods.
+- [x] Saturday specialist payroll once per week with replay safety and persistent cash arrears; no offline wages or free labor.
+- [x] Same existing Factory → Component Works screen displays staffing, machines, capacity, order planning and material requirements. Approved map/UI geometry and character arcs unchanged.
+- [x] Six focused source regression groups (existing component, live-clock, District/Fair campaign, contract hardening, new staffing/requisition and live-clock staffing) passed in isolated V8 execution.
+- [ ] Full `node tests/run-all.cjs` and native Ubuntu Electron playthrough have not been run. No GitHub Actions, packaged download, owner acceptance or release tag.
+
 ## November 1, 2026 · v0.7.72-dev · Contract integrity and electric-workshop safeguards
 - [x] Protect customer order balances: shared warehouse inventory alone cannot justify a second unpaid or unmade delivery.
 - [x] District wire/contact/insulator dispatch requires actual manufacturing against the awarded District orders; Fair lamp dispatch requires sound units manufactured against its awarded order.

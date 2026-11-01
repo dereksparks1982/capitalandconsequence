@@ -1,0 +1,19 @@
+# Capital & Consequence v0.7.73-dev | Factory workforce and materials expansion
+**November 1, 2026 | Source-only development. Unaccepted by owner; no Linux executable built.**
+
+## Approved scope and roadmap entries
+The requested large build expands Federal Electric's previously planned factory capacity, specialist labor, realistic expense accounting, supply procurement and order reporting. The company still begins in January 1878 making electrical components; District streetlighting continues earlier in 1878 and the World's Fair remains a late-1878 story event.
+
+## Playable additions
+- **Additional workers:** hire one bench technician ($35 initial hiring expense, $6 per week) and one winding specialist ($45 initial expense, $7.50 per week). These are abstract shop labor positions, not invented named NPC biographies or changes to Sullivan.
+- **Real equipment:** a second workbench costs $85; a second winding machine costs $110. An added worker alone or a machine alone leaves the existing 180/420-minute recipes unchanged. Only a paired worker and tool reduce the relevant bench or winding assembly time to approximately 75% of its original duration.
+- **Advanced training:** each paid specialist can take a separate, one-time three-hour training course ($32 bench or $45 winding). When paired with the second machine, time per unit falls to approximately 60% of the original, rounded to five-minute increments. Example: a 180-minute winding lot takes 135 minutes with basic extra staffing and 110 with training. The original lamp prototype and batch line timings are untouched.
+- **Actual clock and staff restrictions:** hiring takes two game hours, equipment installation takes three, and training takes three. The real day ends at 5 PM. Assembly still requires Sullivan's presence and the absence of unresolved machine failures; no unattended, infinite or offline factory production is introduced.
+- **Order-specific supply planning:** the factory page can estimate raw material demand for a selected outstanding work order, its available bins, shortfalls, estimated remaining work minutes and exact shortage costs. Confirming a requisition purchases only currently missing raw materials, deducting the existing company treasury, advancing the authoritative clock five minutes and storing a replay-safe receipt. It does not fabricate finished goods or assume every future bulb will pass quality testing.
+- **Saturday payroll and arrears:** specialist salaries are charged once on Saturdays. Insufficient company funds produce persistent wage arrears rather than fictional paid workers. This is separate from Sullivan's existing wage account and the bulb line's existing specialist workers.
+- **Existing UI:** the management and planning controls appear within the established Factory → Component Works sheet. No moved widgets, map art, map pins, rooms, protagonists or established dialogue.
+
+## Verification
+Six focused JavaScript test groups executed successfully in the isolated V8 test harness: component-works, component-works-live, electric-campaign-contracts, electric-campaign-hardening, factory-capacity, and factory-capacity-live. They check ordinary production, wages, order inventory, municipal bids, factory investment idempotency, materials/cash accounting, day boundaries, and earned speed improvements through the actual saved Washington clock.
+
+**Not performed:** complete offline repository Node suite, installation/package build, actual Ubuntu Electron playthrough, owner acceptance. No GitHub Actions, release tag or executable. Machinery prices, salaries and speed factors are tunable gameplay estimates, not claims about real invoices from 1878.

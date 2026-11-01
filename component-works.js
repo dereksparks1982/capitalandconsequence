@@ -70,7 +70,15 @@
  }
  function unitMinutes(state,id){
   const product=PRODUCTS[id];if(!product)return 0;
-  return id==='incandescent-lamp'&&state?.stations?.['lamp-line']>=2?60:product.minutes;
+  if(id==='incandescent-lamp')return state?.stations?.['lamp-line']>=2?60:product.minutes;
+  // Paid bench and winding specialists only improve throughput when the matching
+  // second workstation has been purchased. No worker or machine means no bonus.
+  const role=product.station,exp=state?.factoryCapacity;
+  if((role==='bench'||role==='winder')&&exp?.machines?.[role]>=2&&exp?.staff?.[role]?.count>=1){
+   const factor=exp.staff[role].trained?0.60:0.75;
+   return Math.max(30,Math.ceil(product.minutes*factor/5)*5);
+  }
+  return product.minutes;
  }
  function cached(state,token){return Object.prototype.hasOwnProperty.call(state.receipts,token)?
   {...state.receipts[token],repeated:true}:null}
