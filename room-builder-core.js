@@ -90,14 +90,7 @@ function erase(room,x,y){
  const idx=index(room,x,y);if(room.walls[idx]){room.walls[idx]=null;return true;}
  return false;
 }
-function place(room,id,x,y){
- const s=asset(id);if(!s||!['furniture','small_props','people'].includes(s.category)||room.objects.length>=MAX_OBJECTS)return null;
- const [w,h]=dims(s);
- if(!inBounds(room,x,y,w,h)||s.solid&&overlapsSolid(room,x,y,w,h))return null;
- if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
- const uid='obj_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
- const obj={id:uid,spriteId:id,x,y,rotation:0};room.objects.push(obj);return obj;
-}
+function place(room,id,x,y){return placeRotated(room,id,x,y,0);}
 function relocate(room,id,x,y,rotation=null,duplicate=false){
  const obj=room.objects.find(o=>o.id===id);if(!obj)return null;
  const s=asset(obj.spriteId),r=rotation===null?obj.rotation:rotation;
@@ -109,8 +102,15 @@ function relocate(room,id,x,y,rotation=null,duplicate=false){
  obj.x=x;obj.y=y;obj.rotation=r;return obj;
 }
 function placeRotated(room,spriteId,x,y,rotation){
- const item=place(room,spriteId,x,y);if(!item)return null;
- item.rotation=rotation;return item;
+ const s=asset(spriteId);
+ if(!s||!['furniture','small_props','people'].includes(s.category)||room.objects.length>=MAX_OBJECTS||
+  !Number.isInteger(rotation)||rotation<0||rotation>3)return null;
+ const [w,h]=dims(s,rotation);
+ if(!inBounds(room,x,y,w,h)||s.solid&&overlapsSolid(room,x,y,w,h))return null;
+ if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&
+  y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
+ const uid='obj_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+ const obj={id:uid,spriteId,x,y,rotation};room.objects.push(obj);return obj;
 }
 function remove(room,id){const i=room.objects.findIndex(o=>o.id===id);if(i<0)return false;room.objects.splice(i,1);return true}
 function setSpawn(room,x,y){if(blocked(room,x,y))return false;room.spawns.player={x,y};return true}
