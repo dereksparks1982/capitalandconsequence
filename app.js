@@ -2641,7 +2641,7 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
-  guardedRoomPanel('bedroom sleep',()=>window.FE_SLEEP_UI?.render?.(S,sleepAtHome,{locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('bedroom sleep',()=>window.FE_SLEEP_UI?.render?.(S,sleepAtHome,{locationId:location.id,roomId:room.id,dev},()=>save(true)));
   guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
    const location=currentCityLocation();
    if(location.locationId!=='governmentHospital'||location.roomId!=='reception'||cityRoomSession.dev||
