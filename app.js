@@ -452,7 +452,7 @@ function render(){
  document.body.classList.toggle('component-era',!!S.componentWorks);
  if(!periodRadioAvailable()){if(titleRadioAudio)titleRadioAudio.pause();for(const feed of titleRadioBackgroundFeeds.values())feed.pause()}
  $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();const lunch=$('#goToLunch');if(lunch)lunch.disabled=S.paused||S.phase!=='day'||!window.FE_WASHINGTON_TIME?.secondsUntilLunch?.(S);renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
- updateCashHeader();window.FE_WORLD_BANNER?.sync?.();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
+ updateCashHeader();window.FE_WORLD_BANNER?.sync?.();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();const folio=$('#metropolitanEditionNumber');if(folio)folio.textContent='VOL. I · NO. '+Math.max(1,Math.floor(S.turnSerial||1));$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
  if(window.FE_LIVING_CHARACTERS?.renderPublicDispatches)window.FE_LIVING_CHARACTERS.renderPublicDispatches();
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
@@ -946,7 +946,37 @@ function renderHoldings(){const rows=Object.entries(S.portfolio).filter(([,p])=>
 function renderTransactions(){$('#transactions').innerHTML=S.transactions.slice(-20).reverse().map(t=>'<tr><td>'+t.date+'</td><td>'+t.action+'</td><td>'+t.ticker+'</td><td>'+t.shares+'</td><td>$'+(+t.price).toFixed(2)+'</td><td>'+cash(t.amount)+'</td><td class="'+((t.realized||0)>=0?'gain':'loss')+'">'+(t.action==='SELL'?cash(t.realized||0):'—')+'</td></tr>').join('')||'<tr><td colspan="7" class="empty">No transactions yet.</td></tr>'}
 window.renderTradeEstimate=renderTradeEstimate;
 function renderNotes(){$('#notes').innerHTML=S.notes.slice().reverse().map(n=>'<div class="note-entry"><b>'+n.date+'</b> · '+escapeHtml(n.text)+'<br><small>Source: '+escapeHtml(n.source||'personal observation')+'</small></div>').join('')||'<p class="empty">No notes recorded.</p>'}
-function renderArchive(){$('#newsArchive').innerHTML=S.newsArchive.slice().reverse().map(n=>'<div class="archive-entry"><b>'+n.date+'</b><br>'+escapeHtml(n.headline)+'</div>').join('')||'<p class="empty">No editions archived.</p>'}
+function renderArchive(){
+ const container=$('#newsArchive');if(!container)return;
+ container.replaceChildren();
+ const editions=S.newsArchive.slice().reverse();
+ if(!editions.length){const p=document.createElement('p');p.className='empty';p.textContent='No editions archived.';container.append(p);return;}
+ for(let i=0;i<editions.length;i++){
+  const entry=editions[i];
+  const button=document.createElement('button');
+  button.type='button';button.className='archive-entry metropolitan-issue-index';
+  const date=document.createElement('small');date.textContent=entry.date||entry.iso||'Undated';
+  const head=document.createElement('strong');head.textContent=entry.headline||'Washington Edition';
+  button.append(date,head);
+  button.addEventListener('click',()=>openArchivedIssue(S.newsArchive.length-1-i));
+  container.append(button);
+ }
+}
+function openArchivedIssue(index){
+ const item=S.newsArchive[index];if(!item)return;
+ const preview=$('#metropolitanArchivePreview');if(!preview)return;
+ const set=(selector,value)=>{const node=preview.querySelector(selector);if(node)node.textContent=value||'No report was preserved for this section.'};
+ set('.metropolitan-archive-date',item.date||item.iso||'Undated');
+ set('.metropolitan-archive-headline',item.headline||'Washington Edition');
+ set('[data-archive-story]',item.story);
+ set('[data-archive-society]',item.society||item.societyStory);
+ set('[data-archive-sports]',item.sports||item.sportsStory);
+ const finance=preview.querySelector('[data-archive-finance]');
+ if(finance)finance.textContent=item.financial||'Financial notes were not preserved with this earlier archived edition.';
+ preview.hidden=false;
+ preview.scrollIntoView({block:'nearest',behavior:'auto'});
+}
+
 function renderWashington(){const c=S.contacts;if(S.pokerDay!==S.gameDate){S.pokerDay=S.gameDate;S.pokerPlayed={working:0,middle:0,elite:0}}const wLeft=Math.max(0,5-S.pokerPlayed.working),mLeft=Math.max(0,3-S.pokerPlayed.middle),eLeft=Math.max(0,1-S.pokerPlayed.elite),middleOpen=!!S.middlePokerUnlocked;$('#starRelation').textContent=c.madamStar.met?(c.madamStar.trust>2?'Warm acquaintance':'Acquainted'):'Not yet acquainted';const dayActions=$('#starDayActions'),nightActions=$('#starNightActions'),phaseNote=$('#starPhaseNote');if(dayActions)dayActions.hidden=S.phase!=='day';if(nightActions)nightActions.hidden=S.phase!=='night';if(phaseNote)phaseNote.textContent=S.phase==='day'?'Daytime visits draw a quieter crowd of businessmen, officials and people slipping away from their offices.':S.phase==='night'?'Evening visits draw a busier crowd of gamblers, promoters, wealthy patrons and people from Washington\'s underground.':'The Star Club is closed while the Daily Report is open.';$('#contacts').innerHTML=Object.values(c).filter(x=>x.met).map(x=>'<div class="contact-card"><b>'+escapeHtml(x.name)+'</b><span>'+((x===c.madamStar)?'The Star Club':(x===c.bookie?'Private bookmaker':(x===c.promoter?'Fight promoter':'Washington contact')))+'</span><small>Met personally. Private motives and reliability unknown.</small></div>').join('')||'<p class="empty">Your card index is empty. Meet people around Washington to add contacts.</p>';$('#pokerWorking').disabled=false;$('#simPokerWorking').disabled=wLeft===0;$('#pokerMiddle').disabled=false;$('#simPokerMiddle').disabled=!middleOpen||mLeft===0;$('#pokerElite').disabled=false;$('#simPokerElite').disabled=!S.elitePokerUnlocked||eLeft===0;$('#pokerWorking').textContent='Play · $25 stake · '+wLeft+' available';$('#simPokerWorking').textContent='Simulate · 5 min';$('#pokerMiddle').textContent=middleOpen?'Play · $100 stake · '+mLeft+' available':'Meet Eddie Doyle to unlock';$('#simPokerMiddle').textContent='Simulate · 10 min';$('#pokerElite').textContent=S.elitePokerUnlocked?'Play · $500 stake · '+eLeft+' available':'Harrison Vale invitation required';$('#simPokerElite').textContent='Simulate · 25 min';const commerceStatus=pokerClubStatus('middle'),embassyStatus=pokerClubStatus('elite');
 const statusLabel=s=>s.status==='member'?'MEMBER':s.status==='trial'?'TRIAL INVITATION':s.status==='cooldown'?'COOLING OFF':'INTRODUCTION REQUIRED';
 $('#pokerMiddle').disabled=!commerceStatus.allowed;$('#simPokerMiddle').disabled=!commerceStatus.allowed||mLeft===0;
@@ -1039,7 +1069,14 @@ window.finishWorkshopClosingBell=()=>{
  return S.phase==='night';
 };
 
-function archiveToday(){if(S.newsArchive.some(n=>n.iso===S.gameDate))return;S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,story:S.story,society:S.societyStory,sports:S.sportsStory});if(S.newsArchive.length>400)S.newsArchive.shift()}
+function archiveToday(){
+ if(S.newsArchive.some(n=>n.iso===S.gameDate))return;
+ const idx=marketIndex();
+ S.newsArchive.push({iso:S.gameDate,date:displayDate(),headline:S.headline,
+  story:S.story,society:S.societyStory,sports:S.sportsStory,
+  financial:'Federal Exchange index stood at '+idx.toFixed(2)+'. '+S.marketWire});
+ if(S.newsArchive.length>400)S.newsArchive.shift();
+}
 function payMonthlyDividends(oldIso,newIso){if(monthKey(oldIso)===monthKey(newIso))return;let total=0;for(const [k,p] of Object.entries(S.portfolio)){const x=S.stocks[k],amount=p.shares*x.price*x.yieldRate/12;if(amount>.009){total+=amount;S.transactions.push({date:displayDate(),action:'DIVIDEND',ticker:k,shares:p.shares,price:x.price,amount})}}S.personalCash+=total}
 function generatePaper(){const d=new Date(S.gameDate+'T12:00:00'),day=d.getDate(),sportsItems=[S.lastRaceResult,S.lastBoxingResult,S.lastChessResult,S.lastCheckersResult].filter(Boolean);S.sportsStory=sportsItems.length?sportsItems.join(' '):'No major Washington sporting results were filed overnight.';S.lastRaceResult=null;S.lastBoxingResult=null;S.lastChessResult=null;S.lastCheckersResult=null;if(S.lastRaidOutcome==='caught'){S.headline='PROMINENT INDUSTRIALIST QUESTIONED IN CLUB RAID';S.story='Police activity at a private Washington club has drawn attention to several patrons, including the head of Federal Electric.';S.societyStory='The Star Club raid is the subject of unusually energetic conversation in Washington social circles.';S.lastRaidOutcome=null}else if(S.lastRaidOutcome==='missed'){S.headline='POLICE RAID PRIVATE WASHINGTON CLUB';S.story='Police descended on a private club last evening and detained several patrons for questioning.';S.societyStory='The raid has unsettled bookmakers and private gaming circles across the District.';S.lastRaidOutcome=null}else if(S.companyCash<10000){S.headline='CREDITORS WATCH INDUSTRIAL BALANCE SHEETS';S.story='Tight liquidity has become a concern in several manufacturing offices.';S.societyStory='Bankers report growing attention to industrial credit.'}else{S.headline='FACTORIES WEIGH ORDERS, COSTS AND RECOVERY';S.story='Industrial managers report uneven demand as companies compete for orders and preserve working capital.';S.societyStory=day%3===0?'Private clubs remain busy as businessmen and officials exchange gossip after hours.':'Washington begins another day of meetings, dinners and quiet conversations.'};const fishingNews=window.FE_FISHING?.pendingNews?.(S);
  if(fishingNews){
@@ -1228,6 +1265,12 @@ const divertCompanyFunds=$('#divertCompanyFunds');if(divertCompanyFunds)divertCo
  out.textContent='Company funds diverted: '+cash(amount)+' moved to personal cash. Accounting exposure is now '+accountingExposure()+'.';save();render();
 };
 $('#archiveEdition').onclick=()=>{archiveToday();save();renderArchive();note('Edition placed in the archive.')}
+const archivedIssueClose=$('#metropolitanArchiveClose');
+if(archivedIssueClose)archivedIssueClose.onclick=()=>{
+ const preview=$('#metropolitanArchivePreview');
+ if(preview)preview.hidden=true;
+ $('#archiveEdition')?.focus();
+};
 $('#addNote').onclick=()=>{const text=$('#noteText').value.trim(),source=$('#noteSource').value.trim();if(!text)return;S.notes.push({date:displayDate(),text,source});$('#noteText').value='';$('#noteSource').value='';save();renderNotes()}
 function visitStar(seconds,price,encounterChance,trustGain,period){
  if(!window.FE_VENUES?.canUse('star'))return $('#starNote').textContent='Visit the Star Club in Washington to spend time there.';
