@@ -730,15 +730,6 @@ body.elephant-easter-egg-open{overflow:hidden}
  touch-action:none;
 }
 .title-dev-panel.is-dragging .title-dev-panel-head{cursor:grabbing}
-.title-dev-panel-head button{
- width:24px;height:21px;min-width:0;padding:0;
- border:1px solid rgba(231,195,121,.55);
- border-radius:2px;
- background:rgba(17,13,9,.82);
- color:#f3d995;
- font:700 16px/18px Arial,sans-serif;
- cursor:pointer;
-}
 .title-dev-panel-body{
  display:grid;
  gap:5px;
@@ -776,7 +767,6 @@ body.elephant-easter-egg-open{overflow:hidden}
  font:400 clamp(7px,.54vw,9px)/1.2 Arial,sans-serif;
  text-align:center;
 }
-.title-dev-panel.is-collapsed .title-dev-panel-body{display:none}
 .title-dev-show-hotspots .title-screen-frame > button{
  outline:2px dashed rgba(255,72,72,.95)!important;
  background:rgba(255,40,40,.12)!important;
