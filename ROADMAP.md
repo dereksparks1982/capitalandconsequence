@@ -1,3 +1,10 @@
+## 31 October 2026 · v0.7.54-dev: correct overnight needs accounting
+- [x] Distinguish consciously played Washington time from implicit report-to-morning rest.
+- [x] Sleep restores energy without automatically restoring food, water or injury health.
+- [x] Preserve hunger/thirst warnings and carry the existing needs into the next day without applying hidden overnight starvation damage.
+- [x] Extend offline model regressions for overnight recovery.
+- [ ] Detailed sleeping environments, illness and proper home/restaurant meals remain future location-based features.
+
 ## 31 October 2026 · v0.7.53-dev: physical condition visible in map and rooms
 - [x] Mirror the four existing health/hunger/thirst/energy meters in the map and room world-clock banners.
 - [x] Reuse the saved state and original per-minute source UI; no additional timer, object IDs, or simulation clock.

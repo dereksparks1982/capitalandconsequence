@@ -86,6 +86,16 @@ function sync(save){
  }else if(state.meters.health>50)state.warned.health=false;
  return {ok:true,events,meters:{...state.meters},minute:now};
 }
+function overnight(save){
+ const at=minute(save),state=ensure(save);
+ if(at===null||!state)return {ok:false,reason:'Washington calendar unavailable.'};
+ // Explicit report-to-morning transition; skipped hours are not simulated chores.
+ // Sleeping restores energy only, never food, water or an injury.
+ state.lastMinute=at;
+ state.meters.energy=Math.min(100,Math.max(state.meters.energy,90));
+ state.warned.energy=false;
+ return {ok:true,minute:at,meters:{...state.meters}};
+}
 function availability(save,key){
  if(!Object.hasOwn(CONFIG,key))return {ok:false,reason:'Unknown break.'};
  const now=minute(save);
@@ -152,7 +162,7 @@ function status(save,key){
  if(!result.ok&&result.remaining)return 'Available at '+formatClock(result.availableAt)+' ('+formatDuration(result.remaining)+')';
  return result.reason||'Unavailable';
 }
-const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,minute,sanitize,ensure,sync,take,applyInjury,treat,availability,status,formatDuration,formatClock});
+const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,minute,sanitize,ensure,sync,overnight,take,applyInjury,treat,availability,status,formatDuration,formatClock});
 root.FE_CHARACTER_NEEDS=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

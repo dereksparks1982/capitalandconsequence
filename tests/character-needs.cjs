@@ -66,6 +66,14 @@ assert.ok(severe.characterNeeds.meters.health<100,'prolonged deprivation damages
 assert.ok(severe.characterNeeds.meters.health>=0);
 const legacyNeeds=needs.sanitize({version:1,meters:{hunger:51,thirst:46,energy:79}},start);
 assert.equal(legacyNeeds.meters.health,100,'old saves gain safe full health');
+const slept=save();needs.ensure(slept);
+slept.characterNeeds.meters.energy=4;slept.characterNeeds.meters.hunger=15;slept.characterNeeds.meters.thirst=14;
+slept.worldCalendar.worldMinute+=1440;
+needs.overnight(slept);
+assert.equal(slept.characterNeeds.meters.energy,90,'sleep restores energy');
+assert.equal(slept.characterNeeds.meters.hunger,15,'sleep is not a meal');
+assert.equal(slept.characterNeeds.meters.thirst,14,'sleep does not provide water');
+assert.equal(needs.sync(slept).events.length,2,'overnight skips time decay; low needs notify next morning');
 const unmapped={worldCalendarStatus:'legacy-unmapped',worldCalendar:null};
 assert.equal(needs.availability(unmapped,'water').ok,false,'unknown calendar never fakes passage of time');
 console.log('PASS dated conditions, 1878 time math, break cooldowns across desk/factory, saved restoration and one-time warnings');
