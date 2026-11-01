@@ -91,6 +91,30 @@ function addStation(save,point,name){
  const station={id,name:name.trim().slice(0,60),at:copy(g.nodes[nearest])};
  draft.stations.push(station);return {ok:true,station};
 }
+function distanceToSegment(p,a,b){
+ const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H,x=p.x*W,y=p.y*H;
+ const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy||1)));
+ return Math.hypot(x-ax-t*dx,y-ay-t*dy);
+}
+function eraseAt(save,point){
+ if(!valid(point))return {ok:false,reason:'Choose an on-map location to erase.'};
+ const layout=ensure(save);
+ const stationIndex=layout.stations.findIndex(s=>px(s.at,point)<=18);
+ if(stationIndex>=0){
+  const station=layout.stations.splice(stationIndex,1)[0];
+  layout.trains=layout.trains.filter(t=>t.from!==station.id&&t.to!==station.id);
+  return {ok:true,type:'station',name:station.name};
+ }
+ let best=-1,dist=20;
+ layout.segments.forEach((seg,i)=>{
+  const d=distanceToSegment(point,seg.a,seg.b);
+  if(d<dist){dist=d;best=i}
+ });
+ if(best<0)return {ok:false,reason:'No rail track or station near that click.'};
+ layout.segments.splice(best,1);
+ layout.trains=layout.trains.filter(t=>path(layout,t.from,t.to));
+ return {ok:true,type:'track'};
+}
 function startTrain(save,from,to){
  const layout=ensure(save),road=path(layout,from,to);
  if(!road)return {ok:false,reason:'The stations are not connected by tracks.'};
@@ -113,7 +137,7 @@ function trainPosition(layout,minute,train){
  }
  return {...route.points.at(-1),arrived:true};
 }
-const api=Object.freeze({version:1,sanitize,ensure,graph,path,addSegment,addStation,startTrain,trainPosition,px});
+const api=Object.freeze({version:1,sanitize,ensure,graph,path,addSegment,addStation,eraseAt,startTrain,trainPosition,px});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_RAILWAY=api;
 })(typeof window!=='undefined'?window:globalThis);
