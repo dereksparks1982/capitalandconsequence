@@ -59,7 +59,7 @@ assert.equal(C.place(clutter,'sam_front',3,3),null,'NPC cannot occupy a wall');
 const furniture=C.place(clutter,'desk_oak',4,4);
 assert.ok(furniture);
 assert.equal(C.place(clutter,'sam_front',4,4),null,'NPC cannot occupy a solid desk');
-assert.equal(C.place(clutter,'sam_front',9,8)!==null,false,'NPC may not occupy Charles spawn');
+assert.equal(C.place(clutter,'sam_front',clutter.spawns.player.x,clutter.spawns.player.y)!==null,false,'NPC may not occupy Charles spawn');
 const restored=C.sanitize(JSON.parse(JSON.stringify(room)),'factory','executive-office');
 assert.equal(restored.objects.length,1);
 assert.equal(restored.floor[C.index(restored,4,4)],'floor_rug_red');
