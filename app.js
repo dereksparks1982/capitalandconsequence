@@ -2121,6 +2121,14 @@ function titleNewspaperArchiveCard(issue){
  const preview=issue.kind==='image'&&issue.image?'<img src="'+escapeHtml(issue.image)+'" alt="">':'<div class="title-archive-generated-thumb"><strong>THE<br>METROPOLITAN<br>LEDGER</strong><span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b></div>';
  return '<button class="title-archive-card" type="button" data-archive-newspaper="'+escapeHtml(issue.id)+'">'+preview+'<span>'+escapeHtml(issue.dateLabel)+'</span><b>'+escapeHtml(issue.headline)+'</b><small>OWNED · REOPEN FREE</small></button>';
 }
+function discoverFromReadIssue(saveData,issue){
+ if(!saveData||issue?.kind==='image')return false;
+ const text=[issue?.headline,issue?.story,issue?.societyStory,issue?.sportsStory,issue?.marketWire].filter(Boolean).join(' ');
+ const found=window.FE_NPC_DISCOVERY?.fromText?.(saveData,text,'newspaper',window.FE_NPC_AI?.list?.()||[])||[];
+ if(found.length&&activeProfileId()===lastPlayedProfile()?.id)
+  S.knownPeople=saveData.knownPeople;
+ return found.length>0;
+}
 function purchaseTitleNewspaper(){
  const profile=lastPlayedProfile();
  if(!profile){
@@ -2133,6 +2141,7 @@ function purchaseTitleNewspaper(){
  if(!saveData)saveData=initial();
  saveData=migrate(saveData);
  const issue=titleNewspaperIssueFromSave(saveData);
+ discoverFromReadIssue(saveData,issue);
  saveData.titleNewspaperPurchases=Array.isArray(saveData.titleNewspaperPurchases)?saveData.titleNewspaperPurchases:[];
  saveData.titleNewspaperArchive=saveData.titleNewspaperArchive&&typeof saveData.titleNewspaperArchive==='object'?saveData.titleNewspaperArchive:{};
  if(saveData.titleNewspaperPurchases.includes(issue.id)){
@@ -2166,6 +2175,10 @@ function archivedTitleNewspaperIssue(saveData,editionId){
 }
 function openArchivedTitleNewspaper(editionId){
  const {saveData}=titleArchiveSave(),issue=archivedTitleNewspaperIssue(saveData,editionId);if(!issue)return;
+ if(discoverFromReadIssue(saveData,issue)){
+  const profile=lastPlayedProfile();
+  if(profile)try{localStorage.setItem(profileSaveKey(profile.id),JSON.stringify(saveData))}catch(e){}
+ }
  ensureTitleNewspaperRustleForOpen();
  openTitleDialog('The Metropolitan Ledger','<p class="title-newspaper-receipt">ARCHIVE COPY · '+escapeHtml(issue.dateLabel)+' · no charge</p>'+titleNewspaperIssueHtml(issue));
  const dialog=$('#titleDialog');if(dialog)dialog.classList.add('title-newspaper-dialog');
