@@ -451,7 +451,7 @@ function render(){
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
  document.body.classList.toggle('component-era',!!S.componentWorks);
  if(!periodRadioAvailable()){if(titleRadioAudio)titleRadioAudio.pause();for(const feed of titleRadioBackgroundFeeds.values())feed.pause()}
- $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();const lunch=$('#goToLunch');if(lunch)lunch.disabled=S.paused||S.phase!=='day'||!window.FE_WASHINGTON_TIME?.secondsUntilLunch?.(S);renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
+ $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();window.FE_WORLD_BANNER?.sync?.();const lunch=$('#goToLunch');if(lunch)lunch.disabled=S.paused||S.phase!=='day'||!window.FE_WASHINGTON_TIME?.secondsUntilLunch?.(S);renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
  updateCashHeader();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
  if(window.FE_LIVING_CHARACTERS?.renderPublicDispatches)window.FE_LIVING_CHARACTERS.renderPublicDispatches();
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
@@ -2461,7 +2461,15 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('horse stable',()=>window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
-  const returnDesk=document.getElementById('cityRoomReturnOffice');if(returnDesk)returnDesk.textContent=S.characterRoute==='industrialist'?'Return to Executive Desk':'Return to Personal Desk';
+  // The private desk is a physical place. Never offer a remote instant warp.
+  // Away from Federal Electric, returning requires Map > Federal Electric > Go There.
+  const returnDesk=document.getElementById('cityRoomReturnOffice');
+  if(returnDesk){
+   const atExecutiveSite=location.id==='factory'&&S.characterRoute==='industrialist'&&!dev;
+   returnDesk.hidden=!atExecutiveSite;
+   returnDesk.disabled=!atExecutiveSite;
+   returnDesk.textContent='Return to Executive Desk';
+  }
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
@@ -2555,19 +2563,24 @@ function returnCityRoomToMap(){
  });
 }
 function returnCityRoomToOffice(){
- // Return to the current character's personal desk, not the old title office.
- // Only the Businessman actually owns the Federal Electric executive office.
- if(!cityRoomSession.dev&&S.characterRoute==='industrialist'){
-  const previous=currentCityLocation();
+ // Do not mutate player location or skip travel to teleport home. The only
+ // physical desk supported here is Charles's Federal Electric executive office.
+ // Other venues must use the Map > Federal Electric journey animation.
+ const previous=currentCityLocation();
+ if(S.characterRoute!=='industrialist'||previous.locationId!=='factory'||
+    cityRoomSession.dev||S.paused||S.phase==='report'){
+  const message='Return to the executive office by traveling to Federal Electric on the Washington map.';
+  const status=document.getElementById('cityRoomDescription');
+  if(status&&!document.getElementById('cityRoomOverlay')?.hidden)status.textContent=message;
+  return false;
+ }
+ if(previous.roomId!=='executive-office'){
+  if(!window.FE_TRAVEL?.recordRoomMove?.('factory',previous.roomId,'executive-office')){
+   const status=document.getElementById('cityRoomDescription');
+   if(status)status.textContent='Could not record the one-minute walk to the executive office. No move was made.';
+   return false;
+  }
   S.currentLocation={locationId:'factory',roomId:'executive-office'};
-  if(previous.locationId==='factory'&&previous.roomId!=='executive-office'){
-   window.FE_TRAVEL?.recordRoomMove?.('factory',previous.roomId,'executive-office');
-  }
-  if(previous.locationId!=='factory'){
-   const journeyPaid=window.FE_TRAVEL?.recordProvisional?.(previous.locationId,'factory');
-   window.FE_HORSE_CUSTODY?.onArrival?.(S,previous.locationId,'factory',!!journeyPaid);
-    reviewCashOnArrival(previous.locationId,'factory');
-  }
   window.FE_NPC_AI?.syncClock?.();
   save(true);
  }
@@ -2575,6 +2588,8 @@ function returnCityRoomToOffice(){
  closeTitleMap();
  showTab('desk');
  window.FE_CAREER_SHELL?.refreshDesk?.();
+ render();
+ return true;
 }
 function openSelectedTitleDevRoom(){
  const locationId=document.getElementById('titleDevLocationSelect')?.value;
@@ -4369,8 +4384,8 @@ window.FE_BOOTSTRAP_READY=(async()=>{
  return true;
 })();
 $('#skillFilter')?.addEventListener('change',()=>window.FE_SKILLS?.render?.(S));
-marketTimer=setInterval(()=>{if(bootstrapReady&&!document.hidden&&!S.paused&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
-clockTimer=setInterval(()=>{if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn()},1000);
+marketTimer=setInterval(()=>{if(bootstrapReady&&!document.hidden&&!S.paused&&!capitalTravelBusy&&!titleDevFreezeTime&&!titleScreenBlocksSimulation()&&businessOpen()){moveMarket()}},MARKET_TICK_MS);
+clockTimer=setInterval(()=>{if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||capitalTravelBusy||titleDevFreezeTime||titleScreenBlocksSimulation())return;advanceWorldSimulation(1,false,'tick');$('#dayClock').textContent=clockText();$('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();window.FE_WORLD_BANNER?.sync?.()},1000);
 autosaveTimer=setInterval(()=>{if(bootstrapReady)save(true)},5000);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)save(true);
