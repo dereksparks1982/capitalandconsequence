@@ -58,13 +58,26 @@ function market(body){
   books.appendChild(row(book.name,book.minutes+' min reading · '+book.kind+' · '+(read?'Recipes learned':'Paper volume'),[button]));
  }
  body.append(books);
+ const planner=root.FE_HOUSEHOLD_SHOPPING,site=root.FE_COOKERY?.marketSite?.(profile);
+ const q=planner?.quote?.(profile,site);
+ body.append(el('h5','Your Recipe Shopping List'));
+ if(q?.ok){
+  body.append(row(q.recipe.name,q.complete?'All needed ingredients are stored or carried.':
+   q.missing.map(x=>x.label+' · '+x.packages+' package(s)').join('; '),[btn('Clear List','clearPlan')]));
+  if(!q.complete){
+   const buy=btn('Buy Missing · '+(q.receipt?.totalCents||0)+'¢ · '+q.totalPackages*5+' min','buyPlan');
+   buy.disabled=!q.possible||!actions?.buyPlan;body.append(buy);
+   if(!q.possible)body.append(el('p',q.receipt?.reason||'Some goods are unavailable here. Try Center Market.'));
+  }
+ }else body.append(el('p','Plan a known recipe in your kitchen first.'));
  body.append(el('h5','Sell your baked goods'));
  const carried=root.FE_KITCHEN?.ledger?.(profile)?.k?.carriedMeals||[];
  const sellable=carried.filter(m=>!m.spoiled&&m.servings>0&&root.FE_RECIPES?.byId?.[m.recipe]?.kind==='baking');
  addRows(body,sellable.map(meal=>{
   const name=root.FE_RECIPES.byId[meal.recipe]?.name||meal.recipe;
-  const buy=btn('Sell 1 serving','sell',meal.id,1);
-  return row(name,meal.servings+' physically carried serving(s) · merchant must have cash',[buy]);
+  const till=root.FE_WASHINGTON_COMMERCE?.ensure?.(profile)?.accounts?.[site?site+':bakery':'bakery']||0;
+  return row(name,meal.servings+' carried · '+till+'¢ available at this bakery',
+   [btn('Sell 1','sell',meal.id,1),btn('Sell up to 5','sell',meal.id,Math.min(5,meal.servings))]);
  }));
  if(!sellable.length)body.append(el('p','Bake at home, pack your goods, and carry them here to sell.'));
 }
@@ -76,9 +89,32 @@ function storage(body){
  body.append(storeAll);
  addRows(body,toStore.map(item=>{
   const dest=root.FE_FOOD_CATALOG.find(item.good)?.storage||'pantry';
-  return row(item.label,item.units+' recipe units · suggested '+dest,
-   [btn('Store in '+dest,'store',item.id)]);
+  const buttons=[btn('Store in '+dest,'store',item.id)];
+  if(item.good==='ice-block')buttons.push(btn('Load Icebox','loadIce',item.id));
+  return row(item.label,item.units+' recipe units · suggested '+dest,buttons);
  }));
+ const planner=root.FE_HOUSEHOLD_SHOPPING,plan=planner?.quote?.(profile);
+ body.append(el('h5','Shopping & Recipe Planning'));
+ const pick=el('select');pick.setAttribute('aria-label','Known recipe to shop for');
+ const blank=el('option','Choose known recipe');blank.value='';pick.append(blank);
+ const known=root.FE_COOKERY?.state?.(profile)?.known||[];
+ for(const recipe of root.FE_RECIPES?.RECIPES||[]){
+  if(!known.includes(recipe.id))continue;
+  const option=el('option',recipe.name);option.value=recipe.id;pick.append(option);
+ }
+ if(plan?.ok)pick.value=plan.recipe.id;
+ const plannerControls=el('div',undefined,'cc-food-actions'),planButton=btn('Make Shopping List','planRecipe');
+ planButton.addEventListener('click',e=>{e.stopPropagation();if(!pick.value)return;
+  const result=actions?.planRecipe?.(pick.value);
+  notice=result?.ok?'Recipe shopping list saved.':result?.reason||'Cannot plan recipe.';refresh();
+ });
+ plannerControls.append(pick,planButton);
+ if(plan?.ok){
+  plannerControls.append(btn('Clear List','clearPlan'));
+  body.append(el('p',plan.complete?'Ingredients ready for '+plan.recipe.name+'.':
+   'Missing for '+plan.recipe.name+': '+plan.missing.map(x=>x.label+' × '+x.packages+' package(s)').join(', ')));
+ }
+ body.append(plannerControls);
  body.append(el('h5','Pantry · Larder · Icebox'));
  const k=root.FE_KITCHEN?.ledger?.(profile)?.k;
  if(!k)return;
@@ -91,12 +127,16 @@ function storage(body){
   const box=el('details',undefined,'cc-food-container');
   box.open=container==='pantry';
   const sum=el('summary',container.toUpperCase()+' · '+k.goods.filter(g=>g.container===container).length+' packages');box.append(sum);
-  const rows=k.goods.filter(g=>g.container===container).map(g=>row(foodName(g.good),
-   g.units+' units · '+(g.spoiled?'SPOILED':'fresh')+' · '+container,[
-    btn('Take','take',g.id),btn('Discard','discard',g.id)
-   ]));
+  const rows=k.goods.filter(g=>g.container===container).map(g=>{
+   const buttons=[btn('Take','take',g.id),btn('Discard','discard',g.id)];
+   if(g.good==='ice-block'&&!g.spoiled)buttons.push(btn('Load Icebox','loadIce',g.id));
+   return row(foodName(g.good),g.units+' units · '+(g.spoiled?'SPOILED':'fresh')+' · '+container,buttons);
+  });
   addRows(box,rows);body.append(box);
  }
+ const clear=btn('Discard All Spoiled Food · 2 min','clearSpoiled');
+ clear.disabled=!k.goods.some(g=>g.spoiled)&&!k.meals.some(g=>g.spoiled)&&!k.carriedMeals.some(g=>g.spoiled);
+ body.append(clear);
  body.append(el('h5','Milkman · Iceman · Household Deliveries'));
  const orders=root.FE_HOME_DELIVERIES?.state?.(profile),delivery=el('div',undefined,'cc-food-grid');
  for(const [id,option] of Object.entries(root.FE_HOME_DELIVERIES?.OPTIONS||{})){
@@ -111,6 +151,8 @@ function storage(body){
  body.append(delivery);
  const recent=(orders?.receipts||[]).slice(-3).reverse();
  if(recent.length)body.append(el('p','Recent deliveries: '+recent.map(r=>r.date+' '+r.key+' '+r.packages+' pkg').join(' · ')));
+ const missed=(orders?.failedRounds||[]).slice(-3).reverse();
+ if(missed.length)body.append(el('p','Missed rounds: '+missed.map(r=>r.date+' '+r.key+' ('+r.reason+')').join(' · ')));
 }
 function cooking(body){
  body.append(el('h5','Prepare Food and Practice Baking'));
@@ -144,7 +186,10 @@ function cooking(body){
  addRows(body,data.k.meals.filter(m=>m.servings>0).map(meal=>{
   const r=root.FE_RECIPES?.byId?.[meal.recipe],buttons=[];
   if(!meal.spoiled)buttons.push(btn('Eat · 10 min','eat',meal.id));
-  if(!meal.spoiled&&r?.kind==='baking')buttons.push(btn('Pack 1 to Sell','pack',meal.id,1));
+  if(!meal.spoiled&&r?.kind==='baking'){
+   buttons.push(btn('Pack 1 to Sell','pack',meal.id,1));
+   if(meal.servings>1)buttons.push(btn('Pack All','pack',meal.id,meal.servings));
+  }
   return row(r?.name||meal.recipe,meal.servings+' servings · '+(meal.spoiled?'spoiled':'ready'),buttons);
  }));
  const study=(root.FE_RECIPES?.BOOKS||[]).filter(b=>root.FE_COOKERY?.canRead?.(profile,b.id)?.ok);

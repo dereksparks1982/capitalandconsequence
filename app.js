@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.66-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.67-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -2694,8 +2694,13 @@ function renderHouseholdFood(location,room,dev=false){
   S.phase!=='report'&&!window.FE_MEDICAL_RECORDS?.pending?.(S)&&
   S.currentLocation?.locationId===location.id&&S.currentLocation?.roomId===room.id;
  const bag=()=>m.ensure(S).playerBag, ledger=()=>k.ledger(S).k;
+ const counterOpen=()=>!c.atMarket(S)||(()=>{
+  const t=window.FE_WASHINGTON_TIME?.now?.(S);
+  return S.phase==='day'&&t?.minuteOfDay>=480&&t.minuteOfDay<1020;
+ })();
  function act(seconds,valid,fn){
   if(!allowed())return fail('You must be in this room during active play.');
+  if(!counterOpen())return fail('Market counters are closed outside business hours.');
   const ok=valid();if(!ok?.ok)return ok||fail('Action unavailable.');
   if(!Number.isSafeInteger(seconds)||seconds<1||!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds))
    return fail('Not enough Washington time.');
@@ -2705,7 +2710,40 @@ function renderHouseholdFood(location,room,dev=false){
  }
  const kitchen=()=>k.atKitchen(S)?{ok:true}:fail('You must be at home in the kitchen.');
  const market=()=>c.atMarket(S)?{ok:true}:fail('Visit a physical provisions market.');
+ const shopping=window.FE_HOUSEHOLD_SHOPPING,site=()=>c.marketSite(S);
  const handlers={
+  planRecipe:id=>{
+   if(!allowed()||!k.atKitchen(S))return fail('Plan a meal in your kitchen.');
+   const result=shopping?.choose?.(S,id);if(result?.ok)save(true);
+   return result||fail('Shopping planner unavailable.');
+  },
+  clearPlan:()=>{
+   if(!allowed()||(!k.atKitchen(S)&&!c.atMarket(S)))return fail('Open your notebook at home or a market.');
+   const result=shopping?.clear?.(S);if(result?.ok)save(true);
+   return result||fail('Shopping planner unavailable.');
+  },
+  buyPlan:()=>{
+   if(!c.atMarket(S))return fail('Visit an open provisions counter.');
+   const q=shopping?.quote?.(S,site());
+   if(!q?.ok||q.complete||!q.receipt?.ok)return fail(q?.receipt?.reason||'Shopping list cannot be filled here.');
+   return act(q.totalPackages*300,()=>{
+    const next=shopping.quote(S,site());
+    return next.ok&&!next.complete&&next.receipt?.ok?{ok:true}:fail(next.receipt?.reason||'Shopping list unavailable.');
+   },()=>shopping.buy(S,site()));
+  },
+  loadIce:id=>act(60,()=>{
+   if(!k.atKitchen(S))return kitchen();
+   k.sync(S);const item=bag().find(x=>x.id===id&&x.good==='ice-block')||
+     ledger().goods.find(x=>x.id===id&&x.good==='ice-block');
+   return item&&!item.spoiled&&(!Number.isFinite(item.expiresAt)||item.expiresAt>S.worldCalendar?.worldMinute)?
+    {ok:true}:fail('No unmelted ice available.');
+  },()=>k.loadIce(S,id)),
+  clearSpoiled:()=>act(120,()=>{
+   if(!k.atKitchen(S))return kitchen();
+   k.sync(S);const x=ledger();
+   return x.goods.some(g=>g.spoiled)||x.meals.some(g=>g.spoiled)||x.carriedMeals.some(g=>g.spoiled)?
+    {ok:true}:fail('There is no spoiled food here.');
+  },()=>k.clearSpoiled(S)),
   store:id=>act(60,()=>{if(!k.atKitchen(S))return kitchen();
     const item=bag().find(x=>x.id===id);
     return item&&window.FE_FOOD_CATALOG?.find?.(item.good)&&ledger().goods.length<350?{ok:true}:fail('Grocery missing or storage full.');},
@@ -2750,7 +2788,7 @@ function renderHouseholdFood(location,room,dev=false){
       return fail('Bring fresh packed baked goods.');
     const cents=Math.max(2,Math.round(recipe.difficulty*.7+recipe.minutes*.07))*n;
     return (c.state(S).soldByDate[S.gameDate]||0)+n<=40&&
-      Number(m.ensure(S).accounts.bakery||0)>=cents?{ok:true}:fail('Market bakery cannot buy this quantity.');},
+      Number(m.ensure(S).accounts[site()?site()+':bakery':'bakery']||0)>=cents?{ok:true}:fail('Market bakery cannot buy this quantity.');},
     ()=>c.sell(S,id,n))
  };
  ui.render(S,handlers,{locationId:location.id,roomId:room.id,dev});
