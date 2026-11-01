@@ -47,10 +47,13 @@ hungry.worldCalendar.worldMinute+=360;
 const firstAlerts=needs.sync(hungry).events.map(e=>e.kind);
 assert.ok(firstAlerts.includes('hunger'));
 assert.ok(firstAlerts.includes('thirst'));
-assert.ok(firstAlerts.includes('energy'));
+assert.equal(firstAlerts.includes('energy'),false,'fatigue has a slower warning threshold');
 assert.equal(needs.sync(hungry).events.length,0,'warnings do not spam every second');
 hungry.worldCalendar.worldMinute+=60;
 assert.equal(needs.sync(hungry).events.length,0,'warnings do not spam each minute');
+hungry.worldCalendar.worldMinute+=180;
+assert.deepEqual(needs.sync(hungry).events.map(e=>e.kind),['energy'],
+ 'fatigue warning arrives later and only once');
 assert.equal(needs.sanitize({version:1,meters:{hunger:200,thirst:-44,energy:NaN},
  lastMinute:start,sharedUntil:start+90,cooldowns:{coffee:start+180},entries:[]},start).meters.hunger,100);
 const legacy=save();legacy.characterNeeds={version:999,meters:{hunger:-100}};
