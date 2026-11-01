@@ -8,7 +8,7 @@ const intro=box.querySelector('.boxing-head');if(!intro)return;
 const el=document.createElement('section');
 el.id='boxingPractice';el.className='sheet boxing-practice';
 el.innerHTML='<h3>Top-Down Sparring Ring · Practice</h3>'+
-'<p>WASD: move and sidestep punches · LEFT CLICK: punch · HOLD RIGHT CLICK: block. Footwork and blocking cost stamina. Only partial recovery between rounds.</p>'+
+'<p>WASD: move and face your opponent · LEFT CLICK: punch forward · HOLD RIGHT CLICK: block. Dodge the marked punch line. Footwork and blocking cost stamina. Only partial recovery between rounds.</p>'+
 '<div class="boxing-practice-buttons"><button type="button" data-ring="start">Start Practice</button> <button type="button" data-ring="stop" disabled>End Practice</button></div>'+
 '<div class="boxing-practice-stats" aria-live="off"><span id="ringRound">NO BOUT</span><span id="ringSeconds">00:00</span><span id="ringHealth">HEALTH 100</span><span id="ringStamina">STAMINA 100</span><span id="ringOpponent">OPPONENT 100</span></div>'+
 '<div class="boxing-practice-viewport"><canvas id="ringCanvas" width="448" height="320" tabindex="0" aria-label="Top-down boxing ring. Use WASD, left click to punch, hold right click to block."></canvas></div>'+
@@ -34,7 +34,9 @@ function draw(){
  if(!s)return;
  drawSprite('laborer_'+s.opponent.face,s.opponent.x,s.opponent.y);
  drawSprite('worker_'+s.player.face,s.player.x,s.player.y);
- if(s.ai.windup){ctx.lineWidth=3;ctx.strokeStyle='#db1717';ctx.strokeRect(s.opponent.x*32+3,s.opponent.y*32+3,26,26);}
+ if(s.ai.windup){ctx.lineWidth=3;ctx.strokeStyle='#db1717';ctx.strokeRect(s.opponent.x*32+3,s.opponent.y*32+3,26,26);
+  if(s.ai.target){ctx.strokeStyle='#f4aa36';ctx.strokeRect(s.ai.target.x*32+5,s.ai.target.y*32+5,22,22);}
+ }
  if(s.blocking){ctx.lineWidth=4;ctx.strokeStyle='#38789e';ctx.strokeRect(s.player.x*32+2,s.player.y*32+2,28,28);}
  if(s.phase==='break'||s.phase==='finished'){
   ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(64,120,320,80);

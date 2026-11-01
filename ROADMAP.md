@@ -1,3 +1,10 @@
+## 31 October 2026 · v0.7.57-dev: directional punching and locked punch lines
+- [x] Strikes only connect while facing the opponent.
+- [x] AI marks an intended target tile and cannot automatically follow the dodging player during the windup.
+- [x] Existing WASD footwork, right-mouse guarding, stamina/exhaustion and round scoring remain.
+- [x] Additional direction and manual dodge model assertions; graphical Ubuntu QA pending.
+- [ ] Actual career boxing bout and health/wager reconciliation remain a later integrated milestone.
+
 ## 31 October 2026 · v0.7.56-dev: carried food beyond the market counter
 - [x] Existing purchased market provisions now show in the Personal Journal's Carried Provisions panel and remain available after leaving the merchant.
 - [x] Food consumption requires an active non-dev character profile, time debit, owned bag item and the same shared meal cooldown.

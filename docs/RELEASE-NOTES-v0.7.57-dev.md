@@ -1,0 +1,2 @@
+# Capital & Consequence v0.7.57-dev
+Top-down boxing practice now requires facing the opponent to land a punch. The AI locks an intended strike cell when telegraphing an attack, highlights it, and cannot shift the landing point after the player sidesteps. Manual WASD footwork remains the dodge; right click remains block. Existing stamina and round scoring persist. This is non-career practice and does not change wagers, saved health or records. Tests added for facing and locked-target evasion. Source-only Ubuntu QA pending. No third-party art or GitHub Actions.

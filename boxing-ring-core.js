@@ -34,6 +34,14 @@ function decisionWinner(s){
  const totals=s.scorecards.reduce((a,r)=>({player:a.player+r.player,opponent:a.opponent+r.opponent}),{player:0,opponent:0});
  return totals.player===totals.opponent?'draw':totals.player>totals.opponent?'player':'opponent';
 }
+function facingTarget(fighter,target){
+ const dx=target.x-fighter.x,dy=target.y-fighter.y;
+ if(fighter.face==='right')return dx>0&&Math.abs(dy)<=1;
+ if(fighter.face==='left')return dx<0&&Math.abs(dy)<=1;
+ if(fighter.face==='front')return dy>0&&Math.abs(dx)<=1;
+ if(fighter.face==='back')return dy<0&&Math.abs(dx)<=1;
+ return false;
+}
 function finish(s,method,winner=null){
  s.phase='finished';s.final=method;s.winner=winner;s.blocking=false;
  const outcome=winner==='player'?'You win':winner==='opponent'?'Opponent wins':winner==='draw'?'Draw':'Bout over';
@@ -43,7 +51,7 @@ function punch(s){
  const p=s?.player,o=s?.opponent;
  if(!p||s.phase!=='fighting'||s.blocking||p.punchWait>0||p.stamina<RULES.punchCost)return false;
  p.punchWait=RULES.punchDelay;p.stamina-=RULES.punchCost;
- if(dist(p,o)>2){s.message='Punch missed. Move closer.';return true;}
+ if(dist(p,o)>2||!facingTarget(p,o)){s.message='Punch missed. Face your opponent and get closer.';return true;}
  o.health=Math.max(0,o.health-(s.ai.guard?2:10));
  s.hits++;s.roundPoints.player+=s.ai.guard?1:3;s.message=s.ai.guard?'Opponent blocked your punch.':'Punch landed.';
  if(o.health<=0)finish(s,'knockout','player');
@@ -103,19 +111,19 @@ function step(s,ms,keys={}){
  if(a.windup>0){
   a.windup=Math.max(0,a.windup-dt);
   if(a.windup===0){
-   if(distance<=2&&o.stamina>=6){
+   if(distance<=2&&o.stamina>=6&&a.target&&dist(p,a.target)<=1){
     o.stamina-=6;
     if(s.blocking){p.health=Math.max(0,p.health-1);p.stamina=Math.max(0,p.stamina-4);
      s.blocks++;s.roundPoints.player+=1;s.message='Blocked! Guard absorbed most of the punch.';}
     else{p.health=Math.max(0,p.health-9);s.opponentHits++;s.roundPoints.opponent+=3;s.message='Opponent connected.';}
     if(p.health===0){finish(s,'referee stoppage','opponent');return s;}
-   }else s.message='Opponent missed. You moved out of reach.';
+   }else s.message='Opponent missed. You moved out of the punch line.';
    a.cooldown=950;
   }
  }else{
   a.cooldown=Math.max(0,a.cooldown-dt);
   if(distance<=2&&a.cooldown===0&&o.stamina>=6){
-   a.windup=RULES.windup;a.guard=false;
+   a.windup=RULES.windup;a.guard=false;a.target={x:p.x,y:p.y};
    s.message='Punch coming! Hold RIGHT CLICK to block.';
   }
  }
@@ -128,7 +136,7 @@ function step(s,ms,keys={}){
  }
  return s;
 }
-const api=Object.freeze({RULES,create,move,punch,step,dist,decisionWinner});
+const api=Object.freeze({RULES,create,move,punch,step,dist,decisionWinner,facingTarget});
 root.FE_TOPDOWN_BOXING=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
