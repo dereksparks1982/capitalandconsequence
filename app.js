@@ -1144,7 +1144,7 @@ function sleepAtHome(options={}){
 // physical personal money and a specific in-town venue. No remote gambling.
 function startCircusBooth(key){
  const service=window.FE_CARNIVAL_GAMES,conf=service?.GAMES?.[key];
- if(!conf||S.paused||S.phase==='report'||cityRoomSession.dev)
+ if(!conf||S.paused||S.phase==='report'||cityRoomSession.dev||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return {ok:false,reason:'This booth is unavailable.'};
  if(!service.available(S))return {ok:false,reason:'The circus is not here.'};
  if((Math.round(Number(S.personalCash||0)*100))<conf.feeCents)
@@ -1175,7 +1175,7 @@ function claimCircusPrizes(){
 }
 function requestFortuneReading(){
  const circus=window.FE_CIRCUS_TOUR?.active?.(S),current=currentCityLocation();
- if(!circus||current.locationId!==circus.locationId||cityRoomSession.dev||S.paused)
+ if(!circus||current.locationId!==circus.locationId||cityRoomSession.dev||S.paused||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return {ok:false,reason:'You must be with the reader at her visiting wagon.'};
  const encounterId='circus-reading-'+circus.id+'-'+S.gameDate;
  const prior=(S.tarotSessions||[]).find(x=>x.encounterId===encounterId);
@@ -1187,7 +1187,7 @@ function requestFortuneReading(){
   return {ok:false,reason:'A reading costs ten cents in personal cash.'};
  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,600))
   return {ok:false,reason:'Not enough time for the ten-minute sitting.'};
- if(advanceWorldSimulation(600,true,'action')!==600)
+ if(advanceWorldSimulation(600,true,'action')!==600||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return {ok:false,reason:'The reading was interrupted.'};
  const result=window.FE_TAROT?.reading?.(S,{
   readerId:'visiting-fortune-teller',encounterId,spread:'three',feeCents:10
@@ -1199,14 +1199,14 @@ function requestFortuneReading(){
 }
 function attendCircusShow(){
  const show=window.FE_CIRCUS_BIG_TOP?.slot?.(S);
- if(!show?.ok||cityRoomSession.dev||S.paused||S.phase==='report')
+ if(!show?.ok||cityRoomSession.dev||S.paused||S.phase==='report'||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return show?.ok?{ok:false,reason:'You must attend the show in person.'}:show||{ok:false,reason:'There is no show.'};
  if(Math.round(Number(S.personalCash||0)*100)<show.feeCents)
   return {ok:false,reason:'Admission is twenty cents.'};
  const seconds=show.waitMinutes*60+show.durationSeconds;
  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds))
   return {ok:false,reason:'Not enough game time for this performance.'};
- if(advanceWorldSimulation(seconds,true,'action')!==seconds)
+ if(advanceWorldSimulation(seconds,true,'action')!==seconds||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return {ok:false,reason:'The performance was interrupted.'};
  const result=window.FE_CIRCUS_BIG_TOP?.perform?.(S,show);
  if(!result?.ok)return result||{ok:false,reason:'No show was recorded.'};
@@ -1217,13 +1217,13 @@ function attendCircusShow(){
 }
 function inspectPeddlerGood(id){
  const stall=window.FE_TRAVELING_SALESMAN;
- if(cityRoomSession.dev||S.paused||S.phase==='report'||!stall?.present?.(S))
+ if(cityRoomSession.dev||S.paused||S.phase==='report'||window.FE_MEDICAL_RECORDS?.pending?.(S)||!stall?.present?.(S))
   return {ok:false,reason:'You must visit Silas Pike in person.'};
  if(!stall.GOODS.some(x=>x.id===id))return {ok:false,reason:'This item is not here.'};
  const item=stall.stock(S).find(x=>x.id===id);
  if(!item?.examined){
   if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
-   advanceWorldSimulation(60,true,'action')!==60)
+   advanceWorldSimulation(60,true,'action')!==60||window.FE_MEDICAL_RECORDS?.pending?.(S))
     return {ok:false,reason:'No time to examine the goods.'};
  }
  const result=stall.examine(S,id);
@@ -1239,7 +1239,7 @@ function buyPeddlerGood(id){
  if(Math.round(Number(S.personalCash||0)*100)<item.priceCents)
   return {ok:false,reason:'Not enough personal cash.'};
  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
-    advanceWorldSimulation(60,true,'action')!==60)
+    advanceWorldSimulation(60,true,'action')!==60||window.FE_MEDICAL_RECORDS?.pending?.(S))
   return {ok:false,reason:'There is no time to complete the purchase.'};
  const result=stall.buy(S,id,good=>window.FE_PERSONAL_EFFECTS?.acquire?.(good));
  if(result.ok){window.FE_NPC_DISCOVERY?.learn?.(S,'silasPike','encounter','trading in person');save(true)}
