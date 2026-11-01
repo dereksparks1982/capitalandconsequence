@@ -25,7 +25,7 @@ assert.match(css,/@media\(max-width:760px\)/,'small windows must show the articl
 assert.match(app,/function openArchivedIssue\(index\)/,'readable prior edition');
 assert.match(app,/S\.newsArchive\[index\]/,'archive draws from saved data');
 assert.match(app,/\.textContent=item\./,'archived text uses safe textContent');
-assert.match(app,/financial:'Federal Exchange index stood at '/,
- 'future editions preserve a snapshot instead of today's market wire');
+assert.ok(app.includes("financial:'Federal Exchange index stood at '"),
+ 'future editions preserve a snapshot instead of today\'s market wire');
 assert.match(html,/newspaper-print\.css\?v=/,'paper stylesheet loaded');
 console.log('PASS 1878 Metropolitan Ledger front page, archive and layout source contracts');
