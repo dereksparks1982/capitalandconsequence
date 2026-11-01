@@ -1,3 +1,13 @@
+## November 1, 2026 · v0.7.74-dev · supervised production office and order priorities
+- [x] Add the production office below existing Federal Electric Component Works controls, without changing accepted map or page geometry.
+- [x] Persist prioritized existing production orders; initial order defaults to earliest contractual due date, and moving one to the front costs 5 Washington minutes.
+- [x] Supervised factory shifts of 1–4 hours allocate actual hired bench/winder crews (or qualified lamp line) to a real order; use original company warehouse/production receipts, manufacturing recipes, defects, and authoritative clock.
+- [x] Enforce Charlie's factory visit and management authority, Sullivan's physical attendance, no unrepaired machinery breakdown, one staffed station, weekday hours, and no work past 5 PM. No offline automation.
+- [x] Aggregate shortage planning across the entire remaining manufacturing queue with a single 15-minute cash-backed multi-material requisition and retry-safe receipt.
+- [x] Display order priority, deadline, quantity, current input-limited capacity, projected factory minutes, estimated future invoices (not money in hand), worker wages, and recent production ledger.
+- [x] Isolated tests cover no phantom manufacturing, real save/clock consumption, priority, invoice restrictions and compatibility with prior factory/business systems.
+- [ ] Full `node tests/run-all.cjs` and native Ubuntu Electron gameplay have not been verified; no GitHub Actions, release tag, executable or downloaded build.
+
 ## November 1, 2026 · v0.7.73-dev · expandable 1878 component factory and procurement
 - [x] Hire one additional bench technician and one winding specialist on top of Charlie and the existing salaried foreman; specialists cost hiring fees and weekly company wages.
 - [x] Purchase and fit a second bench and second winding machine separately. **Worker plus machine** is required for each corresponding speed improvement, rather than creating imaginary output.

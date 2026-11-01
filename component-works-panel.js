@@ -144,6 +144,7 @@
   for(const b of panel.querySelectorAll(':scope > button, :scope > form button'))b.disabled=!allowed;
   root.FE_ELECTRIC_CAMPAIGN_UI?.render?.();
   root.FE_FACTORY_CAPACITY_UI?.render?.();
+  root.FE_FACTORY_DISPATCH_UI?.render?.();
  }
  root.FE_COMPONENT_PANEL=Object.freeze({render:renderPanel});
  if(typeof document!=='undefined'){
