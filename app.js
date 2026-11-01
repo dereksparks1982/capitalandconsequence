@@ -406,7 +406,7 @@ document.addEventListener('click',e=>{
  note('Game is paused. Press PLAY to resume.');
 },true);
 function updateCashHeader(){const company=$('#headerCompanyCash'),personal=$('#headerPersonalCash');if(company)company.textContent=money(S.companyCash);if(personal)personal.textContent=money(S.personalCash);window.FE_CASH_UI?.header?.(S);pokerFunding()}
-function renderPauseToggle(){const btn=$('#pauseToggle');if(!btn)return;const paused=!!S.paused;btn.textContent=paused?'PLAY':'PAUSE';btn.setAttribute('aria-label',paused?'Play simulation':'Pause simulation');btn.setAttribute('aria-pressed',paused?'true':'false');btn.title=paused?'Play simulation':'Pause simulation';btn.classList.toggle('paused',paused)}
+function renderPauseToggle(){const btn=$('#pauseToggle');if(!btn)return;const paused=!!S.paused;btn.textContent=paused?'PLAY':'PAUSE';btn.setAttribute('aria-label',paused?'Play simulation':'Pause simulation');btn.setAttribute('aria-pressed',paused?'true':'false');btn.title=paused?'Play simulation':'Pause simulation';btn.classList.toggle('paused',paused);window.FE_WORLD_BANNER?.sync?.()}
 window.updateCashHeader=updateCashHeader;
 function accountingExposure(){
  const missing=Math.max(0,+S.unaccountedFunds||0);if(!missing)return 'NONE';
@@ -451,8 +451,8 @@ function render(){
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
  document.body.classList.toggle('component-era',!!S.componentWorks);
  if(!periodRadioAvailable()){if(titleRadioAudio)titleRadioAudio.pause();for(const feed of titleRadioBackgroundFeeds.values())feed.pause()}
- $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();window.FE_WORLD_BANNER?.sync?.();const lunch=$('#goToLunch');if(lunch)lunch.disabled=S.paused||S.phase!=='day'||!window.FE_WASHINGTON_TIME?.secondsUntilLunch?.(S);renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
- updateCashHeader();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
+ $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();const lunch=$('#goToLunch');if(lunch)lunch.disabled=S.paused||S.phase!=='day'||!window.FE_WASHINGTON_TIME?.secondsUntilLunch?.(S);renderActiveProfileLabel();const appVersion=$('#appVersion');if(appVersion)appVersion.textContent=APP_VERSION;$('#dayClock').textContent=clockText();renderPauseToggle();const phaseName=$('#phaseName');if(phaseName)phaseName.textContent=S.phase==='day'?'BUSINESS DAY':S.phase==='night'?'WASHINGTON NIGHT':'DAILY REPORT';$('#marketStatus').textContent=S.phase==='day'?'EXCHANGE OPEN':S.phase==='night'?'EXCHANGE CLOSED':'BOOKS CLOSED';const quoteHead=$('#quotationHeading'),quoteNote=$('#quotationNote');if(quoteHead)quoteHead.textContent=S.phase==='day'?'Published Quotation Sheet · Opening':'Closing Quotations · Final';if(quoteNote)quoteNote.textContent=S.phase==='day'?'Trading continues behind the scenes, but the opening quotations remain posted until the closing bell. Closing the app freezes the market and world clock.':'The Federal Exchange is closed. Final closing quotations are now posted and remain fixed until the next business morning.';const endBtn=$('#endDay');if(endBtn){endBtn.textContent=S.phase==='day'?'End Business Day':S.phase==='night'?'Advance to 8 AM':'Daily Report Open';endBtn.disabled=S.phase==='report'};
+ updateCashHeader();window.FE_WORLD_BANNER?.sync?.();$('#companyCash').textContent=money(S.companyCash);$('#personalCash').textContent=money(S.personalCash);$('#marketCash').textContent=money(S.personalCash);$('#companyValue').textContent=money(companyValueEstimate());renderOwnership();$('#reputation').textContent=Math.round(S.reputation)+'/100';$('#workers').textContent=S.workers;$('#machinery').textContent=S.machinery.toFixed(1)+'%';$('#capacity').textContent=capacity().toLocaleString();$('#inventory').textContent=Object.values(S.inventoryByGrade).reduce((a,b)=>a+b,0).toLocaleString();$('#dateFoot').textContent=displayDate();$('#paperDate').textContent=displayDate().toUpperCase();$('#headline').textContent=S.headline;$('#story').textContent=S.story;$('#societyStory').textContent=S.societyStory;const sports=$('#sportsStory');if(sports)sports.textContent=S.sportsStory||'No major sporting results reported.';
  if(window.FE_LIVING_CHARACTERS?.renderPublicDispatches)window.FE_LIVING_CHARACTERS.renderPublicDispatches();
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
@@ -2395,6 +2395,14 @@ function reviewCashOnArrival(from,to){
  }
 }
 function guardedRoomPanel(name,action){try{action()}catch(error){console.warn('Capital & Consequence: optional room panel unavailable: '+name,error)}}
+function syncCityRoomDeskReturn(locationId,developerPreview=false){
+ const button=document.getElementById('cityRoomReturnOffice');
+ if(!button)return;
+ const local=locationId==='factory'&&S.characterRoute==='industrialist'&&!developerPreview;
+ button.hidden=!local;
+ button.disabled=!local;
+ button.textContent='Return to Executive Desk';
+}
 function openCityRoom(locationId,roomId,options={}){
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
@@ -2461,15 +2469,9 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('horse stable',()=>window.FE_HORSE_STABLE_UI?.render?.(location.id,room.id,S,recordLiveryPurchase,!dev));
   const mapButton=document.getElementById('cityRoomReturnMap');
   if(mapButton){mapButton.disabled=false;mapButton.textContent='Return to Map';}
-  // The private desk is a physical place. Never offer a remote instant warp.
-  // Away from Federal Electric, returning requires Map > Federal Electric > Go There.
-  const returnDesk=document.getElementById('cityRoomReturnOffice');
-  if(returnDesk){
-   const atExecutiveSite=location.id==='factory'&&S.characterRoute==='industrialist'&&!dev;
-   returnDesk.hidden=!atExecutiveSite;
-   returnDesk.disabled=!atExecutiveSite;
-   returnDesk.textContent='Return to Executive Desk';
-  }
+  // On the first map render this is a dev-only preview. The actual
+  // player session gets its own return-button state after travel commits.
+  syncCityRoomDeskReturn(location.id,dev);
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
@@ -3776,6 +3778,7 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  // Never leave developer privileges active on a regular player visit.
  S.currentLocation={locationId:place.id,roomId:room.id};
  cityRoomSession={locationId:place.id,roomId:room.id,dev:false,source:'map'};
+ syncCityRoomDeskReturn(place.id,false);
  // A newly arrived player can now see any real challenge tied to this room.
  window.FE_DUEL_UI?.refresh?.();
  if(overlay.parentNode!==document.body)document.body.appendChild(overlay);
