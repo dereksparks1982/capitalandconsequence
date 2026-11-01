@@ -230,12 +230,15 @@ function nudge(dx,dy){
  if(o)mutate(()=>C.relocate(room,o.id,o.x+dx,o.y+dy));
 }
 function inspect(){
- const result=C.analyze(room);
+ const result=C.analyze(room),work=Kit.auditStations(room);
+ const warning=work.inaccessible.length?
+  ' UNREACHABLE FURNITURE: '+work.inaccessible.join(', ')+'.':'';
  const message='Room check: '+result.area+' tiles, '+result.furniture+' objects, '+
-  result.reachableDoors+'/'+result.doors+' reachable doors. '+
-  (result.errors.concat(result.warnings).join(' ')||'Charles can reach an open exit.');
+  result.reachableDoors+'/'+result.doors+' reachable doors; '+work.reachable+'/'+work.stations.length+
+  ' work/storage/seating stations approachable. '+
+  (result.errors.concat(result.warnings).join(' ')||'Charles can reach an open exit.')+warning;
  status(message);
- return result;
+ return {...result,stations:work};
 }
 function duplicate(){if(!selectedId)return;const o=room.objects.find(v=>v.id===selectedId);if(o)mutate(()=>{const a=C.relocate(room,o.id,o.x+1,o.y+1,o.rotation,true);if(a)selectedId=a.id;return a;});}
 function del(){if(!selectedId)return;mutate(()=>C.remove(room,selectedId));selectedId=null;render();}
