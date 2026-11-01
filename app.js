@@ -3904,6 +3904,12 @@ async function travelFromTitleMap(event){
  const button=document.getElementById('titleMapLocationTravel');
  if(!img?.naturalWidth||!viewport||!viewer||viewer.hidden)return false;
  capitalTravelBusy=true;if(button)button.disabled=true;
+ // The HUD previews only the eventual world-clock cost during the animation.
+ // Do not debit the game now: FE_TRAVEL commits the full duration once on arrival.
+ window.FE_WORLD_BANNER?.beginTrip?.({
+  departedIso:window.FE_WASHINGTON_TIME?.now?.(S)?.iso,
+  minutes,from:cityLocation(from)?.name||from,to:place?.name||id,mode:availability.mode
+ });
  try{
   window.FE_CAPITAL_TRAVEL?.clearPreview?.();
   if(travelNote)travelNote.textContent='Traveling by '+availability.mode+
@@ -3916,6 +3922,7 @@ async function travelFromTitleMap(event){
      y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),
    // Keep status changes occasional, not sixty accessibility updates/second.
    onProgress:fraction=>{
+    window.FE_WORLD_BANNER?.progress?.(fraction);
     const milestone=Math.min(4,Math.floor(fraction*4));
     if(milestone!==lastMilestone&&travelNote&&!viewer.hidden){
      lastMilestone=milestone;
@@ -3952,6 +3959,11 @@ async function travelFromTitleMap(event){
   });
  }finally{
   capitalTravelBusy=false;
+  // Cancelled trips restore the unchanged authoritative clock; successful
+  // trips reveal the single committed travel debit and its real arrival time.
+  $('#dayClock').textContent=clockText();
+  $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();
+  window.FE_WORLD_BANNER?.finishTrip?.();
   if(button)button.disabled=false;
   if(!viewer.hidden)renderCapitalTravelPreview();
  }
