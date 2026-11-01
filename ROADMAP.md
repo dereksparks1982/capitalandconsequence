@@ -1,3 +1,9 @@
+## 31 October 2026 · v0.7.51-dev: actual hospital reception treatment
+- [x] Existing District General reception now offers physician examinations using game time and personal cash.
+- [x] Limited treatment restores up to 28 Health, requires physical location, and persists to the journal/save.
+- [x] Prevent dev-room, remote, unavailable-time and unaffordable use without inventing new map pins.
+- [ ] Real Linux UI test, hospitals beyond reception, injury complications and insurance remain later roadmap items.
+
 ## 31 October 2026 · v0.7.50-dev: shared physical health and permanent UI
 - [x] Four condition bars under the world clock; preserves existing map artwork and navigation.
 - [x] Sustainably accumulating hunger/thirst depletion eventually damages health after grace periods.

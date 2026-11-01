@@ -2540,6 +2540,26 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
+  guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
+   const location=currentCityLocation();
+   if(location.locationId!=='governmentHospital'||location.roomId!=='reception'||cityRoomSession.dev||
+    !activeProfileId()||S.paused||S.phase==='report')return {ok:false,message:'The physician can only see you in hospital reception.'};
+   const visit=key==='exam'?{seconds:900,cost:2,healing:0}:key==='treat'?{seconds:2700,cost:8,healing:28}:null;
+   if(!visit)return {ok:false,message:'Unknown medical service.'};
+   if(S.personalCash<visit.cost)return {ok:false,message:'Insufficient personal cash.'};
+   if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,visit.seconds))return {ok:false,message:'Not enough game time for this appointment.'};
+   const advanced=window.advanceWorldTime(visit.seconds,true);
+   if(advanced!==visit.seconds)return {ok:false,message:'Appointment could not be completed.'};
+   if(visit.healing>0){
+    const result=window.FE_CHARACTER_NEEDS?.treat?.(S,visit.healing,'District General reception');
+    if(!result?.ok)return {ok:false,message:'Treatment record could not be completed.'};
+   }
+   S.personalCash=Math.round((S.personalCash-visit.cost)*100)/100;
+   if(Array.isArray(S.notes))S.notes.push({date:S.gameDate,source:'District General',
+    text:key==='exam'?'Saw a physician for an examination.':'Received medical treatment at District General.'});
+   save(true);render();
+   return {ok:true,message:key==='exam'?'Physician examination completed.':'Injuries treated. Recovery may still take time.'};
+  }));
   document.body.classList.add('city-room-open');
   guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
    guardedRoomPanel('checkers table',()=>window.FE_CHECKERS_UI?.refresh?.());
