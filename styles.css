@@ -1589,7 +1589,7 @@ body.component-era #warehouse>:not(h2):not(.section-tabs):not(.component-era-not
 /* A location occupies the foreground above the map and the personal desk. */
 body.city-room-open > #cityRoomOverlay{position:fixed;inset:0;z-index:3200000;visibility:visible;pointer-events:auto}
 /* An entered room is the only view: no map, desk, navigation, or global radio. */
-body.city-room-open > :not(#cityRoomOverlay):not(#saveFailureBanner){visibility:hidden!important}
+body.city-room-open > :not(#cityRoomOverlay):not(#saveFailureBanner):not(#titleDevPanel):not(#careerDevToggle):not(#ccMedicalBook):not(#ccMedicalEmergency):not(#ccSleepFade){visibility:hidden!important}
 body.city-room-open > #cityRoomOverlay{visibility:visible!important}
 body.city-room-open .city-room-directory{display:flex;flex-wrap:wrap;gap:8px;padding:18px 22px;background:#d6c5a3;border-bottom:2px solid #99896b}
 body.city-room-open .city-room-directory[hidden]{display:none}
