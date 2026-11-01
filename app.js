@@ -239,6 +239,7 @@ function save(silent=true){
  }
  // Never persist the temporary player-absent simulation scope.
  if(S.npcOffscreenCatchup)payload=Object.assign({},payload,{npcOffscreenCatchup:false});
+ if(S.sleepingAtHome)payload=Object.assign({},payload,{sleepingAtHome:false});
  // Age documented family consequences on actual saved Washington dates only.
  const wasConfined=S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient';
  window.FE_WARDMAN_POLITICS?.advance?.(S);
@@ -1101,27 +1102,43 @@ function recoverMedicalEpisode(){
  note(aftermath);save(true);render();
  return true;
 }
-function sleepAtHome(){
+function sleepAtHome(options={}){
+ const room=cityRoomSession;
+ // The developer room navigator is intentionally allowed to exercise bedroom
+ // mechanics. The actual character is brought to the debug-selected room at
+ // the moment of using its bed, never while merely viewing a preview.
+ if(room.dev&&room.locationId==='home'&&room.roomId==='bedroom')
+  S.currentLocation={locationId:'home',roomId:'bedroom'};
  const p=currentCityLocation();
  if(p.locationId!=='home'||p.roomId!=='bedroom')
-  return {ok:false,reason:'Sleep requires your own bedroom.'};
- if(S.paused||S.phase!=='night')
-  return {ok:false,reason:'Your bedroom is available for overnight rest after the 5 PM closing bell.'};
+  return {ok:false,reason:'You must be in your home bedroom to sleep.'};
+ if(S.paused||S.phase==='report')
+  return {ok:false,reason:'Sleep is unavailable while paused or during the daily report.'};
  if(window.FE_MEDICAL_RECORDS?.pending?.(S))
-  return {ok:false,reason:'You must regain consciousness before you can go to bed.'};
- const seconds=window.FE_WASHINGTON_TIME?.secondsUntilMorning?.(S);
- if(!Number.isSafeInteger(seconds)||seconds<=0)
-  return {ok:false,reason:'The next morning is unavailable.'};
+  return {ok:false,reason:'You must regain consciousness before getting into bed.'};
+ const plan=window.FE_WINDUP_SLEEP?.plan?.(S,options);
+ if(!plan?.ok)return plan||{ok:false,reason:'The wind-up alarm is unavailable.'};
+ const required=plan.totalMinutes*60;
  S.sleepingAtHome=true;
- try{
-  const elapsed=advanceWorldSimulation(seconds,true,'sleep');
-  if(elapsed!==seconds){
-   S.sleepingAtHome=false;save(true);render();
-   return {ok:false,reason:'Your sleep was interrupted by the Washington clock.'};
-  }
- }finally{S.sleepingAtHome=false}
- save(true);render();
- return {ok:true,reason:'You wake after proper bed rest. Your Energy has been restored within your medical limits.'};
+ let elapsed=0;
+ try{elapsed=advanceWorldSimulation(required,true,'sleep')}
+ finally{S.sleepingAtHome=false}
+ const minutes=Math.floor(elapsed/60);
+ const rested=window.FE_CHARACTER_NEEDS?.finishSleep?.(S,minutes);
+ const receipt=window.FE_WINDUP_SLEEP?.settle?.(S,plan,minutes);
+ if(!rested?.ok||!receipt?.ok){
+  save(true);render();return {ok:false,reason:'Sleep was interrupted before you could rest.'};
+ }
+ const complete=elapsed===required;
+ const message=!complete?'Sleep was interrupted by the Washington clock.':
+  plan.overslept?'You overslept by '+plan.extraMinutes+' minutes. That old clock did not wake you in time.':
+  plan.alarmRang?'The wound twin-bell alarm rang and woke you.':
+  plan.alarmEnabled&&!plan.alarmWound?'Your alarm was not wound, so you woke naturally.':
+  'You wake naturally after '+minutes+' minutes of rest.';
+ if(Array.isArray(S.notes))S.notes.push({date:S.gameDate,source:'personal rest',text:message});
+ save(true);render();note(message);
+ return {ok:complete,reason:message,minutes,energy:rested.energy,
+  alarmRang:plan.alarmRang,overslept:plan.overslept};
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
@@ -1235,12 +1252,8 @@ function beginNextDay(){
  if(S.phase!=='report')return;
  if(!S.endlessMode&&(S.turnSerial||1)>=CAMPAIGN_TURNS){S.campaignCompleted=true;S.campaignEndPending=true;save(true);render();return}
  archiveToday();const old=S.gameDate,next=window.FE_WASHINGTON_TIME?.now?.(S)?.date||window.FE_WASHINGTON_TIME.nextCivilDay(S.gameDate);finishDeadlineContracts(old,next);S.gameDate=next;S.turnSerial=(S.turnSerial||1)+1;const takeoverNotice=window.FE_CORPORATE?.advanceDay?.(S);payMonthlyDividends(old,S.gameDate);window.FE_EMPIRE?.advance?.(S);window.FE_FISHING_VESSELS?.advance?.(S);
- // Only an actual bed-rest action restores the Energy meter. Merely skipping
- // the Washington night clock does NOT count as sleeping.
- if(S.sleepingAtHome===true&&currentCityLocation().locationId==='home'&&
-    currentCityLocation().roomId==='bedroom')
-  window.FE_CHARACTER_NEEDS?.overnight?.(S);
- S.sleepingAtHome=false;
+ // Calendar transitions never count as sleep. The sleep action accounts
+ // for all actual rest after advancing the single authoritative clock.
  S.phase='day';S.dayRemaining=window.FE_WASHINGTON_TIME.phaseSecondsRemaining(S);S.phaseBudgetRemainder=0;window.FE_NPC_AI?.syncClock?.();
  for(const [ticker,x] of Object.entries(S.stocks)){if(!stockAvailableInYear(ticker,x.sector,+S.gameDate.slice(0,4)))continue;const priorClose=+x.price||+x.open;x.prevClose=priorClose;x.prev=priorClose;const open=Math.max(1,Math.round(priorClose*(1+openingGapFor(ticker,S.gameDate,x.vol))*100)/100);x.open=open;x.price=open;x.hiddenPrice=open}
  S.marketWire='The Federal Exchange is open. Federal Electric has the opening quotation sheet; closing quotations will be published after the bell.';
@@ -2615,6 +2628,7 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.dataset.locationId=location.id;
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
+  guardedRoomPanel('bedroom sleep',()=>window.FE_SLEEP_UI?.render?.(S,sleepAtHome,{locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
    const location=currentCityLocation();
    if(location.locationId!=='governmentHospital'||location.roomId!=='reception'||cityRoomSession.dev||
