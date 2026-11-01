@@ -44,6 +44,6 @@ assert.match(ui,/Nap · 1 hour/);
 assert.match(ui,/Night · 8 hours/);
 assert.match(ui,/Wind the Clock/);
 assert.match(ui,/classList\.add\('is-black'\)/,'sleep fades to black');
-assert.match(med,/FE_SLEEP_UI\?\.render/,'medical UI uses one sleep panel');
+assert.match(medical,/FE_SLEEP_UI\?\.render/,'medical UI uses one sleep panel');
 assert.match(styles,/:not\(#careerDevToggle\)/,'developer toggle remains visible in rooms');
 console.log('PASS awake depletion, custom sleep recovery, 1878 wind-up alarm, bedroom UI and global developer opener');
