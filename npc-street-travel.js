@@ -90,11 +90,17 @@ function details(svg,agent,def,at,minute,known){
 }
 function render(save,viewport,project,visible){
  clear(false);
- if(!visible||!viewport||typeof project!=='function'||!save?.npcSimulation?.agents||
-  !Number.isSafeInteger(save.worldCalendar?.worldMinute)||!root.FE_CAPITAL_TRAVEL?.positionAt)return 0;
+ root.FE_TOURING_VISITORS?.sync?.(save);
+ if(!visible||!viewport||typeof project!=='function'||
+  !Number.isSafeInteger(save?.worldCalendar?.worldMinute)||!root.FE_CAPITAL_TRAVEL?.positionAt)return 0;
  const minute=save.worldCalendar.worldMinute;
- const riders=Object.values(save.npcSimulation.agents).filter(a=>
-  a?.id&&knownToPlayer(save,a.id)&&a?.status==='travelling'&&valid(a.journey)&&
+ // Itinerant wagons can be part of the NPC simulation or temporarily have
+ // their own saved roster during startup. Deduplicate by resident identity.
+ const agents=[...Object.values(save.npcSimulation?.agents||{}),
+  ...Object.values(save.touringVisitors?.agents||{})];
+ const unique=[...new Map(agents.filter(a=>a?.id).map(a=>[a.id,a])).values()];
+ const riders=unique.filter(a=>
+  knownToPlayer(save,a.id)&&a.status==='travelling'&&valid(a.journey)&&
   minute>=a.journey.departedAt&&minute<a.journey.arrivesAt).slice(0,20);
  if(!riders.length){selected=null;return 0}
  const svg=document.createElementNS(NS,'svg');
