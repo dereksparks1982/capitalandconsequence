@@ -6,9 +6,12 @@ function marketSite(){
  const here=window.FE_CITY?.currentLocation?.();
  if(here?.locationId==='oldChinatown'&&here.roomId==='market-street')return '';
  if(here?.locationId==='hillsdale'&&['hillsdale-market','hillsdale-butcher'].includes(here.roomId))return here.roomId;
+ if(here?.locationId==='easternMarket'&&here.roomId==='market-hall')return 'easternMarket';
+ if(here?.locationId==='georgetownMarketHouse'&&here.roomId==='market-hall')return 'georgetownMarketHouse';
+ if(here?.locationId==='centerMarket'&&['market-hall','wholesale-counter'].includes(here.roomId))return 'centerMarket';
  return null;
 }
-let message='';
+let message='',filter='',category='all';
 function permitted(){
  const p=window.FE_CITY?.currentLocation?.(),t=window.FE_WASHINGTON_TIME?.now?.(S);
  return !!p&&marketSite()!==null&&!window.FE_CITY?.isDevRoom?.()&&S.phase==='day'&&!S.paused&&t?.minuteOfDay>=480&&t.minuteOfDay<1020&&typeof activeProfileId==='function'&&!!activeProfileId();
@@ -49,11 +52,30 @@ function render(){
  const m=commerce().ensure(S),open=permitted(),list=$('cityRoomMarketGoods'),bag=$('cityRoomMarketBag');
  const stock=site?m.siteStocks[site]:m.stock;
  const heading=panel.querySelector('h4');
- if(heading)heading.textContent=site==='hillsdale-market'?'Hillsdale Market · Provisions':site==='hillsdale-butcher'?'Hillsdale Butcher · Meat and Provisions':'Market Street · Local Merchants';
+ if(heading)heading.textContent=({
+  'hillsdale-market':'Hillsdale Market · Provisions','hillsdale-butcher':'Hillsdale Butcher',
+  'easternMarket':'Eastern Market · Groceries','georgetownMarketHouse':'Georgetown Market House',
+  'centerMarket':'Center Market · Washington Provisions'
+ })[site]||'Chinatown · Market Street';
  const note=$('cityRoomMarketNote');if(note)note.textContent=message||'Cash purchases use your personal account. Every sale reduces the actual merchant stock.';
  if(list){
   list.replaceChildren();
-  for(const g of commerce().GOODS.filter(item=>commerce().allowedAt(item.id,site))){
+  const tools=document.createElement('div');tools.className='market-search-tools';
+  const input=document.createElement('input');input.type='search';input.placeholder='Search foods, meat, flour, baking ingredients';input.value=filter;
+  input.setAttribute('aria-label','Search the market catalog');
+  const select=document.createElement('select');select.setAttribute('aria-label','Food categories');
+  for(const name of ['all',...(window.FE_FOOD_CATALOG?.sections||[])]){
+   const option=document.createElement('option');option.value=name;option.textContent=name==='all'?'All goods':name;
+   select.append(option);
+  }
+  select.value=category;input.oninput=()=>{filter=input.value.toLowerCase();render()};
+  select.onchange=()=>{category=select.value;render()};
+  tools.append(input,select);list.appendChild(tools);
+  const goods=commerce().GOODS.filter(item=>commerce().allowedAt(item.id,site)&&
+   (category==='all'||(window.FE_FOOD_CATALOG?.find?.(item.id)?.section||'Miscellaneous')===category)&&
+   (!filter||(item.label+' '+item.id).toLowerCase().includes(filter)));
+  const note=document.createElement('p');note.textContent=goods.length+' goods listed · merchant stocks are finite';list.append(note);
+  for(const g of goods){
    const row=document.createElement('div'),text=document.createElement('span'),button=document.createElement('button');
    text.textContent=g.label+' · '+g.cents+'¢ · '+stock[g.id]+' in stock';
    button.type='button';button.textContent='Buy';button.disabled=!open||stock[g.id]<1||Math.round(S.personalCash*100)<g.cents||m.playerBag.length>=24;
