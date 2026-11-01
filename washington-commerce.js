@@ -6,7 +6,7 @@
 (function(root){
 'use strict';
 const RENT_CENTS=25;
-const GOODS=Object.freeze([
+const STARTING_GOODS=Object.freeze([
  {id:'bread',label:'Bread loaf',units:1,cents:5,vendor:'bakery'},
  {id:'milk',label:'Quart milk bottles',units:2,cents:16,vendor:'dairy'},
  {id:'eggs',label:'Eggs',units:12,cents:24,vendor:'provisions'},
@@ -21,12 +21,27 @@ const GOODS=Object.freeze([
  {id:'lamp-fuel',label:'Home heating and lamp fuel',units:1,cents:30,vendor:'fuel'},
  {id:'soap',label:'Soap',units:1,cents:10,vendor:'grocer'}
 ]);
+// Extend the SAME merchant stock and bag ledger with catalog groceries.
+const EXTRA_GOODS=(root.FE_FOOD_CATALOG?.GOODS||[])
+ .filter(g=>!STARTING_GOODS.some(old=>old.id===g.id))
+ .map(g=>({id:g.id,label:g.label,cents:g.cents,units:g.units,vendor:g.vendor,
+  section:g.section,storage:g.storage,shelfDays:g.shelfDays,markets:g.markets}));
+const GOODS=Object.freeze([...STARTING_GOODS,...EXTRA_GOODS]);
 const BY_GOOD=Object.fromEntries(GOODS.map(g=>[g.id,g]));
 const SITES=Object.freeze({
  'hillsdale-market':new Set(['bread','milk','eggs','potatoes','onions','beans-grains','produce','tea-sugar','seasoning','lamp-fuel','soap']),
- 'hillsdale-butcher':new Set(['bacon','stew-beef'])
+ 'hillsdale-butcher':new Set(GOODS.filter(g=>g.vendor==='butcher').map(g=>g.id)),
+ 'easternMarket':new Set(GOODS.filter(g=>g.markets!=='chinatown').map(g=>g.id)),
+ 'georgetownMarketHouse':new Set(GOODS.filter(g=>g.markets!=='chinatown').map(g=>g.id)),
+ 'centerMarket':new Set(GOODS.map(g=>g.id)),
+ 'oldChinatown':new Set(GOODS.filter(g=>g.markets==='chinatown'||g.vendor==='provisions'||g.vendor==='grocer'||g.vendor==='fishmonger').map(g=>g.id))
 });
-function allowedAt(id,site){return !site||!!SITES[site]?.has(id)}
+function allowedAt(id,site){
+ if(!BY_GOOD[id])return false;
+ if(!site)return true;
+ if(site==='hillsdale-market')return !['butcher','fishmonger'].includes(BY_GOOD[id].vendor)&&BY_GOOD[id].markets!=='chinatown';
+ return !!SITES[site]?.has(id);
+}
 const weekday=date=>new Date(date+'T12:00:00Z').getUTCDay();
 const whole=v=>Number.isSafeInteger(v)&&v>=0;
 function ensure(save){
@@ -45,13 +60,14 @@ function ensure(save){
  if(!Array.isArray(m.playerBag))m.playerBag=[];
  if(!m.siteStocks||typeof m.siteStocks!=='object')m.siteStocks={};
  for(const [site,goods] of Object.entries(SITES)){
+  if(site==='hillsdale-market')for(const g of GOODS)if(allowedAt(g.id,site))goods.add(g.id);
   if(!m.siteStocks[site]||typeof m.siteStocks[site]!=='object')m.siteStocks[site]={};
   for(const id of goods)if(!whole(m.siteStocks[site][id]))m.siteStocks[site][id]=12;
  }
  if(!whole(m.suppliersPaidCents))m.suppliersPaidCents=0;
  if(!whole(m.nextPurchase))m.nextPurchase=m.purchases.length;
  // Initial stocks are starting physical inventories, not an automatic purchase-time refill.
- for(const g of GOODS)if(!whole(m.stock[g.id]))m.stock[g.id]=g.id==='bread'?24:18;
+ for(const g of GOODS)if(!whole(m.stock[g.id]))m.stock[g.id]=g.id==='bread'?24:g.vendor==='butcher'?8:12;
  m.version=2;
  return m;
 }
@@ -99,7 +115,7 @@ function deliveryForCalendar(save,date,slot){
  const m=ensure(save);
  if(m.deliveries[date])return {ok:true,repeated:true,delivery:m.deliveries[date]};
  const manifest=[];
- for(const g of GOODS){
+ for(const g of STARTING_GOODS){
   const qty=g.id==='bread'?10:6,previousDebt=m.supplierDebts[g.vendor]||0;
   const wholesaleCents=Math.round(g.cents*qty*.6);
   // Deliveries may be on supplier credit, explicitly owed, not generated money.
@@ -142,7 +158,7 @@ function settleSaturday(save){
  save.companyCash=companyCents/100;save.componentWorks.cashCents=companyCents;
  save.lastRevenue=Math.round((save.lastRevenue||0)*100+rentCents)/100;
  let groceriesCents=0;
- for(const good of GOODS){
+ for(const good of STARTING_GOODS){
   const result=purchase(save,'foremanSullivan',good.id,{date,token:'weekly|'+date+'|'+good.id});
   if(result.ok)groceriesCents+=result.receipt.cents;
  }
@@ -160,7 +176,7 @@ function settleSaturday(save){
  m.settlements[date]=receipt;
  return {...receipt,repeated:false};
 }
-const api=Object.freeze({RENT_CENTS,GOODS,SITES,allowedAt,ensure,purchase,consume,deliveryForCalendar,settleSaturday});
+const api=Object.freeze({RENT_CENTS,GOODS,STARTING_GOODS,SITES,allowedAt,ensure,purchase,consume,deliveryForCalendar,settleSaturday});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_WASHINGTON_COMMERCE=api;
 })(typeof window!=='undefined'?window:globalThis);
