@@ -1,3 +1,14 @@
+## 1 November 2026 · v0.7.62-dev: genuine second sight and persistent map location
+- [x] The fortune-teller may rarely read a genuine hidden event even if nobody told her; her saved cards and words stay fixed.
+- [x] Record underworld wagers and unreported company withdrawals only when actual gameplay actions succeed; never fabricate crimes.
+- [x] Read actual shared asylum-case truth for cryptic hints without leaking culprit, evidence or future events.
+- [x] Fix ordinary tarot reading of observed investigations, scandals and production interruptions.
+- [x] Keep the current map-location name visible after closing its details, hiding other labels or filtering place pins; don't move any approved map geometry.
+- [x] Add focused tests for private tarot vision and map-location label persistence.
+- [ ] More recorded criminal-career wrongdoing, victims, witnesses, consequences, and private relationships must be implemented before supernatural clues reference them.
+- [ ] Character artwork for the tarot deck, reader's independent wagon route and richer readings pending.
+- [ ] Complete native Linux runtime smoke and full Node regression suite before accepting/releasing. No GitHub Actions.
+
 ## 1 November 2026 · v0.7.61-dev: real Big Top attendance and traveling salesman
 - [x] Separate midway booth play from actually attending a circus performance. Tickets: 20¢; three scheduled shows per day; 45 minutes including real waiting time on the Washington clock.
 - [x] Make Big Top completion the sole gameplay source of circus show attendance, with recorded acts and non-repeatable receipts.
