@@ -51,7 +51,8 @@ const docElements={titleMapMarkers:layer,titleMapShowNames:{checked:false,setAtt
  titleMapCategory:{value:'all'},titleMapOrigin:{value:'all'},titleMapLocationCard:infoCard};
 const document={getElementById:id=>docElements[id]||null};
 const image={naturalWidth:2048,naturalHeight:1159};
-const sandbox={window:city.window,document,layer,img:image,mapViewport,infoCard,TITLE_MAP_LOCATIONS:pins};
+const sandbox={window:city.window,document,layer,img:image,mapViewport,infoCard,TITLE_MAP_LOCATIONS:pins,
+ S:{characterRoute:'industrialist'},activeProfileId:()=>null,currentCityLocation:()=>({locationId:'home',roomId:'front-room'})};
 sandbox.testCode=snippets+`
  const titleMapState={x:0,y:0,scale:.39},pinDisplayName=l=>l.name;
  let titleMapPinEdit=false,titleMapShowNames=false,titleMapSelectedLocationId=null;

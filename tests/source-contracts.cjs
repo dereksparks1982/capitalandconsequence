@@ -553,7 +553,8 @@ clock.spendUntil(futureClock,'1890-01-07T09:00',e=>received.push(e.type));
 check(received.join(',')==='arrive','Long action time advances queued events once');
 check(clock.calendar(JSON.parse(JSON.stringify(futureClock))).iso==='1890-01-07T09:00','World calendar round-trips in per-profile JSON without offline advancement');
 check(appSource.includes('function initTitleMapFilters()')&&appSource.includes('function syncTitleMapFilters()'),'Map category filters and Show Names controls are wired');
-check(appSource.includes("marker.hidden=!location||!titleMapMatchesFilters(location)")&&
+check(appSource.includes("marker.hidden=!location||(!isHere&&!titleMapMatchesFilters(location))")&&
+ appSource.includes("marker.classList.toggle('is-current-location',isHere)")&&
  appSource.includes("titleMapCategory==='all'||location.category===titleMapCategory"),
  'All 42 map markers visible by default; only chosen filters hide them');
 check(appSource.includes('select.onchange=()=>{titleMapCategory=select.value;syncTitleMapFilters()}'),'Changing categories updates map without relocating player');

@@ -87,7 +87,8 @@ assert.ok(app.includes("if(!approved){"),'rejected map drops restore the previou
 assert.ok(app.includes("if(moved&&!onPrintedMap)"),'drops outside A–R / 1–30 grid are rejected');
 assert.ok(app.includes("location.x=before.x;location.y=before.y"),'rejected drops do not persist provisional placements');
 assert.ok(app.includes("commerce:'Markets & Repairs'"),'market and repair venues have distinct category filter');
-assert.ok(app.includes("marker.hidden=!location||!titleMapMatchesFilters(location)"),
+assert.ok(app.includes("marker.hidden=!location||(!isHere&&!titleMapMatchesFilters(location))")&&
+ app.includes("marker.classList.toggle('is-current-location',isHere)"),
  'all registered numbered map pins appear without an active filter');
 assert.ok(app.includes("function titleMapDisplayCoordinate(location,img)"),
  'off-print coordinates get a display-only map-edge anchor');

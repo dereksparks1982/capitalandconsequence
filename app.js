@@ -3721,7 +3721,7 @@ function syncTitleMapFilters(){
  layer.classList.toggle('show-all-names',titleMapShowNames);
  for(const marker of layer.querySelectorAll('[data-map-location]')){
   const location=TITLE_MAP_LOCATIONS.find(v=>v.id===marker.dataset.mapLocation);
-  // Display ALL forty numbered registry pins when filters are clear.
+  // Display all 42 registered numbered pins when filters are clear.
   // Unverified and off-print locations keep their placement warnings instead
   // of disappearing from an otherwise unfiltered map.
   // Current position is a persistent landmark, not a dismissible map-card
@@ -4760,7 +4760,7 @@ function initTitleMapViewer(){
   e.preventDefault(); // Even the right click on a pin pans instead of a menu.
  });
  viewport.addEventListener('pointerdown',e=>{
-  if(e.target?.closest?.('#titleMapLocationCard,input,select,textarea,a'))return;
+  if(e.target?.closest?.('button,input,select,textarea,a,#titleMapLocationCard'))return;
   if(e.button!==2)return; // The LEFT mouse button belongs to editing/clicking.
   titleMapState.pointerId=e.pointerId;titleMapState.lastX=e.clientX;titleMapState.lastY=e.clientY;
   viewport.setPointerCapture(e.pointerId);viewport.classList.add('is-dragging');e.preventDefault();
