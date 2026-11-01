@@ -31,7 +31,7 @@ assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','
 assert.equal(access.canRoom(city,{route:'industrialist'},'babcockLake','shore','1889-01-02').ok,true,'Mapped Babcock Lake is accessible in the alternate-history game');
 assert.equal(access.canRoom(city,{kind:'npc',id:'visitor'},'home','front-room',day).ok,false);
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'capitalSpeedway','1878-01-02').ok,true,'Mapped motor track is open regardless of calendar year');
-assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'licensedGamingHall',day).ok,false);
+assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'licensedGamingHall',day).ok,true,'Mapped gaming hall is visitable even though casino games remain proposed');
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor'},'privateFightHall',day).ok,false);
 assert.equal(access.canLocation(city,{kind:'npc',id:'visitor',invitations:['privateFightHall']},'privateFightHall',day).ok,true);
 assert.equal(access.rooms(city,{route:'investigator'},'factory',day).includes('executive-office'),false);
