@@ -1933,3 +1933,30 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
  .cc-chest-columns{grid-template-columns:1fr}
  .cc-circus-midway,.cc-tarot-wagon,.cc-bedroom-chest{width:100%}
 }
+
+/* The Big Top is an actual paid performance; not merely midway attendance.
+ * Silas Pike's sale table uses the same old paper/wood language as the booths. */
+.cc-circus-big-top,.cc-traveling-salesman{
+ position:relative;width:min(680px,95%);max-height:min(54vh,530px);overflow:auto;
+ margin:8px auto;padding:11px 14px;background:#eadbbd;color:#312516;
+ border:3px double #695133;box-shadow:2px 3px 0 #877452;
+ font:13px/1.4 Georgia,'Times New Roman',serif;text-align:left;
+}
+.cc-circus-big-top[hidden],.cc-traveling-salesman[hidden]{display:none!important}
+.cc-circus-big-top h4,.cc-traveling-salesman h4{font:700 16px 'Courier New',monospace;margin:2px 0 8px}
+.cc-circus-big-top button,.cc-traveling-salesman button{
+ border:2px solid #463321;background:#463a2a;color:#fff6dd;
+ min-height:30px;padding:5px 10px;font:bold 12px 'Courier New',monospace;cursor:pointer;
+}
+.cc-traveling-salesman button:disabled,.cc-circus-big-top button:disabled{opacity:.52;cursor:not-allowed}
+.cc-circus-big-top button:focus-visible,.cc-traveling-salesman button:focus-visible{
+ outline:3px solid #a93e2b;outline-offset:2px
+}
+.cc-peddler-goods{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.cc-peddler-item{background:#dfcba9;border:2px solid #967d57;padding:8px}
+.cc-peddler-item strong{display:block;font:700 14px 'Courier New',monospace}
+.cc-peddler-item p{margin:6px 0}
+.cc-peddler-actions{display:flex;gap:7px}
+.cc-circus-big-top [data-big-top-status],.cc-traveling-salesman [data-peddler-status]{
+ font-weight:bold;margin:8px 0;padding:4px 0;min-height:1.2em
+}
