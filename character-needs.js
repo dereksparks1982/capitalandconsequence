@@ -192,6 +192,25 @@ function eatProvision(save,goodId){
  state.entries=state.entries.slice(-80);
  return {ok:true,meters:{...state.meters}};
 }
+function eatPrepared(save,benefits,recipeId){
+ const clock=sync(save);
+ if(!clock.ok)return {ok:false,reason:clock.reason};
+ const state=ensure(save);
+ if(clock.minute<(state.nextFoodAt??clock.minute))
+  return {ok:false,reason:'You have only just finished eating.'};
+ if(!benefits||!Number.isFinite(benefits.hunger)||benefits.hunger<=0||
+   benefits.hunger>100||!Number.isFinite(benefits.thirst||0))
+  return {ok:false,reason:'Invalid prepared meal.'};
+ for(const key of ['hunger','thirst']){
+  state.meters[key]=clamp(state.meters[key]+(Number(benefits[key])||0));
+  if(state.meters[key]>0)state.deprivation[key]=0;
+  if(state.meters[key]>THRESHOLDS[key]+15)state.warned[key]=false;
+ }
+ state.nextFoodAt=clock.minute+30;
+ state.entries.push({kind:'meal',minute:clock.minute,source:'prepared:'+String(recipeId).slice(0,42)});
+ state.entries=state.entries.slice(-80);
+ return {ok:true,meters:{...state.meters}};
+}
 function provisionAvailability(save,goodId){
  if(!Object.hasOwn(PROVISIONS,goodId))return {ok:false,reason:'Not edible without preparation.'};
  const at=minute(save),state=ensure(save);
@@ -210,7 +229,7 @@ function status(save,key){
  if(!result.ok&&result.remaining)return 'Available at '+formatClock(result.availableAt)+' ('+formatDuration(result.remaining)+')';
  return result.reason||'Unavailable';
 }
-const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,PROVISIONS,minute,sanitize,ensure,sync,finishSleep,overnight,take,eatProvision,provisionAvailability,applyInjury,treat,availability,status,formatDuration,formatClock});
+const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,PROVISIONS,minute,sanitize,ensure,sync,finishSleep,overnight,take,eatProvision,eatPrepared,provisionAvailability,applyInjury,treat,availability,status,formatDuration,formatClock});
 root.FE_CHARACTER_NEEDS=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
