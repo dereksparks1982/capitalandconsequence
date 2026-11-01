@@ -21,7 +21,12 @@
    'The presidency for this date after 1878 has NOT been established in game canon. Do not give a specific incumbent unless the game supplies a later curated fact.',
    'There is NO presidential election in 1880 in this timeline. After 1876, regular presidential elections occur every TEN years: 1886, 1896, and so on; outcomes remain undecided.'
   ];
-  return {date:iso,year,lines:[...common,...context]};
+  // The owner approved this earlier electric city as fictional history.
+  const electric=iso>='1878-01-01'?[
+   'Most of Washington, D.C. already has electrical service by 1878; it is an established industry.',
+   'The District plans electrical streetlighting improvements earlier in 1878 before the planned late-1878 World’s Fair. Winning the work is not guaranteed.'
+  ]:[];
+  return {date:iso,year,lines:[...common,...electric,...context]};
  }
  const api=Object.freeze({forDate});
  if(typeof module==='object'&&module.exports)module.exports=api;

@@ -4,6 +4,8 @@
 
 A nineteenth-century, alternate-history Washington life simulation where Charles runs Federal Electric, Sam patrols the District, Elias navigates Washington's underworld, and Edmund works at the District Asylum. Your actions use one world clock and carry consequences across work, money, travel and personal health.
 
+**Development v0.7.70 (1878 chronology, source only):** Most of Washington already has electricity. Federal Electric manufactures components first, then seeks a District streetlighting contract earlier in 1878, develops bulbs and may compete at a late-1878 World’s Fair. Pin #9 remains fixed. Exact Fair opening day and contract winners remain undecided. See docs/RELEASE-NOTES-v0.7.70-dev.md.
+
 **Development v0.7.69 (World’s Fair story protection, source only):** Fair pin #9 remains visitable from 1878 at its public approach; the 1893 exposition grounds retain their story date. Normal travel and developer room-unlock cannot grant early event entry. The event contract and ceremony are still unimplemented. See `docs/RELEASE-NOTES-v0.7.69-dev.md`. Ubuntu testing remains pending.
 
 **Development v0.7.68 (Linux QA repair, source-only; seven-test follow-up):** Repairs the failed offline regression contracts reported by the owner: tests now validate all 42 mapped places and 1,722 street journeys, manual road painting, 19 real-history cards including Ford’s Theatre and Center Market, physically separated merchant inventories, and the expanded 24-character NPC population. Game access honors mapped locations and sporting venues regardless of calendar year; restricted rooms and not-yet-implemented games remain gated. This revision is awaiting full local Node suite and packaged Electron acceptance. See `docs/RELEASE-NOTES-v0.7.68-dev.md`.

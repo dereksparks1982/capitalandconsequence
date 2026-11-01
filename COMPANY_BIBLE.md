@@ -51,6 +51,8 @@ When the owner says **stop**, stop making changes. No more editing, committing, 
 The story begins in an alternate 1878 Washington, and the owner may authorize inventions, institutions, or events earlier than their real-world dates, including ideas historically associated with later decades. **Every such authorization is specific.** A developer must never infer that *all* dates and gates are now optional.
 
 ### The World's Fair is part of the story
+**November 1, 2026 owner-approved revision:** Most of alternate Washington already has electric power in 1878. The District streetlighting contract precedes the late-1878 World's Fair. The old 1893 Fair date and after-Fair streetlight contract are superseded. The exact opening date and contract awards are still undecided. This is a specific approved revision, not general permission to rewrite other stories.
+
 **Preserve the World's Fair's already established opening date, event schedule, prerequisites, and story integration.** Do not open the Fair early, remove its narrative gates, rewrite its date, or change its consequences without the owner's **specific** permission. The owner did not authorize any change to the World's Fair merely by authorizing unrelated alternate-history exceptions.
 
 A location's map visibility or general visitability is **not** permission to trigger a gated event or skip its story. Being able to visit a mapped destination does not automatically mean its fairgrounds event, ceremonies, attractions, characters, quests, or time-limited activities have begun. Preserve that distinction wherever it is present in existing canon.

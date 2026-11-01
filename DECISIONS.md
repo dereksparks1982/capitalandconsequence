@@ -1,3 +1,16 @@
+## LATEST OWNER DECISION · NOVEMBER 1, 2026 · COMPONENTS → STREETLIGHTS → BULBS → FAIR
+
+**The following decisions supersede all older 1893 World's Fair and later streetlighting references below.** Those passages remain as historical records.
+
+- Washington already has widespread electricity in the alternate January 1878 setting. Charlie's Federal Electric does not invent or own the city's existing network.
+- First, Charlie manufactures real electrical components with the existing timed workbench, inventory and earned customer-order systems.
+- Earlier in 1878, a competitive District streetlighting improvement contract comes BEFORE the Fair. Arc streetlights can use carbon electrodes rather than incandescent bulbs. Wiring, switches, insulators, fixtures and maintenance are relevant components. A first contract for 50 lamp sites is a recommendation, NOT an authorized quantity or a completed contract.
+- Then, Charlie may research and produce experimental incandescent bulbs. He needs glassworking, carbon filaments, vacuum equipment, quality control, money, time and production tools. Research and factory expansion are not automatic.
+- The Washington World's Fair follows in LATE 1878, not 1893. The exact opening date is undecided. October 1, 1878 is only a provisional earliest Q4 game-access boundary, not a claimed ceremony date.
+- A potential 100–200 bulb fair contract is only a proposal. Competitor bids, actual manufacturing, delivery and payment must be implemented before any reward. Losing the streetlight tender does not cancel the Fair.
+- The current component-works incandescent recipe still has an outdated 1880 date gate and a legacy 24-minute unit time. These remain locked until a separate realistic, tested 1878 bulb-development feature replaces them; do NOT simply grant free bulbs.
+- The World’s Fair map pin #9, fixed image, coordinates, public approach and all other characters and gameplay restrictions are unchanged.
+
 ## CURRENT BINDING DECISIONS · 28 October 2026 · v0.6.90-dev
 **Read this section before older dated proposals. Current source work is NOT an accepted Linux release.** The complete current handoff is [CONTINUE-HERE](CONTINUE-HERE.md); implementation status is [ROADMAP](ROADMAP.md); the current feature and audit record is [v0.6.90 development notes](docs/RELEASE-NOTES-v0.6.90-dev.md).
 

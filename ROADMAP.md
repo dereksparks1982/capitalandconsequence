@@ -1,3 +1,15 @@
+## November 1, 2026 · v0.7.70-dev · Electrified Washington chronology
+- [x] Record the new owner's 1878 city-electricity premise and industrial progression.
+- [x] Component production first, competitive District streetlighting work earlier in 1878, then experimental bulbs and late-1878 Fair.
+- [x] Change the Fair event-room earliest eligibility to October 1, 1878 (provisional Q4, not an actual opening day), without moving pin #9 or changing other access rules.
+- [x] Update Company Bible, decisions, world knowledge, README and regression expectations for this explicit authorization.
+- [ ] Implement competitive streetlighting contracts with components, arc-lamp hardware, deliveries, installation, payment, and rival companies. Fifty streetlights remains a suggestion only.
+- [ ] Implement real 1878 bulb research, vacuum/glass/filament manufacture, tooling, failures, time and factory scale-up; legacy 1880 bulb gate and 24-minute recipe are not yet a real solution.
+- [ ] Implement the late-1878 Fair's contests, contracts and earned coverage. A 100–200 bulb order is a suggested starting scale only.
+- [ ] Full Node regression suite and Linux Electron playthrough still needed. No GitHub Actions or accepted release.
+
+> The older 1893 Fair and post-Fair streetlighting plans below are superseded dated records.
+
 ## November 1, 2026 · v0.7.69-dev: World's Fair story timing correction (source only)
 - [x] Restore 1893 story date for Fair #9 without hiding its fixed map pin or public approach.
 - [x] Separate public site visits from gated exposition ground entry; do not invent any fair supply-contract result.

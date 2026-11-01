@@ -140,12 +140,12 @@
   },
   {
    id:'washingtonFairgrounds',name:'D.C. World’s Fair',
-   area:'Potomac Park / Potomac Flats · west of Washington Monument (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',storyEvent:'worlds-fair-1893',
-   description:'The future grounds of the alternate-history 1893 World’s Columbian Exposition.',
+   area:'Potomac Park / Potomac Flats · west of Washington Monument (alternate-history exposition)',category:'fair',availableFrom:'1878-10-01',storyEvent:'worlds-fair-1878',
+   description:'Planned site of the late-1878 Washington World’s Fair, after an earlier District streetlighting improvement phase. Exact opening date undecided.',
    map:{n:9,x:.4700,y:.5660},defaultRoom:'public-approach',
    rooms:[
     {id:'public-approach',name:'Public Approach',description:'Public access to the future exposition site. This is not admission to the fair and cannot trigger a supply contract or ceremony.'},
-    {id:'fairgrounds',name:'Exposition Grounds',restricted:true,storyGate:'worlds-fair-1893',description:'Registered shell for the 1893 Washington fair. Exhibits, contests and ceremonies are not yet implemented.'}
+    {id:'fairgrounds',name:'Exposition Grounds',restricted:true,storyGate:'worlds-fair-1878',description:'Registered shell for the late-1878 Washington fair. Exhibits, contests and ceremonies are not yet implemented.'}
    ]
   },
   {
@@ -505,7 +505,7 @@
     commercePoker: "Our fictional Commerce Club gathers pilots and businessmen for a weekly poker game in a Washington-Hoover airport hangar. The airport is real; the club and game are invented.",
     embassyPoker: "In our Washington, the Embassy Room is an invitation-only private poker venue associated with the Chevy Chase Club. That room is a game invention, not a historical claim about the real club.",
     russianTradeHall: "Merchants, engineers and diplomats of Imperial Russia have an informal Washington meeting hall in this alternate timeline. Its business and conversations are written for the game.",
-    washingtonFairgrounds: "The game's alternative national history brings the 1893 World's Columbian Exposition to Washington's Potomac Flats rather than its real-world venue.",
+    washingtonFairgrounds: "The alternate-history capital already has widespread electricity in 1878. A streetlighting improvement contract precedes its planned late-1878 World’s Fair. No winning supplier is predetermined.",
     secondNightclub: "Le Paon d’Or (The Golden Peacock) belongs outright to Lucien Étienne Delacroix, called Lui. His flamboyant French cabaret trades in music, dance, spectacle and extravagant hospitality. The proprietor’s powerful connections shelter his reputation. Rumors are rumors, not privileged truths; Eli Crowe works the entrance.",
     districtBank: "District Bank is the fictional independent bank where Washington residents may optionally keep separate business, checking and untargeted savings balances. Cash must physically arrive or be collected.",
     capitolAirport: "Our fictional Capitol Airport operates near Benning, separate from the historical Washington-Hoover airfield. Its precise property is still undecided.",
@@ -549,7 +549,7 @@
   capitolAirport:[1660,280,'East of the Anacostia north of Benning; proposed fictional airfield'],
   universityMaryland:[1555,90,'College Park / Maryland Agricultural College vicinity; northern map edge, not a surveyed campus entrance'],
   embassyPoker:[505,132,'Chevy Chase Club vicinity / 6100 Connecticut Avenue; fictional room'],
-  washingtonFairgrounds:[750,538,'Potomac Park west of Washington Monument; fictional 1893 fair site'],
+  washingtonFairgrounds:[750,538,'Potomac Park west of Washington Monument; fictional late-1878 fair site'],
   babcockLake:[857,527,'Washington Monument vicinity / earlier basin, absent from fixed later-era artwork'],
   easternMarket:[1258,475,'225 7th Street SE, Eastern Market block; original building not individually labeled'],
   georgetownMarketHouse:[572,385,'3276 M Street NW, Georgetown Market House area, not separately labeled'],

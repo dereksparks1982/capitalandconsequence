@@ -22,10 +22,10 @@
   const loc=city.getLocation(id),room=city.getRoom(id,roomId||loc.defaultRoom);
   if(!room)return {ok:false,reason:'unknown room'};
   // A public map approach is not permission to enter a dated story event.
-  if(room.storyGate==='worlds-fair-1893'){
+  if(room.storyGate==='worlds-fair-1878'){
    const eligible=typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&
     typeof loc.availableFrom==='string'&&date>=loc.availableFrom;
-   if(!eligible)return {ok:false,reason:'The Washington World’s Fair is scheduled for 1893. The exposition grounds are not open; use the public approach.'};
+   if(!eligible)return {ok:false,reason:'The World’s Fair is planned for late 1878 following the streetlighting phase. Exposition grounds are not yet eligible; use the public approach.'};
    return {ok:true,locationId:id,roomId:room.id};
   }
   if(!room.restricted)return {ok:true,locationId:id,roomId:room.id};
