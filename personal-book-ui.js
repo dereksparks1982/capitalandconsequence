@@ -143,7 +143,11 @@ function render(){
 }
 function jump(index){
  if(turning||!Number.isInteger(index)||index<0||index>=pages.length)return false;
+ const wantsFreshWriting=pages[index]?.id==='notes';
  if(!persistNotes())return false;
+ // If writing was auto-saved, it has become a permanent page and the blank
+ // notebook page moved forward. The Writing shortcut should follow it.
+ if(wantsFreshWriting)index=pages.length-1;
  spread=index-index%2;selectedPage=index;flash='';render();
  const target=index%2?$('personalBookRight'):$('personalBookLeft');
  if(target)target.scrollTop=0;
