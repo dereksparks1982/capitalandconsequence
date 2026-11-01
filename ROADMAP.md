@@ -1,3 +1,10 @@
+## 31 October 2026 · v0.7.52-dev: real formal-duel health consequences
+- [x] Apply physical damage from actually resolved formal duel outcomes through the saved health service.
+- [x] Ensure duplicate duel reports cannot multiply an injury or invent another fight.
+- [x] Keep practice boxing, spectators, wagers and uncompleted challenges from affecting career health.
+- [ ] Expand medical recovery and player-owned official boxing after visible owner-accepted gameplay.
+- [ ] Full Ubuntu visual QA remains outstanding.
+
 ## 31 October 2026 · v0.7.51-dev: actual hospital reception treatment
 - [x] Existing District General reception now offers physician examinations using game time and personal cash.
 - [x] Limited treatment restores up to 28 Health, requires physical location, and persists to the journal/save.

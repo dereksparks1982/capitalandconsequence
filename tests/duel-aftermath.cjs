@@ -1,7 +1,9 @@
 'use strict';
 const assert=require('node:assert/strict');
 const a=require('../duel-aftermath.js');
-const save={gameDate:'1878-05-03',duels:{injuries:[]}},round={
+const needs=require('../character-needs.js');
+global.FE_CHARACTER_NEEDS=needs;
+const save={gameDate:'1878-05-03',worldCalendarStatus:'ready',worldCalendar:{worldMinute:Math.floor(Date.parse('1878-05-03T08:00:00Z')/60000)},duels:{injuries:[]}},round={
  id:'card-dispute:42',status:'resolved',opponent:'Mickey Dunn',
  locationId:'workingPoker',date:'1878-05-03',endedOn:'1878-05-03',
  playerShot:'wounded',opponentShot:'wounded',opponentSkill:22
@@ -9,7 +11,9 @@ const save={gameDate:'1878-05-03',duels:{injuries:[]}},round={
 const entry=a.record(save,round);
 assert.equal(entry.opponentCondition,'injured');
 assert.equal(entry.playerCondition,'injured');
+assert.equal(save.characterNeeds.meters.health,62,'verified wound reduces health');
 assert.equal(a.record(save,round),entry,'Repeated settlement is idempotent');
+assert.equal(save.characterNeeds.meters.health,62,'no duplicate injury from repeated recording');
 assert.equal(save.duelAftermath.events.length,1);
 assert.equal(a.visible(save,'workingPoker','1878-05-03').injury,null);
 assert.equal(a.visible(save,'governmentHospital','1878-05-03').injury.duelId,round.id);
@@ -31,4 +35,5 @@ assert.equal(a.record(save,dead).opponentCondition,'deceased');
 assert.equal(a.opponentStatus(save,'Mickey Dunn','1878-06-30'),'deceased','Dead patrons never heal back to life');
 assert.equal(save.duelAftermath.reports.length,1);
 assert.equal(a.record(save,{...dead,id:'nope',status:'pending'}),null);
+delete global.FE_CHARACTER_NEEDS;
 console.log('PASS duel injuries, dated recovery, treatment, witnessed-only police intake, death permanence and deduplication');

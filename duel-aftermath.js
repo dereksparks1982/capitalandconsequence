@@ -47,6 +47,13 @@ function record(save,duel){
  }
  state.events.unshift(event);
  if(state.events.length>80)state.events.length=80;
+ // Apply a physical injury once, alongside the existing once-only duel event.
+ // No clock debit or novel evidence is created by recording the same duel.
+ if(playerCondition==='injured'||playerCondition==='fatal'){
+  const physical=root.FE_CHARACTER_NEEDS?.applyInjury?.(save,playerCondition==='fatal'?100:38,
+   'formal-duel:'+duel.id);
+  event.healthDamage=physical?.ok?(playerCondition==='fatal'?100:38):0;
+ }
  return event;
 }
 function advance(save,gameDate){
