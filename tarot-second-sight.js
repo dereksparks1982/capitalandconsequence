@@ -36,13 +36,15 @@ function record(save,{id,kind,actorId,subjectId,minute}={}){
  if(state.events.length>80)state.events.splice(0,state.events.length-80);
  return {ok:true,event};
 }
-function trueSecrets(save){
+function trueSecrets(save,sharedWorld=null){
  const out=[];
  const add=(kind,key,priority=3,person=null)=>{if(VALID.has(kind)&&!out.some(e=>e.key===key))
   out.push({kind,key,priority,person,saying:HINTS[kind].saying})};
  const crime=ledger(save)?.events||[];
+ const worldMinute=Number.isSafeInteger(save?.worldCalendar?.worldMinute)?save.worldCalendar.worldMinute:null;
  for(const e of crime.slice(-40)){
-  if(VALID.has(e.kind))add(e.kind,'private:'+e.id,8,e.subjectId||e.actorId);
+  if(VALID.has(e.kind)&&(worldMinute===null||e.minute===null||e.minute<=worldMinute))
+   add(e.kind,'private:'+e.id,8,e.subjectId||e.actorId);
  }
  // Recorded industrialist misconduct is NOT available to ordinary residents.
  // The reader alone may see it, even if the books still hide the loss.
@@ -66,16 +68,20 @@ function trueSecrets(save){
   const ongoing=cases.filter(c=>c?.status==='open'&&c?.truth?.method);
   if(ongoing.length)add('mystery','secret:homicide:'+String(ongoing.at(-1).id),5);
  }
- const shared=save?.sharedWorld;
- if(shared?.worldTruth&&typeof shared.worldTruth==='object'&&
-   Object.keys(shared.worldTruth).length>0)
-  add('asylum','secret:institutional-truth',5);
+ const shared=sharedWorld||save?.sharedWorld;
+ if(shared?.worldTruth&&typeof shared.worldTruth==='object'){
+  for(const [id,truth] of Object.entries(shared.worldTruth)){
+   const at=typeof truth?.at==='string'?Date.parse(truth.at+'Z')/60000:null;
+   if(shared.incidents?.[id]&&(worldMinute===null||!Number.isFinite(at)||at<=worldMinute))
+    add('asylum','secret:institutional-truth:'+id,5);
+  }
+ }
  return out.sort((a,b)=>b.priority-a.priority||a.key.localeCompare(b.key));
 }
 function hash(value){let h=2166136261;for(const c of String(value)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-function vision(save,session){
+function vision(save,session,sharedWorld=null){
  if(!save||!session||!Array.isArray(session.cards))return null;
- const secrets=trueSecrets(save);
+ const secrets=trueSecrets(save,sharedWorld);
  if(!secrets.length)return null;
  const seed=session.encounterId||session.minute||session.cards.map(c=>c.id).join('|');
  // Usually an established significant secret surfaces. Sometimes she stays
