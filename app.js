@@ -1140,6 +1140,63 @@ function sleepAtHome(options={}){
  return {ok:complete,reason:message,minutes,energy:rested.energy,
   alarmRang:plan.alarmRang,overslept:plan.overslept};
 }
+// All circus receipts and tarot sittings use the real Washington clock,
+// physical personal money and a specific in-town venue. No remote gambling.
+function startCircusBooth(key){
+ const service=window.FE_CARNIVAL_GAMES,conf=service?.GAMES?.[key];
+ if(!conf||S.paused||S.phase==='report'||cityRoomSession.dev)
+  return {ok:false,reason:'This booth is unavailable.'};
+ if(!service.available(S))return {ok:false,reason:'The circus is not here.'};
+ if((Math.round(Number(S.personalCash||0)*100))<conf.feeCents)
+  return {ok:false,reason:'Not enough personal cash for the booth fee.'};
+ if(service.ensure(S).active)return {ok:false,reason:'Finish your present game first.'};
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,conf.seconds))
+  return {ok:false,reason:'Not enough Washington time to complete this game.'};
+ const elapsed=advanceWorldSimulation(conf.seconds,true,'action');
+ if(elapsed!==conf.seconds)return {ok:false,reason:'The game clock interrupted this booth.'};
+ const result=service.start(S,key);
+ if(!result.ok)return result;
+ window.FE_CIRCUS_TOUR?.attend?.(S,window.FE_CIRCUS_TOUR?.active?.(S)?.id);
+ save(true);return result;
+}
+function throwAtCircusBooth(choice){
+ const service=window.FE_CARNIVAL_GAMES;
+ if(!service?.available?.(S)||S.paused||cityRoomSession.dev)
+  return {ok:false,reason:'You must be present at the carnival booth.'};
+ const result=service.throwAt(S,choice,item=>window.FE_PERSONAL_EFFECTS?.acquire?.(item));
+ if(result.ok){save(true);window.FE_BEDROOM_CHEST?.refresh?.()}
+ return result;
+}
+function claimCircusPrizes(){
+ if(!window.FE_CARNIVAL_GAMES?.available?.(S)||cityRoomSession.dev)return [];
+ const out=window.FE_CARNIVAL_GAMES.claim(S,item=>window.FE_PERSONAL_EFFECTS?.acquire?.(item));
+ if(out.length)save(true);
+ return out;
+}
+function requestFortuneReading(){
+ const circus=window.FE_CIRCUS_TOUR?.active?.(S),current=currentCityLocation();
+ if(!circus||current.locationId!==circus.locationId||cityRoomSession.dev||S.paused)
+  return {ok:false,reason:'You must be with the reader at her visiting wagon.'};
+ const encounterId='circus-reading-'+circus.id+'-'+S.gameDate;
+ const prior=(S.tarotSessions||[]).find(x=>x.encounterId===encounterId);
+ if(prior){
+  window.FE_TAROT_INTERPRETATION?.interpret?.(S,prior);
+  return {ok:true,replayed:true,session:prior};
+ }
+ if(Math.round(Number(S.personalCash||0)*100)<10)
+  return {ok:false,reason:'A reading costs ten cents in personal cash.'};
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,600))
+  return {ok:false,reason:'Not enough time for the ten-minute sitting.'};
+ if(advanceWorldSimulation(600,true,'action')!==600)
+  return {ok:false,reason:'The reading was interrupted.'};
+ const result=window.FE_TAROT?.reading?.(S,{
+  readerId:'visiting-fortune-teller',encounterId,spread:'three',feeCents:10
+ });
+ if(!result?.ok)return result||{ok:false,reason:'The deck is unavailable.'};
+ window.FE_TAROT_INTERPRETATION?.interpret?.(S,result.session);
+ window.FE_NPC_DISCOVERY?.learn?.(S,'visiting-fortune-teller','encounter','circus wagon');
+ save(true);return result;
+}
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
    Only accepted wagers call chargeMinute, once per accepted ticket.
@@ -2642,6 +2699,12 @@ function openCityRoom(locationId,roomId,options={}){
   overlay.hidden=false;
   guardedRoomPanel('staff break room',()=>renderFactoryBreakRoom());
   guardedRoomPanel('bedroom sleep',()=>window.FE_SLEEP_UI?.render?.(S,sleepAtHome,{locationId:location.id,roomId:room.id,dev},()=>save(true)));
+  guardedRoomPanel('bedroom chest',()=>window.FE_BEDROOM_CHEST?.render?.(S,{locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('circus midway',()=>window.FE_CARNIVAL_UI?.render?.(S,{
+   start:startCircusBooth,throwAt:throwAtCircusBooth,claim:claimCircusPrizes
+  },{locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('fortune-teller',()=>window.FE_TAROT_WAGON_UI?.render?.(S,requestFortuneReading,
+   {locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
    const location=currentCityLocation();
    if(location.locationId!=='governmentHospital'||location.roomId!=='reception'||cityRoomSession.dev||
