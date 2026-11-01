@@ -20,7 +20,7 @@ The temporary carnival fortune-teller and traveling salesman Silas Pike have bee
 - **Updated** `circus-tour.js`: keeps recently closed engagement available for transit simulation without prolonging public opening.
 - **Updated** `app.js`: player only learns a visiting character's identity after actually entering the room while that person is present.
 - **Updated** `index.html`: loads touring road state before the ordinary NPCs, without introducing any external package or changing approved map coordinates.
-- **New focused test** `tests/touring-visitors-wagons.cjs`: presence, travel duration, refusal of nonexistent roads, room access, identity secrecy, and actual departure.
+- **New focused tests** `tests/touring-visitors-wagons.cjs` and `tests/touring-visitor-dialogue.cjs`: presence, road-based travel duration, same-room greeting, refusal of remote conversation, identity secrecy, and actual departure.
 
 ## QA and important limits
 The older player-provided Linux build log identifies **0.7.58** as the checked-out version and reports 189 passes / 6 failures. The current repository had progressed to 0.7.62 before this change. Focused replays of the current versions of `map-travel-departure.cjs`, `capital-travel-interruptions.cjs`, `character-needs.cjs`, `horse-custody.cjs` and `map-go-there.cjs` passed in an isolated JavaScript evaluation; the package-vs-masthead version assertion also matched. These **do not** constitute a full native build result.
