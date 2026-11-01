@@ -18,7 +18,7 @@ panel.setAttribute('aria-label','Room Builder, Federal Electric Executive Office
 panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>ROOM BUILDER</h2><p>Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
 '<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
 '<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Select / Drag moves a placed object. Grid tiles are 32px.</p><dl id="rbInspector"></dl></aside>'+
-'<main class="rb-main"><div class="rb-canvas-tools"><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
+'<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
 '<footer class="rb-footer"><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
@@ -85,6 +85,7 @@ function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,playerFacin
 }
 function render(){
  if(panel.hidden)return;
+ $('rbWidth').value=room.widthTiles;$('rbHeight').value=room.heightTiles;
  const w=room.widthTiles*C.TILE,h=room.heightTiles*C.TILE;
  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  canvas.style.width=(w*zoom)+'px';canvas.style.height=(h*zoom)+'px';
@@ -175,6 +176,12 @@ panel.addEventListener('click',e=>{
  const action=button.dataset.rb,tool=button.dataset.rbMode;
  if(tool){preview=false;mode=tool;render();return;}
  if(action==='close')close();
+ if(action==='resize'){
+  const w=Number($('rbWidth').value),h=Number($('rbHeight').value);
+  const next=C.resize(room,w,h);
+  if(next){mutate(()=>{room=next;return true;});status('Room dimensions: '+w+' × '+h+' tiles. Boundary walls rebuilt; interior furniture preserved.');}
+  else{status('Cannot resize: dimensions must be 8–40, and furniture / Charles must remain inside an unblocked room.');}
+ }
  if(action==='undo')undo();if(action==='redo')redo();
  if(action==='rotate')rotate();if(action==='duplicate')duplicate();if(action==='delete')del();
  if(action==='save')save();
