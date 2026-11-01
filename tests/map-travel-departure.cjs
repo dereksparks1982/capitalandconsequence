@@ -23,6 +23,8 @@ function trial(mode,settings={}){
  let arrivals=0;
  const S={currentLocation:{locationId:'factory',roomId:'executive-office'}};
  const context={S,document:{getElementById:id=>nodes[id]||null},
+  $:id=>nodes[id.replace(/^#/,'')]||{textContent:''},
+  clockText:()=> '9:00 AM',displayHeaderDate:()=> '2 January 1878',displayHeaderTurn:()=> 'Day 1',
   window:{FE_ROAD_EDITOR:{isEditing:()=>false},
    FE_ROAD_LAYOUT:{isActive:()=>!!settings.custom},
    FE_WASHINGTON_TIME:{canSpend:()=>true},
