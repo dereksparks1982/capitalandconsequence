@@ -8,6 +8,7 @@
 - No ghost factory output and no arbitrary additional lost-profit debit. Production stays stopped during the recorded emergency. Existing closing and wage settlement processes remain authoritative.
 - Sleep is now an actual **Sleep Until 8 AM** action in the home bedroom after 5 PM. Skipping the night from elsewhere no longer refills Energy.
 - Existing top status banner now has two readable information rows: period/date/time/weather above exchange/cash/pause. Character condition bars remain separate below.
+- Map travelers now display selectable, keyboard-accessible, deliberately rough occupation and confirmed-vehicle silhouettes with their actual name, occupation and saved journey. Clicking shows a public travel card; selecting the destination uses ordinary map travel rules, without remote NPC conversation. Wagon art is reserved for a real documented wagon journey; no specific "Gypsy" identity was assumed. See `docs/MOVING-NPCS-MAP-INTERACTION-2026-11-01.md`.
 - Regression files: `tests/medical-records.cjs`, `tests/character-bed-rest.cjs`, plus the existing two-row condition/banner contract.
 
 **Balance values** are fictional gameplay defaults, not historical medical quotations. See `docs/MEDICAL-RECORDS-EXHAUSTION-FACTORY-2026-11-01.md` for accepted design and deferred work.
