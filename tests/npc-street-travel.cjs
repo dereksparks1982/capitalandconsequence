@@ -28,7 +28,7 @@ save.npcSimulation.agents.sam={id:'sam',status:'travelling',journey};
 assert.ok(npc.progress(journey,save.worldCalendar.worldMinute)>.4);
 const svg=tag=>({tag,attrs:{},children:[],style:{},removed:false,
  setAttribute(k,v){this.attrs[k]=String(v)},appendChild(v){this.children.push(v)},
- append(...xs){this.children.push(...xs)},remove(){this.removed=true}});
+ append(...xs){this.children.push(...xs)},addEventListener(){},remove(){this.removed=true}});
 global.document={createElementNS:(ns,tag)=>svg(tag)};
 const viewport={clientWidth:900,clientHeight:600,children:[],appendChild(v){this.children.push(v)}};
 assert.equal(npc.render(save,viewport,p=>({x:p.x*900,y:p.y*600}),true),1);
