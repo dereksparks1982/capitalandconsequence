@@ -2758,6 +2758,14 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('traveling peddler',()=>window.FE_TRAVELING_SALESMAN_UI?.render?.(S,
    {inspect:inspectPeddlerGood,buy:buyPeddlerGood},
    {locationId:location.id,roomId:room.id,dev}));
+  guardedRoomPanel('traveling people discovery',()=>{
+   const event=!dev&&window.FE_CIRCUS_TOUR?.active?.(S);
+   if(event&&location.id===event.locationId&&S.currentLocation?.locationId===event.locationId){
+    // An in-person meeting is knowledge, not access to the travel schedule.
+    window.FE_NPC_DISCOVERY?.learn?.(S,'silasPike','encounter','saw his stall at the circus');
+    window.FE_NPC_DISCOVERY?.learn?.(S,'visiting-fortune-teller','encounter','saw her reading table at the circus');
+   }
+  });
   guardedRoomPanel('medical reception',()=>window.FE_MEDICAL?.render?.(S,(key)=>{
    const location=currentCityLocation();
    if(location.locationId!=='governmentHospital'||location.roomId!=='reception'||cityRoomSession.dev||
