@@ -38,10 +38,10 @@ function seasonal(save){
   for(const month of months){
    const begin=Date.UTC(year,month,3,9)/60000;
    const end=Date.UTC(year,month,9,20)/60000;
-   // Keep the just-departed engagement in the save for two hours so actual
+   // Keep the just-departed engagement in the save for up to four hours so actual
    // wagon departures remain observable. The tent itself still disappears
    // at endMinute, since active() checks the original public closing time.
-   if(now>=end+120)continue;
+   if(now>=end+240)continue;
    const id='capital-circus-'+year+'-'+(month+1);
    if(data.engagement?.id!==id)
     schedule(save,{id,startMinute:begin,endMinute:end,locationId:'races',name:'The Washington Traveling Circus'});
