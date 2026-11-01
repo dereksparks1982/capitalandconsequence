@@ -28,7 +28,7 @@ function sanitize(raw,at=null){
  }
  const since=source?.lastMinute;
  const lastMinute=Number.isSafeInteger(since)&&(at===null||since<=at)?since:at;
- const safeUntil=n=>Number.isSafeInteger(n)&&n>=0&&(at===null||n<at+5256000)?n:0;
+ const safeUntil=n=>Number.isSafeInteger(n)&&(at===null||Math.abs(n-at)<5256000)?n:null;
  const cooldowns={};for(const k of Object.keys(CONFIG))cooldowns[k]=safeUntil(source?.cooldowns?.[k]);
  const warned={};
  for(const k of Object.keys(INITIAL))warned[k]=source?.warned?.[k]===true;
@@ -74,7 +74,7 @@ function availability(save,key){
  const now=minute(save);
  if(now===null)return {ok:false,reason:'Washington time is unavailable.'};
  const state=ensure(save);
- const allowed=Math.max(state.sharedUntil,state.cooldowns[key]);
+ const allowed=Math.max(now,state.sharedUntil??now,state.cooldowns[key]??now);
  const remaining=Math.max(0,allowed-now);
  return {ok:remaining===0,remaining,availableAt:allowed,
   reason:remaining?'Available in '+formatDuration(remaining)+'.':'Available now.'};
@@ -104,7 +104,7 @@ function take(save,key,source){
   nextSharedAt:state.sharedUntil,nextSpecificAt:state.cooldowns[key]};
 }
 function formatClock(worldMinute){
- if(!Number.isSafeInteger(worldMinute)||worldMinute<0)return 'unknown';
+ if(!Number.isSafeInteger(worldMinute))return 'unknown';
  const d=new Date(worldMinute*60000);
  const h=d.getUTCHours(),m=String(d.getUTCMinutes()).padStart(2,'0');
  return (h%12||12)+':'+m+(h>=12?' PM':' AM');
