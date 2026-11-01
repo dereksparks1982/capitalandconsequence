@@ -448,6 +448,7 @@ function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
 function render(){
  window.FE_CHARACTER_NEEDS?.ensure?.(S);
+ window.FE_MEDICAL_RECORDS?.player?.(S);
  document.body.classList.toggle('pre-radio-era',!periodRadioAvailable());
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
  document.body.classList.toggle('component-era',!!S.componentWorks);
@@ -458,7 +459,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -1015,6 +1016,8 @@ function advanceHiddenMarket(seconds){
 // World time moves at 1:1. Player actions add their duration, split at
 // schedule/shift boundaries to simulate other lives chronologically.
 function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopClose=false){
+ // A collapsed character cannot initiate another player action before waking.
+ if(kind!=='medical'&&window.FE_MEDICAL_RECORDS?.pending?.(S))return 0;
  if(S.paused||S.phase==='report'||!Number.isSafeInteger(seconds)||seconds<=0)return 0;
  let remaining=seconds,spent=0;
  const oldAway=!!S.npcOffscreenCatchup;
@@ -1028,7 +1031,15 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
    if(!receipt.applied)break;
    S.dayRemaining=window.FE_WASHINGTON_TIME.phaseSecondsRemaining(S);
    if(working){
-    let productive=delta;const cond=S.turnConditions||{};
+    const factoryCollapse=kind==='medical'&&
+      S.medicalRecords?.pending?.setting==='work'&&
+      S.medicalRecords?.pending?.locationId==='factory'&&
+      S.characterRoute==='industrialist';
+    if(factoryCollapse&&S.medicalRecords?.factory){
+      S.medicalRecords.factory.minutesLost+=delta/60;
+      S.lineMessage='Factory emergency shutdown: workers stopped production to assist the owner.';
+    }
+    let productive=factoryCollapse?0:delta;const cond=S.turnConditions||{};
     if((cond.powerOutageSeconds||0)>0){
      const lost=Math.min(productive,cond.powerOutageSeconds);
      cond.powerOutageSeconds=Math.max(0,cond.powerOutageSeconds-lost);productive-=lost;
@@ -1047,12 +1058,38 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
    else if(reached?.minuteOfDay===480&&S.phase==='night'){closeNight(false);beginNextDay();}
    const humanCondition=window.FE_CHARACTER_NEEDS?.sync?.(S);
    if(humanCondition?.events?.length)window.FE_CHARACTER_NEEDS_UI?.notify?.(humanCondition.events);
+   // Collapse is recorded once, after real world-minute depletion. The wake
+   // button later spends the unconscious time on this SAME authoritative clock.
+   if(kind!=='medical'&&humanCondition?.ok&&S.characterNeeds?.meters?.energy<=0){
+    const episode=window.FE_MEDICAL_RECORDS?.collapse?.(S,currentCityLocation().locationId);
+    if(episode?.ok){
+     save(true);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode);
+     break;
+    }
+   }
    window.FE_NPC_AI?.syncClock?.();
    window.FE_CHESS?.tick?.(S,{now:window.FE_WASHINGTON_TIME?.now?.(S),presentAt:id=>window.FE_NPC_AI?.visibleAt?.(id)||[]});
    window.FE_CHECKERS?.tick?.(S,{now:window.FE_WASHINGTON_TIME?.now?.(S),presentAt:id=>window.FE_NPC_AI?.visibleAt?.(id)||[]});
   }
  }finally{S.npcOffscreenCatchup=oldAway}
  return spent;
+}
+function recoverMedicalEpisode(){
+ const medical=window.FE_MEDICAL_RECORDS,pending=medical?.pending?.(S);
+ if(!pending)return false;
+ // Use the actual Washington clock. No teleport, invented payroll or second
+ // economy loop. Factory output stays frozen while workers attend the owner.
+ const elapsed=advanceWorldSimulation(pending.minutesLost*60,true,'medical');
+ const awake=medical.wake(S,elapsed);
+ if(!awake.ok)return false;
+ const location=pending.locationId;
+ const aftermath=location==='factory'&&pending.setting==='work'?
+  'Federal Electric stopped production while the staff attended you. The doctor charged the company.':
+  pending.setting==='home'?'You woke on the floor at home. Get into bed for a proper rest.':
+  'You regain consciousness following a medical emergency.';
+ S.notes.push({date:displayDate(),source:'medical record',text:aftermath});
+ note(aftermath);save(true);render();
+ return true;
 }
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
