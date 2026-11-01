@@ -2007,3 +2007,20 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .title-map-marker[data-physical-icon="circus"] .title-map-marker-pin{background:#773b32}
 .title-map-marker[data-physical-icon="park"] .title-map-marker-pin{background:#315d38}
 .title-map-marker[data-physical-icon]:not([data-physical-icon="number"]) .title-map-marker-pin b{display:none!important}
+
+/* Washington manual painting: prominent accessible tools with the blue building
+ * mask exposed, and RIGHT mouse panning independent of brush strokes. */
+.title-map-viewport{cursor:default}
+.title-map-viewport.is-dragging{cursor:grabbing!important}
+.title-map-road-canvas.editing{cursor:crosshair;touch-action:none}
+.title-map-road-primary{display:flex;flex:1 1 100%;flex-wrap:wrap;gap:7px;align-items:center}
+.title-map-road-primary button{font-weight:800;min-height:36px;border-width:2px;padding:7px 11px}
+#titleMapRoadRoad[aria-pressed="true"]{background:#24614c;color:#fffad0;border-color:#83dbc0}
+#titleMapRoadPaint,#titleMapRoadBlock{border-color:#499dfa;background:#1b426b;color:#fff}
+#titleMapRoadPaint[aria-pressed="true"],#titleMapRoadBlock[aria-pressed="true"]{
+ background:#2179d6;border-color:#8bd5ff;color:#fff;box-shadow:0 0 0 2px #a7d9ff66
+}
+#titleMapRoadErase[aria-pressed="true"],#titleMapRoadEraseRoad[aria-pressed="true"]{
+ background:#84532d;color:#fff;border-color:#e4b47e
+}
+#titleMapRoadStatus{flex-basis:100%;font-weight:700;white-space:normal}
