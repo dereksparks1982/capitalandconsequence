@@ -78,3 +78,11 @@
 @media(prefers-reduced-motion:reduce){
  .personal-book-flip-sheet.forward,.personal-book-flip-sheet.backward{animation-duration:.01ms}
 }
+/* Dated notebook entries: right-hand pages are selectable, with a direct writing shortcut.
+   Scoped to the book toolbar; no approved book geometry or art is replaced. */
+.personal-book-toolbar #personalBookWriteJump{
+ border:1px solid #ad8b64;background:#e4ccaa;color:#382518;
+ font:600 .84rem Georgia,serif;padding:.4rem .65rem;cursor:pointer
+}
+.personal-book-toolbar #personalBookWriteJump:hover,
+.personal-book-toolbar #personalBookWriteJump:focus-visible{background:#f6dfb4;outline:2px solid #be8a4b;outline-offset:1px}
