@@ -3621,6 +3621,11 @@ function titleMapApply(){
   window.FE_NPC_STREET_TRAVEL?.render?.(S,viewport,
    p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
      y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),!viewer?.hidden);
+ if(img.naturalWidth&&viewport)
+  window.FE_CIRCUS_TOUR?.render?.(S,viewport,
+   p=>({x:titleMapState.x+p.x*img.naturalWidth*titleMapState.scale,
+     y:titleMapState.y+p.y*img.naturalHeight*titleMapState.scale}),!viewer?.hidden,
+   id=>openTitleMapLocation(id));
 }
 // Pins stay at their saved map coordinates at every zoom level. Off-print
 // provisional pins remain edge-docked solely to keep their directory entries
@@ -4313,6 +4318,7 @@ function closeTitleMap(chargeTime=true){
  // Editor closes cleanly on map exit; drawn streets/buildings stay saved.
  if(window.FE_ROAD_EDITOR?.isEditing?.())window.FE_ROAD_EDITOR.toggle();
  window.FE_NPC_STREET_TRAVEL?.clear?.();
+ window.FE_CIRCUS_TOUR?.clear?.();
  window.FE_CAPITAL_TRAVEL?.cancel?.();
  window.FE_CAPITAL_TRAVEL?.clearPreview?.();
  const viewer=$('#titleMapViewer');
