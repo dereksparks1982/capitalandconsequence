@@ -1870,3 +1870,14 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
  .title-map-head .title-map-road-tools{max-height:min(35vh,230px)}
  .title-map-filter-label{flex-wrap:wrap}
 }
+
+/* Small, deliberately crude NPC street markers. They are clickable without
+ * shifting the printed Washington map or any previously approved map pin. */
+.capital-npc-travel-layer [role="button"]{outline:none;cursor:pointer}
+.capital-npc-travel-layer [role="button"]:focus-visible path{stroke:#fff!important;stroke-width:3}
+.capital-npc-travel-card{position:absolute;z-index:60;width:min(276px,calc(100% - 12px));padding:9px 11px;border:2px solid #785e3b;background:#eee1c2;color:#28231c;box-shadow:0 4px 15px #0008;font:12px/1.4 Georgia,'Times New Roman',serif}
+.capital-npc-travel-card strong{font-size:15px}
+.capital-npc-travel-card p{margin:5px 0}
+.capital-npc-travel-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.capital-npc-travel-actions button{cursor:pointer;background:#2c3d45;border:1px solid #111e24;color:#fff;padding:5px 7px;font:bold 11px 'Courier New',monospace}
+.capital-npc-travel-actions button:focus-visible{outline:2px solid #af382d;outline-offset:2px}
