@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.71-dev · 1878 municipal streetlighting and incandescent production
+- [x] Competitive February–June streetlighting tender with real eligibility (shipped component customer order), rival bid, outcomes and 50-site physical component obligations.
+- [x] Awarded order creates actual wire, switch contact and insulator jobs in existing Component Works; Saturday dispatch consumes real warehouse stock; weekday inspection pays the contract incrementally.
+- [x] Four time- and money-costed lamp experiments (carbon filament, seals, vacuum, endurance) with possible failed trials, then paid license, hand-built prototype line and 300-minute bulb attempts with real rejects.
+- [x] Two hired specialist lamp workers with Saturday payroll and arrears, paid production line upgrade to 60-minute bulb attempts (still with occasional defects). Uses existing company balance and stock.
+- [x] Competitive late-1878 Fair tender creates an actual 100-bulb workshop job. Saturday physical shipment after the provisional October eligibility window earns only delivered-bulb receipts.
+- [x] Real workshop interface, player-save persistence, idempotent tokens, factory-location and clock checks. Existing four careers, map geometry and unrelated access remain unchanged.
+- [ ] Full local Node test suite and native Ubuntu Electron playthrough not completed. Contract quantities and rival prices are adjustable balance targets, not irreversible lore. No GitHub Actions.
+
 ## November 1, 2026 · v0.7.70-dev · Electrified Washington chronology
 - [x] Record the new owner's 1878 city-electricity premise and industrial progression.
 - [x] Component production first, competitive District streetlighting work earlier in 1878, then experimental bulbs and late-1878 Fair.

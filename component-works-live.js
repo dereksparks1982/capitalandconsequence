@@ -46,7 +46,7 @@
    const job=next.orders.find(o=>o.id===details?.orderId),recipe=job&&works.PRODUCTS[job.productId];
    if(!recipe)return {ok:false,reason:'Unknown workshop order'};
    const availableMinutes=Math.floor(((1020-date.minuteOfDay)*60-(save.worldCalendarRemainder||0))/60);
-   const fit=Math.floor(availableMinutes/recipe.minutes);
+   const fit=Math.floor(availableMinutes/works.unitMinutes(next,job.productId));
    if(fit<1)return {ok:false,reason:'No time to finish one unit before 5 PM; continue next weekday'};
    const units=Math.min(details?.quantity,fit);
    const quote=works.assemblyQuote(next,details?.orderId,units);

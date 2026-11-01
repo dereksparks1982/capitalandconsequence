@@ -87,6 +87,12 @@
   if(!active)return;
   const state=engine.verify(S.componentWorks),panel=document.getElementById('componentWorkshop');
   if(!panel)return;
+  const bulbChoice=panel.querySelector('#cwOrder [name="productId"]');
+  if(bulbChoice&&engine.eligibility(state,'incandescent-lamp').ok&&
+     ![...bulbChoice.options].some(o=>o.value==='incandescent-lamp')){
+   const opt=document.createElement('option');opt.value='incandescent-lamp';
+   opt.textContent='Experimental incandescent lamps';bulbChoice.appendChild(opt);
+  }
   panel.querySelector('#componentBalance').textContent='Company balance: $'+S.companyCash.toFixed(2)+
    ' · Workstations: '+state.stations.bench+' bench, '+state.stations.winder+' winder · Materials: '+
    Object.entries(state.materials).map(([k,v])=>k+' '+v).join(', ');
@@ -115,7 +121,7 @@
     ' · '+o.made+' assembled · '+o.delivered+'/'+o.quantity+' shipped · deadline '+o.deadline+(o.latePenaltyCents?' · late deductions $'+(o.latePenaltyCents/100).toFixed(2):'');
    out.appendChild(p);
   }
-  for(const [id,filter] of [['cwAssemble',o=>o.made<o.quantity],['cwShip',o=>o.delivered<o.quantity]]){
+  for(const [id,filter] of [['cwAssemble',o=>o.made<o.quantity],['cwShip',o=>!o.special&&o.delivered<o.quantity]]){
    const sel=panel.querySelector('#'+id+' [name="orderId"]'),previous=sel.value;
    sel.replaceChildren();
    const accepted=state.orders.filter(filter);
@@ -126,7 +132,9 @@
    if(accepted.some(o=>o.id===previous))sel.value=previous;
   }
   const allowed=S.characterRoute==='industrialist'&&!S.paused&&S.phase==='day';
-  panel.querySelectorAll('button').forEach(b=>b.disabled=!allowed);
+  // Electric contract controls have their own physical-workshop and date gates.
+  for(const b of panel.querySelectorAll(':scope > button, :scope > form button'))b.disabled=!allowed;
+  root.FE_ELECTRIC_CAMPAIGN_UI?.render?.();
  }
  root.FE_COMPONENT_PANEL=Object.freeze({render:renderPanel});
  if(typeof document!=='undefined'){

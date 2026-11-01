@@ -32,8 +32,8 @@
   // Deliberately impossible on the 1878 starting day. Actual late-era
   // licensing, inventions, tools and process realism remain future work.
   'incandescent-lamp':Object.freeze({name:'Experimental incandescent lamps',
-   unitPriceCents:160,minutes:24,inputs:{glass:2,copper:2,carbon:1},
-   station:'lamp-line',availableFrom:'1880-01-01',license:'incandescent-rights'})
+   unitPriceCents:285,minutes:300,inputs:{glass:2,copper:2,carbon:1},
+   station:'lamp-line',availableFrom:'1878-03-01',license:'incandescent-rights'})
  });
  const CUSTOMERS=Object.freeze([
   'Potomac Telegraph Office','District Signal Supply','Capital Railway Telegraph',
@@ -48,6 +48,7 @@
    cashCents:250000,materials:{copper:200,brass:180,iron:120,timber:100,insulation:180,glass:80,carbon:0},
    warehouse:Object.fromEntries(Object.keys(PRODUCTS).map(k=>[k,0])),
    stations:{bench:1,winder:1,'lamp-line':0},licenses:[],
+   lampDevelopment:{attempted:0,good:0,rejected:0},
    orders:[],receipts:{},ledger:[],minutesCommitted:0};
  }
  function verify(state){
@@ -66,6 +67,10 @@
   if(p.license&&!state.licenses.includes(p.license))return {ok:false,reason:'licensing unavailable'};
   if(!positive(state.stations[p.station]))return {ok:false,reason:'required station unavailable'};
   return {ok:true};
+ }
+ function unitMinutes(state,id){
+  const product=PRODUCTS[id];if(!product)return 0;
+  return id==='incandescent-lamp'&&state?.stations?.['lamp-line']>=2?60:product.minutes;
  }
  function cached(state,token){return Object.prototype.hasOwnProperty.call(state.receipts,token)?
   {...state.receipts[token],repeated:true}:null}
@@ -116,10 +121,11 @@
   // Charlie's manual assembly has no per-unit wage charge. The paid assistant
    // is salaried once from company funds at daily close, not per assembly.
   const minutesRequired=p.minutes*units,laborCostCents=0;
-  if(!Number.isSafeInteger(minutesRequired)||minutesRequired>1000000)
+  const actualMinutesRequired=unitMinutes(state,job.productId)*units;
+  if(!Number.isSafeInteger(actualMinutesRequired)||actualMinutesRequired>1000000)
    return {ok:false,reason:'production run too large'};
   if(laborCostCents>state.cashCents)return {ok:false,reason:'insufficient operating cash'};
-  return {ok:true,productId:job.productId,units,inputs,minutesRequired,laborCostCents};
+  return {ok:true,productId:job.productId,units,inputs,minutesRequired:actualMinutesRequired,laborCostCents};
  }
  function assemble(state,orderId,units,token){
   const earlier=authorize(state,token);if(earlier)return earlier;
@@ -129,9 +135,18 @@
   state.cashCents-=quote.laborCostCents;
   state.minutesCommitted+=quote.minutesRequired;
   const job=state.orders.find(o=>o.id===orderId);
-  job.made+=units;state.warehouse[job.productId]+=units;
+  // Failed lamps use real material/time but never become finished inventory.
+  let goodUnits=units,rejectedUnits=0;
+  if(job.productId==='incandescent-lamp'){
+   const stats=state.lampDevelopment||(state.lampDevelopment={attempted:0,good:0,rejected:0});
+   const interval=state.stations['lamp-line']>=2?13:5;
+   for(let i=0;i<units;i++)if((stats.attempted+i+1)%interval===0)rejectedUnits++;
+   goodUnits=units-rejectedUnits;stats.attempted+=units;
+   stats.good+=goodUnits;stats.rejected+=rejectedUnits;
+  }
+  job.made+=goodUnits;state.warehouse[job.productId]+=goodUnits;
   job.status='in-production';
-  return record(state,token,'assembly',{ok:true,orderId,units,productId:job.productId,
+  return record(state,token,'assembly',{ok:true,orderId,units,goodUnits,rejectedUnits,productId:job.productId,
    minutesRequired:quote.minutesRequired,laborCostCents:quote.laborCostCents});
  }
  function ship(state,orderId,units,token){
@@ -139,6 +154,7 @@
   const job=state.orders.find(o=>o.id===orderId);
   if(!job||!positive(units)||units>job.quantity-job.delivered)
    return {ok:false,reason:'invalid shipment'};
+  if(job.special)return {ok:false,reason:'Municipal orders use their own verified physical dispatch register'};
   if(!Number.isSafeInteger(state.warehouse[job.productId])||state.warehouse[job.productId]<units)
    return {ok:false,reason:'insufficient finished warehouse stock'};
   const grossCents=units*job.priceCents;
@@ -182,7 +198,7 @@
   issueRailwayOrder(state,date,saturday.toISOString().slice(0,10));return true;
  }
  const api=Object.freeze({START_DATE,MATERIALS,PRODUCTS,CUSTOMERS,createState,createOpeningOrders,renewStandingOrders,verify,
-  eligibility,order,purchase,assemblyQuote,assemble,ship});
+  eligibility,unitMinutes,order,purchase,assemblyQuote,assemble,ship});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_COMPONENT_WORKS=api;
 })(typeof window!=='undefined'?window:globalThis);

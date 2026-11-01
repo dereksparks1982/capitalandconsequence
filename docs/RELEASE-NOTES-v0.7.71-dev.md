@@ -1,0 +1,15 @@
+# Capital & Consequence v0.7.71-dev | District streetlights and incandescent manufacturing
+November 1, 2026 · Source-only development; not accepted by owner.
+
+## Functional features
+Charles Whitcomb's 1878 Federal Electric workshop can now submit a genuinely competitive District tender for 50 improved electrical streetlighting sites after recording a real component shipment. An independent rival price can defeat Charlie's offer. A successful bid creates actual manufacturing orders for wire, switch contacts and insulators. The existing factory has to assemble them, then physically dispatch sets on Saturday. City inspectors confirm dispatched sites on weekdays; payment happens only after acceptance, not when the contract is awarded.
+
+After the tender is resolved, the laboratory opens later in 1878. Four different research stages consume game time and company money; some attempts fail and must be repeated. Completing research permits a separately paid license and an expensive glass/vacuum prototype bench. Hand-built incandescent bulbs cost 300 work minutes per attempt and can be rejected; materials and work time are lost on defective units. An experienced firm may hire two paid specialists and invest in a batch line with 60-minute bulb attempts, still with some scrap. Specialist wages post once per Saturday, with arrears on cash shortfalls.
+
+Qualified manufacturers may compete for a 100-bulb Fair supply contract in late 1878. A win creates a real factory production order, not imaginary inventory. Only sound lamps physically in the existing warehouse can be dispatched on Saturdays after the provisional October 1 story-eligibility boundary. Each actual shipment earns its associated invoice amount; losing is possible and never cancels the World's Fair itself.
+
+## Protected decisions and boundaries
+The permanent Washington map and all 42 pinned locations are untouched. The original four-character stories, political world, company ownership and other activities are unmodified. The city already has electric service; the streetlighting upgrade uses arc-light components rather than incandescent bulbs. The 50-light and 100-bulb figures are adjustable scenario quantities rather than historical facts or permanently accepted quantities. No automatic newspaper headline, completed Fair opening ceremony or free winning contract was added.
+
+## Verification
+Isolated V8 execution tested bid prerequisites, rival award, atomic inventory dispatch, inspected payment, four lab stages, paid rights/tools, defective bulb rejection, line upgrade, Fair award, physical lamp shipment and once-only Saturday staff wages. The focused regression test is included with the source. Full repository Node tests and native Ubuntu Electron gameplay are NOT verified in the assistant runtime. No GitHub Actions, download, tag or accepted release.
