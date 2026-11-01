@@ -4,7 +4,18 @@
  */
 .cc-world-banner{position:relative;z-index:8;background:#851e2b;color:#fff3e6;border-bottom:2px solid #bdac7a;
  font:700 12px/1.35 'Courier New',monospace;letter-spacing:.01em;flex:none}
-.cc-world-banner-items{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px 9px;padding:6px 10px}
+/* The map and room share exactly the same two-row status layout.
+ * Top: period/clock/weather. Bottom: exchange/cash/pause.
+ * The map close X remains clear of the first row. */
+.cc-world-banner-rows{display:grid;grid-template-rows:auto auto}
+.cc-world-banner-items{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:5px 12px;padding:5px 10px;min-width:0}
+.cc-world-banner-row--primary{border-bottom:1px solid #ae5961}
+.title-map-card .cc-world-banner-row--primary{padding-right:60px;padding-left:60px}
+.cc-world-banner-row--secondary{padding-top:4px;padding-bottom:6px}
+@media(max-width:1020px){
+ .cc-world-banner-items{flex-wrap:wrap}
+}
+
 .cc-world-banner-item{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .cc-world-banner-item>b{font:700 11px/1.25 Georgia,serif;color:#fff7e2}
 .cc-world-banner-value{display:inline-flex;align-items:center;justify-content:center;min-height:25px;max-width:100%;
@@ -27,6 +38,7 @@
 .city-room-shell>.cc-world-banner{width:100%;position:sticky;top:0}
 @media(max-width:700px){
  .cc-world-banner-items{gap:4px 6px;padding:5px 6px;justify-content:flex-start}
+ .title-map-card .cc-world-banner-row--primary{padding-right:55px;padding-left:7px}
  .cc-world-banner-item>b{font-size:10px}
  .cc-world-banner-value{padding:2px 4px;font-size:12px;min-height:23px}
  .cc-world-dayClock .cc-world-banner-value{font-size:13px;min-width:76px}
