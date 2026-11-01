@@ -609,7 +609,7 @@
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
   const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name,activity:actor.activity,history:dev.history(S,def.id)});
-  const circusMention=window.FE_CIRCUS_TOUR?.active?.(S)&&/\\bcircus\\b/i.test(utterance);
+  const circusMention=window.FE_CIRCUS_TOUR?.active?.(S)&&/\bcircus\b/i.test(utterance);
   const circusPrompt=circusMention?
    (window.FE_CIRCUS_TOUR.attended(S)?
     'You have already attended the circus. Was the performance worthwhile?':
