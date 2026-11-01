@@ -16,7 +16,7 @@ assert.ok(game.start(S,'not-a-booth').ok===false);
 assert.equal(S.personalCash,original);
 const started=game.start(S,'rings');
 assert.equal(started.ok,true);
-assert.equal(S.personalCash,original-.05);
+assert.equal(Math.round(S.personalCash*100),Math.round(original*100)-5);
 assert.equal(game.start(S,'balloons').ok,false,'no second paid game while one is unfinished');
 let awarded=[],throws=0,result=null;
 for(let i=0;i<game.GAMES.rings.attempts;i++){
@@ -30,7 +30,7 @@ for(let i=0;i<game.GAMES.rings.attempts;i++){
 assert.equal(throws,3);assert.equal(result.finished,true);
 assert.equal(game.ensure(S).active,null);
 assert.equal(game.ensure(S).history.length,1);
-assert.equal(S.personalCash,original-.05,'round and prize never debit twice');
+assert.equal(Math.round(S.personalCash*100),Math.round(original*100)-5,'round and prize never debit twice');
 assert.ok(game.throwAt(S,0,()=>{throw Error('Should not grant twice')}).ok===false);
 for(const key of Object.keys(game.GAMES)){
  assert.ok(game.GAMES[key].attempts>=3);
@@ -56,7 +56,7 @@ assert.equal(effects.list('bedroom-chest').length,0,'cannot remotely inspect loc
 const before=S.personalCash;
 const sitting=tarot.reading(S,{readerId:'visiting-fortune-teller',encounterId:'circus-reading-May-04',feeCents:10});
 assert.equal(sitting.ok,true);
-assert.equal(S.personalCash,before-.1);
+assert.equal(Math.round(S.personalCash*100),Math.round(before*100)-10);
 const first=interpret.interpret(S,sitting.session);
 assert.equal(first.ok,true);
 assert.equal(first.reading.passages.length,3);
@@ -66,7 +66,7 @@ assert.match(first.reading.intro,/shuffles, cuts the deck and draws the cards he
 S.characterNeeds.meters.energy=100;
 assert.deepEqual(interpret.interpret(S,sitting.session).reading,first.reading,'stored reading does not rewrite the past');
 assert.equal(tarot.reading(S,{readerId:'visiting-fortune-teller',encounterId:'circus-reading-May-04',feeCents:10}).replayed,true);
-assert.equal(S.personalCash,before-.1,'no charge to replay a prior reading');
+assert.equal(Math.round(S.personalCash*100),Math.round(before*100)-10,'no charge to replay a prior reading');
 const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 assert.match(app,/FE_BEDROOM_CHEST\?\.render/);
