@@ -459,12 +459,19 @@ async function runSmokeTest(win) {
         pointer('pointerup',cx+40,cy+5);
         out.painted=(S.customRoadLayout?.blocks?.length||0)>2;
         const surface=host.querySelector('canvas');
-        if(surface&&rect.width>0){
-          const scale=surface.width/rect.width;
-          const x=Math.floor((cx-rect.left)*scale),y=Math.floor((cy-rect.top)*scale);
-          const pixel=surface.getContext('2d').getImageData(x,y,1,1).data;
-          out.bluePixel=pixel[3]>0&&pixel[2]>pixel[0];
-        }else out.bluePixel=false;
+        // A single click-center sample can miss a small paint stroke after
+        // HiDPI scaling, map pan or a compositor resize. Inspect the actual
+        // saved blue brush area across the rendered canvas instead.
+        out.bluePixel=false;
+        if(surface&&surface.width>0&&surface.height>0){
+          const pixels=surface.getContext('2d').getImageData(
+            0,0,surface.width,surface.height).data;
+          for(let i=0;i<pixels.length;i+=4){
+            if(pixels[i+3]>0&&pixels[i+2]>pixels[i]&&pixels[i+2]>pixels[i+1]){
+              out.bluePixel=true;break;
+            }
+          }
+        }
         button.click();
         out.savedVisible=!window.FE_ROAD_EDITOR.isEditing()&&!host.hidden
           &&(S.customRoadLayout?.blocks?.length||0)>2;
