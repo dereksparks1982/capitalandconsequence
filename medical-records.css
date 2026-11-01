@@ -18,3 +18,19 @@
 .cc-home-sleep p{margin:5px 0}
 .cc-home-sleep button{background:#3e4c37;color:#fff;border:1px solid #1d2a1d;padding:7px 12px;font:700 13px 'Courier New',monospace;cursor:pointer}
 .cc-home-sleep .cc-sleep-status{font-weight:700}
+
+/* 1878 wind-up twin-bell clock and bedroom rest: intentionally rough UI. */
+.cc-home-sleep{width:min(530px,95%);max-width:100%;max-height:70vh;overflow:auto;z-index:5;position:relative}
+.cc-home-sleep .cc-sleep-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:8px 0}
+.cc-home-sleep .cc-sleep-choices button{min-width:100px}
+.cc-home-sleep>label,.cc-sleep-alarm>label{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;flex-wrap:wrap}
+.cc-home-sleep input[type="number"]{width:80px}
+.cc-home-sleep input{min-height:29px;font:14px 'Courier New',monospace}
+.cc-sleep-alarm{border:2px double #8a7457;margin:12px 0 0;padding:9px;background:#d5c9ae}
+.cc-sleep-alarm>b{display:block;font:700 12px 'Courier New',monospace}
+.cc-sleep-alarm #ccAlarmState{display:block;margin-top:9px;font:700 11px 'Courier New',monospace}
+#ccSleepStatus{min-height:1.4em}
+.cc-sleep-fade[hidden]{display:none!important}
+.cc-sleep-fade{position:fixed;inset:0;background:#000;z-index:9000000;opacity:0;display:grid;place-items:center;pointer-events:auto;transition:opacity .32s ease;color:#e4dcc9;font:700 14px 'Courier New',monospace;letter-spacing:.15em;text-align:center;padding:24px}
+.cc-sleep-fade.is-black{opacity:1}
+@media(prefers-reduced-motion:reduce){.cc-sleep-fade{transition:none}}
