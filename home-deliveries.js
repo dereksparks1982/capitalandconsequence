@@ -26,8 +26,12 @@ function setOrder(save,key,packages){
  const data=state(save),option=OPTIONS[key];
  if(!data||!option||!Number.isSafeInteger(packages)||packages<0||packages>option.maximum)
   return {ok:false,reason:'Choose a valid order quantity.'};
- data.orders[key]=packages;
- return {ok:true,order:{key,packages}};
+ const now=save?.worldCalendar?.worldMinute;
+ if(!Number.isSafeInteger(now))return {ok:false,reason:'Washington time unavailable.'};
+ const date=dateFromMinute(now),morning=((now%1440)+1440)%1440<8*60;
+ const startDate=morning?date:dateFromMinute(now+1440);
+ data.orders[key]={packages,startDate};
+ return {ok:true,order:{key,packages,startDate}};
 }
 function dueOn(date,period){
  const day=new Date(date+'T12:00:00Z').getUTCDay();
@@ -44,9 +48,11 @@ function tick(save){
  const book=market.ensure(save),results=[];
  // NEVER charge and add twice. Failed deliveries may retry if stock or
  // player funds later change, but successful ones are date-scoped receipts.
- for(const [key,packages] of Object.entries(data.orders)){
-  const option=OPTIONS[key],n=Number(packages);
-  if(!option||!Number.isSafeInteger(n)||n<=0||!dueOn(date,option.period))continue;
+ for(const [key,order] of Object.entries(data.orders)){
+  const option=OPTIONS[key],n=Number(typeof order==='object'?order?.packages:order);
+  const starts=typeof order==='object'?order?.startDate:null;
+  if(!option||!Number.isSafeInteger(n)||n<=0||
+    (validDate(starts)&&date<starts)||!dueOn(date,option.period))continue;
   if(data.receipts.some(x=>x.date===date&&x.key===key&&x.ok))continue;
   const good=market.GOODS.find(x=>x.id===option.good);
   const stock=book.siteStocks?.[option.site],cost=good?.cents*n,cash=Math.round(Number(save.personalCash||0)*100);
