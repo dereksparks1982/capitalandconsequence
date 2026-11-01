@@ -9,6 +9,7 @@
   'right-pocket':{name:'Right Pocket',where:'person'},
   'desk':{name:'Executive Desk',where:'factory',room:'executive-office'},
   'home-storage':{name:'Household Storage',where:'home',room:'storage'},
+  'bedroom-chest':{name:'Bedroom Chest',where:'home',room:'bedroom'},
   'office-storage':{name:'Executive Office Storage',where:'factory',room:'executive-office'}
  });
  const clamp=n=>Math.max(0,Math.min(1,Number.isFinite(+n)?+n:0));
@@ -63,6 +64,8 @@
   if(!item||!isAccessible(item.container))
    return {ok:false,reason:'That possession is not physically available.'};
   if(item.container===destination)return {ok:false,reason:'The item is already there.'};
+  if(destination==='bedroom-chest'&&list('bedroom-chest').length>=64)
+   return {ok:false,reason:'The bedroom chest is full (64 objects).'};
   if(destination==='desk'){
    const occupied=list('desk').length;
    if(occupied>=40)return {ok:false,reason:'No room for more desk objects.'};
