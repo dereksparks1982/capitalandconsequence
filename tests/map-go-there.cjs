@@ -5,7 +5,7 @@ const app=read('app.js'),styles=read('styles.css'),citySource=read('city.js');
 const start=app.indexOf('function enterMapDestination('),end=app.indexOf('function buildTitleMapMarkers(',start);
 assert.ok(start>0&&end>start,'Live room navigation bridge is present');
 const source=app.slice(start,end);
-function scenario({denied=false,restricted=false,destinationRoom=null,failedJourney=false}={}){
+function scenario({denied=false,restricted=false,storyGate=false,developerUnlock=false,destinationRoom=null,failedJourney=false}={}){
  let rendered=0,saved=0,menus=0,journeys=0;
  const map={hidden:false},notice={textContent:''};
  const body={appendChild(el){el.parentNode=this},classList:{entries:new Set(),add(v){this.entries.add(v)},remove(v){this.entries.delete(v)}}};
@@ -15,8 +15,8 @@ function scenario({denied=false,restricted=false,destinationRoom=null,failedJour
  const context={S,
   document:{body,getElementById:id=>({cityRoomOverlay:overlay,titleMapViewer:map,titleMapTravelNote:notice,titleMapLocationTravel:{dataset:{locationId:'star'}}}[id]||null)},
   window:{FederalElectricCity:{},FE_CITY_ACCESS:{canRoom(){return {ok:!denied,reason:'Invitation required'}}},FE_TRAVEL:{recordProvisional(){journeys++;return !failedJourney},recordRoomMove(){journeys++;return !failedJourney}}},
-  titleMapSelectedLocationId:'star',TITLE_MAP_LOCATIONS:[{id:'star',name:'Star Club'}],titleDevUnlockAllRooms:false,cityRoomSession:{},
-  cityLocation:id=>id==='star'?place:null,cityRoom:(id,roomId)=>({id:roomId||'star-room',restricted}),
+  titleMapSelectedLocationId:'star',TITLE_MAP_LOCATIONS:[{id:'star',name:'Star Club'}],titleDevUnlockAllRooms:developerUnlock,cityRoomSession:{},
+  cityLocation:id=>id==='star'?place:null,cityRoom:(id,roomId)=>({id:roomId||'star-room',restricted,storyGate:storyGate?'worlds-fair-1893':null}),
   mapTravelRestriction:()=>'',currentCityLocation:()=>({...S.currentLocation}),
   openCityRoom(id,roomId,{dev,source}){assert.equal(dev,true);assert.equal(source,'map');rendered++;overlay.dataset.locationId=id;overlay.hidden=false;return true},
   guardedRoomPanel(name,fn){fn()},renderHouseholdFood(){},renderCityRoomDirectory(){menus++},renderFactoryBreakRoom(){},syncCityRoomDeskReturn(){},updateTitleDevCityControls(){},recordLiveryPurchase(){},
@@ -52,6 +52,11 @@ assert.equal(privateDenied.result,false);assert.equal(privateDenied.rendered,0);
 assert.equal(privateDenied.map.hidden,false);assert.equal(privateDenied.S.currentLocation.locationId,'factory');
 const privateGranted=scenario({restricted:true,destinationRoom:'madam-office'});
 assert.equal(privateGranted.result,true);
+const earlyFair=scenario({restricted:true,storyGate:true,denied:true,developerUnlock:true,destinationRoom:'fairgrounds'});
+assert.equal(earlyFair.result,false,'Developer unlock cannot enter an early story event');
+assert.equal(earlyFair.rendered,0);assert.equal(earlyFair.journeys,0);assert.equal(earlyFair.saved,0);
+const eligibleFair=scenario({restricted:true,storyGate:true,destinationRoom:'fairgrounds'});
+assert.equal(eligibleFair.result,true,'Story-gated room works after eligibility');
 assert.match(app,/button\.onclick=\(\)=>cityRoomSession\.dev\?openCityRoom\(location\.id,room\.id,\{dev:true,source:'dev'\}\):enterMapDestination\(location\.id,null,room\.id\)/);
 assert.match(app,/button\.onclick=\(\)=>enterMapDestination\(loc\.id\)/,'unpinned city locations share navigation');
 assert.match(app,/e\.target\?\.closest\?\.\('button,input,select,textarea,a,#titleMapLocationCard'\)/,'map viewport does not capture Go There button presses');

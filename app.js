@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.68-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.69-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -2653,8 +2653,9 @@ function renderCityRoomDirectory(location,activeRoomId){
   button.textContent=room.name;
   const access=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate);
    button.disabled=(!!room.restricted&&!cityRoomSession.dev&&!titleDevUnlockAllRooms&&access?.ok!==true)||
+    (!!room.storyGate&&!cityRoomSession.dev&&access?.ok!==true)||
     (S.characterRoute==='wardman'&&S.wardmanStanding?.status==='patient'&&room.id!=='patient-ward'&&!cityRoomSession.dev);
-  if(button.disabled)button.title='Restricted room: authorization required.';
+  if(button.disabled)button.title=room.storyGate?(access?.reason||'Story event is not open.'):'Restricted room: authorization required.';
   button.classList.toggle('active',room.id===activeRoomId);
   button.onclick=()=>cityRoomSession.dev?openCityRoom(location.id,room.id,{dev:true,source:'dev'}):enterMapDestination(location.id,null,room.id);
   directory.appendChild(button);
@@ -2807,6 +2808,8 @@ function openCityRoom(locationId,roomId,options={}){
   returnCityRoomToOffice();closeTitleMap();return true;
  }
  const room=cityRoom(location.id,roomId||location.defaultRoom);
+ // Developer room unlock must not override a narrative event date.
+ if(room?.storyGate&&!dev&&window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate)?.ok!==true)return false;
  if(room?.restricted&&!dev&&!titleDevUnlockAllRooms&&!window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},location.id,room.id,S.gameDate).ok){
   console.warn('Federal Electric: restricted room entry refused',location.id,room.id);
   return false;
@@ -4196,6 +4199,11 @@ function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisiona
  const place=cityLocation(id);
  const room=place&&cityRoom(id,requestedRoomId||place.defaultRoom);
  if(!place||!room)return fail('This destination has no available room.');
+ // Map visibility and developer room unlock cannot bypass a story event.
+ if(room.storyGate){
+  const gate=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},place.id,room.id,S.gameDate);
+  if(gate?.ok!==true)return fail(gate?.reason||'This event has not yet opened.');
+ }
  if(room.restricted&&!titleDevUnlockAllRooms){
   const permission=window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},place.id,room.id,S.gameDate);
   if(permission?.ok!==true)return fail(permission?.reason||'This room requires authorization.');
@@ -4342,6 +4350,9 @@ async function travelFromTitleMap(event){
  const room=cityLocation(id);
  const targetRoom=room&&cityRoom(id,room.defaultRoom);
  if(!targetRoom){if(travelNote)travelNote.textContent='No accessible destination room.';return false}
+ if(targetRoom.storyGate&&window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},id,targetRoom.id,S.gameDate)?.ok!==true){
+  if(travelNote)travelNote.textContent='This scheduled story event is not open. No journey was recorded.';return false;
+ }
  if(targetRoom.restricted&&!titleDevUnlockAllRooms&&
   window.FE_CITY_ACCESS?.canRoom?.(window.FederalElectricCity,{kind:'player',route:S.characterRoute},id,targetRoom.id,S.gameDate)?.ok!==true){
   if(travelNote)travelNote.textContent='This room requires authorization.';return false;

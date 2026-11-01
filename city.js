@@ -140,10 +140,13 @@
   },
   {
    id:'washingtonFairgrounds',name:'D.C. World’s Fair',
-   area:'Potomac Park / Potomac Flats · west of Washington Monument (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',
+   area:'Potomac Park / Potomac Flats · west of Washington Monument (alternate-history exposition)',category:'fair',availableFrom:'1893-01-01',storyEvent:'worlds-fair-1893',
    description:'The future grounds of the alternate-history 1893 World’s Columbian Exposition.',
-   map:{n:9,x:.4700,y:.5660},defaultRoom:'fairgrounds',
-   rooms:[{id:'fairgrounds',name:'Exposition Grounds',description:'A registered shell for the 1893 Washington fair. Exhibits and contests are not implemented yet.'}]
+   map:{n:9,x:.4700,y:.5660},defaultRoom:'public-approach',
+   rooms:[
+    {id:'public-approach',name:'Public Approach',description:'Public access to the future exposition site. This is not admission to the fair and cannot trigger a supply contract or ceremony.'},
+    {id:'fairgrounds',name:'Exposition Grounds',restricted:true,storyGate:'worlds-fair-1893',description:'Registered shell for the 1893 Washington fair. Exhibits, contests and ceremonies are not yet implemented.'}
+   ]
   },
   {
    id:'secondNightclub',name:'Le Paon d’Or',
@@ -579,10 +582,12 @@
    location.mapEvidence=point[2];
   }
   if(location.map){
-   // Calendar-year restrictions do not apply to registered map locations in
-   // this alternate-history world. Actual room security and invitations do.
-   delete location.availableFrom;
-   delete location.availableUntil;
+   // Mapped places are always present; preserve dates for authored STORY events.
+   // Historical construction years are otherwise not access restrictions.
+   if(!location.storyEvent){
+    delete location.availableFrom;
+    delete location.availableUntil;
+   }
    location.mapPlacement=anchor?'map-anchored':area?'area-located':'unverified';
    location.provisionalMapPosition=!anchor;
   }

@@ -82,9 +82,10 @@ assert.equal(ford.map.n,41);
 assert.equal(city.getLocation('centerMarket').map.n,42,'Center Market is independently numbered and visitable');
 assert.ok(ford.rooms.some(r=>r.id==='theatre-lobby'));
 for(const p of places.filter(p=>p.map)){
- assert.equal(p.availableFrom,undefined,'map-visible places never have starting-year gates');
- assert.equal(p.availableUntil,undefined,'map-visible places never have ending-year gates');
+ if(p.id==='washingtonFairgrounds')assert.equal(p.availableFrom,'1893-01-01','Fair story date must be preserved');
+ else assert.equal(p.availableFrom,undefined,'Other mapped locations retain year-independent visits');
+ assert.equal(p.availableUntil,undefined,'Map locations are not hidden by historical closing years');
 }
 assert.doesNotMatch(app,/if\(entry\.availableFrom&&S\.gameDate/);
 assert.doesNotMatch(app,/if\(entry\.availableUntil&&S\.gameDate/);
-console.log('PASS right pan contract, precise left freehand, blue buildings, eraser, Ford’s Theatre #41 and no year gates');
+console.log('PASS right pan, manual drawing, Ford’s Theatre #41 and the protected 1893 Fair story date');

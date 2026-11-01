@@ -1,3 +1,10 @@
+## November 1, 2026 · v0.7.69-dev: World's Fair story timing correction (source only)
+- [x] Restore 1893 story date for Fair #9 without hiding its fixed map pin or public approach.
+- [x] Separate public site visits from gated exposition ground entry; do not invent any fair supply-contract result.
+- [x] Respect this story gate through room menu, map arrival and developer room-unlock shortcuts.
+- [x] Add regression tests while preserving other mapped sites' year-independent availability.
+- [ ] Full local Node regression suite and Ubuntu Electron gameplay acceptance remain pending. No Actions or executable.
+
 ## 1 November 2026 · v0.7.65-dev: manual Washington painting and landmark access
 - [x] Pan entire Washington map by RIGHT mouse drag, leaving LEFT clicks and dragging free for road and blue-building painting and pin interaction.
 - [x] Fix painted first-point alignment with actual displayed map image bounds rather than incorrect viewport offset.
