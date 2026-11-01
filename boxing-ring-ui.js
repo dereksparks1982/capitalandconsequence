@@ -67,7 +67,8 @@ function tick(now){
 }
 function resume(){if(s&&s.phase!=='finished'&&!raf&&visible()){last=0;raf=requestAnimationFrame(tick);}}
 start.addEventListener('click',()=>{
- cancel();s=G.create(80);start.textContent='Restart Practice';stop.disabled=false;
+ cancel();const energy=typeof S!=='undefined'&&Number.isFinite(S?.characterNeeds?.meters?.energy)?S.characterNeeds.meters.energy:80;
+ s=G.create(energy);start.textContent='Restart Practice';stop.disabled=false;
  canvas.focus();stats();draw();resume();
 });
 stop.addEventListener('click',()=>{
