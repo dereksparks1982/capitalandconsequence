@@ -3,7 +3,7 @@
 (function(root){
 'use strict';
 if(typeof document==='undefined')return;
-let toast=null,timer=null;
+let toast=null,timer=null,hud=null;
 function element(){
  if(toast)return toast;
  toast=document.createElement('aside');toast.id='characterNeedsNotice';
@@ -26,11 +26,32 @@ function notify(events){
  el.hidden=false;clearTimeout(timer);
  timer=setTimeout(()=>{el.hidden=true;},13000);
 }
+function mountHud(){
+ if(hud?.isConnected)return hud;
+ const anchor=document.querySelector('.persistent-header');if(!anchor)return null;
+ hud=document.createElement('section');hud.id='characterConditionHud';
+ hud.className='character-condition-hud';hud.setAttribute('aria-label','Character condition');hud.setAttribute('role','group');
+ for(const key of ['health','hunger','thirst','energy']){
+  const item=document.createElement('div');item.className='character-condition-item';
+  const heading=document.createElement('span');heading.textContent=key.toUpperCase();
+  const meter=document.createElement('progress');meter.max=100;meter.value=100;
+  meter.id='condition-'+key;meter.setAttribute('aria-label',key);
+  const value=document.createElement('output');value.id='condition-'+key+'-value';
+  item.append(heading,meter,value);hud.append(item);
+ }
+ anchor.append(hud);return hud;
+}
 function render(save){
  const service=root.FE_CHARACTER_NEEDS,state=save?.characterNeeds;
  if(!service||!state)return;
  const meters=state.meters||{};
- const text='Hunger: '+Math.round(meters.hunger??0)+'/100 · Thirst: '+
+ if(mountHud()){for(const key of ['health','hunger','thirst','energy']){
+  const amount=Math.max(0,Math.min(100,Number(meters[key])||0));
+  const meter=document.getElementById('condition-'+key),out=document.getElementById('condition-'+key+'-value');
+  if(meter){meter.value=amount;meter.classList.toggle('low',amount<=30);}
+  if(out)out.textContent=Math.round(amount)+'/100';
+ }}
+ const text='Health: '+Math.round(meters.health??100)+'/100 · Hunger: '+Math.round(meters.hunger??0)+'/100 · Thirst: '+
   Math.round(meters.thirst??0)+'/100 · Energy: '+Math.round(meters.energy??0)+'/100';
  const desk=document.getElementById('careerDeskNeeds');
  if(desk)desk.textContent=text;

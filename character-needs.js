@@ -13,7 +13,8 @@ const CONFIG=Object.freeze({
 const SHARED_COOLDOWN=90;
 const RATES=Object.freeze({hunger:.12,thirst:.18,energy:.085});
 const THRESHOLDS=Object.freeze({hunger:40,thirst:40,energy:32});
-const INITIAL=Object.freeze({hunger:82,thirst:85,energy:80});
+const INITIAL=Object.freeze({hunger:82,thirst:85,energy:80,health:100});
+const HEALTH_RULES=Object.freeze({dehydrationDelay:180,starvationDelay:720,dehydrationDamage:.025,starvationDamage:.008});
 function minute(save){
  return save?.worldCalendarStatus==='ready'&&Number.isSafeInteger(save?.worldCalendar?.worldMinute)?
   save.worldCalendar.worldMinute:null;
@@ -30,10 +31,11 @@ function sanitize(raw,at=null){
  const lastMinute=Number.isSafeInteger(since)&&(at===null||since<=at)?since:at;
  const safeUntil=n=>Number.isSafeInteger(n)&&(at===null||Math.abs(n-at)<5256000)?n:null;
  const cooldowns={};for(const k of Object.keys(CONFIG))cooldowns[k]=safeUntil(source?.cooldowns?.[k]);
+ const deprivation={hunger:Number.isFinite(source?.deprivation?.hunger)?Math.max(0,source.deprivation.hunger):0,thirst:Number.isFinite(source?.deprivation?.thirst)?Math.max(0,source.deprivation.thirst):0};
  const warned={};
  for(const k of Object.keys(INITIAL))warned[k]=source?.warned?.[k]===true;
  return {version:1,meters,lastMinute,sharedUntil:safeUntil(source?.sharedUntil),
-  cooldowns,warned,entries:Array.isArray(source?.entries)?source.entries.filter(e=>
+  cooldowns,warned,deprivation,entries:Array.isArray(source?.entries)?source.entries.filter(e=>
    e&&Object.hasOwn(CONFIG,e.kind)&&Number.isSafeInteger(e.minute)&&typeof e.source==='string'
   ).slice(-80):[]};
 }
@@ -50,8 +52,19 @@ function sync(save){
  const previous=Number.isSafeInteger(state.lastMinute)&&state.lastMinute<=now?state.lastMinute:now;
  const passed=now-previous;
  if(passed>0){
-  for(const [key,rate] of Object.entries(RATES))
-   state.meters[key]=clamp(state.meters[key]-passed*rate);
+  for(const [key,rate] of Object.entries(RATES)){
+   const previousMeter=state.meters[key];
+   const nextMeter=clamp(previousMeter-passed*rate);
+   state.meters[key]=nextMeter;
+   if(key==='hunger'||key==='thirst'){
+    const depleted=rate>0?Math.max(0,passed-Math.max(0,previousMeter)/rate):0;
+    const start=state.deprivation[key],end=start+depleted;
+    const delay=key==='hunger'?HEALTH_RULES.starvationDelay:HEALTH_RULES.dehydrationDelay;
+    const rateDamage=key==='hunger'?HEALTH_RULES.starvationDamage:HEALTH_RULES.dehydrationDamage;
+    state.meters.health=clamp(state.meters.health-(Math.max(0,end-delay)-Math.max(0,start-delay))*rateDamage);
+    state.deprivation[key]=nextMeter===0?end:0;
+   }
+  }
  }
  state.lastMinute=now;
  const events=[];
@@ -67,6 +80,10 @@ function sync(save){
    }[key]});
   }
  }
+ if(state.meters.health<=30&&!state.warned.health){
+  state.warned.health=true;
+  events.push({kind:'health',minute:now,text:'Your health is poor. You need medical attention.'});
+ }else if(state.meters.health>50)state.warned.health=false;
  return {ok:true,events,meters:{...state.meters},minute:now};
 }
 function availability(save,key){
@@ -94,14 +111,35 @@ function take(save,key,source){
  const rule=CONFIG[key];
  state.sharedUntil=now+SHARED_COOLDOWN;
  state.cooldowns[key]=now+rule.cooldown;
- for(const [meter,value] of Object.entries(rule.effects))
+ for(const [meter,value] of Object.entries(rule.effects)){
   state.meters[meter]=clamp(state.meters[meter]+value);
+  if((meter==='hunger'||meter==='thirst')&&state.meters[meter]>0)state.deprivation[meter]=0;
+ }
  for(const [meter,threshold] of Object.entries(THRESHOLDS))
   if(state.meters[meter]>threshold+15)state.warned[meter]=false;
  state.entries.push({kind:key,minute:now,source:String(source||'unknown').slice(0,50)});
  if(state.entries.length>80)state.entries.splice(0,state.entries.length-80);
  return {ok:true,kind:key,minute:now,meters:{...state.meters},
   nextSharedAt:state.sharedUntil,nextSpecificAt:state.cooldowns[key]};
+}
+function applyInjury(save,amount,reason='injury'){
+ const clock=sync(save);if(!clock.ok)return {ok:false,reason:clock.reason};
+ if(!Number.isFinite(amount)||amount<=0||amount>100)return {ok:false,reason:'Invalid injury.'};
+ const state=ensure(save);state.meters.health=clamp(state.meters.health-amount);
+ state.entries.push({kind:'injury',minute:clock.minute,source:String(reason).slice(0,50),damage:amount});
+ state.entries=state.entries.slice(-80);
+ const events=[];
+ if(state.meters.health<=30&&!state.warned.health){state.warned.health=true;events.push({kind:'health',minute:clock.minute,text:'You are seriously injured and need medical attention.'});}
+ return {ok:true,health:state.meters.health,events};
+}
+function treat(save,amount,source='medical-care'){
+ const clock=sync(save);if(!clock.ok)return {ok:false,reason:clock.reason};
+ if(!Number.isFinite(amount)||amount<=0||amount>100)return {ok:false,reason:'Invalid treatment.'};
+ const state=ensure(save);state.meters.health=clamp(state.meters.health+amount);
+ state.entries.push({kind:'treatment',minute:clock.minute,source:String(source).slice(0,50),restored:amount});
+ state.entries=state.entries.slice(-80);
+ if(state.meters.health>50)state.warned.health=false;
+ return {ok:true,health:state.meters.health};
 }
 function formatClock(worldMinute){
  if(!Number.isSafeInteger(worldMinute))return 'unknown';
@@ -114,7 +152,7 @@ function status(save,key){
  if(!result.ok&&result.remaining)return 'Available at '+formatClock(result.availableAt)+' ('+formatDuration(result.remaining)+')';
  return result.reason||'Unavailable';
 }
-const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,minute,sanitize,ensure,sync,take,availability,status,formatDuration,formatClock});
+const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,minute,sanitize,ensure,sync,take,applyInjury,treat,availability,status,formatDuration,formatClock});
 root.FE_CHARACTER_NEEDS=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

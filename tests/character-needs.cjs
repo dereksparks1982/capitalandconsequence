@@ -11,7 +11,7 @@ function save(){
 const s=save();
 assert.equal(needs.minute(s),start);
 const created=needs.ensure(s);
-assert.deepEqual(created.meters,{hunger:82,thirst:85,energy:80});
+assert.deepEqual(created.meters,{hunger:82,thirst:85,energy:80,health:100});
 assert.equal(created.lastMinute,start);
 assert.equal(needs.sync(s).events.length,0);
 const snapshot=JSON.stringify(s);
@@ -58,6 +58,14 @@ assert.equal(needs.sanitize({version:1,meters:{hunger:200,thirst:-44,energy:NaN}
  lastMinute:start,sharedUntil:start+90,cooldowns:{coffee:start+180},entries:[]},start).meters.hunger,100);
 const legacy=save();legacy.characterNeeds={version:999,meters:{hunger:-100}};
 assert.equal(needs.ensure(legacy).meters.hunger,82,'older/broken saves migrate without fake starvation');
+const injury=save();needs.ensure(injury);
+assert.equal(needs.applyInjury(injury,32,'sparring').health,68);
+assert.equal(needs.treat(injury,12,'hospital').health,80);
+const severe=save();needs.ensure(severe);severe.worldCalendar.worldMinute+=1200;needs.sync(severe);
+assert.ok(severe.characterNeeds.meters.health<100,'prolonged deprivation damages health');
+assert.ok(severe.characterNeeds.meters.health>=0);
+const legacyNeeds=needs.sanitize({version:1,meters:{hunger:51,thirst:46,energy:79}},start);
+assert.equal(legacyNeeds.meters.health,100,'old saves gain safe full health');
 const unmapped={worldCalendarStatus:'legacy-unmapped',worldCalendar:null};
 assert.equal(needs.availability(unmapped,'water').ok,false,'unknown calendar never fakes passage of time');
 console.log('PASS dated conditions, 1878 time math, break cooldowns across desk/factory, saved restoration and one-time warnings');

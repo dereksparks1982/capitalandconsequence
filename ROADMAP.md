@@ -1,3 +1,13 @@
+## 31 October 2026 · v0.7.50-dev: shared physical health and permanent UI
+- [x] Four condition bars under the world clock; preserves existing map artwork and navigation.
+- [x] Sustainably accumulating hunger/thirst depletion eventually damages health after grace periods.
+- [x] Add bounded, auditable applyInjury and treat APIs for later genuine combat and medical service.
+- [x] Upgrade existing character saves with health 100; preserve break cooldowns and character needs.
+- [x] Add model regressions and dev notes. Full Linux source suite/gameplay pending.
+- [ ] Physical hospital/clinic treatment tied to the real room, time and personal cash.
+- [ ] Connect actual licensed/private combat and hazards to persistent injury service.
+- [ ] Room-first factory floor and collapsible real management controls after office acceptance.
+
 ## 31 October 2026 · v0.7.46-dev: saved hunger/thirst, real breaks and future room-first factory
 - [x] Human needs accrue with the authoritative Washington world calendar. Character hunger, thirst and energy persist with profile saves; crossing a threshold produces one non-modal notification until that need has been meaningfully restored.
 - [x] **No destination-choice buttons:** alerts never force travel, provide a teleporter or ask the player to choose home/café/restaurant. Food and drink must eventually be accessed through genuine physical locations.
