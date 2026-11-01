@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
+const css=fs.readFileSync(path.join(__dirname,'../styles.css'),'utf8');
+const sync=app.slice(app.indexOf('function syncTitleMapFilters()'),app.indexOf('window.FE_ROAD_EDITOR_SETUP='));
+const position=app.slice(app.indexOf('function titleMapPositionMarkers()'),app.indexOf('function closeTitleMapLocation()'));
+const close=app.slice(app.indexOf('function closeTitleMapLocation()'),app.indexOf('function mapTravelRestriction('));
+assert.match(sync,/const isHere=.*currentCityLocation\(\)\.locationId===location.id/);
+assert.match(sync,/marker.hidden=!location\|\|\(!isHere&&!titleMapMatchesFilters\(location\)\)/);
+assert.match(sync,/is-current-location/);
+assert.match(position,/is-current-location/,'zoom and pan leave the current location tag attached to its actual marker');
+assert.match(css,/\.title-map-marker\.is-current-location \.title-map-marker-label\{\s*display:block!important/);
+assert.match(css,/YOU ARE HERE/);
+assert.match(close,/card.hidden=true/);
+assert.doesNotMatch(close,/is-current-location/,'closing details must not dismiss the permanent place label');
+console.log('PASS persistent current location label survives closed map card, name toggle and map filter');
