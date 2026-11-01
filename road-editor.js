@@ -165,8 +165,8 @@ function sync(){
 function toggle(){
  if(!config){info('Road editor has not initialized.');return false;}
  if(config.busy?.()){info('Finish the current journey first.');return false;}
- if(!editing&&config.getPinEdit?.()){
-  info('Finish Edit Pins before painting streets or blue buildings.');return false;
+ if(!editing&&(config.getPinEdit?.()||root.FE_RAIL_EDITOR?.isEditing?.())){
+  info('Finish Edit Pins or Rail Editor before painting streets or blue buildings.');return false;
  }
  if(!valid()){info('Local road routing module is unavailable.');return false;}
  if(!ensureCanvas())return false;
