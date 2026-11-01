@@ -24,7 +24,7 @@ const journey={version:1,from:'factory',to:'star',departedAt:1000,
  arrivesAt:1000+first.minutes,routePoints:first.routePoints,
  routeType:first.routeType,guidePixels:first.guidePixels};
 save.worldCalendar.worldMinute=1000+Math.floor(first.minutes/2);
-save.npcSimulation.agents.sam={id:'sam',status:'travelling',journey};
+save.characterRoute='industrialist';save.npcSimulation.agents.sam={id:'sam',status:'travelling',journey,memories:[{key:'greet',withId:'industrialist'}]};
 assert.ok(npc.progress(journey,save.worldCalendar.worldMinute)>.4);
 const svg=tag=>({tag,attrs:{},children:[],style:{},removed:false,
  setAttribute(k,v){this.attrs[k]=String(v)},appendChild(v){this.children.push(v)},
