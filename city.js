@@ -566,6 +566,10 @@
    location.mapEvidence=point[2];
   }
   if(location.map){
+   // Calendar-year restrictions do not apply to registered map locations in
+   // this alternate-history world. Actual room security and invitations do.
+   delete location.availableFrom;
+   delete location.availableUntil;
    location.mapPlacement=anchor?'map-anchored':area?'area-located':'unverified';
    location.provisionalMapPosition=!anchor;
   }
