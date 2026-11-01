@@ -73,6 +73,7 @@
  // Private player-only records. No NPC may inspect this interface or learn
  // any facts from the text of the player's private pages.
  window.FE_PERSONAL_BOOK?.bind?.({getSave:()=>S,save:()=>save(true)});
+ window.FE_DESK_COLLECTION?.bind?.({getSave:()=>S,save:()=>save(true)});
  const first=document.querySelector('#desk > h2');
  if(first)first.before(desk);
  function dateLabel(profile){
@@ -153,17 +154,19 @@
    const bookTitle=route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal';
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
     <div class="career-desk-art" aria-label="${escape(route.name)} desk with paper map and record book">
-      <div class="career-desk-blotter">
-       <button type="button" id="careerDeskMap" class="career-desk-map" title="Open the Washington map" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
-       <button type="button" id="careerDeskLedger" class="career-desk-ledger" title="Open ${escape(bookTitle)}" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
+      <div id="careerDeskBlotter" class="career-desk-blotter" aria-label="Movable map, book and collected possessions">
+       <button type="button" id="careerDeskMap" data-desk-move="map" class="career-desk-map career-desk-movable" title="Click to open the Washington map; drag to rearrange" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
+       <button type="button" id="careerDeskLedger" data-desk-move="ledger" class="career-desk-ledger career-desk-movable" title="Click to open ${escape(bookTitle)}; drag to rearrange" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
       </div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
     </div>
+    ${route.id==='industrialist'?'<section id="careerDeskCollection" class="career-desk-collection" aria-label="Personal belongings"><div class="career-desk-inventory"><h3>On Your Person</h3><div id="careerDeskCarried"></div></div><div class="career-desk-inventory"><h3>On the Desk</h3><div id="careerDeskPlaced"></div></div><div id="careerDeskItemDetail" class="career-desk-item-detail" aria-live="polite"></div></section>':''}
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
     ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
     <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
     ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button></div><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
+   window.FE_DESK_COLLECTION?.attach?.(desk);
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskEnterLocation').onclick=()=>window.FE_CITY?.openRoom?.(S.currentLocation.locationId,S.currentLocation.roomId);
@@ -228,7 +231,7 @@
   }
   const d=desk.querySelector('#careerDeskDate');
   if(d)d.textContent=S.gameDate+' · '+({day:'BUSINESS DAY',night:'WASHINGTON NIGHT',report:'DAILY REPORT'}[S.phase]||S.phase);
-  if(route.id==='industrialist')refreshCoffeeVisitors();
+  if(route.id==='industrialist'){refreshCoffeeVisitors();window.FE_DESK_COLLECTION?.refresh?.();}
   window.FE_PATROL_UI?.refresh?.();
   window.FE_DOORMAN_UI?.refresh?.();
   window.FE_ORDERLY_UI?.refresh?.();
