@@ -37,3 +37,12 @@ The full source test runner and packaged Electron smoke check must run on a Linu
 - Updated the Linux builder to keep **both** executables, validate their ELF headers and runtime resources, and smoke-test the same root launcher that the user double-clicks.
 - Added an offline test that executes the native binary with a mock game runtime, exercises startup arguments, validates opt-in sandbox behavior, tests a missing game runtime, and covers the build-time installation process.
 - The native launcher has been compiled and exercised on an x86_64 Linux development host, but the full packaged Electron smoke test has not yet passed on the user's desktop. No playable release or rebuilt local game is claimed.
+
+## Project-folder housekeeping
+- Added `scripts/clean-project.py` to audit the entire existing Linux project root before removing clutter from view.
+- Keeps the working `capitalandconsequence` launcher, matching `capitalandconsequence-runtime`, Electron's Chromium support files, `resources/app.asar`, `locales/`, code, bundled media, map and historical design documents.
+- Moves the obsolete `capital-consequence` and `capital-consequence-bin` programs plus recognized temporary build folders, failed-build leftovers, old packaged distributions and build logs into a dated `~/DKLab/Archives/Capital-Consequence-cleanup-*/` recovery folder. Does not destroy the originals or delete unknown user work.
+- Preserves any owner-customized duplicate map image unless its bytes match the approved immutable map.
+- Repairs `run-linux.sh` and the old in-place source updater so they no longer direct users to deleted legacy binary names.
+- Runs cleanup automatically after future successful local game installation. Cleanups themselves never trigger compilation, sudo, GitHub Actions or a download.
+- Current desktop still requires one explicit local cleanup to remove existing stale files. Repository changes alone do not erase local files.
