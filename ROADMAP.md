@@ -1,4 +1,4 @@
-## 31 October 2026 · v0.7.57-dev: directional punching and locked punch lines
+## 31 October 2026 · v0.7.58-dev: symmetric boxing stamina\n- [x] Opponent movement and guards consume the same finite round stamina as the player.\n- [x] Exhausted opponent pursuit slows instead of bypassing stamina limits.\n- [x] Opponent stamina visible in practice HUD.\n- [x] Tests added for exhausted pursuit, blocking cost, and empty-stamina guard prevention.\n- [ ] Career injuries, betting, standings and Linux UI acceptance remain separate. No GitHub Actions.\n\n## 31 October 2026 · v0.7.57-dev: directional punching and locked punch lines
 - [x] Strikes only connect while facing the opponent.
 - [x] AI marks an intended target tile and cannot automatically follow the dodging player during the windup.
 - [x] Existing WASD footwork, right-mouse guarding, stamina/exhaustion and round scoring remain.
