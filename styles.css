@@ -1881,3 +1881,12 @@ body.city-room-open #cityRoomOverlay[data-location-id="star"] .city-room-placeho
 .capital-npc-travel-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
 .capital-npc-travel-actions button{cursor:pointer;background:#2c3d45;border:1px solid #111e24;color:#fff;padding:5px 7px;font:bold 11px 'Courier New',monospace}
 .capital-npc-travel-actions button:focus-visible{outline:2px solid #af382d;outline-offset:2px}
+
+/* Circus is a PUBLIC temporary attraction, not an automatically discovered NPC.
+   Anchor the crude tent to an existing saved venue pin without map art edits. */
+.cc-circus-map-token{position:absolute;z-index:12;transform:translate(-50%,-100%);
+  min-width:32px;min-height:30px;border:2px solid #6b301c;border-radius:2px;
+  background:#f3dfa8;color:#563026;box-shadow:1px 2px 4px #0007;
+  font:21px/1.1 'Segoe UI Emoji',sans-serif;cursor:pointer;pointer-events:auto}
+.cc-circus-map-token:focus-visible{outline:3px solid #f9e4ab;outline-offset:2px}
+.cc-circus-map-token:hover{background:#fff0c5}
