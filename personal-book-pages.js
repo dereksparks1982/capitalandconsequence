@@ -149,7 +149,7 @@ function buildPages(save,{publicFile}={}){
   [legacy]));
  const written=Array.isArray(save.personalBookEntries)?save.personalBookEntries:[];
  written.filter(entry=>entry&&typeof entry.text==='string'&&entry.text.trim())
-  .slice(-250).forEach((entry,i)=>{
+  .forEach((entry,i)=>{
    const date=txt(entry.date||'Undated',40);
    pages.push(page('private-entry:'+(entry.id||i),'Private Writing',
     'My Own Words · Entry '+(i+1),date,[txt(entry.text,4000)]));
