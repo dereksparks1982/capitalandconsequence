@@ -449,6 +449,16 @@ window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.me
 function render(){
  window.FE_CHARACTER_NEEDS?.ensure?.(S);
  window.FE_MEDICAL_RECORDS?.player?.(S);
+ // Seed private, empty records for every named person in the city registry
+ // once per profile. Not one false diagnosis, prescription or visit is added.
+ if(S.medicalRecords&&!S.medicalRecords.cityRegistryReady){
+  for(const place of window.FederalElectricCity?.listLocations?.()||[]){
+   for(const resident of place.people||[])
+    if(resident?.id&&resident?.name)
+     window.FE_MEDICAL_RECORDS?.ensurePatient?.(S,'npc:'+resident.id,resident.name,'npc');
+  }
+  S.medicalRecords.cityRegistryReady=true;
+ }
  document.body.classList.toggle('pre-radio-era',!periodRadioAvailable());
  document.body.classList.toggle('pre-car-racing-era',S.gameDate<'1933-01-01');
  document.body.classList.toggle('component-era',!!S.componentWorks);
