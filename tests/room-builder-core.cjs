@@ -41,6 +41,13 @@ assert.equal(C.remove(room,copy.id),true);assert.equal(C.remove(room,copy.id),fa
 assert.equal(C.setSpawn(room,4,5),false,'blocked player spawn rejected');
 assert.equal(C.setSpawn(room,9,8),true);
 assert.equal(C.walk(room,{x:4,y:4},0,1).y,4,'desk blocks walking');
+const grown=C.resize(room,19,15);
+assert.ok(grown,'expansion keeps the room valid');
+assert.equal(grown.widthTiles,19);assert.equal(grown.heightTiles,15);
+assert.equal(grown.objects.length,1,'resizing never silently discards placed furniture');
+assert.equal(grown.floor[C.index(grown,4,4)],'floor_rug_red');
+assert.equal(grown.walls[C.index(grown,Math.floor(grown.widthTiles/2),grown.heightTiles-1)],'door_open');
+assert.equal(C.resize(room,9,8),null,'shrinking past Charles or furniture is rejected');
 const restored=C.sanitize(JSON.parse(JSON.stringify(room)),'factory','executive-office');
 assert.equal(restored.objects.length,1);
 assert.equal(restored.floor[C.index(restored,4,4)],'floor_rug_red');
