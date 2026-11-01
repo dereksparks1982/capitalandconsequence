@@ -50,8 +50,9 @@ function sanitize(raw,locationId='factory',roomId='executive-office'){
   for(let yy=obj.y;yy<obj.y+h;yy++)for(let xx=obj.x;xx<obj.x+w;xx++)
    if(asset(room.walls[index(room,xx,yy)])?.solid&&!sprite.solid)
     throw Error('Decoration inside solid construction');
-  if((sprite.solid||sprite.category==='people')&&overlapsSolid(room,obj.x,obj.y,w,h))
-   throw Error('Objects or characters overlap solid furniture');
+  if((sprite.solid||sprite.category==='people')&&
+      (overlapsSolid(room,obj.x,obj.y,w,h)||overlapsActors(room,obj.x,obj.y,w,h)))
+   throw Error('Objects or characters overlap solid furniture or another actor');
   room.objects.push({id:obj.id,spriteId:obj.spriteId,x:obj.x,y:obj.y,rotation:rot});
  }
  const pos=raw.spawns?.player;
@@ -76,6 +77,13 @@ function solidAt(room,x,y,excludeId=null){
 function overlapsSolid(room,x,y,w,h,excludeId=null){
  for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(solidAt(room,i,j,excludeId))return true;
  return false;
+}
+function overlapsActors(room,x,y,w,h,excludeId=null){
+ return room.objects.some(obj=>{
+  if(obj.id===excludeId||asset(obj.spriteId)?.category!=='people')return false;
+  const [pw,ph]=dims(asset(obj.spriteId),obj.rotation);
+  return x<obj.x+pw&&x+w>obj.x&&y<obj.y+ph&&y+h>obj.y;
+ });
 }
 function overlapsWall(room,x,y,w,h){
  for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)
@@ -110,7 +118,9 @@ function relocate(room,id,x,y,rotation=null,duplicate=false){
  const s=asset(obj.spriteId),r=rotation===null?obj.rotation:rotation;
  if(!Number.isInteger(r)||r<0||r>3)return null;
  const [w,h]=dims(s,r);
- if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&overlapsSolid(room,x,y,w,h,duplicate?null:id))return null;
+ if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&
+   (overlapsSolid(room,x,y,w,h,duplicate?null:id)||
+    overlapsActors(room,x,y,w,h,duplicate?null:id)))return null;
  if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
  if((s.solid||s.category==='people')&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
  if(duplicate)return placeRotated(room,obj.spriteId,x,y,r);
@@ -121,7 +131,8 @@ function placeRotated(room,spriteId,x,y,rotation){
  if(!s||!['furniture','small_props','people'].includes(s.category)||room.objects.length>=MAX_OBJECTS||
   !Number.isInteger(rotation)||rotation<0||rotation>3)return null;
  const [w,h]=dims(s,rotation);
- if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&overlapsSolid(room,x,y,w,h))return null;
+ if(!inBounds(room,x,y,w,h)||(s.solid||s.category==='people')&&
+   (overlapsSolid(room,x,y,w,h)||overlapsActors(room,x,y,w,h)))return null;
  if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
  if((s.solid||s.category==='people')&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&
   y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
