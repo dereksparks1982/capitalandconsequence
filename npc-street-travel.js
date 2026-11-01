@@ -65,10 +65,11 @@ const SHAPES=Object.freeze({
 const TINT=Object.freeze({resident:'#49321f',police:'#24374a',courier:'#67452b',
  merchant:'#5b4b29',performer:'#6e333e',worker:'#4f5543',wagon:'#694327'});
 function knownToPlayer(save,id){
- // Knowing someone's full name requires a recorded introduction, not merely
- // spotting their moving coat on the city map.
- return !!save?.npcSimulation?.agents?.[id]?.memories?.some(m=>
-  m?.key==='greet'&&m.withId===save.characterRoute);
+ // An earned introduction, read article or confirmed conversation unlocks a
+ // person's map token. The token NEVER reveals destination or activity.
+ return !!root.FE_NPC_DISCOVERY?.known?.(save,id)||
+  !!save?.npcSimulation?.agents?.[id]?.memories?.some(m=>
+   m?.key==='greet'&&m.withId===save.characterRoute);
 }
 function details(svg,agent,def,at,minute,known){
  const box=document.createElement('div');
@@ -93,7 +94,7 @@ function render(save,viewport,project,visible){
   !Number.isSafeInteger(save.worldCalendar?.worldMinute)||!root.FE_CAPITAL_TRAVEL?.positionAt)return 0;
  const minute=save.worldCalendar.worldMinute;
  const riders=Object.values(save.npcSimulation.agents).filter(a=>
-  a?.status==='travelling'&&valid(a.journey)&&
+  a?.id&&knownToPlayer(save,a.id)&&a?.status==='travelling'&&valid(a.journey)&&
   minute>=a.journey.departedAt&&minute<a.journey.arrivesAt).slice(0,20);
  if(!riders.length){selected=null;return 0}
  const svg=document.createElementNS(NS,'svg');
