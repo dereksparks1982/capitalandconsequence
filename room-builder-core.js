@@ -46,6 +46,10 @@ function sanitize(raw,locationId='factory',roomId='executive-office'){
   if(!sprite||!['furniture','small_props','people'].includes(sprite.category)||!Number.isInteger(rot)||rot<0||rot>3)throw Error('Unknown object sprite');
   const [w,h]=dims(sprite,rot);
   if(!inBounds(room,obj.x,obj.y,w,h))throw Error('Object outside room');
+  // Non-solid decorative props may rest on a desk, but not inside a wall.
+  for(let yy=obj.y;yy<obj.y+h;yy++)for(let xx=obj.x;xx<obj.x+w;xx++)
+   if(asset(room.walls[index(room,xx,yy)])?.solid&&!sprite.solid)
+    throw Error('Decoration inside solid construction');
   if(sprite.solid&&overlapsSolid(room,obj.x,obj.y,w,h))throw Error('Objects overlap solids');
   room.objects.push({id:obj.id,spriteId:obj.spriteId,x:obj.x,y:obj.y,rotation:rot});
  }
@@ -70,6 +74,11 @@ function overlapsSolid(room,x,y,w,h,excludeId=null){
  for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(solidAt(room,i,j,excludeId))return true;
  return false;
 }
+function overlapsWall(room,x,y,w,h){
+ for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)
+  if(asset(room.walls[index(room,xx,yy)])?.solid)return true;
+ return false;
+}
 function blocked(room,x,y){return solidAt(room,x,y)}
 function contains(obj,x,y){const [w,h]=dims(asset(obj.spriteId),obj.rotation);return x>=obj.x&&x<obj.x+w&&y>=obj.y&&y<obj.y+h}
 function findObject(room,x,y){return [...room.objects].reverse().find(o=>contains(o,x,y))||null}
@@ -79,8 +88,10 @@ function paint(room,x,y,id){
  if(!s||!['floors','construction'].includes(s.category))return false;
  if(s.category==='floors'){if(room.floor[idx]===id)return false;room.floor[idx]=id;return true;}
  if(room.walls[idx]===id)return false;
+ // Solid construction cannot bury either a person, an object or the spawn.
+ // Open doors are passable; closed doors and wall/window tiles are not.
  if(s.solid&&(room.spawns.player.x===x&&room.spawns.player.y===y||
-   room.objects.some(o=>asset(o.spriteId)?.solid&&contains(o,x,y))))return false;
+   room.objects.some(o=>contains(o,x,y))))return false;
  room.walls[idx]=id;return true;
 }
 function erase(room,x,y){
@@ -97,6 +108,7 @@ function relocate(room,id,x,y,rotation=null,duplicate=false){
  if(!Number.isInteger(r)||r<0||r>3)return null;
  const [w,h]=dims(s,r);
  if(!inBounds(room,x,y,w,h)||s.solid&&overlapsSolid(room,x,y,w,h,duplicate?null:id))return null;
+ if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
  if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
  if(duplicate)return placeRotated(room,obj.spriteId,x,y,r);
  obj.x=x;obj.y=y;obj.rotation=r;return obj;
@@ -107,6 +119,7 @@ function placeRotated(room,spriteId,x,y,rotation){
   !Number.isInteger(rotation)||rotation<0||rotation>3)return null;
  const [w,h]=dims(s,rotation);
  if(!inBounds(room,x,y,w,h)||s.solid&&overlapsSolid(room,x,y,w,h))return null;
+ if(!s.solid&&overlapsWall(room,x,y,w,h))return null;
  if(s.solid&&x<=room.spawns.player.x&&room.spawns.player.x<x+w&&
   y<=room.spawns.player.y&&room.spawns.player.y<y+h)return null;
  const uid='obj_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
@@ -145,7 +158,52 @@ function resize(room,widthTiles,heightTiles){
  try{return sanitize(next,room.locationId,room.roomId);}
  catch(error){return null;}
 }
-const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sanitize,resize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,clone};
+/* A tile route stays inside this design. Never touches city travel, saves or
+   simulation. Useful for accessibility checks and click-to-walk previews. */
+function path(room,start,goal){
+ if(!start||!goal||!inBounds(room,start.x,start.y)||!inBounds(room,goal.x,goal.y)||
+   blocked(room,start.x,start.y)||blocked(room,goal.x,goal.y))return null;
+ const origin=cell(start.x,start.y),target=cell(goal.x,goal.y);
+ const queue=[{x:start.x,y:start.y}],seen=new Set([origin]),previous=new Map();
+ let end=null;
+ for(let at=0;at<queue.length;at++){
+  const current=queue[at],here=cell(current.x,current.y);
+  if(here===target){end=here;break;}
+  for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
+   const x=current.x+dx,y=current.y+dy,k=cell(x,y);
+   if(seen.has(k)||blocked(room,x,y))continue;
+   seen.add(k);previous.set(k,here);queue.push({x,y});
+  }
+ }
+ if(!end)return null;
+ const result=[];let k=end;
+ while(k!==origin){
+  const [x,y]=k.split(',').map(Number);result.push({x,y});k=previous.get(k);
+ }
+ result.reverse();return result;
+}
+function analyze(room){
+ const errors=[],warnings=[];
+ const doors=[];
+ for(let y=0;y<room.heightTiles;y++)for(let x=0;x<room.widthTiles;x++){
+  const type=room.walls[index(room,x,y)];
+  if(type==='door_open'||type==='door_closed')doors.push({x,y,open:type==='door_open'});
+ }
+ const start=room.spawns.player;
+ if(blocked(room,start.x,start.y))errors.push('Charles starts inside an obstacle.');
+ if(!doors.length)warnings.push('This room has no door.');
+ else if(!doors.some(d=>d.open))warnings.push('All doors are closed. Open one before leaving.');
+ else if(!doors.some(d=>d.open&&path(room,start,d)!==null))
+  warnings.push('No open door is reachable from Charles’s starting position.');
+ const entry=doors.filter(d=>d.open).map(d=>({x:d.x,y:d.y,steps:path(room,start,d)?.length??null}));
+ const unreachable=entry.filter(d=>d.steps===null).length;
+ const occupied=room.objects.filter(o=>asset(o.spriteId)?.solid).length;
+ return {ok:errors.length===0&&warnings.length===0,errors,warnings,
+  doors:doors.length,reachableDoors:entry.length-unreachable,
+  furniture:room.objects.length,solidFurniture:occupied,
+  area:room.widthTiles*room.heightTiles,roomId:room.roomId};
+}
+const api={TILE,key,asset,dims,cell,index,inBounds,makeRoom,sanitize,resize,blocked,findObject,paint,erase,place,relocate,remove,setSpawn,walk,toggleDoor,path,analyze,clone};
 root.FE_ROOM_BUILDER_CORE=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
