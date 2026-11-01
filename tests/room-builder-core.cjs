@@ -48,6 +48,18 @@ assert.equal(grown.objects.length,1,'resizing never silently discards placed fur
 assert.equal(grown.floor[C.index(grown,4,4)],'floor_rug_red');
 assert.equal(grown.walls[C.index(grown,Math.floor(grown.widthTiles/2),grown.heightTiles-1)],'door_open');
 assert.equal(C.resize(room,9,8),null,'shrinking past Charles or furniture is rejected');
+const sample=C.sampleOffice();
+assert.equal(sample.objects.length,8,'crude reusable example office exists');
+assert.equal(C.analyze(sample).reachableDoors,1,'Charles can reach an exit');
+assert.equal(C.path(sample,sample.spawns.player,{x:8,y:11})!==null,true,'editor path finder reaches a door');
+const clutter=C.makeRoom();
+assert.equal(C.place(clutter,'plant_small',0,1),null,'decoration may not be embedded in an exterior wall');
+assert.equal(C.paint(clutter,3,3,'wall_horizontal'),true);
+assert.equal(C.place(clutter,'sam_front',3,3),null,'NPC cannot occupy a wall');
+const furniture=C.place(clutter,'desk_oak',4,4);
+assert.ok(furniture);
+assert.equal(C.place(clutter,'sam_front',4,4),null,'NPC cannot occupy a solid desk');
+assert.equal(C.place(clutter,'sam_front',9,8)!==null,false,'NPC may not occupy Charles spawn');
 const restored=C.sanitize(JSON.parse(JSON.stringify(room)),'factory','executive-office');
 assert.equal(restored.objects.length,1);
 assert.equal(restored.floor[C.index(restored,4,4)],'floor_rug_red');
