@@ -517,7 +517,7 @@
  // Face-to-face contact only. This uses the NPC's public routine, not
  // hidden personal goals, confidential motives or unscheduled future events.
  function talkAtLocation(id,topic='greet'){
-  if(!['greet','work','city','today'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
+  if(!['greet','work','city','today','circus'].includes(topic)||S.paused||S.phase==='report'||!profile())return {ok:false,reason:'Conversation is unavailable.'};
   const def=BY_ID.get(id),w=ensure(),a=w?.agents[id],position=window.FE_CITY?.currentLocation?.();
   const shown=observedPosition(id,a);
   if(!def||isPlayer(def)||!a||!position||shown?.locationId!==position.locationId||(position.roomId&&shown.roomId&&position.roomId!==shown.roomId)||shown?.status!=='present')
@@ -525,6 +525,8 @@
   const route=S.characterRoute||'industrialist',date=observedDate();
   window.FE_NPC_DISCOVERY?.learn?.(S,id,'encounter',position.locationId);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {ok:false,reason:'The game date is not available.'};
+  if(topic==='circus'&&!window.FE_CIRCUS_TOUR?.active?.(S))
+   return {ok:false,reason:'There is no circus currently in town.'};
   // Quick questions obey precisely the same language barrier as free speech.
   // Hearing an untranslated response never counts as earning acquaintance.
   const languages=window.FE_NPC_LANGUAGE?.spoken?.(def)||[def.language||'en'];
@@ -546,7 +548,11 @@
   }
   const known=a.memories.some(m=>m.key==='greet'&&m.withId===route);
   const affinity=Number.isFinite(+a.relationships[route])?+a.relationships[route]:0;
-  const reply=def.language==='zh'?(topic==='greet'?'你好，我叫李文。':topic==='today'?'我今天忙著處理生意。':topic==='work'?'我正在照看商業訂單與來往貨物。':def.publicRemark):
+  const circusResponse=window.FE_CIRCUS_TOUR?.active?.(S)?
+   (window.FE_CIRCUS_TOUR?.attended?.(S)?
+    'You have already seen the circus, have you? What did you think of the show?':
+    'They say the circus is in town. Do you intend to see it?'):null;
+  const reply=topic==='circus'?circusResponse:def.language==='zh'?(topic==='greet'?'你好，我叫李文。':topic==='today'?'我今天忙著處理生意。':topic==='work'?'我正在照看商業訂單與來往貨物。':def.publicRemark):
    def.language==='ru'?(topic==='greet'?'Добрый день.':topic==='today'?'У меня свои дела.':topic==='work'?'Я занят работой.':def.publicRemark):topic==='greet'
    ?(known?(affinity>=4?'Welcome back. It is good to have a familiar face here.':'Good to see you again.'):'Good day. I am '+def.name+'.')
    :topic==='city'?def.publicRemark:topic==='today'?
@@ -603,7 +609,12 @@
   catch(e){return {ok:false,reason:String(e.message||e)}}
   if(!query.ok)return query;
   const scripted=window.FE_NPC_SCRIPTED_TALK?.answer?.(def,utterance,{date,place:window.FederalElectricCity?.getLocation?.(position.locationId)?.name,activity:actor.activity,history:dev.history(S,def.id)});
-  let spoken=scripted?.handled?scripted.reply:null;
+  const circusMention=window.FE_CIRCUS_TOUR?.active?.(S)&&/\\bcircus\\b/i.test(utterance);
+  const circusPrompt=circusMention?
+   (window.FE_CIRCUS_TOUR.attended(S)?
+    'You have already attended the circus. Was the performance worthwhile?':
+    'The circus is in town. Are you planning to see it?'):null;
+  let spoken=circusPrompt||(scripted?.handled?scripted.reply:null);
   if(!spoken&&model?.chat){
    try{
     const result=await model.chat({messages:query.messages});
@@ -692,6 +703,7 @@
     window.FE_NPC_CARD?.open?.({id:visitor.id,name:visitor.name,occupation:def?.occupation||'Washington resident',
      sex:['madamStar','chenMei','annaPetrovna'].includes(visitor.id)?'woman':'man',
      history:window.FE_NPC_DIALOGUE?.history?.(S,visitor.id)||[],valid,
+     circusInTown:!!window.FE_CIRCUS_TOUR?.active?.(S),
      onQuick:topic=>talkAtLocation(visitor.id,topic),
      onSpeak:words=>converseAtLocation(visitor.id,words)});
    });
