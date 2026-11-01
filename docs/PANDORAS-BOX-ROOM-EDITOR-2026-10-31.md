@@ -2,7 +2,7 @@
 
 **Project:** Capital & Consequence  
 **Recorded:** 31 October 2026  
-**Status:** Approved design direction and proposed first implementation slice. Documentation only; no editor is claimed implemented or accepted.  
+**Status:** Approved foundation plan, now partially implemented as development source through v0.7.45-dev. Not packaged, accepted or Linux-playtested. See `docs/OPEN-SOURCE-TILE-GAME-LESSONS-2026-10-31.md`.  
 **Priority:** **ACTIVE NEXT TOOLING MILESTONE.** Build this editor before designing the District Asylum interior or expanding location-by-location scenery.
 
 ## Goal
