@@ -64,31 +64,30 @@ const SHAPES=Object.freeze({
 });
 const TINT=Object.freeze({resident:'#49321f',police:'#24374a',courier:'#67452b',
  merchant:'#5b4b29',performer:'#6e333e',worker:'#4f5543',wagon:'#694327'});
-function placeName(id){return root.FederalElectricCity?.getLocation?.(id)?.name||'an unconfirmed destination'}
-function details(svg,agent,def,at,minute,onSelectDestination){
- const j=agent.journey,box=document.createElement('div');
+function knownToPlayer(save,id){
+ // Knowing someone's full name requires a recorded introduction, not merely
+ // spotting their moving coat on the city map.
+ return !!save?.npcSimulation?.agents?.[id]?.memories?.some(m=>
+  m?.key==='greet'&&m.withId===save.characterRoute);
+}
+function details(svg,agent,def,at,minute,known){
+ const box=document.createElement('div');
  box.className='capital-npc-travel-card';
- const title=document.createElement('strong');title.textContent=def.name;
- const role=document.createElement('p');role.textContent=def.occupation;
+ const title=document.createElement('strong');title.textContent=known?def.name:'Unfamiliar traveler';
+ const role=document.createElement('p');role.textContent=known?def.occupation:'A person passing through Washington';
  const journey=document.createElement('p');
- const mins=Math.max(1,Math.ceil(j.arrivesAt-minute));
- journey.textContent='In transit: '+placeName(j.from)+' to '+placeName(j.to)+' · approximately '+mins+' game minutes remaining.';
- const note=document.createElement('p');note.textContent='To speak with this person, meet them at a location. The map does not allow remote conversation.';
+ journey.textContent='Traveling through the city. Their destination is unknown.';
+ const note=document.createElement('p');note.textContent='To learn where they are going, meet them in person and ask. They may not tell you the truth.';
  const actions=document.createElement('div');actions.className='capital-npc-travel-actions';
- const select=document.createElement('button');select.type='button';select.textContent='Show destination';
- select.addEventListener('click',event=>{
-  event.stopPropagation();
-  if(typeof onSelectDestination==='function'&&j.to)onSelectDestination(j.to);
- });
  const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='Close';
  dismiss.addEventListener('click',event=>{event.stopPropagation();selected=null;box.remove()});
- actions.append(select,dismiss);box.append(title,role,journey,note,actions);
+ actions.append(dismiss);box.append(title,role,journey,note,actions);
  // Keep the information inside the map viewport and above the street icon.
  box.style.left=Math.max(6,Math.min(Math.max(6,svg.clientWidth-280),at.x+10))+'px';
  box.style.top=Math.max(6,Math.min(Math.max(6,svg.clientHeight-158),at.y+12))+'px';
  return box;
 }
-function render(save,viewport,project,visible,onSelectDestination){
+function render(save,viewport,project,visible){
  clear(false);
  if(!visible||!viewport||typeof project!=='function'||!save?.npcSimulation?.agents||
   !Number.isSafeInteger(save.worldCalendar?.worldMinute)||!root.FE_CAPITAL_TRAVEL?.positionAt)return 0;
@@ -109,11 +108,11 @@ function render(save,viewport,project,visible,onSelectDestination){
   if(!p)continue;
   let at;try{at=project(p)}catch(error){continue}
   if(!at||!Number.isFinite(at.x)||!Number.isFinite(at.y))continue;
-  const def=identity(agent),kind=iconKind(agent,def);
+  const def=identity(agent),known=knownToPlayer(save,agent.id),kind=iconKind(agent,def);
   const group=document.createElementNS(NS,'g');
   group.setAttribute('transform','translate('+at.x+' '+at.y+')');
   group.setAttribute('role','button');group.setAttribute('tabindex','0');
-  group.setAttribute('aria-label',def.name+', traveling toward '+placeName(j.to)+'. Select for details.');
+  group.setAttribute('aria-label',(known?def.name:'Unfamiliar traveler')+', traveling through Washington. Select for details.');
   group.setAttribute('data-resident-id',agent.id);
   group.style.cursor='pointer';group.style.pointerEvents='all';
   const hit=document.createElementNS(NS,'circle');
@@ -124,11 +123,11 @@ function render(save,viewport,project,visible,onSelectDestination){
   shape.setAttribute('stroke','#e3c38b');
   shape.setAttribute('stroke-width','1.4');
   const title=document.createElementNS(NS,'title');
-  title.textContent=def.name+' · '+kind+' · click to inspect journey';
+  title.textContent=(known?def.name:'Unfamiliar traveler')+' · click to observe';
   const choose=event=>{
    event.preventDefault?.();event.stopPropagation?.();
    selected=selected===agent.id?null:agent.id;
-   render(save,viewport,project,visible,onSelectDestination);
+   render(save,viewport,project,visible);
   };
   group.addEventListener('pointerdown',e=>e.stopPropagation());
   group.addEventListener('click',choose);
@@ -139,7 +138,7 @@ function render(save,viewport,project,visible,onSelectDestination){
  if(!count){selected=null;return 0}
  viewport.appendChild(svg);overlay=svg;
  if(active){
-  const card=details(viewport,active,activeDef,activePos,minute,onSelectDestination);
+  const card=details(viewport,active,activeDef,activePos,minute,knownToPlayer(save,active.id));
   // A sibling over the SVG is clickable and independent of map pan/zoom.
   card.style.pointerEvents='auto';
   card.addEventListener('pointerdown',event=>event.stopPropagation());
