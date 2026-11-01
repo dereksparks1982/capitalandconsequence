@@ -28,5 +28,5 @@ save.currentLocation={locationId:'factory',roomId:'executive-office'};
 assert.equal(custody.prepare(save,'h1','eastLivery').ok,false,'Horse cannot be conjured back to livery');
 const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
 assert.ok(app.includes('onArrival?.(S,priorLocation.locationId,location.id,!!journeyPaid)'));
-assert.ok(app.includes("onArrival?.(S,previous.locationId,'factory',!!journeyPaid)"));
+assert.ok(app.includes('onArrival?.(S,prior.locationId,place.id,true)'),'Map arrivals notify custody only after an actually recorded journey');
 console.log('PASS physical horse journey from seller to factory, paid travel witness, no teleport and stable replay');
