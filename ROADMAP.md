@@ -1,3 +1,10 @@
+## 31 October 2026 · v0.7.56-dev: carried food beyond the market counter
+- [x] Existing purchased market provisions now show in the Personal Journal's Carried Provisions panel and remain available after leaving the merchant.
+- [x] Food consumption requires an active non-dev character profile, time debit, owned bag item and the same shared meal cooldown.
+- [x] Consuming a carried item never recharges purchase cash, regenerates shop inventory or manufactures free goods.
+- [x] Keep explicit non-food items separate from consumables, with no notification destination choices.
+- [ ] Confirm local Ubuntu journal scrolling and save/reload; home kitchen and restaurants remain later.
+
 ## 31 October 2026 · v0.7.55-dev: purchased food becomes usable nourishment
 - [x] Existing Chinatown/Hillsdale market player bags support eating purchased provisions with their own hunger and thirst benefits.
 - [x] Existing market stock, purchase receipts, personal cash and physically present room gating remain the only way to obtain provisions.

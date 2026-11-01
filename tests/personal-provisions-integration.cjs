@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
+const ui=read('personal-provisions-ui.js'),app=read('app.js'),html=read('index.html');
+assert.match(html,/personal-provisions-ui\.js\?v=/);
+assert.match(ui,/Carried Provisions/);assert.match(ui,/playerBag\.filter/);
+assert.match(ui,/provisionAvailability\(state,item\.good\)/);
+assert.match(ui,/advanceWorldTime\(600,true\)/);
+assert.match(ui,/model\.consume\(state,id\)/);
+assert.match(ui,/needs\.eatProvision\(state,removed\.good\.good\)/);
+assert.match(ui,/if\(typeof save==='function'\)save\(true\)/);
+assert.match(ui,/typeof activeProfileId/);assert.match(ui,/isDevRoom/);
+assert.match(app,/FE_CARRIED_PROVISIONS\?\.refresh\?\.\(S\)/);
+assert.doesNotMatch(ui,/window\.location|goThere|openRoom\(/);
+console.log('PASS journal provision ownership, meal time, saved inventory use and no teleport');
