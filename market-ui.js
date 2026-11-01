@@ -25,9 +25,20 @@ function buy(id){
 }
 function use(id){
  if(!permitted()){message='You must be at the market to sort your shopping bag.';render();return;}
- if(window.advanceWorldTime(60)!==60){message='Could not complete this action.';render();return;}
- const consumed=commerce().consume(S,id);
- message=consumed.ok?'Used '+consumed.good.label+'.':consumed.reason;
+ const model=commerce(),m=model.ensure(S),item=m.playerBag.find(g=>g.id===id);
+ if(!item){message='This item is no longer in your shopping bag.';render();return;}
+ const needs=window.FE_CHARACTER_NEEDS;
+ const food=needs?.PROVISIONS?.[item.good];
+ const available=food?needs.provisionAvailability(S,item.good):null;
+ if(available&&!available.ok){message=available.reason;render();return;}
+ const duration=food?600:60;
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,duration)){message='Not enough time for this action.';render();return;}
+ if(window.advanceWorldTime(duration)!==duration){message='Could not complete this action.';render();return;}
+ const consumed=model.consume(S,id);
+ if(!consumed.ok){message=consumed.reason;render();return;}
+ const outcome=food?needs.eatProvision(S,consumed.good.good):null;
+ message=food?(outcome?.ok?'Ate '+consumed.good.label+'. Hunger and thirst updated.':outcome?.reason||'Meal not recorded.'):
+  'Used '+consumed.good.label+'.';
  save(true);render();
 }
 function render(){
@@ -54,7 +65,10 @@ function render(){
   const title=document.createElement('p');title.textContent='Shopping bag: '+m.playerBag.length+'/24 purchased items. Personal cash: $'+Number(S.personalCash).toFixed(2);bag.appendChild(title);
   for(const item of m.playerBag){
    const row=document.createElement('div'),text=document.createElement('span'),button=document.createElement('button');
-   text.textContent=item.label+' · '+item.date;button.type='button';button.textContent='Use';button.disabled=!open;button.onclick=()=>use(item.id);
+   text.textContent=item.label+' · '+item.date;button.type='button';const food=window.FE_CHARACTER_NEEDS?.PROVISIONS?.[item.good];
+   const permission=food?window.FE_CHARACTER_NEEDS.provisionAvailability(S,item.good):null;
+   button.textContent=food?'Eat / Drink':'Use';button.disabled=!open||permission?.ok===false;
+   if(permission?.remaining)button.title=permission.reason;button.onclick=()=>use(item.id);
    row.append(text,button);bag.appendChild(row);
   }
  }

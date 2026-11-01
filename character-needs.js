@@ -35,7 +35,7 @@ function sanitize(raw,at=null){
  const warned={};
  for(const k of Object.keys(INITIAL))warned[k]=source?.warned?.[k]===true;
  return {version:1,meters,lastMinute,sharedUntil:safeUntil(source?.sharedUntil),
-  cooldowns,warned,deprivation,entries:Array.isArray(source?.entries)?source.entries.filter(e=>
+  cooldowns,warned,deprivation,nextFoodAt:safeUntil(source?.nextFoodAt),entries:Array.isArray(source?.entries)?source.entries.filter(e=>
    e&&Object.hasOwn(CONFIG,e.kind)&&Number.isSafeInteger(e.minute)&&typeof e.source==='string'
   ).slice(-80):[]};
 }
@@ -151,6 +151,37 @@ function treat(save,amount,source='medical-care'){
  if(state.meters.health>50)state.warned.health=false;
  return {ok:true,health:state.meters.health};
 }
+const PROVISIONS=Object.freeze({
+ bread:Object.freeze({hunger:34}),milk:Object.freeze({hunger:8,thirst:24}),
+ eggs:Object.freeze({hunger:29}),bacon:Object.freeze({hunger:27}),
+ 'stew-beef':Object.freeze({hunger:42}),potatoes:Object.freeze({hunger:24}),
+ onions:Object.freeze({hunger:8}),'beans-grains':Object.freeze({hunger:35}),
+ produce:Object.freeze({hunger:22,thirst:8})
+});
+function eatProvision(save,goodId){
+ const benefit=PROVISIONS[goodId];
+ if(!benefit)return {ok:false,reason:'This purchase is not ready-to-eat food.'};
+ const clock=sync(save);
+ if(!clock.ok)return {ok:false,reason:clock.reason};
+ const state=ensure(save);
+ if(clock.minute<(state.nextFoodAt??clock.minute))return {ok:false,reason:'You have only just finished eating.'};
+ for(const [key,value] of Object.entries(benefit)){
+  state.meters[key]=clamp(state.meters[key]+value);
+  if(state.meters[key]>0)state.deprivation[key]=0;
+  if(state.meters[key]>THRESHOLDS[key]+15)state.warned[key]=false;
+ }
+ state.nextFoodAt=clock.minute+30;
+ state.entries.push({kind:'meal',minute:clock.minute,source:'market-provision:'+goodId});
+ state.entries=state.entries.slice(-80);
+ return {ok:true,meters:{...state.meters}};
+}
+function provisionAvailability(save,goodId){
+ if(!Object.hasOwn(PROVISIONS,goodId))return {ok:false,reason:'Not edible without preparation.'};
+ const at=minute(save),state=ensure(save);
+ if(at===null||!state)return {ok:false,reason:'Washington time unavailable.'};
+ const wait=Math.max(0,(state.nextFoodAt??at)-at);
+ return {ok:wait===0,remaining:wait,reason:wait?'Available in '+formatDuration(wait)+'.':'Ready to eat.'};
+}
 function formatClock(worldMinute){
  if(!Number.isSafeInteger(worldMinute))return 'unknown';
  const d=new Date(worldMinute*60000);
@@ -162,7 +193,7 @@ function status(save,key){
  if(!result.ok&&result.remaining)return 'Available at '+formatClock(result.availableAt)+' ('+formatDuration(result.remaining)+')';
  return result.reason||'Unavailable';
 }
-const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,minute,sanitize,ensure,sync,overnight,take,applyInjury,treat,availability,status,formatDuration,formatClock});
+const api=Object.freeze({CONFIG,SHARED_COOLDOWN,RATES,THRESHOLDS,INITIAL,HEALTH_RULES,PROVISIONS,minute,sanitize,ensure,sync,overnight,take,eatProvision,provisionAvailability,applyInjury,treat,availability,status,formatDuration,formatClock});
 root.FE_CHARACTER_NEEDS=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

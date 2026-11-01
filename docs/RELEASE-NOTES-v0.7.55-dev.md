@@ -1,0 +1,5 @@
+# Capital & Consequence v0.7.55-dev: real purchased meals
+
+The original physical Washington commerce system now connects directly to personal hunger and thirst. Bread, milk, eggs, bacon, beef, potatoes, onions, grains and produce purchased from registered Chinatown/Hillsdale vendors can be consumed from the existing player shopping bag. Eating takes 10 Washington minutes and can be repeated after a 30-minute meal interval, rather than spamming infinite free meals. Food purchases already debit **personal** cash and finite merchant stocks; consumption removes exactly one owned bag entry. Non-food objects cannot restore needs. Drinking milk restores hydration as well as some hunger.
+
+The market remains at its actual location with existing shop hours and career access. No automatic eating, home teleport, notification menu, invented pin, restaurant shortcut or new stock supply. This is a first physical provisioning loop, not a finished home kitchen or restaurant meal system. Ubuntu graphical QA and full offline regression suite still pending.

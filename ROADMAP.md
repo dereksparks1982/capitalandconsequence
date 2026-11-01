@@ -1,3 +1,11 @@
+## 31 October 2026 · v0.7.55-dev: purchased food becomes usable nourishment
+- [x] Existing Chinatown/Hillsdale market player bags support eating purchased provisions with their own hunger and thirst benefits.
+- [x] Existing market stock, purchase receipts, personal cash and physically present room gating remain the only way to obtain provisions.
+- [x] Food consumption requires Washington game time, removes exactly one bag entry and enforces 30-minute space between meals.
+- [x] Non-food supplies remain ordinary items and never heal hunger or thirst.
+- [x] Added needs model tests for meals and drink, food cooldown and unusable items.
+- [ ] Prepared restaurant meals, home cooking, cooking requirements and inventory outside the market remain future work.
+
 ## 31 October 2026 · v0.7.54-dev: correct overnight needs accounting
 - [x] Distinguish consciously played Washington time from implicit report-to-morning rest.
 - [x] Sleep restores energy without automatically restoring food, water or injury health.
