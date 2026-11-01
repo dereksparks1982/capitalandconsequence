@@ -11,12 +11,12 @@
 
 This Bible records the ten rules the owner explicitly directed the developer to follow after unauthorized changes to established Capital & Consequence gameplay. It applies to every assistant, developer, automated process, future build, refactor, test revision, documentation update, and handoff.
 
-**Read this file before touching the project.** Read the relevant existing canon and decisions too. This Bible does **not** replace the story bible, character codices, map canon, or owner-approved decisions. It protects them.
+**Read this file before touching the project.** Read the relevant existing canon and decisions too. This Bible does **not** replace the story bible, character codices, map canon, or owner-approved decisions. It protects them **until the owner approves a revision**. No creative decision is inherently permanent or beyond criticism.
 
 ## THE TEN NON-NEGOTIABLE RULES
 
 ### 1. THE OWNER IS THE FINAL AUTHORITY
-The owner decides what belongs in the game, what changes, and what stays. A developer's opinion that something would be an improvement does not overrule an owner decision. Do not substitute convenience, realism, a test result, or an assistant's preference for approval.
+The owner has final approval over what belongs in the game, what changes, and what stays. **Developers are expressly allowed and encouraged to suggest improvements, challenge weak ideas, point out conflicts, and recommend alternatives.** Explain the reason, likely consequences, and tradeoffs candidly. Advice is not an override: do not implement a departure from an owner decision without approval.
 
 ### 2. AUTHORIZATION IS SPECIFIC, NOT BLANKET PERMISSION
 Permission for **one named exception** applies to **that exception only**. It cannot be generalized to unrelated years, locations, mechanics, laws, events, story triggers, or progression. Alternate-history freedom is not authority to rewrite established rules.
@@ -28,7 +28,7 @@ A repair must not break, erase, bypass, or casually simplify a working or approv
 Established character identities, relationships, histories, secrets, locations, event timing, quest prerequisites, and outcomes stay authoritative. Do not invent new story facts, erase existing story facts, or alter the plot to make implementation easier. New ideas are proposals until the owner approves them.
 
 ### 5. NO UNAUTHORIZED CHANGES
-Do not implement extra features, remove restrictions, redesign screens, move approved UI geometry, relocate pins, replace assets, change unrelated data, or expand a bug fix beyond the approved scope. **"While I was here" is not authorization.** If an additional change would help, propose it separately; do not silently make it.
+Do not implement extra features, remove restrictions, redesign screens, move approved UI geometry, relocate pins, replace assets, change unrelated data, or expand a bug fix beyond the approved scope. **"While I was here" is not authorization.** Suggestions and constructive disagreement are welcome, including proposals to revise existing rules or canon. Discuss and secure approval before implementing a change outside the approved scope.
 
 ### 6. READ THE PROJECT DOCUMENTATION BEFORE EDITING
 Read this Bible and the relevant current decisions, world rules, story documents, and existing implementation before changing anything. Do not rely only on chat memory, historical assumptions, or a partial summary. When documents differ, identify which decision is later and actually approved; do not guess away conflicts.
@@ -70,7 +70,7 @@ Before a change, a developer must be able to state:
 4. **Verification:** Which tests prove both the intended change and the preserved behavior?
 5. **Reporting:** Which checks ran, which failed, and what still needs owner acceptance?
 
-If the requested work cannot be done without an unapproved collateral change, **do not make that collateral change**. Explain the conflict instead.
+If the requested work cannot be done without an unapproved collateral change, **do not make that collateral change**. Explain the conflict, propose workable options, and seek approval for any broader change.
 
 ## DEVELOPMENT AND RELEASE RULES
 
@@ -101,6 +101,6 @@ Older proposals and old release notes do not override a later explicit owner dec
 
 Acknowledge the precise unauthorized change. Identify the affected files, mechanics, tests, and story consequences. Do **not** conceal it by rewriting tests, inventing an approval, or making still more unrequested edits. Stop changes when told; wait for explicit direction about restoration or repair.
 
-**THE OWNER DECIDES WHAT CHANGES. THE DEVELOPER IMPLEMENTS ONLY THAT DECISION.**
+**DEVELOPERS MAY PROPOSE BETTER IDEAS. THE OWNER DECIDES WHICH CHANGES TO APPROVE.**
 
 **FIX THE PROBLEM. PRESERVE THE WORLD.**
