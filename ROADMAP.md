@@ -1,3 +1,14 @@
+## 1 November 2026 · v0.7.61-dev: real Big Top attendance and traveling salesman
+- [x] Separate midway booth play from actually attending a circus performance. Tickets: 20¢; three scheduled shows per day; 45 minutes including real waiting time on the Washington clock.
+- [x] Make Big Top completion the sole gameplay source of circus show attendance, with recorded acts and non-repeatable receipts.
+- [x] Add a separate in-person conman salesman (Silas Pike) at the circus, with plausible and false merchandise claims, saved item inspections and actual pocket purchases.
+- [x] Discover travelers only when encountered; knowing their existence does not reveal their later routes or locations.
+- [x] Extend tarot's character-only interpretation with player-witnessed cases, news scandals and factory interruption context, without omniscient mystery spoilers.
+- [x] Add regression coverage for show vs midway and inspection/one-off trader purchases.
+- [ ] Independent merchant street journey, dialogue and negotiation; genuine gameplay effects of rare equipment still outstanding.
+- [ ] Actual circus stage visuals, performer NPC schedules and moving targets in carnival booths outstanding.
+- [ ] Native Linux executable and full game UI/source test suite still need testing before acceptance. No GitHub Actions.
+
 ## 1 November 2026 · v0.7.60-dev: playable circus midway, bedroom chest and in-world readings
 - [x] Recurring seasonal circus weeks at existing Capital Race Grounds, public temporary tent icon.
 - [x] Six paid physical midway booths: ring toss, balloon darts, tin duck gallery, cans, high striker and penny peg drop. Each has a playable five-position selection, aim clue, fee, finite attempts and score.
