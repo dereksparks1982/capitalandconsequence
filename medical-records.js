@@ -131,7 +131,13 @@ function wake(save,secondsSpent){
 }
 function onSleep(save){
  const patient=player(save);
- patient.recoveryNights++;
+ const today=dateMinute(minute(save))?.slice(0,10);
+ // An overnight transition is a calendar event, not a button that can be
+ // repeatedly used to erase chronic exhaustion in the same morning.
+ if(today&&patient.lastRecoveryDay!==today){
+  patient.recoveryNights++;
+  patient.lastRecoveryDay=today;
+ }
  const status=severity(patient,minute(save));
  return {severity:status,energyCap:status==='severe'?65:status==='chronic'?80:100};
 }
