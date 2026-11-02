@@ -1,3 +1,13 @@
+## November 2, 2026 · v0.7.85-dev · working merchant vessel position viewer (source only)
+- [x] Identify owner-added `assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg` and use it unedited in a **separate** maritime chart inside Charles's existing fleet page. No changes to the protected Washington map or 1878 narrative.
+- [x] Add a connected sea-lane graph with image-coordinate tracks for the existing eight merchant ports and estimate passage days from nautical-distance and schooner/steamer speeds. Intermediate waypoints never grant trade access or cargo sales.
+- [x] Snapshot route coordinates, distance and departure clock minute to new saved voyages. Show owned ship icons and inspection cards at port or underway, with progress derived only from the player-advanced game clock.
+- [x] Preserve the existing dispatch, cargo inventory, fleet vs Federal Electric cash, wear/upkeep, insurance, weather loss, ports, freight receipt and same-day duplicate settlement gates.
+- [x] Add a focused offline `tests/merchant-navigation.cjs` source regression and execute targeted connector-side V8 route/dispatch/arrival checks.
+- [ ] Run the full local Node suite, inspect the chart in Ubuntu Electron, confirm each line overlays the uploaded JPEG accurately, and get owner acceptance before any release/tag.
+- [ ] Verify chart licensing/provenance. Survey period-accurate port tracks, vessel-specific routing, winds, seasonality, weather delays, canal feasibility and actual harbor layovers; current timing is a labeled estimate.
+See `docs/RELEASE-NOTES-v0.7.85-dev.md`. No GitHub Actions or accepted release.
+
 ## November 1, 2026 · v0.7.84-dev · hired railway staff and real weekly wage settlement
 - [x] Hire an optional unnamed locomotive engineer for $120 with 90 game minutes of onboarding, or a conductor for $70 with 60 minutes, **only** from Charlie's authorized factory office with a constructed, owned railway.
 - [x] An employed engineer reduces actual bought-locomotive wear from 4 to 2 points per paid trip; an employed conductor reduces track wear from 2 to 1, leaving all existing fare/dispatch restrictions and initial unstaffed behavior unchanged.
