@@ -127,10 +127,19 @@ function portPanel(name){
 function pinPanel(id){
  const pin=state().pins.find(p=>p.id===+id);
  if(!pin)return'<p>Chart mark is missing.</p>';
- return '<h3>Personal Chart Mark</h3><p>Image position '+pin.x+', '+pin.y+'</p>'+
+ const kind=pin.kind||'study';
+ let html='<h3>Personal Chart Mark</h3><p>Image position '+pin.x+', '+pin.y+'</p>'+
   '<label>Name <input id="merchantPinName" maxlength="64" value="'+esc(pin.name)+'"></label>'+
   action('rename-pin:'+pin.id,'Save Pin Name')+action('move-pin:'+pin.id,'Reposition Mark')+action('remove-pin:'+pin.id,'Remove Mark')+
-  '<p class="fine">Your private chart mark is not an established port, trading permission or a playable character destination.</p>';
+  '<label>Area type <select id="merchantPinKind">'+['study','harbor','coast','sea'].map(k=>'<option value="'+k+'"'+(kind===k?' selected':'')+'>'+({study:'Unclassified study mark',harbor:'Harbour candidate',coast:'Coastline',sea:'Open sea'})[k]+'</option>').join('')+'</select></label>'+
+  action('classify-pin:'+pin.id,'Save Area Type')+
+  '<p class="fine">A chart mark is a personal annotation, not a verified commercial port or a visited location.</p>';
+ if(kind==='harbor')html+=action('inspect-mark:'+pin.id,'Examine Harbour Sections');
+ if(session.scene==='mark:'+pin.id){
+  html+='<h4>Proposed Harbour District</h4>'+portMiniScene()+
+   '<p class="fine">Preview only: no physical visit, trading entitlement or named resident is created.</p>';
+ }
+ return html;
 }
 function shipPanel(id){
  const s=fleet().ships.find(v=>String(v.id)===String(id));if(!s)return'<p>Ship not found.</p>';
@@ -206,6 +215,11 @@ function onClick(e){
    const id=+command.slice(11),name=host.querySelector('#merchantPinName')?.value;
    return changed(regions.rename(session.save,id,name));
   }
+  if(command.startsWith('classify-pin:')){
+   const id=+command.slice(13),kind=host.querySelector('#merchantPinKind')?.value;
+   return changed(regions.classify(session.save,id,kind));
+  }
+  if(command.startsWith('inspect-mark:')){session.scene='mark:'+command.slice(13);session.zone='quay';return draw(false)}
   if(command.startsWith('remove-pin:')){
    const id=+command.slice(11),out=regions.remove(session.save,id);
    if(out.ok){session.selection={type:'port',id:'Baltimore'};session.onChange?.();draw(false)}
