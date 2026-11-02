@@ -113,6 +113,8 @@ for(const date of ['1878-02-02','1878-03-02','1878-04-02','1878-05-02','1878-06-
 }
 assert.equal(F.report(bad).status,'repossessed');
 assert.equal(C.canManage(bad),false);
+assert.equal(C.incorporate(bad,'post-foreclosure-charter').ok,false,'foreclosed business cannot be re-incorporated by ousted Charles');
+assert.equal(F.pay(bad,4500,'post-foreclosure-payment').ok,false,'company funds cannot undo confiscation by shortcut');
 assert.equal(C.ensure(bad).president,'whitcomb-father');
 assert.equal(C.ownership(bad).family,2500,'a loan is not a disguised automatic share issue');
 assert.equal(C.ownership(bad).founder,7500,'pledged property seizure does not fabricate a transfer of shares');
