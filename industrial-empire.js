@@ -2,6 +2,7 @@
    Fictional 1878 starting values. Each business has a separate treasury. */
 (function(root){
 'use strict';
+const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const PRICE={steel:65000,rail:175000,schooner:14000,steamer:36000};
 const PORTS={
  Baltimore:{distance:0,storm:.006,piracy:0,leads:['New York']},
@@ -94,7 +95,7 @@ function buyShip(save,type){
  root.FE_SKILLS?.practice?.(save,'business-management',{amount:.31,difficulty:50,event:'ship-buy:'+id,source:'Merchant shipping acquisition'});
  return result('Vessel added to merchant fleet.');
 }
-function daysFor(a,b,type){return Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*(type==='steamer'?.85:1.12)))}
+function daysFor(a,b,type){const voyage=nav?.plan?.(a,b,type);return voyage?.days||Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*(type==='steamer'?.85:1.12)))}
 function availableFederalCargo(save){
  // 1878 Federal Electric manufactures actual telegraph keys and fittings,
  // not light bulbs; sell and transport only real finished warehouse goods.
@@ -119,8 +120,9 @@ function dispatch(save,id,dest,cargo,insured){
   else save.inventoryByGrade.standard-=consignment.units;
  }
  f.cash-=charge+insurance;ledger(f,save.gameDate,'Departure, port fees'+(insured?', hull insurance':''),-charge-insurance);
- const from=ship.port,days=daysFor(from,dest,ship.type);ship.status='at-sea';
- ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0,consignment};
+ const from=ship.port,voyage=nav?.plan?.(from,dest,ship.type),days=voyage?.days||daysFor(from,dest,ship.type);ship.status='at-sea';
+ ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0,consignment,
+  departMinute:nav?.gameMinute?.(save)??null,routePoints:voyage?.points||null,nauticalMiles:voyage?.nauticalMiles||null,navSurvey:voyage?.survey||null};
  event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?consignment.units+' '+consignment.productId+' goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
  root.FE_SKILLS?.practice?.(save,'logistics',{amount:.28,difficulty:51,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Scheduling cargo shipment'});
  root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.17,difficulty:43,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Cargo manifest review'});
@@ -211,6 +213,8 @@ function advance(save){
 function ownedLocation(save,id){return (id==='factory'||id==='home')&&save.characterRoute==='industrialist'||!!save.ownedLocationIds?.includes?.(id)}
 function render(save,onChange){
  const host=document.getElementById('industrialEmpirePanel');if(!host)return;
+ const previousChart=host.querySelector('details.merchant-chart');
+ const chartExpanded=previousChart?previousChart.open:true;
  if(save.characterRoute!=='industrialist'){host.hidden=true;return}
  host.hidden=false;const e=advance(save),m=e.steel,r=e.rail,f=e.fleet;
  const button=(key,label)=>'<button type="button" data-empire-action="'+esc(key)+'">'+label+'</button>';
@@ -228,6 +232,7 @@ function render(save,onChange){
   }
   html+='</article>';
  }
+ if(root.FE_MERCHANT_CHART?.render)html+=root.FE_MERCHANT_CHART.render(save,f,host.dataset.selectedShip||'',chartExpanded);
  for(const [port,goods]of Object.entries(f.electric))if(Array.isArray(goods)&&goods.length)html+='<p>Consigned Federal Electric goods in '+esc(port)+': '+goods.map(g=>g.units+' '+g.productId).join(', ')+'. '+button('sell-electric:'+port,'Complete local sale')+'</p>';
  html+='<h4>Captain & Superintendent Reports</h4><div class="empire-log">'+e.log.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div><p class="fine">Voyages follow the in-game calendar. Ships incur crew and hull upkeep, sometimes require repairs, may suffer storm loss or piracy on historically exposed routes, and occasionally uncover commercial leads. Losses are not reversed automatically.</p>';
  host.innerHTML=html;
@@ -235,6 +240,7 @@ function render(save,onChange){
   const target=event.target.closest('[data-empire-action]');if(!target)return;
   const key=target.dataset.empireAction;
   let outcome;
+  if(key.startsWith('ship-info:')){host.dataset.selectedShip=key.slice(10);render(save,onChange);return}
   if(key==='buy-steel')outcome=buy(save,'steel');
   else if(key==='buy-rail')outcome=buy(save,'rail');
   else if(key==='make-rails')outcome=millAction(save,'rails');
@@ -254,6 +260,18 @@ function render(save,onChange){
   if(!outcome)return;
   const status=document.getElementById('notice');if(status)status.textContent=outcome.message;
   if(outcome.ok){onChange();render(save,onChange)}
+ };
+ host.onchange=event=>{
+  if(event.target?.matches?.('[data-merchant-ship-select]')){
+   host.dataset.selectedShip=event.target.value;
+   render(save,onChange);
+  }
+ };
+ host.onkeydown=event=>{
+  const action=event.target?.closest?.('.merchant-ship[data-empire-action]');
+  if(action&&(event.key==='Enter'||event.key===' ')){
+   event.preventDefault();host.dataset.selectedShip=action.dataset.empireAction.slice(10);render(save,onChange);
+  }
  };
 }
 const api=Object.freeze({PRICE,PORTS,ensure,advance,buy,millAction,merchantSale,repairRails,buyShip,dispatch,repairShip,verifyLead,sellElectric,ownedLocation,render,dayFor:daysFor});
