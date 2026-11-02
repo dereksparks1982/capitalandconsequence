@@ -4,6 +4,7 @@
 const assert=require('node:assert/strict');
 const empire=require('../industrial-empire.js');
 const trade=require('../merchant-trade.js');
+const nav=require('../merchant-navigation.js');
 const minute=s=>Math.floor(Date.parse(s+'T09:00:00Z')/60000);
 const addDays=(d,n)=>{let x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 function roll(key){let h=2166136261;for(const c of String(key)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return(h>>>0)/4294967296}
@@ -15,7 +16,8 @@ function make(day){
 // outcome rather than injecting an imaginary loss result.
 let badDay=null;
 for(let k=0;k<400;k++){
- const day=addDays('1878-05-01',k),month=Number(day.slice(5,7));
+ const day=addDays('1878-05-01',k),landing=addDays(day,nav.plan('New York','Havana','schooner').days),
+  month=Number(landing.slice(5,7));
  const risk=.048*(1+(100-8)/65)*(month>=6&&month<=11?2:1);
  const threshold=risk*.17+.002*.22;
  if(roll('1|'+day+'|Havana|trade')<threshold){badDay=day;break}
