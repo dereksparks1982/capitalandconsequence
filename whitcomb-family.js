@@ -97,6 +97,8 @@ function pay(save,amountCents,token){
   save.currentLocation?.locationId!=='factory'||save.currentLocation?.roomId!=='executive-office')
   return {ok:false,reason:'Family debt payments require Charles in his Federal Electric executive office during business hours.'};
  if(f.status==='repossessed')return {ok:false,reason:'The secured factory has already been repossessed.'};
+ if(save.corporateGovernance?.president&&save.corporateGovernance.president!=='charles')
+  return {ok:false,reason:'A former president cannot spend Federal Electric company money on a family loan.'};
  if(typeof token!=='string'||!/^[a-z0-9:_-]{1,90}$/i.test(token))
   return {ok:false,reason:'A valid dated payment receipt is required.'};
  if(f.receipts[token])return {...f.receipts[token],repeated:true};
