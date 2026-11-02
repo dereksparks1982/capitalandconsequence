@@ -75,6 +75,23 @@ function buildPages(save,{publicFile}={}){
  if(pending&&typeof pending==='object')pages.push(incidentPage(pending,'pending'));
  for(const entry of logs.slice(-MAX_REPORTS).reverse())if(entry&&typeof entry==='object')
   pages.push(incidentPage(entry,'filed'));
+ // Sam's personal casebook contains his actually entered police property
+ // records, without implying a crime, verified owner, or detective rank.
+ const property=save.patrolProperty?.version===1?save.patrolProperty:null;
+ if(property){
+  const items=Object.values(property.items||{}).slice(-MAX_REPORTS).reverse();
+  if(items.length)pages.push({id:'station-property',section:'Police Property',
+   title:'Lost Property Custody Register',
+   kicker:'Items actually collected on Hillsdale patrol and entered at station',
+   paragraphs:['A property custody entry does not establish guilt, an owner or a criminal case.'],
+   items:items.map(e=>({
+    heading:text(e.id,80)+' · '+text(e.date,40),
+    text:text(e.description,220)+' · '+text(e.status,60)+
+     ' · '+(e.chain?.length||0)+' custody entries · '+
+     (e.sealed?'sealed':'unsealed')+' · '+(e.inspected?'inspected':'not inspected')+
+     ' · '+(e.verifiedOwner?'verified owner':'owner not verified')
+   }))});
+ }
  for(const raw of cases.slice(-8))pages.push(...publicCasePages(raw,publicFile));
  const asylumEvidence=Array.isArray(save.incidentObservations?.records)?
   save.incidentObservations.records.filter(e=>e&&typeof e.eventId==='string'&&e.eventId.startsWith('asylum:')):[];

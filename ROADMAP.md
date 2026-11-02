@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.78-dev · verified life records in all four private books
+- [x] Charlie's existing Business Ledger includes **real** accepted component/District/Fair production obligations, documented manufacturing and purchase receipts, earned staffing/equipment and actual contracted deliveries. A hypothetical order is never labeled as paid cash.
+- [x] Sam's existing Casebook includes a private, read-only reference to his own actually filed Hillsdale property custody chain, with explicit unverified-owner status and no fabricated crime evidence.
+- [x] Eli's personal journal includes his genuinely held/transferred nightclub parcels and filed four-contact night shift reports. A manager review or promotion is not silently granted.
+- [x] Edmund's Duty Journal includes actual unresolved stores requests, dated escalations and completed shift handovers. Neither private patient diagnoses nor his unnamed brother's decisions are invented.
+- [x] Original page-turning book design, writer's own notes, saved annotations, story gates and map geometry unchanged. New book pages do not mutate save state.
+- [x] Cross-route isolated regression confirms current profile-only data isolation, recorded facts and no fictional outcomes.
+- [ ] Full Node source suite and Ubuntu Electron actual book rendering/readability still awaiting acceptance; no packaged executable or Actions.
+
 ## November 1, 2026 · v0.7.77-dev · Edmund's documented institutional service
 - [x] Save actual reported ordinary ward assignments as independently verifiable services, with original task and response; no invented patient names or medical histories.
 - [x] Real **supply shortage/request** tasks can create tracked unresolved requisitions only after Edmund physically attends and files the source assignment. Inventory-check-only tasks do not automatically create a supply order.
