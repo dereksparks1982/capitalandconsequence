@@ -46,16 +46,21 @@
   return g;
  }
  const passable=t=>['floor','road','dock'].includes(t);
- function preview(save,place,zone='quay'){
-  if(!placeKnown(save,place)||!ZONES.includes(zone))return null;
+ function preview(save,place,zone=null){
+  if(!placeKnown(save,place))return null;
   const state=regions.ensure(save);
-  if(!state.harborSurvey||state.harborSurvey.place!==place||!ZONES.includes(state.harborSurvey.zone))
-   state.harborSurvey={place,zone,x:entry().x,y:entry().y};
-  const p=state.harborSurvey;
-  if(p.zone!==zone){p.zone=zone;p.x=entry().x;p.y=entry().y}
-  const grid=tiles(p.zone);
-  if(!passable(grid[p.y]?.[p.x])){p.x=entry().x;p.y=entry().y}
-  return {place,zone:p.zone,x:p.x,y:p.y,tiles:grid,width:W,height:H};
+  const active=state.harborSurvey?.place===place&&ZONES.includes(state.harborSurvey.zone)?
+   state.harborSurvey.zone:'quay';
+  const selected=zone===null?active:zone;
+  if(!ZONES.includes(selected))return null;
+  if(!state.harborSurveys||typeof state.harborSurveys!=='object')state.harborSurveys={};
+  const sections=state.harborSurveys[place]||{};
+  const remembered=sections[selected],grid=tiles(selected);
+  let x=Number.isInteger(remembered?.x)?remembered.x:entry().x;
+  let y=Number.isInteger(remembered?.y)?remembered.y:entry().y;
+  if(!passable(grid[y]?.[x])){x=entry().x;y=entry().y}
+  state.harborSurvey={place,zone:selected,x,y};
+  return {place,zone:selected,x,y,tiles:grid,width:W,height:H};
  }
  function step(save,place,dx,dy){
   if(!Number.isInteger(dx)||!Number.isInteger(dy)||Math.abs(dx)+Math.abs(dy)!==1)return {ok:false,reason:'Only one adjacent tile per step.'};
@@ -66,6 +71,9 @@
    return {ok:false,reason:'That part of the harbour layout is blocked.'};
   const record=regions.ensure(save).harborSurvey;
   record.x=nx;record.y=ny;
+  const m=regions.ensure(save);
+  if(!m.harborSurveys[place])m.harborSurveys[place]={};
+  m.harborSurveys[place][s.zone]={x:nx,y:ny};
   return {ok:true,x:nx,y:ny};
  }
  function walkTo(save,place,x,y){
