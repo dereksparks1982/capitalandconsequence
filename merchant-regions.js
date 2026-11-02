@@ -29,7 +29,7 @@ function addPin(save,x,y){
  if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>800||y>600)return{ok:false,reason:'The location is outside the printed chart.'};
  if(m.pins.length>=60)return{ok:false,reason:'The chart has reached its 60-mark limit.'};
  const id=++m.nextPin;
- const pin={id,x:Math.round(clamp(x,800)*10)/10,y:Math.round(clamp(y,600)*10)/10,name:'Chart Mark '+id};
+ const pin={id,x:Math.round(clamp(x,800)*10)/10,y:Math.round(clamp(y,600)*10)/10,name:'Chart Mark '+id,kind:'study'};
  m.pins.push(pin);
  return{ok:true,pin};
 }
@@ -45,6 +45,12 @@ function move(save,id,x,y){
  if(!pin||![x,y].every(Number.isFinite)||x<0||y<0||x>800||y>600)return{ok:false,reason:'Invalid chart placement.'};
  pin.x=Math.round(x*10)/10;pin.y=Math.round(y*10)/10;return{ok:true,pin};
 }
+function classify(save,id,kind){
+ const pin=ensure(save).pins.find(p=>p.id===Number(id));
+ if(!pin)return{ok:false,reason:'Chart pin not found.'};
+ if(!['study','harbor','coast','sea'].includes(kind))return{ok:false,reason:'Unknown area type.'};
+ pin.kind=kind;return{ok:true,pin};
+}
 function remove(save,id){
  const m=ensure(save),index=m.pins.findIndex(p=>p.id===Number(id));
  if(index<0)return{ok:false,reason:'Chart pin not found.'};
@@ -58,7 +64,7 @@ function inspectZone(portName,id){
  const zone=ZONES.find(z=>z.id===id);
  return zone?{port:portName,...zone}:null;
 }
-const api=Object.freeze({ZONES,ensure,addPin,rename,move,remove,port,inspectZone});
+const api=Object.freeze({ZONES,ensure,addPin,rename,move,classify,remove,port,inspectZone});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_MERCHANT_REGIONS=api;
 })(typeof window!=='undefined'?window:globalThis);
