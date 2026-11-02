@@ -180,6 +180,7 @@
     <div class="career-desk-art" aria-label="${escape(route.name)} desk with paper map and record book">
       <div id="careerDeskBlotter" class="career-desk-blotter" aria-label="Movable map, book and collected possessions">
        <button type="button" id="careerDeskMap" data-desk-move="map" class="career-desk-map career-desk-movable" title="Click to open the Washington map; drag to rearrange" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
+        ${route.id==='industrialist'?'<button type="button" id="careerDeskShippingMap" data-desk-move="shipping" class="career-desk-shipping career-desk-movable" title="Open World Shipping Chart; drag to rearrange" aria-label="Open world shipping chart"><img src="assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg" alt="" draggable="false"><small>SHIPPING ROUTES</small></button>':''}
        <button type="button" id="careerDeskLedger" data-desk-move="ledger" class="career-desk-ledger career-desk-movable" title="Click to open ${escape(bookTitle)}; drag to rearrange" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
       </div>
       <div class="career-desk-pencil" aria-hidden="true"></div>
@@ -188,11 +189,16 @@
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
     ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
-    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button><button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
+    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button>${route.id==='industrialist'?'<button type="button" id="careerDeskShippingButton">Shipping Map</button>':''}<button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
     ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button><button type="button" data-desk-refreshment="rest">Rest Break</button></div><p id="careerDeskNeeds" class="character-needs-meter"></p><p id="careerDeskCoffeeNext" class="career-desk-coffee-next"></p><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
    window.FE_DESK_COLLECTION?.attach?.(desk);
    desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
    desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
+    if(route.id==='industrialist'){
+     const openShipping=()=>window.FE_MERCHANT_MAP?.open?.(S,()=>{save(true);render()});
+     desk.querySelector('#careerDeskShippingMap').onclick=openShipping;
+     desk.querySelector('#careerDeskShippingButton').onclick=openShipping;
+    }
    desk.querySelector('#careerDeskEnterLocation').onclick=()=>window.FE_CITY?.openRoom?.(S.currentLocation.locationId,S.currentLocation.roomId);
    desk.querySelector('#careerDeskLedger').onclick=()=>window.FE_PERSONAL_BOOK?.open?.();
    desk.querySelector('#careerDeskMenu').onclick=open;
