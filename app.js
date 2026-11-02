@@ -1275,6 +1275,16 @@ function buyPeddlerGood(id){
 // use the existing saved world clock; no new wall-clock or freight treasury.
 window.FE_PASSENGER_ACTIONS=Object.freeze({
  changed:()=>{save(true);render()},
+ togglePause:()=>{
+  const button=document.getElementById('pauseToggle');
+  if(!button)return {ok:false,reason:'The normal pause control is unavailable.'};
+  button.click();return {ok:true,reason:S.paused?'Simulation paused.':'Simulation resumed.'};
+ },
+ recover:()=>{
+  if(!window.FE_MEDICAL_RECORDS?.pending?.(S))return {ok:false,reason:'No medical emergency is pending.'};
+  const recovered=recoverMedicalEpisode();
+  return {ok:!!recovered,reason:recovered?'Medical recovery completed through the existing system.':'Medical recovery was interrupted.'};
+ },
  board:(to,type)=>{
   const passage=window.FE_PASSENGER_SEA;
   const proposal=passage?.quote?.(S,to,type);
