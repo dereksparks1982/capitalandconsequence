@@ -19,9 +19,10 @@ function initial(day='1878-01-02'){
  return {version:1,lenderId:FAMILY_ID,origin:'Alexandria, Egypt',signed:day,
   principalCents:LOAN_CENTS,originalPrincipalCents:LOAN_CENTS,
   aprBps:APR_BPS,monthlyCents:MONTHLY_CENTS,nextDue:nextMonth(day),
-  interestDueCents:0,principalDueCents:0,installments:[],payments:[],letters:[],
-  dividendIncomeCents:0,consecutiveMisses:0,status:'current',
-  lastAdvanceDate:null,receipts:{},nextId:1};
+  interestDueCents:0,principalDueCents:0,installments:[],payments:[],
+  letters:[{id:1,date:day,kind:'investment',message:'Your father has arranged the American factory financing as a secured loan and a separate voting ownership interest. He expects punctual accounts, honest business conduct, and repayment, not gratitude for a gift.'}],
+  dividendIncomeCents:0,consecutiveMisses:0,status:'current',personalStanding:'recognized',
+  lastAdvanceDate:null,receipts:{},nextId:2};
 }
 function ensure(save){
  if(!save||typeof save!=='object')throw Error('A saved campaign is required.');
@@ -42,7 +43,7 @@ function report(save){
  return {status:f.status,principalCents:f.principalCents,interestDueCents:f.interestDueCents,
   principalDueCents:f.principalDueCents,overdueCents:overdue(f),paymentCents:f.monthlyCents,
   nextDue:f.nextDue,consecutiveMisses:f.consecutiveMisses,
-  dividendIncomeCents:f.dividendIncomeCents,letters:f.letters.slice(-5)};
+  dividendIncomeCents:f.dividendIncomeCents,personalStanding:f.personalStanding,letters:f.letters.slice(-5)};
 }
 function notice(f,date,kind,message){
  const row={id:f.nextId++,date,kind,message};f.letters.push(row);
@@ -80,8 +81,8 @@ function advanceDay(save){
     'The secured creditor gives formal notice that the outstanding business loan is in default.');
   }
   if(f.consecutiveMisses>=6){
-   f.status='repossessed';notice(f,due,'foreclosure',
-    'After repeated unpaid installments, the Whitcomb lender enforces the secured factory interest. Charles loses management authority; his personal life continues.');
+   f.status='repossessed';f.personalStanding='disowned';notice(f,due,'foreclosure',
+    'After repeated unpaid installments, the Whitcomb lender enforces the secured factory interest. Charles loses management authority and is disowned; his life continues outside control of the family firm.');
    outcome={kind:'family-foreclosure',message:'The Whitcomb family enforced its secured factory loan after sustained default.'};
    break;
   }
