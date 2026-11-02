@@ -1,3 +1,14 @@
+## November 1, 2026 · v0.7.80-dev · paid railway ownership and construction
+- [x] The separate Rail Editor remains only a drawing/planning layer. Acquiring a company railway first requires an actual paid charter and company authority, not a free line for every painted sketch.
+- [x] Survey existing connected planned track between distinct planned stations and acquire dated, paid corridor rights. Snapshot the surveyed geometry so editing or deleting a planning sketch does not erase legitimate owned construction.
+- [x] Finish construction through repeated paid 90-minute labor shifts and company-material budgets; no platforms or travel revenue until the full crew work has been funded and completed.
+- [x] Buy up to four actual locomotives for real company cash and authorize paid-fuel trains on completed owned track; preserve the existing Washington world minute for movement.
+- [x] Draw constructed company-owned routes and an FE locomotive distinct from the free rail planning sketch, without changing the fixed map image or pinned geography.
+- [x] Add the Finance/Build controls *inside* the existing map Rail Editor, preserving its original controls, manual track painting and existing demonstration train.
+- [x] Reuse Federal Electric company treasury, sync component works accounting, respect presidential control and save profile isolation, and block duplicate spending with receipt tokens.
+- [x] Focused isolated JS regression covers charter, surveyed route, rights costs, crew progress, completed line, locomotive/fuel, replay guard, no invented passenger fares and no edits to already-constructed lines.
+- [ ] Actual passenger/freight demand, schedules, cargo loading, retained operating workers and maintenance are not yet created; no speculative profit. Full Node suite and native Ubuntu Electron QA remain pending.
+
 ## November 1, 2026 · v0.7.79-dev · real Star Club dining room
 - [x] Replace the Star Club's previously descriptive-only **Dining Room** menu promise with four playable table-service meals, preserving the existing approved rooms, proprietor and the absolute prohibition on cards or gambling.
 - [x] Require a genuine entered Star Club Dining Room, valid game-clock service period, personal funds and actual spent Washington minutes for each purchase. No remote dining, closed-day magic or private-suite bypass.

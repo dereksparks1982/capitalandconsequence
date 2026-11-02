@@ -1,0 +1,14 @@
+# Capital & Consequence v0.7.80-dev | Paid Railway Company Construction
+November 1, 2026. Source-only development; not an accepted Ubuntu Electron release.
+
+## Real ownership vs the existing map planner
+Charles Whitcomb may now finance railroad rights and construction using **Federal Electric company funds** while physically at his factory during the business day. This is a separate saved, attributed railway-company ledger, not a second map or free tract of land. The old rail drawing and station positioning remain unchanged and are **only proposals**.
+
+At the Rail Editor, the initial railway charter costs $250 and 60 game minutes. A connected painted route between two planned stations can be surveyed and acquired as one permitted corridor, with a $75 filing cost plus 45 cents per map pixel of rights. The purchased map geometry and station identities are copied into an independently saved corridor deed so subsequent edits to the penciled plan cannot wipe owned track or teleport a company locomotive. Corridor construction then requires multiple separate **paid 90-minute crew shifts** at $35 each, with no instant opening of a railway line. The full station platforms and rails become marked operational only after the final funded construction shift. All values are provisional business-game balance, not claims about 1878 engineering costs.
+
+After completing a line, Charles can buy a real locomotive for $1,400 and 120 business minutes; a dispatch on owned open rail costs $12 fuel and fifteen minutes. Only one train runs on a company line at once in this prototype, and its visual position moves with **existing Washington time**, not a second clock. Trains already in the original unowned planning editor remain clearly demonstration-only. The new owned FE locomotive is drawn in the original overlay, and keeps its exact purchased route if the plan is later edited. No new map pins, reimagined map images, restricted destinations or character-story changes.
+
+Important limitation: the paid railway does **not** sell fictitious tickets, fabricate passengers or mint freight revenue. Actual cargo booking, customer settlements, timetables, maintenance and wages must be built on real source-of-truth economy before calling this a profitable operating railroad.
+
+## QA
+Focused isolated JavaScript source regression passed actual charter fees, read-only survey, plan-connected station topology, rights acquisition, crew work charges and time, opening after completion, locomotive purchase, fuel debiting, one active train, stable ownership across plan deletion and reload, duplicate receipts and corporate-control checks. Full Node suite and native Linux Electron gameplay remain untested. No GitHub Actions, owner test command, new installer or release tag.

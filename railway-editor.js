@@ -9,7 +9,7 @@ function state(){return config?.getSave?.()}
 function plan(){return root.FE_RAILWAY?.ensure?.(state())}
 function notify(s){const node=$('titleMapRailStatus');if(node)node.textContent=s}
 function snapshot(){past.push(JSON.stringify(plan()));if(past.length>30)past.shift()}
-function commit(s){config?.persist?.();draw();refreshOptions();notify(s)}
+function commit(s){config?.persist?.();draw();refreshOptions();root.FE_RAIL_COMPANY_UI?.render?.();notify(s)}
 function position(p){const v=config?.getView?.()||{x:0,y:0,scale:1};return {x:v.x+p.x*W*v.scale,y:v.y+p.y*H*v.scale}}
 function local(e){
  const r=overlay?.getBoundingClientRect?.(),v=config?.getView?.();
@@ -34,6 +34,25 @@ function draw(){
   ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
   ctx.strokeStyle='#271f1a';ctx.lineWidth=5;ctx.stroke();
   ctx.strokeStyle='#c0ac76';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+ }
+ // Paid lines are stored as immutable company route snapshots. Erasing a
+ // pencil mark cannot silently erase the company's legal deed or built track.
+ for(const line of state()?.railwayCompany?.lines||[]){
+  if(line.status!=='open'||!Array.isArray(line.route)||line.route.length<2)continue;
+  ctx.beginPath();
+  line.route.forEach((point,index)=>{
+   const at=position(point);
+   if(index===0)ctx.moveTo(at.x,at.y);else ctx.lineTo(at.x,at.y);
+  });
+  ctx.strokeStyle='#645333';ctx.lineWidth=7;ctx.setLineDash([]);ctx.stroke();
+  ctx.strokeStyle='#d0b36d';ctx.lineWidth=2;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);
+ }
+ const ownedLocomotive=root.FE_RAIL_COMPANY?.locomotivePosition?.(state());
+ if(ownedLocomotive){
+  const a=position(ownedLocomotive);
+  ctx.fillStyle='#6f341b';ctx.strokeStyle='#f6d492';ctx.lineWidth=2;
+  ctx.fillRect(a.x-12,a.y-8,24,16);ctx.strokeRect(a.x-12,a.y-8,24,16);
+  ctx.fillStyle='#f2e0b4';ctx.font='bold 10px monospace';ctx.fillText('FE',a.x-8,a.y+3);
  }
  for(const s of p.stations){
   const v=position(s.at);
@@ -139,7 +158,7 @@ function mount(args){
  },500);
  return true;
 }
-function sync(){if(!config)return;draw()}
+function sync(){if(!config)return;draw();root.FE_RAIL_COMPANY_UI?.render?.()}
 root.FE_RAIL_EDITOR=Object.freeze({mount,sync,isEditing:()=>editing});
 root.FE_RAIL_EDITOR_SETUP?.();
 })(typeof window!=='undefined'?window:globalThis);
