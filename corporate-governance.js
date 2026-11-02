@@ -4,8 +4,10 @@
  */
 (function(root){
 'use strict';
+const family=typeof module==='object'&&module.exports?require('./whitcomb-family.js'):root.FE_WHITCOMB_FAMILY;
 const PEOPLE=Object.freeze([
  {id:'charles',name:'Charles Whitcomb',temperament:'founder',loyalty:100},
+ {id:'whitcomb-father',name:'Whitcomb Senior · Family Investor',temperament:'former-officer',loyalty:72},
  {id:'harlow',name:'Edwin Harlow',temperament:'banker',loyalty:68},
  {id:'vale',name:'Harrison Vale',temperament:'financier',loyalty:42},
  {id:'prescott',name:'Nathaniel Prescott',temperament:'industrialist',loyalty:60},
@@ -16,7 +18,7 @@ const positive=n=>Number.isSafeInteger(n)&&n>0;
 const dollars=cents=>'$'+(cents/100).toFixed(2);
 const validDate=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s);
 const clone=x=>JSON.parse(JSON.stringify(x));
-function initial(){return {version:1,status:'private',ticker:'FEC',issuedShares:10000,founderShares:10000,
+function initial(){return {version:1,status:'private',ticker:'FEC',issuedShares:10000,founderShares:7500,familyShares:2500,
  publicShares:0,rivalShares:0,marketShares:0,offeringPriceCents:500,offeringDate:null,
  directors:[],president:'charles',charterDate:null,authorizations:{},shareholderProxies:0,
  votes:[],dividends:[],bid:null,acquisitions:[],lastAdvanceDate:null,events:[],receipts:{},nextId:1};}
@@ -25,10 +27,10 @@ function ensure(save){
  if(!save.corporateGovernance)save.corporateGovernance=initial();
  const c=save.corporateGovernance;
  if(c.version!==1||!Number.isSafeInteger(c.issuedShares)||!positive(c.issuedShares)||
-  !Number.isSafeInteger(c.founderShares)||!Number.isSafeInteger(c.publicShares)||
+  !Number.isSafeInteger(c.founderShares)||!Number.isSafeInteger(c.familyShares)||!Number.isSafeInteger(c.publicShares)||
   !Number.isSafeInteger(c.rivalShares)||!Number.isSafeInteger(c.marketShares)||
-  c.founderShares<0||c.publicShares<0||c.rivalShares<0||c.marketShares<0||
-  c.issuedShares!==c.founderShares+c.publicShares+c.rivalShares+c.marketShares||
+  c.founderShares<0||c.familyShares<0||c.publicShares<0||c.rivalShares<0||c.marketShares<0||
+  c.issuedShares!==c.founderShares+c.familyShares+c.publicShares+c.rivalShares+c.marketShares||
   !Array.isArray(c.directors)||!Array.isArray(c.events)||!Array.isArray(c.votes)||
   !Array.isArray(c.dividends)||!Array.isArray(c.acquisitions)||!c.receipts)
   throw Error('Unrecognized corporate charter. Save preserved; no automatic reset.');
@@ -36,13 +38,14 @@ function ensure(save){
 }
 function percent(shares,total){return total?Math.round(10000*shares/total)/100:0;}
 function ownership(save){
- const c=ensure(save),personal=c.founderShares+c.marketShares,others=c.publicShares+c.rivalShares;
+ const c=ensure(save),personal=c.founderShares+c.marketShares,others=c.publicShares+c.rivalShares+c.familyShares;
  return {founder:personal,founderPercent:percent(personal,c.issuedShares),
+  family:c.familyShares,familyPercent:percent(c.familyShares,c.issuedShares),
   outsider:others,outsiderPercent:percent(others,c.issuedShares),rival:c.rivalShares,
   rivalPercent:percent(c.rivalShares,c.issuedShares),issued:c.issuedShares,
   public:c.publicShares,tradable:c.publicShares};
 }
-function canManage(save){const c=ensure(save);return save.characterRoute==='industrialist'&&c.president==='charles';}
+function canManage(save){const c=ensure(save);return save.characterRoute==='industrialist'&&c.president==='charles'&&family.ensure(save).status!=='repossessed';}
 function syncTreasury(save){if(save.componentWorks&&Number.isFinite(save.companyCash))save.componentWorks.cashCents=Math.round(save.companyCash*100);}
 function register(save,kind,message,details={}){
  const c=ensure(save),entry={id:'FE-CORP-'+c.nextId++,date:save.gameDate||'1878-01-02',kind,message,...details};
@@ -72,17 +75,19 @@ function incorporate(save,token){
   save.companyCash=Math.round((save.companyCash-75)*100)/100;syncTreasury(save);
   c.status='chartered';c.charterDate=save.gameDate;c.directors=[
    {id:'charles',name:'Charles Whitcomb',loyalty:100,temperament:'founder'},
-   {id:'harlow',name:'Edwin Harlow',loyalty:68,temperament:'banker'},
-   {id:'prescott',name:'Nathaniel Prescott',loyalty:60,temperament:'industrialist'}
-  ];register(save,'charter','Federal Electric incorporated. A three-director board elected Charles president.');
-  return {ok:true,message:'Corporate charter recorded. Charles remains president and owns every voting share.'};
+   {id:'whitcomb-father',name:'Whitcomb Senior · Family Investor',loyalty:72,temperament:'former-officer'},
+   {id:'harlow',name:'Edwin Harlow',loyalty:68,temperament:'banker'}
+  ];register(save,'charter','Federal Electric incorporated. Charles retains 75% of original voting shares and his father retains 25%, including a designated investor board seat.');
+  return {ok:true,message:'Charter recorded. Charles is president with 75% of voting shares; his father owns 25% and holds an investor board seat.'};
  });
 }
 function appoint(save,id,slot,token){
  return commit(save,token,c=>{
   const reason=check(save,'factory');if(reason)return reject(reason);
   if(c.status==='private')return reject('Incorporate Federal Electric before electing directors.');
-  if(!Number.isInteger(slot)||slot<1||slot>=c.directors.length)return reject('Choose one of the two outside director seats.');
+  if(!Number.isInteger(slot)||slot<1||slot>=c.directors.length)return reject('Choose an elected outside director seat.');
+  if(c.directors[slot]?.id==='whitcomb-father'&&percent(c.familyShares,c.issuedShares)>=15)
+   return reject('The family investor seat is reserved while the Whitcomb family holds at least 15% of votes.');
   const candidate=electable(c,id);if(!candidate)return reject('Candidate is unavailable or already serves.');
   if(ownership(save).founderPercent+c.shareholderProxies<=50)return reject('You lack a majority of the voting shares and pledged shareholder proxies.');
   c.directors[slot]={...candidate};c.shareholderProxies=0;
@@ -105,6 +110,13 @@ function lobby(save,id,token){
 }
 function boardSupport(save,resolution,d){
  if(d.id==='charles')return resolution!=='remove';
+ if(d.id==='whitcomb-father'){
+  const debt=family.report(save);
+  if(resolution==='ipo')return !['demand','repossessed'].includes(debt.status);
+  if(resolution==='dividend')return debt.overdueCents===0&&(save.companyCash||0)>=1200;
+  if(resolution==='reinstate')return debt.status!=='repossessed';
+  return false;
+ }
  const pressure=(save.reputation||50)<40?-18:(save.reputation||50)>=75?9:0;
  const cashPoor=(save.companyCash||0)<600?-20:0;
  const thresholds={ipo:54,dividend:66,reinstate:60,remove:75};
@@ -119,6 +131,7 @@ function vote(save,resolution,token){
   if(resolution==='ipo'&&c.status!=='chartered')return reject('Federal Electric is already listed.');
   if(resolution==='dividend'&&c.status!=='public')return reject('A public-company dividend requires an exchange listing.');
   if(resolution==='reinstate'&&c.president==='charles')return reject('Charles already holds the presidency.');
+  if(family.ensure(save).status==='repossessed'&&resolution==='reinstate')return reject('A secured family receivership cannot be bypassed by an ordinary board vote.');
   if(resolution==='dividend'&&Math.round((save.companyCash||0)*100)<10000)return reject('The company requires at least $100 for a dividend.');
   if(resolution==='dividend'&&c.dividends.some(d=>d.date.slice(0,7)===save.gameDate.slice(0,7)))return reject('The board has already paid a dividend this month.');
   const votes=c.directors.map(d=>({id:d.id,yes:boardSupport(save,resolution,d)}));
@@ -130,9 +143,11 @@ function vote(save,resolution,token){
    const cents=Math.floor(Math.round((save.companyCash||0)*100)*.12);
    if(cents<1000)return reject('A dividend must distribute at least $10 in company funds.');
    const founderCents=Math.floor(cents*(c.founderShares+c.marketShares)/c.issuedShares);
+   const familyCents=Math.floor(cents*c.familyShares/c.issuedShares);
    save.companyCash=Math.round((save.companyCash-cents/100)*100)/100;syncTreasury(save);
    save.personalCash=Math.round(((save.personalCash||0)+founderCents/100)*100)/100;
-   c.dividends.push({date:save.gameDate,totalCents:cents,founderCents});
+   family.dividend(save,familyCents);
+   c.dividends.push({date:save.gameDate,totalCents:cents,founderCents,familyCents});
   }
   register(save,'board-vote','Board '+(passed?'approved ':'rejected ')+resolution+' ('+ayes+' to '+(votes.length-ayes)+').');
   return {ok:true,passed,ayes,nays:votes.length-ayes,message:'Board '+(passed?'approved ':'rejected ')+resolution+' by '+ayes+' to '+(votes.length-ayes)+'.'};
@@ -182,16 +197,17 @@ function prospectus(save,newShares,secondaryShares,priceCents){
  const founderProceedsCents=Math.floor(founderGrossCents*95/100);
  const feesCents=companyGrossCents+founderGrossCents-companyProceedsCents-founderProceedsCents;
  const founderPercent=percent(founder+c.marketShares,issued);
+ const familyPercent=percent(c.familyShares,issued);
  const dilution=Number((100-founderPercent).toFixed(2));
  const majorityLost=founderPercent<=50;
  return {ok:problems.length===0,reason:problems[0]||null,problems,
   fairPriceCents:fair,minPriceCents:minPrice,maxPriceCents:maxPrice,
   newShares,secondaryShares,priceCents,issuedShares:issued,sharesPlaced,
-  founderShares:founder,founderPercent,outsiderPercent:dilution,majorityLost,
+  founderShares:founder,founderPercent,familyShares:c.familyShares,familyPercent,outsiderPercent:dilution,majorityLost,
   companyGrossCents,founderGrossCents,companyProceedsCents,founderProceedsCents,feesCents,
   note:majorityLost?'Charles would lose majority voting control. Outside holders may elect directors or mount a takeover.':
    founderPercent<65?'Charles keeps a majority, but a concentrated outside float increases takeover pressure.':
-   'Charles retains a majority stake, although directors and shareholders still have influence.'};
+   'Charles retains a majority stake, although his father and other shareholders still have independent votes.'};
 }
 function listing(save,newShares,secondaryShares,priceCents,token){
  return commit(save,token,c=>{
@@ -210,10 +226,10 @@ function listing(save,newShares,secondaryShares,priceCents,token){
   register(save,'ipo','Federal Electric listed as FEC: '+newShares+' new and '+secondaryShares+' founder shares sold.',
    {newShares,secondaryShares,priceCents,companyProceedsCents:terms.companyProceedsCents,
     founderProceedsCents:terms.founderProceedsCents,underwritingFeesCents:terms.feesCents,
-    founderPercent:terms.founderPercent});
+    founderPercent:terms.founderPercent,familyShares:c.familyShares,familyPercent:terms.familyPercent});
   return {ok:true,message:'FEC listed. Company raised '+dollars(terms.companyProceedsCents)+
    '; Charles received '+dollars(terms.founderProceedsCents)+
-   '. Ownership '+terms.founderPercent.toFixed(2)+'%.',
+   '. Charles '+terms.founderPercent.toFixed(2)+'%, father '+terms.familyPercent.toFixed(2)+'%.',
    newShares,secondaryShares,founderPercent:terms.founderPercent,
    companyProceedsCents:terms.companyProceedsCents,founderProceedsCents:terms.founderProceedsCents,
    underwritingFeesCents:terms.feesCents};
@@ -280,6 +296,8 @@ function removePresident(save,cause){
 }
 function advanceDay(save){
  const c=ensure(save);if(!validDate(save.gameDate)||c.lastAdvanceDate===save.gameDate)return null;
+ const familyOutcome=family.advanceDay(save);
+ if(familyOutcome){c.president='whitcomb-father';register(save,'family-foreclosure',familyOutcome.message);return familyOutcome;}
  const previous=c.lastAdvanceDate;c.lastAdvanceDate=save.gameDate;
  const elapsed=previous?Math.max(1,Math.min(90,Math.round((Date.parse(save.gameDate)-Date.parse(previous))/86400000))):1;
  for(const acquisition of c.acquisitions){
