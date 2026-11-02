@@ -76,7 +76,8 @@ If the requested work cannot be done without an unapproved collateral change, **
 
 ## DEVELOPMENT AND RELEASE RULES
 
-- **No GitHub Actions.**
+- **GitHub Actions policy (owner revised November 2, 2026; shared DK LAB rule):** GitHub Actions are permitted again because usage limits have reset, but **only sparingly and when genuinely needed**. Prefer local Linux tests. Reserve Actions for meaningful integration, compatibility, and release verification that cannot reasonably be covered locally. Do not add workflows or trigger runs simply because a small change was committed.
+- For justified Actions runs, keep jobs targeted and efficient; minimize billed minutes and artifact uploads, storage, and retention. Do not accumulate unnecessary artifacts. Accurately report which checks ran and which remain unverified.
 - **Linux-first.** Work in the existing project and existing installed game; do not silently create a replacement project or duplicate installation.
 - No password prompts, SSH-agent or keyring dependencies, automatic browser opens, or `set -e` commands.
 - Do not split or reorganize existing source files merely for style, size, or aesthetics.
