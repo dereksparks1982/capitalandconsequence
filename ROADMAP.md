@@ -1,5 +1,18 @@
 > **CURRENT DEVELOPMENT POLICY · NOVEMBER 2, 2026:** [COMPANY_BIBLE.md](COMPANY_BIBLE.md) contains **development/build/release rules only**; [GAME_LORE.md](GAME_LORE.md) indexes story, world, character, map, and gameplay canon. The owner **allows GitHub Actions and other compute, both sparingly**. Prefer appropriate local Linux checks and use hosted resources only when justified. Older dated “No GitHub Actions” statements below are preserved as history and are **superseded**, not current prohibitions. No gameplay or release authorization follows from this documentation change.
 
+## November 2, 2026 · v0.7.90-dev · physical maritime merchant commerce (source only)
+- [x] Add six generic merchant cargo families in a separate, cash-backed inventory from third-party freight and Federal Electric components. Port supply is finite by saved game week, ship holds are capacity-limited and quotes do not mutate state.
+- [x] Purchase physical goods with the actual fleet treasury, pay loading and original departure costs, and assign a unique saved bill of lading to an owned, berthed vessel on an established mapped shipping route.
+- [x] Only after an actual world-clock arrival may surviving cargo enter the receiving port's saved storehouse. No sale credit on dispatch, no double arrival, and no instant return or teleport.
+- [x] Offer genuine local port-agent sales with gross amount, commission, duty, net fleet receipt and unique one-time removal of the sold cargo.
+- [x] Extend sea-loss and partial-damage outcomes to actual merchant goods, paying separately purchased cargo insurance independently of the vessel's hull cover. Lost goods cannot be sold.
+- [x] Make purchase, forecast profit, premium, ship capacity, route and live stock visible on the existing world chart and industrial fleet screens; remember chart quotation controls across redraws.
+- [x] Display actual delivered merchant goods in physical overseas warehouses and offer fifteen-minute in-person market sale only when Charles has arrived and walked into the market on the single world clock.
+- [x] Add two new offline cargo regressions covering finite stocks, ownership, purchase, shipment, insurance, damage, sea loss, deliberate sales, save/reload and original Washington chart preservation; focused V8 source checks also reran existing maritime freight/route quote regressions.
+- [ ] Run the **complete** local Node suite and genuine Ubuntu Electron visual and multi-day gameplay tests before an accepted game build. In particular review port form selection, remote vs physical agent sales, long-period settlement and insured damage.
+- [ ] Research historic cargo prices, seasonal supply, customs rules and document original chart image redistribution rights; current rates are explicitly **provisional**. No named NPC or canon chronology was changed.
+See `docs/RELEASE-NOTES-v0.7.90-dev.md`. GitHub Actions and billable compute were not used in this build.
+
 ## November 2, 2026 · v0.7.89-dev · observable weather delays and real foreign lodging (source only)
 - [x] Deterministic voyage-specific, saved rough-sea delays revealed only after the ship reaches the affected ocean segment, never rolled by refreshing the map or reloading.
 - [x] Adjust saved ETA/arrival minute at most once, and preserve normal world-clock reports, health, ship location, paid fares, cargo and cash ownership.
