@@ -187,8 +187,19 @@ function shipPanel(id){
  const s=fleet().ships.find(v=>String(v.id)===String(id));if(!s)return'<p>Ship not found.</p>';
  const p=nav.position(s,session.save);
  let html='<h3>'+esc(s.name)+'</h3><p><strong>'+esc(s.status.toUpperCase())+'</strong> · '+esc(s.type)+' · Hull '+Number(s.condition).toFixed(0)+'%</p>';
- if(s.status==='at-sea'&&s.trip)
-  html+='<p>'+esc(s.trip.from)+' → '+esc(s.trip.to)+'<br>ETA '+esc(s.trip.eta)+' · '+Math.floor((p?.progress||0)*100)+'% sailed</p>';
+ if(s.status==='at-sea'&&s.trip){
+  const trip=s.trip,seaMiles=trip.nauticalMiles||nav.route(trip.from,trip.to)?.nauticalMiles||0;
+  const cargo=trip.cargo==='electric'?trip.consignment?
+   trip.consignment.units+' '+trip.consignment.productId+' Federal Electric components':'Federal Electric consignment':
+   'Merchant freight';
+  html+='<p>'+esc(trip.from)+' → '+esc(trip.to)+'</p>'+
+   '<dl class="ocean-voyage-facts"><dt>Cargo</dt><dd>'+esc(cargo)+'</dd>'+
+   '<dt>Departure</dt><dd>'+esc(trip.depart)+'</dd>'+
+   '<dt>Expected arrival</dt><dd>'+esc(trip.eta)+'</dd>'+
+   '<dt>Distance</dt><dd>'+Math.round(seaMiles).toLocaleString('en-US')+' nautical miles</dd>'+
+   '<dt>Passage</dt><dd>'+Math.floor((p?.progress||0)*100)+'% complete; '+(p?.remainingDays??'unknown')+' days remaining</dd>'+
+   '<dt>Hull insurance</dt><dd>'+(trip.insured?'Covered':'Not purchased')+'</dd></dl>';
+ }
  else if(s.status==='in-port'){
   const destinations=fleet().ports.filter(v=>v!==s.port);
   html+='<p>Berth: '+esc(s.port)+'</p><div class="ocean-form"><label>Destination<select data-ocean-destination="'+s.id+'">'+
@@ -210,6 +221,12 @@ function business(){
   html+='<p>Federal Electric cargo at '+esc(port)+': '+goods.map(g=>esc(g.units+' '+g.productId)).join(', ')+
    ' '+action('sell:'+port,'Complete Local Sale')+'</p>';
  html+='<h4>Trade Ports</h4><p>'+e.ports.map(esc).join(' · ')+'</p>';
+ const history=root.FE_EMPIRE.ensure(session.save).log||[];
+ if(history.length)html+='<details class="ocean-voyage-log"><summary>Shipping Office Journal · '+history.length+' entries</summary>'+
+  history.slice(0,20).map(line=>'<p>'+esc(line)+'</p>').join('')+'</details>';
+ const receipts=(e.ledger||[]).slice(-18).reverse();
+ if(receipts.length)html+='<details class="ocean-voyage-log"><summary>Fleet Expenses & Earnings · '+e.ledger.length+' receipts</summary>'+
+  receipts.map(row=>'<p>'+esc(row.date)+' · '+esc(row.label)+' · '+cash(row.amount)+'</p>').join('')+'</details>';
  return html;
 }
 function draw(reset){
