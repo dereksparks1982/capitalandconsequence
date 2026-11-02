@@ -10,7 +10,8 @@ const GAMES=Object.freeze({
  gallery:{name:'Tin Duck Shooting Gallery',feeCents:8,seconds:240,attempts:4,action:'Fire at a moving tin duck',theme:'Clockwork ducks, spring-loaded toy rifle'},
  cans:{name:'Knock Down the Cans',feeCents:4,seconds:180,attempts:3,action:'Throw a ball at stacked tins',theme:'Three pyramids of painted tins'},
  bell:{name:'High Striker Bell',feeCents:5,seconds:120,attempts:3,action:'Swing the mallet',theme:'A hammer, a tall post and a brass bell'},
- pennies:{name:'Penny Peg Drop',feeCents:3,seconds:120,attempts:3,action:'Drop a penny through pegs',theme:'Wooden pegs and numbered pockets'}
+ pennies:{name:'Penny Peg Drop',feeCents:3,seconds:120,attempts:3,action:'Drop a penny through pegs',theme:'Wooden pegs and numbered pockets'},
+ clockwork:{name:'Clockwork Duck Challenge',feeCents:9,seconds:240,attempts:4,action:'Time your shot at a winding mechanical duck',theme:'Five moving target lanes and a hand-cranked mechanism'}
 });
 const PRIZES=Object.freeze({
  consolation:Object.freeze([{code:'paper-crown',name:'Painted Paper Crown',kind:'souvenir',description:'A cheap paper carnival crown.'},
@@ -44,20 +45,37 @@ function start(save,key){
  if(state.serial>200000)return {ok:false,reason:'The carnival ledger is full.'};
  const round={id:'midway-'+engagement.id.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,36)+'-'+key+'-'+(state.serial+1),
   engagementId:engagement.id,key,plays:[],score:0,attempts:conf.attempts,
-  paidCents:conf.feeCents,startedMinute:save.worldCalendar?.worldMinute??null};
+  paidCents:conf.feeCents,startedMinute:save.worldCalendar?.worldMinute??null,
+  ...(key==='clockwork'?{movesInTurn:0,totalMechanismMoves:0,moves:[]}: {})};
  save.personalCash=(balance-conf.feeCents)/100;
  state.serial++;state.active=round;
  return {ok:true,round:{...round}};
 }
 function target(round,index){
+ if(round.key==='clockwork')return (hash(round.id+'|clockwork-peg')%5+index*2+(round.movesInTurn||0))%5;
  return hash(round.id+'|target|'+index)%5;
+}
+function advanceTarget(save,spentSeconds){
+ const round=save?.carnivalGames?.active;
+ if(!round||round.key!=='clockwork')return {ok:false,reason:'No paid clockwork duck round is underway.'};
+ if(!available(save)||save.paused||save.phase==='report')
+  return {ok:false,reason:'The mechanical target only moves at an active Washington circus booth.'};
+ if(spentSeconds!==30)return {ok:false,reason:'Wait a complete thirty charged game seconds to turn the mechanism.'};
+ if(round.movesInTurn>=2)return {ok:false,reason:'The operator allows only two target changes per shot.'};
+ const before=target(round,round.plays.length);
+ round.movesInTurn++;round.totalMechanismMoves++;
+ round.moves.push({step:round.plays.length+1,minute:save.worldCalendar?.worldMinute||null,
+  previousLane:before,lane:target(round,round.plays.length)});
+ return {ok:true,moved:true,lane:target(round,round.plays.length),roundId:round.id};
 }
 function preview(round){
  if(!round||!GAMES[round.key])return null;
  const attempt=round.plays.length;
  const mark=target(round,attempt),zone=mark<=1?'left side':mark===2?'middle':'right side';
  return {game:GAMES[round.key],step:attempt+1,total:GAMES[round.key].attempts,
-  score:round.score,lanes:5,zone,done:attempt>=GAMES[round.key].attempts};
+  score:round.score,lanes:5,zone,done:attempt>=GAMES[round.key].attempts,
+  ...(round.key==='clockwork'?{movingLane:mark+1,movesRemaining:Math.max(0,2-(round.movesInTurn||0)),
+    shotSeconds:30}: {})};
 }
 function throwAt(save,choice,award){
  const state=ensure(save),round=state?.active;
@@ -75,6 +93,7 @@ function throwAt(save,choice,award){
   (gap===0?4:gap===1?2:0);
  const hit=points>=2;
  round.plays.push({choice,mark,points});round.score+=points;
+ if(round.key==='clockwork')round.movesInTurn=0;
  if(round.plays.length<conf.attempts)return {ok:true,finished:false,hit,points,round:{...round}};
  const max=conf.attempts*(round.key==='bell'?5:4);
  const fraction=round.score/max;
@@ -103,7 +122,7 @@ function claim(save,award){
  }
  return result;
 }
-const api=Object.freeze({GAMES,PRIZES,ensure,available,start,preview,throwAt,claim});
+const api=Object.freeze({GAMES,PRIZES,ensure,available,start,preview,throwAt,advanceTarget,claim});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.FE_CARNIVAL_GAMES=api;
 })(typeof window!=='undefined'?window:globalThis);

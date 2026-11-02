@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.82-dev · tactile, paid-clockwork carnival challenge
+- [x] Add **Clockwork Duck Challenge** as a seventh independent booth rather than overwriting any of the six already implemented carnival games and their saved rules.
+- [x] Actual duck target changes between five aim lanes by deliberately winding the mechanism for an extra thirty Washington game seconds. The old carnival's paid booth admission and score/prize ledgers still apply.
+- [x] Limit each shot to at most two extra mechanism movements, retain the current target until the player aims, and log the visible lane/position and timing for later replay.
+- [x] Render the currently lit moving duck lane and a 'Turn Clockwork' button in the existing deliberately simple wooden carnival booth, without moving the city's map, changing any story gate or relying on real timers.
+- [x] Keep all six original prize tables, per-booth physical cash fees, genuine award/inventory behavior, traveling circus schedule and save history unchanged.
+- [x] Focused source regression covers actual in-world minute-plus-seconds remainder, admission fee, inability to skip wait time or exceed per-shot wind cap, repeated aim results, save/reload and refusal to affect the original ring-toss booth.
+- [ ] More fully animated booth art and physics, full Node suite and actual Ubuntu Electron visual/play acceptance remain future work. No Actions, released executable or alternate World's Fair timing.
+
 ## November 1, 2026 · v0.7.81-dev · actual Federal Electric rail cargo
 - [x] Allow loading only **real finished physical components** in Federal Electric warehouse and only for a completed, genuinely owned rail corridor with a paid locomotive available.
 - [x] Record company-paid cartage and loading from the existing factory to the departure platform in thirty Washington minutes. Warehouse stock is consumed once on successful load, with no invented second bag or customer payment.

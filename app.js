@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.81-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.82-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1170,6 +1170,21 @@ function throwAtCircusBooth(choice){
   return {ok:false,reason:'You must be present at the carnival booth.'};
  const result=service.throwAt(S,choice,item=>window.FE_PERSONAL_EFFECTS?.acquire?.(item));
  if(result.ok){save(true);window.FE_BEDROOM_CHEST?.refresh?.()}
+ return result;
+}
+function waitForCircusClockwork(){
+ const engine=window.FE_CARNIVAL_GAMES;
+ if(S.paused||S.phase==='report'||cityRoomSession.dev||
+    !engine?.available?.(S)||engine.ensure(S)?.active?.key!=='clockwork')
+  return {ok:false,reason:'Wait beside your paid clockwork target during the active circus visit.'};
+ if((engine.ensure(S).active.movesInTurn||0)>=2)
+  return {ok:false,reason:'The operator allows only two clockwork turns per shot.'};
+ if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,30))
+  return {ok:false,reason:'The Washington clock has no available thirty-second interval.'};
+ if(advanceWorldSimulation(30,true,'action')!==30)
+  return {ok:false,reason:'The clockwork interval was interrupted; the target did not advance.'};
+ const result=engine.advanceTarget(S,30);
+ if(result.ok)save(true);
  return result;
 }
 function claimCircusPrizes(){
@@ -2875,7 +2890,7 @@ function openCityRoom(locationId,roomId,options={}){
   guardedRoomPanel('bedroom sleep',()=>window.FE_SLEEP_UI?.render?.(S,sleepAtHome,{locationId:location.id,roomId:room.id,dev},()=>save(true)));
   guardedRoomPanel('bedroom chest',()=>window.FE_BEDROOM_CHEST?.render?.(S,{locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('circus midway',()=>window.FE_CARNIVAL_UI?.render?.(S,{
-   start:startCircusBooth,throwAt:throwAtCircusBooth,claim:claimCircusPrizes
+   start:startCircusBooth,throwAt:throwAtCircusBooth,wait:waitForCircusClockwork,claim:claimCircusPrizes
   },{locationId:location.id,roomId:room.id,dev}));
   guardedRoomPanel('fortune-teller',()=>window.FE_TAROT_WAGON_UI?.render?.(S,requestFortuneReading,
    {locationId:location.id,roomId:room.id,dev}));

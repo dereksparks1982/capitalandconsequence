@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 if(typeof document==='undefined')return;
-let ui=null,activeSave=null,startAction=null,throwAction=null,claimAction=null;
+let ui=null,activeSave=null,startAction=null,throwAction=null,claimAction=null,waitAction=null;
 function section(){
  if(ui?.isConnected)return ui;
  const holder=document.querySelector('#cityRoomOverlay .city-room-placeholder');
@@ -21,8 +21,11 @@ function section(){
   const start=e.target.closest('[data-start-game]');
   const shot=e.target.closest('[data-midway-throw]');
   const claim=e.target.closest('[data-claim-prize]');
+  const wait=e.target.closest('[data-midway-wait]');
   if(start&&typeof startAction==='function'){const r=startAction(start.dataset.startGame);show(r?.reason||r?.message||'The round has begun.');refresh();}
-  else if(shot&&typeof throwAction==='function'){
+  else if(wait&&typeof waitAction==='function'){
+   const r=waitAction();show(r?.ok?'The clockwork duck moved to lane '+r.lane+'.':r?.reason||'The target stayed still.');refresh();
+  }else if(shot&&typeof throwAction==='function'){
    const r=throwAction(Number(shot.dataset.midwayThrow));
    const text=r?.finished?
     (r.tier==='none'?'No prize this time.':r.record?.prize?'Won: '+r.record.prize.name+'.':'Prize earned but awaiting room in your pockets.'):
@@ -48,17 +51,32 @@ function refresh(){
   list.hidden=true;game.hidden=false;game.replaceChildren();
   const header=document.createElement('h5');header.textContent=details.game.name+' · '+details.game.theme;
   const stats=document.createElement('p');stats.textContent='Turn '+details.step+'/'+details.total+' · Score '+details.score;
-  const help=document.createElement('p');help.textContent=details.game.action+'. The attendant points toward the '+details.zone+' of the stall. Choose one of five positions.';
+  const help=document.createElement('p');
+  help.textContent=record.key==='clockwork'?
+   'The spring-driven duck is now in lane '+details.movingLane+
+   '. Aim at its CURRENT position, or turn the mechanism for 30 game seconds. Up to two waits per shot.' :
+   details.game.action+'. The attendant points toward the '+details.zone+' of the stall. Choose one of five positions.';
   const targets=document.createElement('div');targets.className='cc-midway-targets';
   for(let i=0;i<5;i++){
    const button=document.createElement('button');button.type='button';button.dataset.midwayThrow=String(i);
-   button.textContent=record.key==='balloons'?'◯':record.key==='gallery'?'♞':
+   button.textContent=record.key==='balloons'?'◯':record.key==='gallery'||record.key==='clockwork'?'♞':
     record.key==='pennies'?'▼':record.key==='bell'?'▥':record.key==='cans'?'▣':'◉';
    button.title='Aim at position '+(i+1);
+   if(record.key==='clockwork'){
+    button.dataset.currentTarget=String(i+1===details.movingLane);
+    button.style.outline=i+1===details.movingLane?'3px solid #d9aa50':'';
+   }
    button.setAttribute('aria-label','Aim at position '+(i+1));
    targets.appendChild(button);
   }
-  game.append(header,stats,help,targets);return;
+  game.append(header,stats,help,targets);
+  if(record.key==='clockwork'){
+   const wait=document.createElement('button');wait.type='button';wait.dataset.midwayWait='1';
+   wait.textContent='Turn Clockwork · 30 Game Seconds ('+details.movesRemaining+' left)';
+   wait.disabled=details.movesRemaining<=0;
+   game.appendChild(wait);
+  }
+  return;
  }
  list.hidden=false;game.hidden=true;
  for(const [key,cfg] of Object.entries(engine.GAMES)){
@@ -77,7 +95,7 @@ function refresh(){
 }
 function render(save,actions,{locationId,roomId,dev=false}={}){
  activeSave=save;
- startAction=actions?.start;throwAction=actions?.throwAt;claimAction=actions?.claim;
+ startAction=actions?.start;throwAction=actions?.throwAt;claimAction=actions?.claim;waitAction=actions?.wait;
  const node=section();
  if(!node)return;
  const event=root.FE_CIRCUS_TOUR?.active?.(save),overlay=document.getElementById('cityRoomOverlay');
