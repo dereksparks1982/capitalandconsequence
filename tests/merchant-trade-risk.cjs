@@ -58,7 +58,7 @@ assert(!empire.dispatchTrade(s,ship.id,'Baltimore','machinery',1,true).ok);
 assert.equal(trade.ensure(s).used['New York|machinery|'+trade.week({gameDate:badDay})],5,
  'the actual purchase remains recorded against its original calendar week');
 const oldWeek=trade.week(s);
-s.gameDate=addDays(badDay,14);s.worldCalendar.worldMinute=minute(s.gameDate);
+s.gameDate=addDays(badDay,28);s.worldCalendar.worldMinute=minute(s.gameDate);
 assert(trade.week(s)>oldWeek);
 assert.equal(trade.remaining(s,'New York','machinery'),trade.stockFor('New York','machinery'),'port supply refreshes only with a new calendar week');
 // A company-account identity check must deny phantom payouts.
