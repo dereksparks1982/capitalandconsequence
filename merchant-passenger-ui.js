@@ -98,6 +98,7 @@ function draw(){
   body+=button('booking-close','Close Ticket Office');
  }else if(travel.phase==='at-sea'){
   const trip=st.voyage;
+  const meters=save.characterNeeds?.meters||{};
   body='<div class="passenger-voyage-summary"><p>From <b>'+esc(trip.from)+'</b> to <b>'+esc(trip.to)+'</b> · '+esc(trip.type)+'</p>'+
    '<p>Estimated arrival: <b>'+esc(trip.etaDate)+'</b> · '+travel.daysRemaining+' days remaining.</p>'+
    '<p>'+(travel.feeder?'On the river/coastal transfer.':'At sea along the charted ocean route.')+
@@ -113,6 +114,13 @@ function draw(){
     button('shipping-map','Inspect Full World Shipping Chart')+
     button('advance-day',save.phase==='report'?'Review Complete · Begin Next Day':'Advance Through Current Phase')+
     '<p class="fine">All hours pass through the saved Washington clock. Daily reports, health, world events and expenses remain active. No real-time skipping.</p></div>';
+  body+='<section class="passenger-amenities"><h3>Passenger Cabin & Galley</h3>'+
+   '<p>Energy '+Math.round(meters.energy??0)+'/100 · Hunger '+Math.round(meters.hunger??0)+
+   '/100 · Thirst '+Math.round(meters.thirst??0)+'/100 · Personal cash '+money(save.personalCash)+'</p>'+
+   button('cabin-rest','Sleep in Passenger Cabin')+
+   button('galley-meal','Galley Meal · $0.50')+
+   button('galley-water','Drinking Water · $0.10')+
+   '<p class="fine">These actions spend in-game time and use the existing health meters. Shipboard medical care and exhaustion are recorded without teleporting to Washington.</p></section>';
   if(save.phase==='report')body+='<div class="passenger-day-report"><h3>Daily Report · '+esc(save.gameDate)+'</h3>'+
    '<p>Company close: '+money(save.dailyReport?.companyEnd??save.companyCash)+
    ' · Personal cash: '+money(save.dailyReport?.personalAtClose??save.personalCash)+'</p></div>';
@@ -148,6 +156,9 @@ function click(e){
  if(cmd==='advance-day'){changed(actions?.advance?.());return}
  if(cmd==='toggle-pause'){changed(actions?.togglePause?.());return}
  if(cmd==='recover'){changed(actions?.recover?.());return}
+ if(cmd==='cabin-rest'){changed(actions?.cabinRest?.());return}
+ if(cmd==='galley-meal'){changed(actions?.galleyMeal?.());return}
+ if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
  if(cmd.startsWith('walk:')){
   const parts=cmd.split(':');changed(actions?.move?.(sea.ensure(save).position.zone,+parts[1],+parts[2]));
