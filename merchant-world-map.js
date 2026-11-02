@@ -412,7 +412,13 @@ function onClick(e){
   else setStatus(out.reason);
  }
 }
-function onChange(){}
+function onChange(e){
+ if(!session?.quote||!e.target?.matches?.('[data-ocean-destination],[data-ocean-cargo],[data-ocean-insurance]'))return;
+ session.quote=null;
+ host.querySelector('.ocean-quoted-route')?.remove();
+ host.querySelector('.ocean-quote-details')?.remove();
+ setStatus('Voyage options changed. Preview again to check the new route, inventory and cost.');
+}
 function onKey(e){
  if(session?.walking&&!(e.target.closest('input,textarea,select,[contenteditable]'))){
   if(e.key==='Escape'){e.preventDefault();session.walking=null;draw(false);return}
