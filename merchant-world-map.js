@@ -103,6 +103,18 @@ function plot(){
  }
  return svg+'</svg>';
 }
+function portMiniScene(){
+ let html='<div class="ocean-port-scene" aria-label="Small simplified harbour district">';
+ const tiles=['water','water','quay','quay','warehouse','warehouse','water','water','quay','quay','customs','street',
+  'water','water','quay','street','street','street','water','quay','quay','street','market','market',
+  'water','quay','quay','street','lodging','lodging','water','quay','quay','street','street','street'];
+ for(const t of tiles){
+  html+=t==='water'?'<span class="ocean-tile water" aria-label="Water"></span>':
+   '<button type="button" class="ocean-tile '+t+'" data-ocean-action="zone:'+t+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+
+   ({quay:'║',warehouse:'▣',customs:'▤',street:'·',market:'▥',lodging:'⌂'}[t]||'')+'</button>';
+ }
+ return html+'</div>';
+}
 function portPanel(name){
  const data=regions.port(name);if(!data)return '<p>Port not found.</p>';
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
@@ -111,16 +123,8 @@ function portPanel(name){
  html+=action('port-scene:'+name,'Explore Harbour Layout');
  if(session.scene===name){
   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
-  html+='<div class="ocean-port-scene" aria-label="Small simplified harbour district">';
-  const tiles=['water','water','quay','quay','warehouse','warehouse','water','water','quay','quay','customs','street',
-   'water','water','quay','street','street','street','water','quay','quay','street','market','market',
-   'water','quay','quay','street','lodging','lodging','water','quay','quay','street','street','street'];
-  for(let i=0;i<tiles.length;i++){
-   const t=tiles[i];html+=t==='water'?'<span class="ocean-tile water" aria-label="Water"></span>':
-    '<button type="button" class="ocean-tile '+t+'" data-ocean-action="zone:'+t+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+
-    ({quay:'║',warehouse:'▣',customs:'▤',street:'·',market:'▥',lodging:'⌂'}[t]||'')+'</button>';
-  }
-  html+='</div><h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p><p class="fine">This is a small, generic planning scene. Opening it does not move Charles to the port or charge a journey. Character boarding and local visits still require a separate travel integration.</p>';
+  html+=portMiniScene();
+  html+='<h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p><p class="fine">This is a small, generic planning scene. Opening it does not move Charles to the port or charge a journey. Character boarding and local visits still require a separate travel integration.</p>';
  }
  return html;
 }
@@ -136,7 +140,9 @@ function pinPanel(id){
   '<p class="fine">A chart mark is a personal annotation, not a verified commercial port or a visited location.</p>';
  if(kind==='harbor')html+=action('inspect-mark:'+pin.id,'Examine Harbour Sections');
  if(session.scene==='mark:'+pin.id){
+  const zone=regions.ZONES.find(z=>z.id===session.zone)||regions.ZONES[0];
   html+='<h4>Proposed Harbour District</h4>'+portMiniScene()+
+   '<h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p>'+
    '<p class="fine">Preview only: no physical visit, trading entitlement or named resident is created.</p>';
  }
  return html;
