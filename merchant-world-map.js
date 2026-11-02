@@ -101,6 +101,9 @@ function plot(){
  if(session.quote?.ok&&Array.isArray(session.quote.points)){
   svg+='<polyline class="ocean-quoted-route" points="'+session.quote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
  }
+ if(session.tradeQuote?.ok&&Array.isArray(session.tradeQuote.points)){
+  svg+='<polyline class="ocean-quoted-route" points="'+session.tradeQuote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
+ }
  const passage=root.FE_PASSENGER_SEA?.position?.(session.save);
  if(passage?.phase==='at-sea'){
   const trip=root.FE_PASSENGER_SEA.ensure(session.save).voyage;
@@ -206,6 +209,16 @@ function portPanel(name){
    ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong> · Steamship: <strong>'+
    steam.days+' days</strong></p><p class="fine">This is a route estimate, not a booked journey or verified period sailing schedule.</p></div>';
  }
+ const arrived=fleet().tradeHold?.[name]||[];
+ if(arrived.length){
+  html+='<section class="ocean-port-trade"><h4>Merchant Cargo Physically Landed Here</h4>'+
+    arrived.map(lot=>{
+     const q=root.FE_MERCHANT_TRADE?.saleQuote?.(session.save,name,lot);
+     return '<p>'+esc(lot.units+' '+lot.name)+' · manifest #'+lot.id+
+      (q?.ok?' · net local sale '+cash(q.net):'')+' '+
+      action('trade-sell:'+name+':'+lot.id,'Sell Through Port Agent')+'</p>';
+    }).join('')+'</section>';
+ }
  if(name!=='Baltimore'&&root.FE_PASSENGER_SEA){
   const passage=root.FE_PASSENGER_SEA;
   const rateS=passage.BOAT_RATES.schooner,rateT=passage.BOAT_RATES.steamer;
@@ -256,6 +269,7 @@ function shipPanel(id){
   const trip=s.trip,seaMiles=trip.nauticalMiles||nav.route(trip.from,trip.to)?.nauticalMiles||0;
   const cargo=trip.cargo==='electric'?trip.consignment?
    trip.consignment.units+' '+trip.consignment.productId+' Federal Electric components':'Federal Electric consignment':
+   trip.cargo==='trade'&&trip.tradeLot?trip.tradeLot.units+' paid '+trip.tradeLot.name:
    'Merchant freight';
   html+='<p>'+esc(trip.from)+' → '+esc(trip.to)+'</p>'+
    '<dl class="ocean-voyage-facts"><dt>Cargo</dt><dd>'+esc(cargo)+'</dd>'+
@@ -272,6 +286,30 @@ function shipPanel(id){
    '<label>Cargo<select data-ocean-cargo="'+s.id+'"><option value="freight"'+(session.quote?.cargo==='freight'?' selected':'')+'>Merchant freight</option><option value="electric"'+(session.quote?.cargo==='electric'?' selected':'')+'>Federal Electric finished goods</option></select></label>'+
    '<label><input type="checkbox" data-ocean-insurance="'+s.id+'"'+(session.quote?.insured?' checked':'')+'> Hull insurance</label>'+
    action('quote:'+s.id,'Preview Voyage')+action('dispatch:'+s.id,'Dispatch Voyage')+action('repair:'+s.id,'Repair Hull')+'</div>';
+  const t=root.FE_MERCHANT_TRADE;
+  if(t){
+   const market=Object.entries(t.GOODS).filter(([,item])=>item.origins.includes(s.port));
+   html+='<section class="ocean-physical-trade"><h4>Purchase & Sail Actual Cargo</h4>'+
+    '<p>Origin exchange at '+esc(s.port)+'. Ship capacity: '+t.CAPACITY[s.type]+' units.</p>'+
+    '<label>Trade destination<select data-ocean-trade-dest="'+s.id+'">'+destinations.map(v=>
+      '<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')+'</select></label>'+
+    '<label>Commodity<select data-ocean-trade-good="'+s.id+'">'+market.map(([id,g])=>
+      '<option value="'+esc(id)+'">'+esc(g.name)+' · '+t.remaining(session.save,s.port,id)+' available</option>').join('')+'</select></label>'+
+    '<label>Units<input data-ocean-trade-units="'+s.id+'" type="number" min="1" max="'+t.CAPACITY[s.type]+'" value="'+Math.min(8,t.CAPACITY[s.type])+'"></label>'+
+    '<label><input type="checkbox" data-ocean-trade-insurance="'+s.id+'"> Separate hull and cargo insurance</label>'+
+    action('trade-preview:'+s.id,'Quote Actual Goods')+action('trade-dispatch:'+s.id,'Buy Goods & Dispatch')+'</section>';
+   if(session.tradeQuote?.ok&&session.tradeQuote.shipId===s.id){
+    const q=session.tradeQuote;
+    html+='<section class="ocean-quote-details"><h4>Real Cargo Proposal · Not Bought</h4>'+
+      '<p>'+esc(q.units+' '+q.productName)+' · '+esc(q.from)+' → '+esc(q.to)+'</p>'+
+      '<p>Cash required: '+cash(q.due)+' (cargo '+cash(q.purchase)+', loading '+cash(q.loading)+
+      ', departure '+cash(q.fee)+', hull/cargo cover '+cash(q.insurance+q.cargoInsurance)+').</p>'+
+      '<p>Estimated arrival after '+q.days+' days. Gross sale '+cash(q.expectedGross)+
+      ', port duty/agent '+cash(q.agent+q.duty)+'. Potential net fleet profit after estimated upkeep: '+
+      cash(q.forecastProfit)+'.</p>'+
+      '<p class="fine">Sale proceeds depend on actual arrival and deliberate sale. Weather damage, loss and ongoing expenses can change results. Neither money nor inventory is altered by this quotation.</p></section>';
+   }
+  }
   if(session.quote?.ok&&session.quote.shipId===s.id){
    const q=session.quote;
    html+='<section class="ocean-quote-details"><h4>Route Proposal · Not Dispatched</h4><p>'+esc(q.from)+' → '+esc(q.to)+' · '+q.nauticalMiles.toLocaleString('en-US')+' nautical miles</p>'+
@@ -293,6 +331,16 @@ function business(){
  for(const [port,goods]of Object.entries(e.electric))if(Array.isArray(goods)&&goods.length)
   html+='<p>Federal Electric cargo at '+esc(port)+': '+goods.map(g=>esc(g.units+' '+g.productId)).join(', ')+
    ' '+action('sell:'+port,'Complete Local Sale')+'</p>';
+ const tradeHold=e.tradeHold||{};
+ let held=0;
+ for(const [port,lots]of Object.entries(tradeHold))for(const lot of (Array.isArray(lots)?lots:[])){
+  held++;
+  const q=root.FE_MERCHANT_TRADE?.saleQuote?.(session.save,port,lot);
+  html+='<p class="ocean-physical-trade">'+esc(lot.units+' '+lot.name)+' actually landed at '+esc(port)+
+   ', receipt #'+esc(lot.id)+' · '+(q?.ok?'net sale '+cash(q.net):'sale unavailable')+' '+
+   action('trade-sell:'+port+':'+lot.id,'Sell Cargo')+'</p>';
+ }
+ html+='<h4>Physical Cargo Holds · '+held+' unsold lots</h4><p class="fine">Goods are paid for at origin and may be damaged or lost in transit. Receiving the lot creates no revenue until it is deliberately sold through the receiving port agent.</p>';
  html+='<h4>Trade Ports</h4><p>'+e.ports.map(esc).join(' · ')+'</p>';
  const history=root.FE_EMPIRE.ensure(session.save).log||[];
  if(history.length)html+='<details class="ocean-voyage-log"><summary>Shipping Office Journal · '+history.length+' entries</summary>'+
@@ -384,7 +432,7 @@ function onClick(e){
    session.selection={type:'pin',id};session.tab='selection';
    draw(false);root.requestAnimationFrame(()=>focusPoint([pin.x,pin.y],1.1));return;
   }
-  if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.quote=null;session.tab='selection';return draw(false)}
+  if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.quote=null;session.tradeQuote=null;session.tab='selection';return draw(false)}
   if(command.startsWith('port-scene:')){session.scene=command.slice(11);session.tab='selection';return draw(false)}
   if(command.startsWith('zone:')){session.zone=command.slice(5);return draw(false)}
   if(command.startsWith('rename-pin:')){
@@ -401,6 +449,23 @@ function onClick(e){
    if(out.ok){session.selection={type:'port',id:'Baltimore'};session.onChange?.();draw(false)}
    else setStatus(out.reason);return;
   }
+  if(command.startsWith('trade-preview:')||command.startsWith('trade-dispatch:')){
+   const id=Number(command.slice(command.lastIndexOf(':')+1)),ship=fleet().ships.find(s=>s.id===id);
+   const destination=host.querySelector('[data-ocean-trade-dest="'+id+'"]')?.value;
+   const item=host.querySelector('[data-ocean-trade-good="'+id+'"]')?.value;
+   const units=Number(host.querySelector('[data-ocean-trade-units="'+id+'"]')?.value);
+   const insured=!!host.querySelector('[data-ocean-trade-insurance="'+id+'"]')?.checked;
+   if(command.startsWith('trade-preview:')){
+    const offer=root.FE_MERCHANT_TRADE?.quote?.(session.save,ship,destination,item,units,insured,fleet());
+    if(offer?.ok){session.tradeQuote=offer;session.quote=null;draw(false)}
+    else setStatus(offer?.reason||'Merchant cargo quotation unavailable.');
+   }else{
+    const offer=root.FE_EMPIRE.dispatchTrade(session.save,id,destination,item,units,insured);
+    if(offer?.ok){session.tradeQuote=null;session.quote=null}
+    changed(offer);
+   }
+   return;
+  }
   if(command.startsWith('quote:')){
    const id=+command.slice(6),quote=root.FE_MERCHANT_ROUTE_QUOTE?.quote?.(
     session.save,id,host.querySelector('[data-ocean-destination="'+id+'"]')?.value,
@@ -410,7 +475,11 @@ function onClick(e){
    return;
   }
   let out=null;const empire=root.FE_EMPIRE;
-  if(command.startsWith('buy:'))out=empire.buyShip(session.save,command.slice(4));
+  if(command.startsWith('trade-sell:')){
+   const parts=command.slice(11),split=parts.lastIndexOf(':');
+   out=empire.sellTrade(session.save,parts.slice(0,split),parts.slice(split+1));
+  }
+  else if(command.startsWith('buy:'))out=empire.buyShip(session.save,command.slice(4));
   else if(command.startsWith('verify:'))out=empire.verifyLead(session.save,command.slice(7));
   else if(command.startsWith('sell:'))out=empire.sellElectric(session.save,command.slice(5));
   else if(command.startsWith('repair:'))out=empire.repairShip(session.save,+command.slice(7));
@@ -444,11 +513,13 @@ function onClick(e){
  }
 }
 function onChange(e){
- if(!session?.quote||!e.target?.matches?.('[data-ocean-destination],[data-ocean-cargo],[data-ocean-insurance]'))return;
- session.quote=null;
- host.querySelector('.ocean-quoted-route')?.remove();
- host.querySelector('.ocean-quote-details')?.remove();
- setStatus('Voyage options changed. Preview again to check the new route, inventory and cost.');
+ const freight=e.target?.matches?.('[data-ocean-destination],[data-ocean-cargo],[data-ocean-insurance]');
+ const physical=e.target?.matches?.('[data-ocean-trade-dest],[data-ocean-trade-good],[data-ocean-trade-units],[data-ocean-trade-insurance]');
+ if(!freight&&!physical)return;
+ if(freight)session.quote=null;
+ if(physical)session.tradeQuote=null;
+ host.querySelectorAll('.ocean-quoted-route,.ocean-quote-details').forEach(node=>node.remove());
+ setStatus('Voyage options changed. Preview again to check the route, stock and cash.');
 }
 function onKey(e){
  if(session?.walking&&!(e.target.closest('input,textarea,select,[contenteditable]'))){
