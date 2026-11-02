@@ -1275,6 +1275,27 @@ function buyPeddlerGood(id){
 // use the existing saved world clock; no new wall-clock or freight treasury.
 window.FE_PASSENGER_ACTIONS=Object.freeze({
  changed:()=>{save(true);render()},
+ portTradeSale:(lotId)=>{
+  const port=S.passengerSea?.port,fleet=window.FE_EMPIRE?.ensure?.(S)?.fleet;
+  if(!port||S.passengerSea?.voyage||S.currentLocation?.locationId!=='foreignHarbor'||
+     S.currentLocation?.roomId!=='market'||S.passengerSea?.position?.zone!=='market')
+   return {ok:false,reason:'Charles must be standing at the visited harbour market to sell cargo in person.'};
+  if(S.paused||S.phase!=='day'||window.FE_MEDICAL_RECORDS?.pending?.(S))
+   return {ok:false,reason:'The merchant counter is closed or Charles is unable to trade.'};
+  if(!fleet?.ports?.includes(port))
+   return {ok:false,reason:'The harbour is not yet verified for commercial business.'};
+  const lot=fleet?.tradeHold?.[port]?.find(l=>String(l.id)===String(lotId));
+  if(!lot||!window.FE_MERCHANT_TRADE?.saleQuote?.(S,port,lot)?.ok)
+   return {ok:false,reason:'There is no genuine available cargo receipt for this sale.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,900)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<900)
+   return {ok:false,reason:'A full fifteen-minute market appointment is required.'};
+  if(advanceWorldSimulation(900,true,'action')!==900)
+   return {ok:false,reason:'The market transaction was interrupted before completion.'};
+  const receipt=window.FE_EMPIRE.sellTrade(S,port,lotId);
+  if(receipt.ok){save(true);render()}
+  return receipt;
+ },
  harborRest:()=>{
   const sea=window.FE_PASSENGER_SEA,offer=sea?.lodgingQuote?.(S);
   if(!offer?.ok)return offer||{ok:false,reason:'The harbour lodging is unavailable.'};
