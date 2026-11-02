@@ -109,3 +109,12 @@ body.merchant-world-open{overflow:hidden}
 .ocean-harbor-register{background:#fdf6e7;border:1px solid #b19f80;margin:9px 0;padding:8px;font-size:12px}
 .ocean-harbor-register h5{font-size:13px;margin:0 0 6px;color:#48371c}
 .ocean-harbor-register p{margin:4px 0 6px}
+
+
+.ocean-quote-details{background:#f9efcf;border:2px solid #9e8560;margin:12px 0;padding:10px}
+.ocean-quote-details h4{margin:3px 0 8px;color:#4b3424}
+.ocean-quote-details p{margin:5px 0}
+.ocean-quote-details ol{padding-left:23px;font-size:12px}
+.merchant-world-overlays .ocean-quoted-route{stroke:#b43725;stroke-width:4;
+ stroke-dasharray:10 4;fill:none;opacity:.92;pointer-events:none}
+.merchant-world-overlays .ocean-route{stroke:#273d54;stroke-width:2.2}
