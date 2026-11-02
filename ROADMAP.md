@@ -1,3 +1,5 @@
+> **CURRENT DEVELOPMENT POLICY · NOVEMBER 2, 2026:** [COMPANY_BIBLE.md](COMPANY_BIBLE.md) contains **development/build/release rules only**; [GAME_LORE.md](GAME_LORE.md) indexes story, world, character, map, and gameplay canon. The owner **allows GitHub Actions and other compute, both sparingly**. Prefer appropriate local Linux checks and use hosted resources only when justified. Older dated “No GitHub Actions” statements below are preserved as history and are **superseded**, not current prohibitions. No gameplay or release authorization follows from this documentation change.
+
 ## November 2, 2026 · v0.7.88-dev · paid overseas passenger loop (source only)
 - [x] Add Passenger Pier to the existing Potomac River Fishing Bank, without changing Washington's map image or existing pin coordinates.
 - [x] Require Charles to physically reach the pier and buy passage with personal money before moving him to a saved passenger-vessel location. Include a provisional two-day Chesapeake/Baltimore feeder and real ocean-route days from the existing shipping chart.
