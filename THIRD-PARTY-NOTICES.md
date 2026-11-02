@@ -6,6 +6,10 @@ This register identifies third-party materials **actually incorporated into the 
 
 **Licenses vary by component.** An MIT, BSD, ISC or Apache license does not make the whole game open source. Conversely, the proprietary project license does **not** take away rights that a third-party license grants in the third-party component itself. Read each applicable license. Nothing here grants rights the original author did not grant.
 
+## Uploaded shipping reference chart (permission review pending)
+
+The owner added `assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg` on 2 November 2026. The v0.7.85 development viewer displays this exact image **without changing its pixels**, and uses independent in-game vector positions for purchased ship icons. The image displays an EcoClipper shipping-lines title/legend. **Upstream creator, authoritative original source URL, license terms, and permission to redistribute are not yet verified.** An uploaded image is not automatically public-domain or license-free, and no third-party shipping-route source code was imported in this build. Do not distribute a public playable release with this image until its rights are cleared or an authorized alternative is selected. The manually drafted overlay is not claimed to be authentic 1878 shipping-route data.
+
 ## Confirmed bundled third-party JavaScript
 
 | Component | Copyright holder | Upstream | License applicable to component | Bundled paths | Original license notice |
