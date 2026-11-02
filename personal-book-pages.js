@@ -100,6 +100,9 @@ function industrialistPages(save){
    ['No passenger or third-party freight revenue is assumed before a real paying customer settles.'],[
     item('Railway charter',railway.charter?'Registered '+railway.charter.date+' for '+money(railway.charter.feeCents/100):'Not registered'),
     item('Constructed lines',String(lines.filter(l=>l.status==='open').length)+' of '+lines.length+' purchased corridors'),
+    item('Railway staff',Object.entries(railway.staff||{}).filter(([key,val])=>
+     ['engineer','conductor'].includes(key)&&val?.hired).map(([key])=>key).join(', ')||'No permanent staff hired'),
+    item('Railway wage arrears',money((railway.staff?.arrearsCents||0)/100)),
     item('Locomotives owned',String(engines.length)+
       (engines.length?' · '+engines.map(e=>e.id+' condition '+(e.condition??100)+'/100').join('; '):''))
    ].concat(lines.slice(-ROWS).map(l=>item(l.id+' · '+l.status,

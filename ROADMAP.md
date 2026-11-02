@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.84-dev · hired railway staff and real weekly wage settlement
+- [x] Hire an optional unnamed locomotive engineer for $120 with 90 game minutes of onboarding, or a conductor for $70 with 60 minutes, **only** from Charlie's authorized factory office with a constructed, owned railway.
+- [x] An employed engineer reduces actual bought-locomotive wear from 4 to 2 points per paid trip; an employed conductor reduces track wear from 2 to 1, leaving all existing fare/dispatch restrictions and initial unstaffed behavior unchanged.
+- [x] Hires add a real $18/week engineer and $12/week conductor wage obligation to the canonical railway company's records, not a gratuitous NPC paycheck or a source of passenger income.
+- [x] Real Saturday closing automatically pays wages once from Federal Electric company funds, recognizes prior unpaid arrears, preserves debt when cash is insufficient, and credits subsequent payment without duplicating wage expense.
+- [x] Add role, signing costs, weekly wages and arrears display to the existing rail finance editor and Charles's own Business Ledger, without giving other protagonists access.
+- [x] Focused source regression verified time/cash hire gates, duplicate receipt protection, reduced real-trip wear, correct Saturday classification, single settlement, partial payment, arrears recovery and save isolation.
+- [ ] Named labor contracts, staffing levels, time-off, union matters, actual external railway revenues, complete Node regression suite and live Ubuntu Electron playthrough remain open.
+
 ## November 1, 2026 · v0.7.83-dev · owned rail serviceability and workshop repairs
 - [x] Real paid company train departures gradually wear the owned line (2/100) and the actual purchased locomotive (4/100). No wear on map-editor demonstration sprites or automatic world-clock progression.
 - [x] A line below 30/100 or a locomotive below 30/100 cannot authorize another revenue-independent company departure. Other purchased serviceable locomotives may still be used.

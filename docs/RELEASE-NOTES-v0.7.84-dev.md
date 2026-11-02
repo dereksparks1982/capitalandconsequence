@@ -1,0 +1,13 @@
+# Capital & Consequence v0.7.84-dev | Railway Staff & Saturday Payroll
+November 1, 2026 · Source-only development, not an owner-accepted Linux release.
+
+Charles Whitcomb can now appoint two optional permanent railway employees to his separately financed Federal Electric rail construction enterprise. A hired locomotive engineer costs $120 and ninety real game minutes; a hired conductor costs $70 and sixty minutes. Both appointments must be made from the factory during normal Business Day and require at least one already purchased, constructed corridor. Their personal names are deliberately **not invented** until staff character biographies are approved.
+
+An engineer is paid $18 each Saturday and reduces the engine wear caused by an actual fuel-paid locomotive departure from four condition points to two. A conductor is paid $12 each Saturday and reduces track wear from two to one. Neither changes another company’s books, operating roles, story gates or the original unstaffed service. These are not instant mechanical upgrades: their paid salaries are persistent obligations.
+
+The actual Business Day Saturday-closing code calls the railway payroll settler after existing lamp specialists and before Sullivan's independently earned wage. The company treasury is debited once per Saturday date. If cash is insufficient, the unpaid balance remains in a saved arrears account. Next Saturday's payroll includes both the fresh weekly obligation and prior arrears, and the ledger retains a receipt for each settlement. The factory component-cash display is kept synchronized, but personal funds and other subsidiary treasuries are not conflated.
+
+The existing Rail Editor finance panel and Charlie's own Business Ledger show employees and wage arrears, preserving all approved map geometry and company story. No new passenger revenue, automatic payroll for NPCs not hired, corporate title changes or ticket-office powers were added.
+
+## Verification
+Focused isolated JavaScript regression covered real signing money, paid appointment time, double-hire refusal, no duplicate hiring receipts, genuine train wear improvements, first Saturday payroll, nonduplicate settlement, later company cash shortage, wages in arrears, repayment on a later Saturday and isolation from Eli's employment and unrelated character saves. Full Node suite and live Ubuntu Electron rendering/playthrough untested; no Actions, installer, owner command or accepted tag.

@@ -153,8 +153,11 @@ function transact(save,request){
   // Use is never free: wear occurs on the one authentic paid departure.
   const runningLine=entity.lines.find(l=>l.id===allowed.id);
   const runningEngine=entity.engines.find(e=>e.id===allowed.trainId);
-  runningLine.condition=Math.max(0,(runningLine.condition??100)-2);
-  runningEngine.condition=Math.max(0,(runningEngine.condition??100)-4);
+  // Contracted workers reduce real mechanical wear; they never create fares.
+  const lineWear=entity.staff?.conductor?.hired?1:2;
+  const engineWear=entity.staff?.engineer?.hired?2:4;
+  runningLine.condition=Math.max(0,(runningLine.condition??100)-lineWear);
+  runningEngine.condition=Math.max(0,(runningEngine.condition??100)-engineWear);
   t.lineConditionAfter=runningLine.condition;
   t.engineConditionAfter=runningEngine.condition;
   entity.trips.push(t);if(entity.trips.length>120)entity.trips.splice(0,entity.trips.length-120);

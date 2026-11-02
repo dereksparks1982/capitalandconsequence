@@ -115,6 +115,7 @@ function render(){
  if(last)actions.appendChild(el('p','Latest actual paid trip '+last.id+' · '+last.status+
   ' · no speculative ticket or freight proceeds.'));
  root.FE_RAIL_FREIGHT_UI?.render?.();
+ root.FE_RAIL_STAFF_UI?.render?.();
 }
 root.FE_RAIL_COMPANY_UI=Object.freeze({mount,render});
 if(typeof document!=='undefined'){
