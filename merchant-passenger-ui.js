@@ -84,8 +84,15 @@ function draw(){
    '<p>Estimated arrival: <b>'+esc(trip.etaDate)+'</b> · '+travel.daysRemaining+' days remaining.</p>'+
    '<p>'+(travel.feeder?'On the river/coastal transfer.':'At sea along the charted ocean route.')+
    ' · '+Math.floor(travel.progress*100)+'% of total passage elapsed.</p></div>'+
+   '<div class="passenger-sea-map"><svg viewBox="0 0 800 600" role="img" aria-label="Current passenger vessel on the original maritime route chart">'+
+   '<image href="'+esc(nav.MAP)+'" width="800" height="600"/>'+
+   '<polyline points="'+trip.points.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="4" stroke-dasharray="9 6"/>'+
+   (travel.coordinates?'<circle cx="'+travel.coordinates.x+'" cy="'+travel.coordinates.y+'" r="14" fill="#f4d16d" stroke="#432a1e" stroke-width="3"/>'+
+   '<text x="'+travel.coordinates.x+'" y="'+(travel.coordinates.y+5)+'" text-anchor="middle" fill="#251f1b" font-size="17">♟</text>':'')+
+   '</svg></div>'+
    '<div class="passenger-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(travel.progress*100)+'"><span style="width:'+Math.floor(travel.progress*100)+'%"></span></div>'+
    '<div class="passenger-time-actions">'+
+    button('shipping-map','Inspect Full World Shipping Chart')+
     button('advance-day',save.phase==='report'?'Review Complete · Begin Next Day':'Advance Through Current Phase')+
     '<p class="fine">All hours pass through the saved Washington clock. Daily reports, health, world events and expenses remain active. No real-time skipping.</p></div>';
   if(save.phase==='report')body+='<div class="passenger-day-report"><h3>Daily Report · '+esc(save.gameDate)+'</h3>'+
