@@ -1,0 +1,80 @@
+/* Separate merchant world map, not a replacement for the authorized Washington scene. */
+body.merchant-world-open{overflow:hidden}
+.merchant-world-viewer[hidden]{display:none!important}
+.merchant-world-viewer{position:fixed;inset:0;z-index:650;display:flex;align-items:center;justify-content:center;
+ background:rgba(20,26,27,.84);padding:12px;font-family:Georgia,serif;color:#352a1c}
+.merchant-world-card{width:min(1500px,100%);height:min(94vh,975px);min-height:370px;display:flex;flex-direction:column;overflow:hidden;
+ border:5px double #4b3b27;background:#e8dcc1;box-shadow:0 8px 36px #070707a6}
+.merchant-world-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;
+ padding:11px 15px;background:#463624;color:#fff0d8}
+.merchant-world-head h2{font-size:23px;margin:4px 0}
+.merchant-world-head p{margin:0;font-size:12px}
+.merchant-world-tools{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+.merchant-world-tools button,.merchant-world-sidebar button{min-height:35px;background:#fff2d5;color:#322819;border:1px solid #947b53;cursor:pointer}
+.merchant-world-tools button[data-ocean-action=close]{background:#9a3b32;color:white;font-weight:bold;font-size:18px;min-width:41px}
+.merchant-world-tools output{min-width:42px;text-align:center}
+.merchant-world-columns{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(245px,1fr);min-height:0;flex:1}
+.merchant-world-viewport{position:relative;background:#b9b5a7;min-width:0;min-height:220px;
+ cursor:crosshair;overflow:hidden;touch-action:pan-y;outline-offset:-4px}
+.merchant-world-stage{position:absolute;top:0;left:0;width:800px;height:600px;transform-origin:0 0}
+.merchant-world-stage>img{display:block;width:800px;height:600px;max-width:none;user-select:none;pointer-events:none}
+.merchant-world-overlays{position:absolute;inset:0;width:800px;height:600px;overflow:visible;pointer-events:none}
+.merchant-world-overlays .ocean-port,.merchant-world-overlays .ocean-ship,
+.merchant-world-overlays .ocean-custom-pin{pointer-events:all;cursor:pointer}
+.merchant-world-overlays .ocean-port circle{stroke:#fff9e7;stroke-width:2;fill:#b3b1a6}
+.merchant-world-overlays .ocean-port.open-port circle{fill:#395c41}
+.merchant-world-overlays .ocean-port.selected circle{fill:#9d3729;stroke:#fff}
+.merchant-world-overlays .ocean-port text{fill:#fff1cf;font:13px Georgia,serif;pointer-events:none}
+.merchant-world-overlays .ocean-custom-pin path{stroke:#fff8df;stroke-width:1.5;fill:#a04030}
+.merchant-world-overlays .ocean-custom-pin circle{fill:#f7edd5}
+.merchant-world-overlays .ocean-custom-pin.selected path{fill:#d18b21}
+.merchant-world-overlays .ocean-ship circle{fill:#f6e9c9;stroke:#1c3144;stroke-width:2}
+.merchant-world-overlays .ocean-ship.selected circle{fill:#e9c96f;stroke:#8a2a21;stroke-width:3}
+.merchant-world-overlays .ocean-ship path{fill:#374755;stroke:#152534}
+.merchant-world-overlays .ocean-route{stroke:#273d54;stroke-width:2.2;stroke-dasharray:4 5;fill:none;opacity:.8}
+.merchant-world-overlays g:focus-visible{outline:none;filter:drop-shadow(0 0 5px #161515)}
+.merchant-world-sidebar{overflow-y:auto;border-left:3px solid #aa926a;background:#f6ecd6;padding:11px 13px;
+ min-width:0;min-height:0}
+.merchant-world-sidebar h3{font-size:18px;margin:10px 0}
+.merchant-world-sidebar h4{font-size:14px;margin:10px 0 5px}
+.merchant-world-sidebar p{margin:6px 0 9px}
+.merchant-world-sidebar button{padding:6px 9px;margin:3px}
+.merchant-world-sidebar button:focus-visible,.merchant-world-tools button:focus-visible{outline:3px solid #316186}
+.ocean-tabs{display:flex;gap:3px;flex-wrap:wrap;border-bottom:1px solid #a29373;margin-bottom:12px;padding-bottom:8px}
+.ocean-tabs button{flex:1 1 100px}
+.merchant-world-sidebar section[hidden]{display:none}
+.ocean-form{display:grid;gap:7px;border:1px solid #c3b58f;background:#fffaed;padding:10px;margin-top:10px}
+.ocean-form label{display:block;font-weight:bold}
+.ocean-form input[type=checkbox]{vertical-align:middle}
+.ocean-form select,.merchant-world-sidebar input[type=text],#merchantPinName{width:100%;max-width:100%;background:white;font-size:15px;padding:7px}
+.ocean-business-actions{display:flex;flex-wrap:wrap}
+.ocean-port-scene{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));max-width:340px;
+ margin:10px 0;border:3px solid #463a25;aspect-ratio:1.5;overflow:hidden}
+.ocean-port-scene .ocean-tile{min-width:0;min-height:0;margin:0!important;border:1px solid #5e5b4c;
+ padding:0;font-size:17px;text-align:center;line-height:1;display:flex;align-items:center;justify-content:center;color:#292717}
+.ocean-port-scene .ocean-tile.water{background:#637f9b}
+.ocean-port-scene .ocean-tile.quay{background:#998262}
+.ocean-port-scene .ocean-tile.warehouse{background:#9b8971}
+.ocean-port-scene .ocean-tile.customs{background:#d0c3a6}
+.ocean-port-scene .ocean-tile.market{background:#b0a17a}
+.ocean-port-scene .ocean-tile.lodging{background:#a58b74}
+.ocean-port-scene .ocean-tile.street{background:#b5a898}
+.merchant-world-card footer{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+ padding:8px 14px;background:#d2c2a3;font:12px Georgia,serif}
+#merchantWorldStatus{font-weight:bold}
+/* New movable shipping chart on the felt is additive: no existing desk map or book positions change. */
+.career-desk .career-desk-shipping{width:148px;height:107px;min-width:0;min-height:0;max-width:148px;
+ border:2px solid #6f5439;background:#e6d6b5;padding:4px;transform:rotate(2deg);z-index:1;
+ box-shadow:2px 3px 6px #21180d6b}
+.career-desk .career-desk-shipping img{display:block;object-fit:cover;object-position:center;width:100%;height:76px;pointer-events:none;filter:sepia(.12)}
+.career-desk .career-desk-shipping small{display:block;color:#4b3520;font:700 11px Georgia,serif;text-align:center;white-space:nowrap}
+.career-desk .career-desk-shipping:hover,.career-desk .career-desk-shipping:focus-visible{outline:3px solid #d4ad69;outline-offset:4px}
+@media(max-width:780px){
+ .merchant-world-viewer{padding:3px}.merchant-world-card{height:98vh}
+ .merchant-world-head{padding:8px}.merchant-world-head h2{font-size:18px}
+ .merchant-world-columns{grid-template-columns:1fr;grid-template-rows:minmax(210px,52%) minmax(0,1fr)}
+ .merchant-world-sidebar{border-left:0;border-top:3px solid #aa926a}
+ .career-desk .career-desk-shipping{width:100px;height:83px}
+ .career-desk .career-desk-shipping img{height:53px}
+ .career-desk .career-desk-shipping small{font-size:9px}
+}
