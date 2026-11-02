@@ -20,3 +20,15 @@ The merchant shipping image must be a **second full interactive map**, reachable
 - Port coordinates and ship routes remain hand-drafted approximate overlays. The exact uploaded EcoClipper JPEG is kept but 1878-voyage authenticity and copyright/redistribution rights are not verified.
 - Focused connector-side JavaScript parsing and unit simulations only; full Node test suite, actual Electron chart rendering, practical camera/desktop/pointer visual QA and accepted Linux release are pending.
 - No GitHub Actions, new playable installer, tag, or accepted release.
+
+
+## Follow-on implementation within v0.7.86
+- Personal chart marks may now be classified as an unclassified study point, coastline, open sea, or **proposed harbour**; these descriptions are saved per profile. A proposed harbour can display the same six-sector generic harbour layout without granting verified trade or access.
+- A **Ports & Your Chart Marks** directory now lists eight existing ports plus personal annotations and centers the map on a selected location. The directory's expanded state is preserved as the map re-renders.
+- World shipping camera settings save the chart center and zoom as view-relative game coordinates and restore on reopening. Right-button pan and wheel zoom continue to operate independently of the Washington map controls.
+- Schooner/steamship inspection shows saved cargo manifest, precise in-game departure and ETA dates, estimated sea distance, percentage completed, days remaining and insurance coverage. The shipping office exposes its original cash receipts and superintendent's event journal, with no duplicate revenue or separate fake treasury.
+- Harbour planning zones provide **read-only real records**: quay lists actually docked owned ships; storehouse lists received Federal Electric components; customs desk displays saved voyage notices without claiming formal customs clearance; merchant market shows existing verified/unverified trade access. Lodging and street sectors describe their unimplemented activities, without generating NPCs.
+- Port information offers approximate **Baltimore-to-port passage forecasts** for a schooner versus a steamship. These are informational quotes, not actual passenger embarkation or paid travel.
+- Port and ship SVG markers accept keyboard activation, dockside zone selection shows a visible pressed state, and the offline source regression now covers directories, annotation separation, read-only records, camera persistence and keyboard wiring.
+
+**Checks after these changes:** In-tool JavaScript evaluation and focused calculations passed the shipping and port-preview checks available here, including 17 additional targeted assertions. Native Ubuntu Electron, the complete Node regression suite and owner acceptance are still pending.
