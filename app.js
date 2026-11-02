@@ -448,6 +448,7 @@ function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
 function render(){
+ if(S.characterRoute==='industrialist')window.FE_PASSENGER_SEA?.sync?.(S);
  window.FE_CHARACTER_NEEDS?.ensure?.(S);
  window.FE_MEDICAL_RECORDS?.player?.(S);
  // Seed private, empty records for every named person in the city registry
@@ -470,7 +471,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -2415,6 +2416,9 @@ function createProfile(name,routeId='industrialist'){
  profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
 }
 function showSavedCityLocation(){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port)){
+  window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);return;
+ }
  const current=currentCityLocation();
  if(current.locationId!=='factory')openCityRoom(current.locationId,current.roomId,{dev:false,source:'resume'});
 }
@@ -2814,6 +2818,7 @@ function renderHouseholdFood(location,room,dev=false){
  ui.render(S,handlers,{locationId:location.id,roomId:room.id,dev});
 }
 function openCityRoom(locationId,roomId,options={}){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port)&&options.source!=='passenger'&&options.source!=='resume')return false;
  const location=cityLocation(locationId);
  if(!location){console.error('Federal Electric: unknown destination',locationId);return false;}
  const dev=!!options.dev,source=options.source||'dev';
@@ -3201,6 +3206,7 @@ function openLocalVenueActivity(id){
   btn.onclick=event=>{event.stopImmediatePropagation();restoreLocalVenueActivity();window.FE_VENUES?.renderRoomOpportunities?.(currentCityLocation().locationId)};
  });
  window.FE_VENUES.renderRoomOpportunities(currentCityLocation().locationId);
+ window.FE_PASSENGER_UI?.updatePier?.(S,window.FE_PASSENGER_ACTIONS);
  return true;
 }
 window.FE_CITY={
@@ -3957,6 +3963,7 @@ function closeTitleMapLocation(){
 }
 // Preserve a visible explanation for historically locked and undiscovered locations.
 function mapTravelRestriction(location){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port))return 'Charles must finish his maritime journey and return to Washington before using the city map.';
  if(!activeProfileId())return 'Select a player profile before traveling.';
  if(!location)return 'Unknown destination.';
  const entry=cityLocation(location.id);
@@ -4208,6 +4215,7 @@ function renameSelectedTitleMapPin(reset=false){
 // already works in the developer panel. Apply regular player access rules
 // before rendering and commit the visit only after the room is visible.
 function enterMapDestination(id,event,requestedRoomId,travelMode=null,provisionalMinutes=null,routeDetails=null){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port))return false;
  event?.preventDefault?.();
  event?.stopPropagation?.();
  const location=TITLE_MAP_LOCATIONS.find(v=>v.id===id)||cityLocation(id);
