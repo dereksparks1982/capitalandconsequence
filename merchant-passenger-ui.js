@@ -42,6 +42,7 @@ function quote(){
  return sea.quote(save,next,shipType);
 }
 function localRecords(port,zone){
+ if(zone==='lodging')return'<h4>Sailors’ Lodging</h4><p>A simple bed costs '+money(sea.LODGING_COST)+' personal cash per rest (provisional price). The normal world clock and energy rules apply.</p>'+button('harbor-rest','Pay for Bed & Rest · '+money(sea.LODGING_COST));
  const fleet=root.FE_EMPIRE?.ensure?.(save)?.fleet;
  if(!fleet)return'<p>Fleet records are unavailable.</p>';
  if(zone==='quay'){
@@ -56,8 +57,7 @@ function localRecords(port,zone){
   'This destination is commercially verified. Real receipts are handled by the shipping office.':
   'This destination is not verified for commercial shipments.')+'</p>';
  if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
- if(zone==='lodging')return'<h4>Sailors’ Lodging</h4><p>A simple bed costs '+money(sea.LODGING_COST)+' personal cash per rest (provisional price). The normal world clock and energy rules apply.</p>'+button('harbor-rest','Pay for Bed & Rest · '+money(sea.LODGING_COST));
- return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
+  return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
 }
 function cargoScene(){
  const state=sea.ensure(save),p=state.position,grid=walk.tiles(p.zone);
