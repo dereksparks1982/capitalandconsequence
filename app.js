@@ -448,7 +448,10 @@ function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
 function render(){
- if(S.characterRoute==='industrialist')window.FE_WHITCOMB_FAMILY?.ensure?.(S);
+ if(S.characterRoute==='industrialist'){
+  window.FE_WHITCOMB_FAMILY?.ensure?.(S);
+  window.FE_CORPORATE?.ensure?.(S);
+ }
  if(S.characterRoute==='industrialist')window.FE_PASSENGER_SEA?.sync?.(S);
  window.FE_CHARACTER_NEEDS?.ensure?.(S);
  window.FE_MEDICAL_RECORDS?.player?.(S);
