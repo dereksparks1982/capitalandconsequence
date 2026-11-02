@@ -101,6 +101,15 @@ function plot(){
  if(session.quote?.ok&&Array.isArray(session.quote.points)){
   svg+='<polyline class="ocean-quoted-route" points="'+session.quote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
  }
+ const passage=root.FE_PASSENGER_SEA?.position?.(session.save);
+ if(passage?.phase==='at-sea'){
+  const trip=root.FE_PASSENGER_SEA.ensure(session.save).voyage;
+  if(trip?.points?.length){
+   svg+='<polyline class="ocean-passenger-route" points="'+trip.points.map(p=>p.join(',')).join(' ')+'"><title>Passenger route '+esc(trip.from)+' to '+esc(trip.to)+'</title></polyline>';
+   const p=passage.coordinates;
+   if(p)svg+='<g class="ocean-passenger-ship" role="img" aria-label="Charles aboard passenger vessel, '+Math.floor(passage.progress*100)+' percent completed"><circle cx="'+p.x+'" cy="'+p.y+'" r="15"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle">♟</text></g>';
+  }
+ }
  for(const ship of e.ships){
   if(ship.status!=='at-sea'||!ship.trip)continue;
   const line=ship.trip.routePoints||nav.route(ship.trip.from,ship.trip.to)?.points;
