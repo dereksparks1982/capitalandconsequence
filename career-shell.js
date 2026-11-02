@@ -121,7 +121,7 @@
   const title=document.getElementById('titleScreen');
   if(title)title.hidden=true;
   titleScreenDeskBreak=false;
-  closeCityRoom();closeTitleMap();
+  closeCityRoom();closeTitleMap();window.FE_MERCHANT_MAP?.close?.();
   pauseTitleAudio();
   showNew=false;menu.hidden=false;message();
   renderMenu();
