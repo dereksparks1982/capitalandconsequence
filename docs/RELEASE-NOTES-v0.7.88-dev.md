@@ -24,3 +24,6 @@ Make the owner's exact existing EcoClipper sea-lane image a true working shippin
 - **Image rights:** the EcoClipper reference is owner-added; do not redistribute a public game image until the source and rights are confirmed.
 
 No release tag, backup, GitHub Actions, executable, installer, automatic web open or terminal command.
+
+## Map ticket-office integration
+The original full-screen shipping map now shows **estimated personal passenger fares and travel days** for ports, including the provisional two-day Washington feeder connection. Its ticket-office button opens an actual booking workflow **only** if Charles is physically at the Potomac Passenger Pier or at a foreign harbour reached by a completed journey. The selected map port pre-fills the ticket destination. This never unlocks commercial trade rights or permits free overseas teleportation.
