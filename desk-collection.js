@@ -5,7 +5,7 @@
 (function(root){
  'use strict';
  let bind=null,desk=null,blotter=null,drag=null,suppress=null,selected=null;
- const DEFAULT=Object.freeze({map:Object.freeze({x:.84,y:.50}),ledger:Object.freeze({x:.98,y:.50})});
+ const DEFAULT=Object.freeze({map:Object.freeze({x:.84,y:.50}),ledger:Object.freeze({x:.98,y:.50}),shipping:Object.freeze({x:.39,y:.53})});
  const clamp=n=>Math.max(0,Math.min(1,Number.isFinite(+n)?+n:0));
  const current=()=>bind?.getSave?.();
  function layout(){
@@ -29,6 +29,7 @@
   if(!blotter)return;
   place(blotter.querySelector('#careerDeskMap'),pos('map'));
   place(blotter.querySelector('#careerDeskLedger'),pos('ledger'));
+   place(blotter.querySelector('#careerDeskShippingMap'),pos('shipping'));
   for(const item of root.FE_PERSONAL_EFFECTS?.list?.('desk')||[])
    place(blotter.querySelector('[data-desk-item-id="'+item.id+'"]'),item);
  }
