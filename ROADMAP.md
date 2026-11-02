@@ -1,3 +1,13 @@
+## November 2, 2026 · v0.7.87-dev · walkable harbor plans and voyage preflight (source only)
+- [x] Six deliberately generic 12×9 survey floorplans (quay, warehouse, customs, market, sailors' lodging, street) with walls, water and furnishings; one-tile WASD/arrows/adjacent-click movement and collision.
+- [x] Open those small planning scenes from a named commercial port or owner-marked harbour candidate on the exact existing EcoClipper chart. Save **independent** survey cursor positions for each port and section; do not move Charles or advance time from a map preview.
+- [x] Give owned docked schooners/steamships a read-only quotation before real dispatch, including all chartered sea legs, distance, plausible ETA, cargo eligibility, optional insurance and actual fleet-treasury departure costs; show the proposed route as a distinct line.
+- [x] Keep the real cargo dispatch, maintenance, verified ports, payment, risks and single authoritative world clock in existing systems. Never make previewed cargo, money or journey receipts.
+- [x] Add local offline source regressions for harbor tile walking and quote-to-dispatch accounting.
+- [ ] **Real passenger travel remains open:** locate and physically reach a legitimate port of embarkation, buy passage, process the existing daily report/time gates throughout voyage, prevent Washington on-site activity while away, and arrive in small playable foreign-port rooms with authentic return travel.
+- [ ] Run complete Node suite and Ubuntu Electron graphical/interaction test, verify original chart reproduction and redistribution rights, and seek owner acceptance before release/tag.
+See `docs/RELEASE-NOTES-v0.7.87-dev.md`.
+
 ## November 2, 2026 · v0.7.86-dev · full desk-accessible maritime map (source only)
 - [x] Add a distinct original-image maritime miniature to Charles's existing movable desk items. Persist its saved position independently of approved Washington map and business book.
 - [x] Open full shipping map from miniature, desk button, or merchant fleet; zoom, fit, right-drag pan, close, select existing port or ship, live read-only vessel overlay redraw from saved Washington clock.
