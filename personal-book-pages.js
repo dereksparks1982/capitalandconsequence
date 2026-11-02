@@ -91,6 +91,28 @@ function industrialistPages(save){
       (shop.lampDevelopment?.good||0)+' sound bulbs · '+(shop.lampDevelopment?.rejected||0)+' scrapped')
    ]));
  }
+ const railway=save.railwayCompany?.version===1?save.railwayCompany:null;
+ if(railway){
+  const lines=Array.isArray(railway.lines)?railway.lines:[];
+  const engines=Array.isArray(railway.engines)?railway.engines:[];
+  pages.push(page('company-railway-ownership','Railway Accounts','Rights, Construction & Rolling Stock',
+   'Paid company assets only · drawn plans confer no ownership',
+   ['No passenger or third-party freight revenue is assumed before a real paying customer settles.'],[
+    item('Railway charter',railway.charter?'Registered '+railway.charter.date+' for '+money(railway.charter.feeCents/100):'Not registered'),
+    item('Constructed lines',String(lines.filter(l=>l.status==='open').length)+' of '+lines.length+' purchased corridors'),
+    item('Locomotives owned',String(engines.length))
+   ].concat(lines.slice(-ROWS).map(l=>item(l.id+' · '+l.status,
+    (l.stations||[]).map(s=>s.name).join(' to ')+' · rights '+money(l.rightsCents/100)+
+    ' · construction '+money(l.constructionCostCents/100)+
+    ' · '+l.crewShiftsCompleted+'/'+l.crewShiftsRequired+' paid shifts')))));
+  const cargo=Array.isArray(railway.freight)?railway.freight:[];
+  if(cargo.length)pages.push(page('company-railway-cargo','Railway Accounts','Real Factory Cargo',
+   'Finished physical goods moved without creating customer revenue',
+   ['Goods at a railway depot are not stock in the factory and have not been sold.'],
+   cargo.slice(-ROWS).reverse().map(m=>item(m.id+' · '+m.date,
+    m.quantity+' '+m.productId+' · '+m.status+' · destination '+m.destinationName+
+    ' · customer proceeds '+money((m.paymentCents||0)/100)))));
+ }
  return pages;
 }
 function money(value){return Number.isFinite(value)?'$'+value.toFixed(2):'Not recorded'}

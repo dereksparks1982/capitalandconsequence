@@ -1,3 +1,13 @@
+## November 1, 2026 · v0.7.81-dev · actual Federal Electric rail cargo
+- [x] Allow loading only **real finished physical components** in Federal Electric warehouse and only for a completed, genuinely owned rail corridor with a paid locomotive available.
+- [x] Record company-paid cartage and loading from the existing factory to the departure platform in thirty Washington minutes. Warehouse stock is consumed once on successful load, with no invented second bag or customer payment.
+- [x] Bind exactly one outstanding manifest to an actual fuel-paid train departure. The manifest stays loaded in transit and cannot be received before its actual existing world-clock arrival minute.
+- [x] Enter a separate ten-minute factory-office arrival acknowledgment after the train arrives; the destination station's depot inventory increases by the delivered quantity without returning goods to the source warehouse.
+- [x] Prevent concurrent double booking on the same line and duplicate receipt tokens. Preserve any failed attempt's source inventory and treasury balances.
+- [x] Expose the freight register inside the existing railroad finance tools and add genuine corporate rail/cargo records to Charlie's read-only Business Ledger; no knowledge leak to other protagonists.
+- [x] New focused source regression checks real item quantities, fee accounting, clock-gated departure/arrival, empty depot before arrival, final depot stock, duplicate protection, and profile restrictions.
+- [ ] Real third-party freight buyers, actual customer settlements, tariffs, timetables, railway staffing, open depot retail and separate existing Capital Branch Railway integration remain future work. No speculative railway revenue, accepted Ubuntu executable, or GitHub Actions.
+
 ## November 1, 2026 · v0.7.80-dev · paid railway ownership and construction
 - [x] The separate Rail Editor remains only a drawing/planning layer. Acquiring a company railway first requires an actual paid charter and company authority, not a free line for every painted sketch.
 - [x] Survey existing connected planned track between distinct planned stations and acquire dated, paid corridor rights. Snapshot the surveyed geometry so editing or deleting a planning sketch does not erase legitimate owned construction.

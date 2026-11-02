@@ -1,0 +1,13 @@
+# Capital & Consequence v0.7.81-dev | Factory components by physical railroad freight
+November 1, 2026 · Source-only, not a full Node- or Ubuntu-accepted release.
+
+The new Federal Electric owned-line construction system now has a physical freight-custody extension. A railroad line that is only painted on the map cannot ship real goods. The player must own a built line, have paid for a locomotive, and possess finished products in the canonical `componentWorks.warehouse`.
+
+While Charles is at Federal Electric during working hours, he may cart 1–25 actual components from the source warehouse to the departure platform in 30 actual game minutes. The company pays $10 plus $0.20 per unit for this cartage. The exact finished product quantity is removed immediately from its original physical inventory. The manifest records the route, original SKU, destination station, quantity, loading time and cost. Another outstanding manifest cannot be booked for the same corridor.
+
+Only a separate, paid locomotive dispatch starts transit. The dispatch attaches its exact preloaded manifest to the trip. Once the original Washington clock advances past the train's actual arrival, Charles may spend 10 minutes recording the depot's arrival confirmation. The destination depot stock then increases by precisely the transmitted amount. This is NOT a sale: customer identity remains null, freight proceeds remain zero and internal stock movement never pays the factory or its subsidiary for itself.
+
+Both the original Rail Editor finance panel and Charlie's old page-turning Business Ledger now show paid owned railway assets and physical moving stock, instead of confusing penciled infrastructure with property. No new map image, pin, factory art, World’s Fair event or protagonist story has been altered. The preexisting Capital Branch Railway acquisition ledger remains independent, with its own treasury and operations.
+
+## QA
+Focused source test using the actual Component Works, Railway Planner and Railway Company engines covers exact stock/cents/time, a manifest staying unreceived before destination arrival, manifest linking to a paid train, receipt replay, a second failed booking, profile isolation, persistent depot stock, and no fabricated customer proceeds. Full offline Node suite and Ubuntu Electron interactive gameplay have not been run. No GitHub Actions, packaged download or owner terminal command.

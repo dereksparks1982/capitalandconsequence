@@ -124,8 +124,14 @@ function transact(save,request){
   const t={id:'FE-TRIP-'+(++entity.serial),lineId:allowed.id,engineId:allowed.trainId,
    departMinute:save.worldCalendar.worldMinute,date,durationMinutes:allowed.durationMinutes,
    fuelCents:1200,status:'running',passengerRevenueCents:0,freightRevenueCents:0};
+  // Internal component carriage must be explicitly loaded first.
+  // Starting a train alone never transfers stock, creates a buyer or pays fares.
+  const cargo=Array.isArray(entity.freight)?entity.freight.find(x=>x.lineId===allowed.id&&x.status==='origin-loaded'):null;
+  if(cargo){cargo.status='in-transit';cargo.tripId=t.id;t.cargoManifestId=cargo.id;}
   entity.trips.push(t);if(entity.trips.length>120)entity.trips.splice(0,entity.trips.length-120);
-  result={tripId:t.id,description:'Owned locomotive dispatched. Fuel paid; no unsupported ticket or freight revenue.'};
+  result={tripId:t.id,cargoManifestId:cargo?.id||null,
+   description:'Owned locomotive dispatched.'+(cargo?' Carrying genuine factory components for depot receipt.':'')+
+    ' Fuel paid; no unsupported ticket or freight revenue.'};
  }
  save.companyCash=(cash(save)-allowed.costCents)/100;
  if(save.componentWorks)save.componentWorks.cashCents=Math.round(save.companyCash*100);
