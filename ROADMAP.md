@@ -1,3 +1,14 @@
+## November 2, 2026 · v0.7.86-dev · full desk-accessible maritime map (source only)
+- [x] Add a distinct original-image maritime miniature to Charles's existing movable desk items. Persist its saved position independently of approved Washington map and business book.
+- [x] Open full shipping map from miniature, desk button, or merchant fleet; zoom, fit, right-drag pan, close, select existing port or ship, live read-only vessel overlay redraw from saved Washington clock.
+- [x] Place, rename, reposition and delete up to 60 per-profile personal chart marks without creating fictional commercial port access.
+- [x] Perform schooner/steamship purchase, authorized dispatch, insurance, hull repair, real consignment sales and discovered port verification on the map using the existing fleet economy.
+- [x] View eight established or unverified port markers and low-fidelity clickable small harbor **planning scenes**: quay, warehouse, customs, market, lodging and street. No unearned resident, revenue or property.
+- [x] Add focused regression tests for map/source wiring, commercial authority, saved annotations, protection of the original Washington map and nonteleporting harbor inspections.
+- [ ] Actual **character travel** to distant ports remains a separate integration: embarkation from a physically reached American harbor, passenger fares and provisions, full in-game clock/day-report passage, arrival, physical presence/return, and playable port-zone walking/interactions with the shared systems. Do not count the planning scenes as visited locations.
+- [ ] Full Node suite, Linux Electron interactive screenshot inspection, owner approval, exact line tracing and source-image licensing remain outstanding. No GitHub Actions, tagged release or packaging.
+See `docs/RELEASE-NOTES-v0.7.86-dev.md`.
+
 ## November 2, 2026 · v0.7.85-dev · working merchant vessel position viewer (source only)
 - [x] Identify owner-added `assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg` and use it unedited in a **separate** maritime chart inside Charles's existing fleet page. No changes to the protected Washington map or 1878 narrative.
 - [x] Add a connected sea-lane graph with image-coordinate tracks for the existing eight merchant ports and estimate passage days from nautical-distance and schooner/steamer speeds. Intermediate waypoints never grant trade access or cargo sales.
