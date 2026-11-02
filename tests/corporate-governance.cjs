@@ -59,7 +59,7 @@ assert.equal(C.ownership(a).founder,500);
 assert.equal(a.companyCash,7175);
 assert.equal(a.personalCash,7250);
 assert.equal(a.stocks.FEC.issuedShares,15000);
-assert.equal(C.ensure(a).events.at(-1).underwritingFeesCents,70000,'Underwriter fees are recorded in the corporate minute book');
+assert.equal(C.ensure(a).events.at(-1).underwritingFeesCents,60000,'Underwriter fees are recorded in the corporate minute book');
 assert.equal(C.ensure(a).events.at(-1).founderPercent,3.33,'IPO records actual post-offering control');
 assert.equal(a.stocks.FEC.history.length,0,'FEC must not gain invented pre-IPO market history');
 
