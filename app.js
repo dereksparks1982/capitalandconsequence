@@ -1275,6 +1275,54 @@ function buyPeddlerGood(id){
 // use the existing saved world clock; no new wall-clock or freight treasury.
 window.FE_PASSENGER_ACTIONS=Object.freeze({
  changed:()=>{save(true);render()},
+ cabinRest:()=>{
+  if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
+   return {ok:false,reason:'Charles must be aboard his passenger vessel.'};
+  if(S.paused||S.phase==='report')return {ok:false,reason:'Cabin rest is not available right now.'};
+  const span=Math.min(8*3600,window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0);
+  if(span<3600)return {ok:false,reason:'Not enough clock time remains for cabin rest before the next boundary.'};
+  S.sleepingAboardPassenger=true;
+  let passed=0;
+  try{passed=advanceWorldSimulation(span,true,'sleep')}
+  finally{S.sleepingAboardPassenger=false}
+  if(passed<=0)return {ok:false,reason:'Cabin rest was interrupted.'};
+  const rested=window.FE_CHARACTER_NEEDS?.finishSleep?.(S,Math.floor(passed/60));
+  save(true);render();
+  return {ok:!!rested?.ok,reason:'Rested aboard for '+Math.floor(passed/60)+' game minutes.',minutes:Math.floor(passed/60)};
+ },
+ galleyMeal:()=>{
+  if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
+   return {ok:false,reason:'Meals are served aboard the passenger vessel.'};
+  if(S.paused||S.phase==='report'||S.personalCash<.50)
+   return {ok:false,reason:'A galley meal requires fifty cents personal cash and active game time.'};
+  const current=window.FE_CHARACTER_NEEDS?.ensure?.(S);
+  if((current?.nextFoodAt||0)>(S.worldCalendar?.worldMinute||0))
+   return {ok:false,reason:'Charles has recently eaten. Another meal is not due yet.'};
+  if((window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<=600)
+   return {ok:false,reason:'The galley closes at the next clock boundary.'};
+  if(advanceWorldSimulation(600,true,'passenger-meal')!==600)return {ok:false,reason:'The galley service was interrupted.'};
+  const eaten=window.FE_CHARACTER_NEEDS?.eatPrepared?.(S,{hunger:50,thirst:15},'passenger-galley');
+  if(!eaten?.ok)return {ok:false,reason:eaten?.reason||'Meal not served.'};
+  S.personalCash=Math.round((S.personalCash-.50)*100)/100;
+  save(true);render();
+  return {ok:true,reason:'A hot shipboard meal was served for $0.50. Ten game minutes elapsed.'};
+ },
+ galleyWater:()=>{
+  if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
+   return {ok:false,reason:'Water is available at the vessel galley.'};
+  if(S.paused||S.phase==='report'||S.personalCash<.10)
+   return {ok:false,reason:'Water requires ten cents personal cash and active game time.'};
+  const available=window.FE_CHARACTER_NEEDS?.availability?.(S,'water');
+  if(!available?.ok)return {ok:false,reason:available?.reason||'Water is on cooldown.'};
+  if((window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<=120)
+   return {ok:false,reason:'There is insufficient time before the next clock boundary.'};
+  if(advanceWorldSimulation(120,true,'passenger-water')!==120)return {ok:false,reason:'Galley service was interrupted.'};
+  const drink=window.FE_CHARACTER_NEEDS?.take?.(S,'water','passenger-galley');
+  if(!drink?.ok)return {ok:false,reason:drink?.reason||'Water could not be served.'};
+  S.personalCash=Math.round((S.personalCash-.10)*100)/100;
+  save(true);render();
+  return {ok:true,reason:'Shipboard drinking water purchased for $0.10. Two game minutes elapsed.'};
+ },
  togglePause:()=>{
   const button=document.getElementById('pauseToggle');
   if(!button)return {ok:false,reason:'The normal pause control is unavailable.'};
