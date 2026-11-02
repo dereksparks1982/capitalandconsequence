@@ -99,7 +99,10 @@ function draw(){
  h.innerHTML='<div class="merchant-passenger-card"><header><div><small>CAPITAL & CONSEQUENCE · PASSENGER TRAVEL</small>'+
   '<h2 id="merchantPassengerHeading">'+(booking?'Maritime Passenger Office':travel.phase==='at-sea'?'Aboard the Passenger Vessel':'Overseas Harbour')+'</h2>'+
   '<p>Game date '+esc(save.gameDate)+' · '+(save.phase==='report'?'Daily Report':save.phase==='day'?'Day':'Night')+'</p></div></header>'+
-  '<div class="merchant-passenger-body">'+body+'<p id="merchantPassengerStatus" role="status">'+esc(status)+'</p></div></div>';
+  '<div class="merchant-passenger-body">'+
+  (save.paused?button('toggle-pause','Resume Simulation'):'')+
+  (root.FE_MEDICAL_RECORDS?.pending?.(save)?button('recover','Recover From Medical Emergency'):'')+
+  body+'<p id="merchantPassengerStatus" role="status">'+esc(status)+'</p></div></div>';
 }
 function refresh(s,handlers){
  save=s;actions=handlers;ensureHost();
@@ -118,6 +121,8 @@ function click(e){
  if(cmd==='shipping-map'){root.FE_MERCHANT_MAP?.open?.(save,()=>actions?.changed?.());return}
  if(cmd==='board'){changed(actions?.board?.(dest,shipType));return}
  if(cmd==='advance-day'){changed(actions?.advance?.());return}
+ if(cmd==='toggle-pause'){changed(actions?.togglePause?.());return}
+ if(cmd==='recover'){changed(actions?.recover?.());return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
  if(cmd.startsWith('walk:')){
   const parts=cmd.split(':');changed(actions?.move?.(sea.ensure(save).position.zone,+parts[1],+parts[2]));
