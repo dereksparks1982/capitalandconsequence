@@ -10,7 +10,7 @@ const ZONES=Object.freeze([
  {id:'warehouse',name:'Storehouse',description:'A plain dockside storehouse. Trade goods belong to the ship or consignee until an actual ledger transaction.'},
  {id:'customs',name:'Customs Desk',description:'A port official would examine cargo manifests and duties. No clearance has been granted merely by viewing the chart.'},
  {id:'market',name:'Merchant Square',description:'A compact waterfront exchange with stalls and agents. No stock or trade contract is automatically created.'},
- {id:'lodging',name:'Sailors’ Lodging',description:'Basic lodging near the harbor. Room bookings and named residents have not been implemented.'},
+ {id:'lodging',name:'Sailors’ Lodging',description:'Basic paid bed rest is available after physically reaching this section. The room rate is a provisional game estimate; named residents remain unimplemented.'},
  {id:'street',name:'Harbour Street',description:'The lane joining the quay, warehouses and town. Inland exploration will require an approved regional map.'}
 ]);
 const clamp=(v,max)=>Math.max(0,Math.min(max,Number.isFinite(+v)?+v:0));
