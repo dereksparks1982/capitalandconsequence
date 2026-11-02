@@ -18,7 +18,7 @@ Extend Charles's original-image EcoClipper maritime map with usable small harbou
 
 ### Verification and release boundaries
 - Added `tests/merchant-harbor-walk.cjs` and `tests/merchant-route-quote.cjs` for lane authorization, sector collision, saved survey-state separation, original desk asset, cargo requirements, insured charges, dry-run immutability and real dispatch consistency.
-- In-tool targeted JavaScript execution checked 60 critical conditions (including 48 known port/sector combinations and 12 other targeted assertions) with **no failures**, before the final source refinements. Final regression status must be rechecked when the full Ubuntu Node suite can run.
+- In-tool targeted JavaScript execution ultimately checked **118 focused conditions with zero failures**, including all 48 known port/sector combinations, their rendered markup, per-zone persistence, route proposal immutability, actual freight/cargo authorization and original artwork/script ordering. A final source fix also clears stale quote visuals when the player edits voyage selections. Full Ubuntu Node suite and native Electron chart gameplay remain unverified.
 - No GitHub Actions, no tagging, no executable or local patch delivery. Full Node regression suite, graphical Ubuntu Electron verification, real physical overseas character travel and the image's redistribution license remain **pending**.
 
 The current game-clock's daily report gate must not be bypassed by a fictitious 30-day instant travel action. Complete in-world passenger journeys must pass through the existing clock, survival, finances, world events and room/location permissions in a later approved integration.
