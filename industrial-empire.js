@@ -3,6 +3,7 @@
 (function(root){
 'use strict';
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
+const trade=typeof module==='object'&&module.exports?require('./merchant-trade.js'):root.FE_MERCHANT_TRADE;
 const PRICE={steel:65000,rail:175000,schooner:14000,steamer:36000};
 const PORTS={
  Baltimore:{distance:0,storm:.006,piracy:0,leads:['New York']},
@@ -22,7 +23,7 @@ function roll(key){let h=2166136261;for(const c of String(key)){h^=c.charCodeAt(
 function fresh(){return{version:1,lastDate:null,
  steel:{owned:false,cash:0,rails:0,iron:0,condition:92,ledger:[]},
  rail:{owned:false,cash:0,miles:35,condition:86,ledger:[]},
- fleet:{cash:0,ships:[],ports:['Baltimore','Philadelphia'],leads:[],electric:{},nextId:0,ledger:[]},
+ fleet:{cash:0,ships:[],ports:['Baltimore','Philadelphia'],leads:[],electric:{},tradeHold:{},nextId:0,ledger:[]},
  log:[]}}
 function ensure(save){
  if(!save.industrialEmpire||save.industrialEmpire.version!==1)save.industrialEmpire=fresh();
@@ -32,6 +33,7 @@ function ensure(save){
  if(!Array.isArray(e.fleet.ports))e.fleet.ports=['Baltimore','Philadelphia'];
  if(!Array.isArray(e.fleet.leads))e.fleet.leads=[];
  if(!e.fleet.electric)e.fleet.electric={};
+ if(!e.fleet.tradeHold||typeof e.fleet.tradeHold!=='object')e.fleet.tradeHold={};
  if(!Array.isArray(e.fleet.ledger))e.fleet.ledger=[];
  if(!Array.isArray(e.log))e.log=[];
  if(!e.lastDate&&/^\d{4}-\d{2}-\d{2}$/.test(save.gameDate||''))e.lastDate=save.gameDate;
@@ -128,6 +130,60 @@ function dispatch(save,id,dest,cargo,insured){
  root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.17,difficulty:43,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Cargo manifest review'});
  return result('Voyage begun. Expected '+ship.trip.eta+'.');
 }
+
+// Physical merchant lots are purchased from finite weekly inventories with actual
+// fleet treasury money. A dispatched lot is tied to a single saved vessel voyage.
+function dispatchTrade(save,id,dest,item,units,insured){
+ const e=ensure(save),f=e.fleet,ship=f.ships.find(v=>v.id===id);
+ const offer=trade?.quote?.(save,ship,dest,item,units,insured,f);
+ if(!offer?.ok)return result('Unavailable: '+(offer?.reason||'commodity exchange unavailable.'));
+ const lotReceipt=trade.purchase(save,offer);
+ if(!lotReceipt.ok)return result('Unavailable: '+lotReceipt.reason);
+ const lot=lotReceipt.lot;
+ f.cash=Math.round((f.cash-offer.due)*100)/100;
+ ledger(f,save.gameDate,'Purchased physical '+lot.units+' '+lot.name+' at '+lot.from,-offer.purchase);
+ ledger(f,save.gameDate,'Cargo handling and departure: '+ship.name,-offer.loading-offer.fee);
+ if(offer.insurance||offer.cargoInsurance)
+  ledger(f,save.gameDate,'Paid hull and cargo insurance: '+ship.name,-offer.insurance-offer.cargoInsurance);
+ ship.status='at-sea';
+ const idTrip=ship.id+'|'+lot.id;
+ ship.trip={from:ship.port,to:dest,cargo:'trade',depart:save.gameDate,
+  eta:addDay(save.gameDate,offer.days),insured:!!insured,fee:0,
+  tradeLot:lot,insurancePremium:offer.cargoInsurance,
+  departMinute:nav.gameMinute(save),routePoints:offer.points,
+  nauticalMiles:offer.nauticalMiles,navSurvey:'ecoclipper-image-traced-v1',manifestId:idTrip};
+ event(e,save.gameDate,ship.name+' departed '+ship.port+' for '+dest+
+  ' carrying '+lot.units+' paid '+lot.name+'. Purchase '+money(offer.purchase)+
+  ', handling/passage '+money(offer.loading+offer.fee)+
+  (insured?', including separate hull and cargo cover.':'.'));
+ root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.31,difficulty:51,event:'trade-lot:'+idTrip,source:'Real merchant cargo manifest'});
+ root.FE_SKILLS?.practice?.(save,'logistics',{amount:.24,difficulty:52,event:'trade-voyage:'+idTrip,source:'Paid commercial sea route'});
+ return result('Merchant cargo aboard '+ship.name+'. Expected '+ship.trip.eta+'. Revenue requires actual arrival and sale.');
+}
+// Quote and sale never assume an NPC buyer has paid before goods are present
+// at the receiving port; the destination's real market quote is evaluated when sold.
+function sellTrade(save,port,lotId){
+ const e=ensure(save),f=e.fleet,hold=f.tradeHold[port];
+ if(save.characterRoute!=='industrialist'||save.paused||save.phase!=='day')
+  return result('Unavailable: sale requires Charles and an open commercial day.');
+ if(!f.ports.includes(port)||!Array.isArray(hold))
+  return result('Unavailable: no authorized destination trade warehouse.');
+ const index=hold.findIndex(l=>String(l.id)===String(lotId));
+ if(index<0)return result('Unavailable: no unsold cargo receipt with that number.');
+ const lot=hold[index],value=trade.saleQuote(save,port,lot);
+ if(!value.ok)return result('Unavailable: '+value.reason);
+ hold.splice(index,1);
+ f.cash=Math.round((f.cash+value.net)*100)/100;
+ ledger(f,save.gameDate,'Merchant cargo sale '+lot.units+' '+lot.name+' at '+port,value.gross);
+ ledger(f,save.gameDate,'Port agent commission and customs duty at '+port,-value.agent-value.duty);
+ event(e,save.gameDate,'Port market in '+port+' bought '+lot.units+' '+lot.name+
+  ' landed by ship #'+lot.shipId+'. Gross '+money(value.gross)+
+  ', commission '+money(value.agent)+', duty '+money(value.duty)+
+  ', fleet net '+money(value.net)+'.');
+ root.FE_SKILLS?.practice?.(save,'salesmanship',{amount:.3,difficulty:51,event:'trade-sale:'+lot.id,source:'Merchant goods sold through an established port'});
+ return result('Sold the actual '+lot.units+' '+lot.name+' for '+money(value.net)+' net fleet cash.');
+}
+
 function repairShip(save,id){
  const e=ensure(save),f=e.fleet,ship=f.ships.find(v=>v.id===id);
  if(!ship||ship.status!=='in-port'||save.paused||save.phase!=='day')return result('Unavailable: repairs require a ship in port and an open workday.');
@@ -171,14 +227,38 @@ function arrive(e,ship,date){
  if(draw<risk*.17+piracy*.22){
   const cause=draw<risk*.17?'storm':'piracy',insure=v.insured?Math.round(PRICE[ship.type]*.72):0;
   ship.status='lost';ship.trip=null;if(insure){e.fleet.cash+=insure;ledger(e.fleet,date,'Hull insurance settlement for '+ship.name,insure)}
+  if(v.cargo==='trade'&&v.tradeLot){
+   const cargoCover=v.insured?Math.round(v.tradeLot.purchase*.7):0;
+   if(cargoCover){e.fleet.cash+=cargoCover;ledger(e.fleet,date,'Separate cargo loss insurance '+v.tradeLot.name,cargoCover)}
+   event(e,date,v.tradeLot.units+' '+v.tradeLot.name+' lost with '+ship.name+
+    (cargoCover?'; cargo insurance reimbursed '+money(cargoCover)+'.':'; uninsured merchant cargo lost.'));
+  }
   event(e,date,ship.name+' was lost at sea due to '+cause+'. '+(insure?'Hull insurance paid '+money(insure)+'.':'No hull insurance payment.'));
   return;
  }
  const damage=draw<risk+piracy?Math.round(8+roll(key+'|damage')*37):Math.round(1+roll(key+'|wear')*4);
  ship.condition=Math.max(7,ship.condition-damage);ship.port=v.to;ship.status='in-port';ship.trip=null;ship.experience++;
  if(v.cargo==='freight'){e.fleet.cash+=v.fee;ledger(e.fleet,date,'Completed merchant freight: '+v.to,v.fee)}
+ else if(v.cargo==='trade'){
+  const lot=v.tradeLot;
+  if(lot){
+   const spoiled=draw<risk+piracy?Math.max(1,Math.floor(lot.units*.2)):0;
+   const landed=Math.max(0,lot.units-spoiled);
+   if(spoiled){
+    const cover=v.insured?Math.floor(lot.purchase*spoiled/lot.units*.7):0;
+    if(cover){e.fleet.cash+=cover;ledger(e.fleet,date,'Cargo damage insurance '+lot.name,cover)}
+    event(e,date,ship.name+' arrived with '+spoiled+' damaged '+lot.name+
+     (cover?'; partial cargo insurance paid '+money(cover)+'.':'; no cargo insurance payment.'));
+   }
+   if(landed>0){
+    if(!Array.isArray(e.fleet.tradeHold[v.to]))e.fleet.tradeHold[v.to]=[];
+    e.fleet.tradeHold[v.to].push({...lot,units:landed,landedDate:date,
+     lostUnits:spoiled,shipName:ship.name});
+   }
+  }
+ }
  else {if(!Array.isArray(e.fleet.electric[v.to]))e.fleet.electric[v.to]=[];e.fleet.electric[v.to].push(v.consignment)}
- event(e,date,ship.name+' arrived in '+v.to+'; '+(v.cargo==='freight'?'freight fee '+money(v.fee):'Federal Electric goods await consignee')+'. Hull '+ship.condition+'%.');
+ event(e,date,ship.name+' arrived in '+v.to+'; '+(v.cargo==='freight'?'freight fee '+money(v.fee):v.cargo==='trade'?'real merchant goods awaiting local sale':'Federal Electric goods await consignee')+'. Hull '+ship.condition+'%.');
  const candidates=weather.leads.filter(p=>!e.fleet.ports.includes(p)&&!e.fleet.leads.some(x=>x.port===p));
  if(candidates.length&&roll(key+'|contact')<Math.min(.72,.38+ship.experience*.04)){
   const port=candidates[Math.floor(roll(key+'|lead')*candidates.length)];
@@ -231,10 +311,21 @@ function render(save,onChange){
   if(ship.status==='in-port'){
    html+='<div class="empire-voyage"><label>Destination <select data-ship-port="'+ship.id+'">'+f.ports.filter(x=>x!==ship.port).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label><label>Cargo <select data-ship-cargo="'+ship.id+'"><option value="freight">Merchant Freight</option><option value="electric">Federal Electric finished components (real inventory)</option></select></label><label><input type="checkbox" data-ship-insure="'+ship.id+'"> Hull insurance</label>'+button('dispatch:'+ship.id,'Dispatch Ship')+button('repair-ship:'+ship.id,'Shipyard Repair')+'</div>';
   }
+  if(ship.status==='in-port'&&trade){
+    const portGoods=Object.entries(trade.GOODS).filter(([,g])=>g.origins.includes(ship.port));
+    html+='<div class="empire-voyage"><strong>Physical Merchant Cargo</strong>'+
+      '<label>Destination <select data-trade-port="'+ship.id+'">'+f.ports.filter(p=>p!==ship.port).map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('')+'</select></label>'+
+      '<label>Commodity <select data-trade-good="'+ship.id+'">'+portGoods.map(([id,g])=>'<option value="'+esc(id)+'">'+esc(g.name)+' · '+trade.remaining(save,ship.port,id)+' at port</option>').join('')+'</select></label>'+
+      '<label>Units <input type="number" min="1" max="'+trade.CAPACITY[ship.type]+'" value="'+Math.min(8,trade.CAPACITY[ship.type])+'" data-trade-units="'+ship.id+'"></label>'+
+      '<label><input type="checkbox" data-trade-insured="'+ship.id+'"> Hull and cargo insurance</label>'+
+      button('trade:'+ship.id,'Purchase Goods & Dispatch')+'</div>';
+   }
   html+='</article>';
  }
  if(root.FE_MERCHANT_CHART?.render)html+=root.FE_MERCHANT_CHART.render(save,f,host.dataset.selectedShip||'',chartExpanded);
  for(const [port,goods]of Object.entries(f.electric))if(Array.isArray(goods)&&goods.length)html+='<p>Consigned Federal Electric goods in '+esc(port)+': '+goods.map(g=>g.units+' '+g.productId).join(', ')+'. '+button('sell-electric:'+port,'Complete local sale')+'</p>';
+ for(const [port,lots]of Object.entries(f.tradeHold))if(Array.isArray(lots))for(const lot of lots)
+  html+='<p>Merchant cargo awaiting sale at '+esc(port)+': '+lot.units+' '+esc(lot.name)+' (original lot #'+lot.id+'). '+button('trade-sale:'+port+':'+lot.id,'Sell Through Port Agent')+'</p>';
  html+='<h4>Captain & Superintendent Reports</h4><div class="empire-log">'+e.log.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div><p class="fine">Voyages follow the in-game calendar. Ships incur crew and hull upkeep, sometimes require repairs, may suffer storm loss or piracy on historically exposed routes, and occasionally uncover commercial leads. Losses are not reversed automatically.</p>';
  host.innerHTML=html;
  host.onclick=event=>{
@@ -254,6 +345,17 @@ function render(save,onChange){
   else if(key==='buy-steamer')outcome=buyShip(save,'steamer');
   else if(key.startsWith('verify:'))outcome=verifyLead(save,key.slice(7));
   else if(key.startsWith('sell-electric:'))outcome=sellElectric(save,key.slice(14));
+  else if(key.startsWith('trade-sale:')){
+   const rest=key.slice(11),cut=rest.lastIndexOf(':');
+   outcome=sellTrade(save,rest.slice(0,cut),rest.slice(cut+1));
+  }
+  else if(key.startsWith('trade:')){
+   const id=Number(key.slice(6)),amount=Number(host.querySelector('[data-trade-units="'+id+'"]')?.value);
+   outcome=dispatchTrade(save,id,
+    host.querySelector('[data-trade-port="'+id+'"]')?.value,
+    host.querySelector('[data-trade-good="'+id+'"]')?.value,amount,
+    !!host.querySelector('[data-trade-insured="'+id+'"]')?.checked);
+  }
   else if(key.startsWith('repair-ship:'))outcome=repairShip(save,Number(key.slice(12)));
   else if(key.startsWith('dispatch:')){
    const id=Number(key.slice(9));
@@ -276,7 +378,7 @@ function render(save,onChange){
   }
  };
 }
-const api=Object.freeze({PRICE,PORTS,ensure,advance,buy,millAction,merchantSale,repairRails,buyShip,dispatch,repairShip,verifyLead,sellElectric,ownedLocation,render,dayFor:daysFor});
+const api=Object.freeze({PRICE,PORTS,ensure,advance,buy,millAction,merchantSale,repairRails,buyShip,dispatch,dispatchTrade,sellTrade,repairShip,verifyLead,sellElectric,ownedLocation,render,dayFor:daysFor});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_EMPIRE=api;
 })(typeof window!=='undefined'?window:globalThis);
