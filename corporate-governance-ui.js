@@ -4,6 +4,7 @@
 const get=id=>document.getElementById(id);
 const $=n=>'$'+Number(n||0).toFixed(2);
 const corp=()=>root.FE_CORPORATE;
+const family=()=>root.FE_WHITCOMB_FAMILY;
 const context=()=>root.FE_CORPORATE_CONTEXT?.();
 let latestResult='';
 function node(tag,text){const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);return e;}
@@ -39,11 +40,35 @@ function desk(){
  const head=node('div');head.className='ipo-scaffold-head';
  head.append(node('h4','Federal Electric · Corporate Affairs'),button('Close',()=>get('exploreIpo')?.click()));
  host.appendChild(head);
- message(host,'Charter: '+c.status.toUpperCase()+' · President: '+(c.president==='charles'?'Charles Whitcomb':'Edwin Harlow')+
-  ' · Ownership: '+own.founderPercent.toFixed(2)+'% of '+own.issued.toLocaleString()+' shares ('+own.founder.toLocaleString()+' held).');
- message(host,c.status==='private'?'Private sole ownership: incorporate at the factory before issuing public securities.':
+ message(host,'Charter: '+c.status.toUpperCase()+' · President: '+(c.president==='charles'?'Charles Whitcomb':c.president==='whitcomb-father'?'Whitcomb family receiver':'Edwin Harlow')+
+  ' · Charles '+own.founderPercent.toFixed(2)+'% ('+own.founder.toLocaleString()+' votes) · Father '+
+  own.familyPercent.toFixed(2)+'% ('+own.family.toLocaleString()+' votes) · '+own.issued.toLocaleString()+' issued shares.');
+ message(host,c.status==='private'?'Privately owned by Charlie and his father. The family equity stake remains after loan repayment.':
   c.status==='chartered'?'Board approval and a physical underwriter visit precede a public offering.':
   'Ticker FEC trades through the broker. Share ownership and the presidency are separate.');
+ const finance=family(),account=finance?.report?.(save);
+ if(account&&save.characterRoute==='industrialist'){
+  host.append(node('h5','Alexandria · Family Financing'));
+  message(host,'Father: British former army officer and established Alexandria overland merchant. Family financing already furnished the property, workshop, equipment and starting cash; no free second loan payment.');
+  message(host,'Secured family loan: '+$(account.principalCents/100)+' principal; outstanding installment '+$(account.overdueCents/100)+
+   ' (interest '+$(account.interestDueCents/100)+', principal '+$(account.principalDueCents/100)+
+   '). Next invoice '+account.nextDue+' · nominal '+$(account.paymentCents/100)+
+   ' monthly · status '+account.status.toUpperCase()+'.');
+  message(host,'The company owes this separate debt regardless of any stock listing. Father owns '+own.familyPercent.toFixed(2)+
+   '% of voting shares and retains his investor seat while the holding is at least 15%. Total family dividends recorded: '+$(account.dividendIncomeCents/100)+'.');
+  if(account.overdueCents>0&&account.status!=='repossessed'){
+   const payOpts=node('div');payOpts.className='trade-buttons';
+   const amount=numeric(Math.min(account.overdueCents,account.paymentCents)/100,.01,account.overdueCents/100,.01);
+   payOpts.append(label('Loan payment ($)',amount),
+    button('Pay Family Installment · Company Cash',()=>perform('family-payment',(s,t)=>
+     family().pay(s,Math.round(Number(amount.value)*100),t)),true));
+   host.appendChild(payOpts);
+  }
+  if(account.letters.length){
+   host.append(node('h5','Letters from Alexandria'));
+   for(const letter of account.letters.slice(-4).reverse())message(host,letter.date+' · '+letter.message);
+  }
+ }
  const actions=node('div');actions.className='trade-buttons';
  if(c.status==='private'){
   actions.appendChild(button('Incorporate · $75',()=>perform('charter',(s,t,a)=>a.incorporate(s,t)),save.characterRoute==='industrialist'));
@@ -61,11 +86,12 @@ function desk(){
    line.className='fine';roster.appendChild(line);
    if(d.id!=='charles')roster.append(button('Meet '+d.name+' · $25',()=>perform('lobby-'+d.id,(s,t,a)=>a.lobby(s,d.id,t))));
   }host.appendChild(roster);
-  const elected=c.directors.filter(d=>d.id!=='charles');
-  const replace=selection(elected.map((d,i)=>[String(i+1),d.name]));
-  const candidates=selection(api.PEOPLE.filter(p=>!c.directors.some(d=>d.id===p.id)).map(p=>[p.id,p.name]));
+  const elected=c.directors.map((d,i)=>({d,i})).filter(x=>x.i>0&&
+   !(x.d.id==='whitcomb-father'&&own.familyPercent>=15));
+  const replace=selection(elected.map(({d,i})=>[String(i),d.name]));
+  const candidates=selection(api.PEOPLE.filter(p=>!c.directors.some(d=>d.id===p.id)&&p.id!=='whitcomb-father').map(p=>[p.id,p.name]));
   const election=node('div');election.className='trade-buttons';election.append(label('Replace director',replace),label('Candidate',candidates),
-    button('Hold Shareholder Election',()=>perform('elect',(s,t,a)=>a.appoint(s,candidates.value,Number(replace.value),t)),!!candidates.options.length));
+    button('Hold Shareholder Election',()=>perform('elect',(s,t,a)=>a.appoint(s,candidates.value,Number(replace.value),t)),!!candidates.options.length&&!!replace.options.length));
   host.appendChild(election);
  }
  if(c.bid){
@@ -92,7 +118,7 @@ function broker(){
  const save=ctx.save,c=api.ensure(save),own=api.ownership(save);
  host.append(node('h4','Federal Electric · Underwriting & Corporate Control'));
  if(latestResult)message(host,latestResult);
- message(host,'Current state: '+c.status.toUpperCase()+' · FEC ownership '+own.founderPercent+'% · '+own.public+' public shares · '+own.rival+' held by hostile interests.');
+ message(host,'Current state: '+c.status.toUpperCase()+' · Charles '+own.founderPercent+'% · father '+own.familyPercent+'% · '+own.public+' public shares · '+own.rival+' held by hostile interests. Family shares are already issued and cannot be sold as Charles’s secondary offering.');
  if(save.characterRoute!=='industrialist'){
   message(host,'These company instructions belong to Charles Whitcomb. Other careers can trade ordinary securities.');
   return;
@@ -125,7 +151,7 @@ function broker(){
     '. Company receives '+$(terms.companyProceedsCents/100)+
     '; Charles personally receives '+$(terms.founderProceedsCents/100)+
     '; underwriter retains '+$(terms.feesCents/100)+
-    '. Founder voting stake '+terms.founderPercent.toFixed(2)+'%. '+terms.note+
+    '. Charles voting stake '+terms.founderPercent.toFixed(2)+'%, father '+terms.familyPercent.toFixed(2)+'%. '+terms.note+
     (terms.ok?' READY TO SUBMIT.':' NOT READY: '+terms.problems.join(' '));
   };
   for(const field of [newQty,oldQty,offer])field.addEventListener('input',update);
