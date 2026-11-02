@@ -289,14 +289,15 @@ function shipPanel(id){
   const t=root.FE_MERCHANT_TRADE;
   if(t){
    const market=Object.entries(t.GOODS).filter(([,item])=>item.origins.includes(s.port));
+   const draft=session.tradeDraft?.shipId===s.id?session.tradeDraft:null;
    html+='<section class="ocean-physical-trade"><h4>Purchase & Sail Actual Cargo</h4>'+
     '<p>Origin exchange at '+esc(s.port)+'. Ship capacity: '+t.CAPACITY[s.type]+' units.</p>'+
     '<label>Trade destination<select data-ocean-trade-dest="'+s.id+'">'+destinations.map(v=>
-      '<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')+'</select></label>'+
+      '<option value="'+esc(v)+'"'+(draft?.to===v?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
     '<label>Commodity<select data-ocean-trade-good="'+s.id+'">'+market.map(([id,g])=>
-      '<option value="'+esc(id)+'">'+esc(g.name)+' · '+t.remaining(session.save,s.port,id)+' available</option>').join('')+'</select></label>'+
-    '<label>Units<input data-ocean-trade-units="'+s.id+'" type="number" min="1" max="'+t.CAPACITY[s.type]+'" value="'+Math.min(8,t.CAPACITY[s.type])+'"></label>'+
-    '<label><input type="checkbox" data-ocean-trade-insurance="'+s.id+'"> Separate hull and cargo insurance</label>'+
+      '<option value="'+esc(id)+'"'+(draft?.item===id?' selected':'')+'>'+esc(g.name)+' · '+t.remaining(session.save,s.port,id)+' available</option>').join('')+'</select></label>'+
+    '<label>Units<input data-ocean-trade-units="'+s.id+'" type="number" min="1" max="'+t.CAPACITY[s.type]+'" value="'+(draft?.units||Math.min(8,t.CAPACITY[s.type]))+'"></label>'+
+    '<label><input type="checkbox" data-ocean-trade-insurance="'+s.id+'"'+(draft?.insured?' checked':'')+'> Separate hull and cargo insurance</label>'+
     action('trade-preview:'+s.id,'Quote Actual Goods')+action('trade-dispatch:'+s.id,'Buy Goods & Dispatch')+'</section>';
    if(session.tradeQuote?.ok&&session.tradeQuote.shipId===s.id){
     const q=session.tradeQuote;
@@ -455,6 +456,7 @@ function onClick(e){
    const item=host.querySelector('[data-ocean-trade-good="'+id+'"]')?.value;
    const units=Number(host.querySelector('[data-ocean-trade-units="'+id+'"]')?.value);
    const insured=!!host.querySelector('[data-ocean-trade-insurance="'+id+'"]')?.checked;
+   session.tradeDraft={shipId:id,to:destination,item,units,insured};
    if(command.startsWith('trade-preview:')){
     const offer=root.FE_MERCHANT_TRADE?.quote?.(session.save,ship,destination,item,units,insured,fleet());
     if(offer?.ok){session.tradeQuote=offer;session.quote=null;draw(false)}
@@ -517,7 +519,18 @@ function onChange(e){
  const physical=e.target?.matches?.('[data-ocean-trade-dest],[data-ocean-trade-good],[data-ocean-trade-units],[data-ocean-trade-insurance]');
  if(!freight&&!physical)return;
  if(freight)session.quote=null;
- if(physical)session.tradeQuote=null;
+ if(physical){
+  const id=Number(e.target.dataset.oceanTradeDest||e.target.dataset.oceanTradeGood||
+   e.target.dataset.oceanTradeUnits||e.target.dataset.oceanTradeInsurance);
+  if(Number.isSafeInteger(id)&&id>0){
+   session.tradeDraft={shipId:id,
+    to:host.querySelector('[data-ocean-trade-dest="'+id+'"]')?.value,
+    item:host.querySelector('[data-ocean-trade-good="'+id+'"]')?.value,
+    units:Number(host.querySelector('[data-ocean-trade-units="'+id+'"]')?.value),
+    insured:!!host.querySelector('[data-ocean-trade-insurance="'+id+'"]')?.checked};
+  }
+  session.tradeQuote=null;
+ }
  host.querySelectorAll('.ocean-quoted-route,.ocean-quote-details').forEach(node=>node.remove());
  setStatus('Voyage options changed. Preview again to check the route, stock and cash.');
 }
