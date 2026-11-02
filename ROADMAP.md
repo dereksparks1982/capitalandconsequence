@@ -1,5 +1,15 @@
 > **CURRENT DEVELOPMENT POLICY · NOVEMBER 2, 2026:** [COMPANY_BIBLE.md](COMPANY_BIBLE.md) contains **development/build/release rules only**; [GAME_LORE.md](GAME_LORE.md) indexes story, world, character, map, and gameplay canon. The owner **allows GitHub Actions and other compute, both sparingly**. Prefer appropriate local Linux checks and use hosted resources only when justified. Older dated “No GitHub Actions” statements below are preserved as history and are **superseded**, not current prohibitions. No gameplay or release authorization follows from this documentation change.
 
+## November 2, 2026 · v0.7.89-dev · observable weather delays and real foreign lodging (source only)
+- [x] Deterministic voyage-specific, saved rough-sea delays revealed only after the ship reaches the affected ocean segment, never rolled by refreshing the map or reloading.
+- [x] Adjust saved ETA/arrival minute at most once, and preserve normal world-clock reports, health, ship location, paid fares, cargo and cash ownership.
+- [x] Correct the return-voyage sequence: the Atlantic/ocean portion precedes the final Baltimore-to-Washington feeder. The distinct shipping chart and unchanged reference bitmap show the correct route position.
+- [x] Show revised ETA, voyage notices, return-connection status and a simple captain's register on the existing passenger panel.
+- [x] Physically reached overseas Sailors' Lodging now offers paid, timed rest with personal-cash receipt and existing energy/medical rules. No named roomkeeper, free equipment or imaginary company settlement.
+- [ ] Execute complete local Node source tests and a genuine Ubuntu Electron playthrough; test long multi-day passages, day-close payments, low health and map overlays before accepting any playable release.
+- [ ] Replace estimated weather, feeder duration, fare, and $1.25 lodging price with researched period-specific services; source map redistribution rights remain unverified.
+See `docs/RELEASE-NOTES-v0.7.89-dev.md`. No Actions run, executable, release or tag.
+
 ## November 2, 2026 · v0.7.88-dev · paid overseas passenger loop (source only)
 - [x] Add Passenger Pier to the existing Potomac River Fishing Bank, without changing Washington's map image or existing pin coordinates.
 - [x] Require Charles to physically reach the pier and buy passage with personal money before moving him to a saved passenger-vessel location. Include a provisional two-day Chesapeake/Baltimore feeder and real ocean-route days from the existing shipping chart.
