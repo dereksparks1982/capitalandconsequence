@@ -37,6 +37,7 @@ function open(save,onChange){
   shipId:null,scene:null,zone:'quay',scale:1,x:0,y:0,drag:null,ready:false,focus:null};
  else session.onChange=onChange;
  session.focus=document.activeElement;
+ session.ready=false;
  ensuredHost();host.hidden=false;
  document.body.classList.add('merchant-world-open');
  draw(true);
@@ -51,18 +52,36 @@ function open(save,onChange){
 }
 function close(){
  if(!host||host.hidden)return;
+ persistView();
  host.hidden=true;document.body.classList.remove('merchant-world-open');
  if(ticker!==null){root.clearInterval(ticker);ticker=null}
  session?.focus?.focus?.();
+}
+function persistView(){
+ if(!host||host.hidden||!session?.ready)return;
+ const vp=host.querySelector('.merchant-world-viewport');if(!vp)return;
+ const fit=Math.max(.25,Math.min((vp.clientWidth-12)/800,(vp.clientHeight-12)/600));
+ const view=state().view;
+ view.zoom=Math.round(session.scale/fit*10000)/10000;
+ view.cx=Math.max(0,Math.min(800,(vp.clientWidth/2-session.x)/session.scale));
+ view.cy=Math.max(0,Math.min(600,(vp.clientHeight/2-session.y)/session.scale));
+ session.onChange?.();
 }
 function resize(first=false){
  if(!session||!host||host.hidden)return;
  const vp=host.querySelector('.merchant-world-viewport'),stage=host.querySelector('.merchant-world-stage');
  if(!vp||!stage)return;
  if(!session.ready||first){
-  const fit=Math.min((vp.clientWidth-12)/800,(vp.clientHeight-12)/600);
-  session.scale=Math.max(.25,fit);session.x=(vp.clientWidth-800*session.scale)/2;
-  session.y=(vp.clientHeight-600*session.scale)/2;session.ready=true;
+  const restore=!session.ready,fit=Math.max(.25,Math.min((vp.clientWidth-12)/800,(vp.clientHeight-12)/600));
+  session.scale=fit;session.x=(vp.clientWidth-800*fit)/2;
+  session.y=(vp.clientHeight-600*fit)/2;
+  const view=state().view;
+  if(restore&&Number.isFinite(view.zoom)&&view.zoom>0&&Number.isFinite(view.cx)&&Number.isFinite(view.cy)){
+   session.scale=Math.max(.3,Math.min(3.5,fit*view.zoom));
+   session.x=vp.clientWidth/2-view.cx*session.scale;
+   session.y=vp.clientHeight/2-view.cy*session.scale;
+  }
+  session.ready=true;
  }
  stage.style.transform='translate('+session.x+'px,'+session.y+'px) scale('+session.scale+')';
  host.querySelector('#merchantWorldZoom')?.replaceChildren(document.createTextNode(Math.round(session.scale*100)+'%'));
@@ -125,7 +144,7 @@ function focusPoint(point,minimumScale=1){
 }
 function chartDirectory(){
  const marks=state().pins,ports=Object.keys(nav.PORTS),opened=new Set(fleet().ports);
- let html='<details class="ocean-chart-directory"><summary>Ports & Your Chart Marks · '+(ports.length+marks.length)+'</summary>';
+ let html='<details class="ocean-chart-directory"'+(session.directoryOpen?' open':'')+'><summary>Ports & Your Chart Marks · '+(ports.length+marks.length)+'</summary>';
  html+='<h4>Known ports</h4><div class="ocean-directory-links">'+ports.map(port=>
   action('focus-port:'+port,(opened.has(port)?'● ':'○ ')+port)).join('')+'</div>';
  if(marks.length)html+='<h4>My marked areas</h4><div class="ocean-directory-links">'+marks.map(pin=>
@@ -196,8 +215,8 @@ function business(){
 function draw(reset){
  if(!session||host?.hidden)return;
  root.FE_EMPIRE.advance(session.save);
- const view=host.querySelector('.merchant-world-viewport');
- const oldWidth=view?.clientWidth,oldHeight=view?.clientHeight;
+ const directory=host.querySelector('.ocean-chart-directory');
+ if(directory)session.directoryOpen=directory.open;
  host.innerHTML='<div class="merchant-world-card"><header class="merchant-world-head"><div><small>CHARLES WHITCOMB · MERCHANT NAVIGATION</small><h2 id="merchantWorldHeading">World Shipping Chart</h2><p>'+esc(session.save.gameDate)+' · Ships move with the saved Washington clock</p></div><div class="merchant-world-tools">'+
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
