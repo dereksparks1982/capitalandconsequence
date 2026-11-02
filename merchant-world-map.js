@@ -129,7 +129,7 @@ function portMiniScene(){
   'water','quay','quay','street','lodging','lodging','water','quay','quay','street','street','street'];
  for(const t of tiles){
   html+=t==='water'?'<span class="ocean-tile water" aria-label="Water"></span>':
-   '<button type="button" class="ocean-tile '+t+'" data-ocean-action="zone:'+t+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+
+   '<button type="button" class="ocean-tile '+t+(session.zone===t?' selected':'')+'" data-ocean-action="zone:'+t+'" title="'+esc(t)+'" aria-pressed="'+(session.zone===t?'true':'false')+'" aria-label="'+esc(t)+'">'+
    ({quay:'║',warehouse:'▣',customs:'▤',street:'·',market:'▥',lodging:'⌂'}[t]||'')+'</button>';
  }
  return html+'</div>';
