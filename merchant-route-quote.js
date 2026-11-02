@@ -6,7 +6,8 @@
  'use strict';
  const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
  const empire=typeof module==='object'&&module.exports?require('./industrial-empire.js'):root.FE_EMPIRE;
- const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&!Number.isNaN(Date.parse(d+'T00:00:00Z'));
+ const validDate=d=>{if(typeof d!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d))return false;
+  const n=Date.parse(d+'T00:00:00Z');return Number.isFinite(n)&&new Date(n).toISOString().slice(0,10)===d};
  function addDays(date,days){
   if(!validDate(date)||!Number.isInteger(days)||days<1||days>1000)return null;
   const m=Date.parse(date+'T00:00:00Z')+days*86400000;
