@@ -86,6 +86,22 @@ assert.equal(row.familyCents,Math.floor(total*2500/13000));
 assert.equal(F.report(s).dividendIncomeCents,row.familyCents);
 assert.equal(C.vote(s,'dividend','first-dividend').repeated,true);
 assert.equal(F.report(s).dividendIncomeCents,row.familyCents,'replay cannot pay father twice');
+// Corporate UI takes its payment token from the family receipt counter rather
+// than the corporate register, so multiple partial payments remain possible.
+const split=mk();F.ensure(split);split.gameDate='1878-02-02';F.advanceDay(split);
+const firstToken='family-payment:'+F.ensure(split).nextId;
+assert.equal(F.pay(split,1500,firstToken).ok,true);
+assert.equal(F.report(split).overdueCents,3000);
+const secondToken='family-payment:'+F.ensure(split).nextId;
+assert.notEqual(secondToken,firstToken);
+assert.equal(F.pay(split,3000,secondToken).ok,true);
+assert.equal(F.report(split).overdueCents,0);
+assert.equal(split.companyCash,2455);
+assert.equal(F.pay(split,1500,firstToken).repeated,true);
+assert.equal(split.companyCash,2455,'old token cannot double pay an installment');
+const other=mk();other.characterRoute='wardman';
+C.advanceDay(other);
+assert.equal(other.whitcombFamily,undefined,'other protagonist does not incur Charlie family loan');
 const stored=copy(s);
 assert.equal(C.ensure(stored).familyShares,2500);
 assert.equal(F.report(stored).principalCents,748000);
