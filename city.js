@@ -50,7 +50,7 @@
    rooms:[
     {id:'star-room',name:'Star Club Salon',description:'You are inside Madam Star’s refined Washington club. Guests are welcomed here before choosing a room. There are no cards or gambling.'},
      {id:'main-parlor',name:'Main Parlor',description:'Gentle conversation, guests, introductions and discreet service gather in Madam Star’s main parlor.'},
-     {id:'dining-room',name:'Dining Room',description:'Guests may dine and take refreshments with quiet, period-appropriate salon music. Detailed menus and ordering remain in development.'},
+     {id:'dining-room',name:'Dining Room',description:'Guests may dine and take refreshments with quiet, period-appropriate salon music. Meals can be ordered at the existing tables. Dining costs personal money and advances the Washington clock; no cards or gambling.'},
      {id:'brandy-room',name:'Brandy Room',description:'A quieter smoking and conversation room for established patrons.'},
      {id:'madam-office',name:'Madam Star’s Private Office',restricted:true,description:'Madam Star grants entry by invitation. Her correspondence and affairs are not open to casual guests.'},
      {id:'private-suites',name:'Private Rooms',restricted:true,description:'Private rooms are accessible only by permission. No gambling is permitted anywhere in the club.'}

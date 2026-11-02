@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.79-dev · real Star Club dining room
+- [x] Replace the Star Club's previously descriptive-only **Dining Room** menu promise with four playable table-service meals, preserving the existing approved rooms, proprietor and the absolute prohibition on cards or gambling.
+- [x] Require a genuine entered Star Club Dining Room, valid game-clock service period, personal funds and actual spent Washington minutes for each purchase. No remote dining, closed-day magic or private-suite bypass.
+- [x] Use the authoritative Character Needs `eatPrepared` hunger/thirst restoration and 30-minute meal cooldown, not a second need meter or unlimited refreshment exploit.
+- [x] Deduct personal funds and place real cents in WashingtonCommerce's existing Star Club dining till; each in-game date has a finite, provisional menu portion allocation and durable single-use receipts.
+- [x] Existing salon and parlor remain non-gambling social spaces, Brandy Room retains smoking-only context, and Madam Star's office/suites remain permission-gated.
+- [x] Focused source regression with actual needs and commerce modules verifies finite supplies, cash, nourishment, cooldown, fake-time refusal, room/phase guards, replay safety and separated profile saves.
+- [ ] Historical culinary supply details and actual Star Club staff interactions remain future design; no claim of full offline Node suite or native Linux Electron acceptance. No GitHub Actions.
+
 ## November 1, 2026 · v0.7.78-dev · verified life records in all four private books
 - [x] Charlie's existing Business Ledger includes **real** accepted component/District/Fair production obligations, documented manufacturing and purchase receipts, earned staffing/equipment and actual contracted deliveries. A hypothetical order is never labeled as paid cash.
 - [x] Sam's existing Casebook includes a private, read-only reference to his own actually filed Hillsdale property custody chain, with explicit unverified-owner status and no fabricated crime evidence.
