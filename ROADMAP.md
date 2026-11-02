@@ -5,6 +5,10 @@
 - [x] Perform schooner/steamship purchase, authorized dispatch, insurance, hull repair, real consignment sales and discovered port verification on the map using the existing fleet economy.
 - [x] View eight established or unverified port markers and low-fidelity clickable small harbor **planning scenes**: quay, warehouse, customs, market, lodging and street. No unearned resident, revenue or property.
 - [x] Add focused regression tests for map/source wiring, commercial authority, saved annotations, protection of the original Washington map and nonteleporting harbor inspections.
+- [x] Add a map directory that centers eight established ports and personal ocean annotations, remember the chart pan/zoom between visits, and support SVG ship/port keyboard activation.
+- [x] Classify personal chart marks as harbor candidate, coast, sea or study area; preview simple harbor zones without converting survey marks into verified ports.
+- [x] Read existing owned docked ships and Federal Electric consigned goods within quay/storehouse zones; inspect voyage notices and actual trade verification, never mint inventory.
+- [x] Give each owned ship a saved-clock voyage manifest/insurance panel and expose fleet operating receipts and event journal in the shipping office; show labeled estimate of days/speeds from Baltimore to selected ports.
 - [ ] Actual **character travel** to distant ports remains a separate integration: embarkation from a physically reached American harbor, passenger fares and provisions, full in-game clock/day-report passage, arrival, physical presence/return, and playable port-zone walking/interactions with the shared systems. Do not count the planning scenes as visited locations.
 - [ ] Full Node suite, Linux Electron interactive screenshot inspection, owner approval, exact line tracing and source-image licensing remain outstanding. No GitHub Actions, tagged release or packaging.
 See `docs/RELEASE-NOTES-v0.7.86-dev.md`.
