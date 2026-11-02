@@ -51,11 +51,24 @@ function localRecords(port,zone){
  }
  if(zone==='warehouse'){
   const goods=Array.isArray(fleet.electric?.[port])?fleet.electric[port]:[];
-  return '<h4>Recorded Federal Electric Goods</h4>'+(goods.length?goods.map(v=>'<p>'+esc(v.units)+' '+esc(v.productId)+' units</p>').join(''):'<p>No Federal Electric consignment has reached this storehouse.</p>');
+  const lots=Array.isArray(fleet.tradeHold?.[port])?fleet.tradeHold[port]:[];
+  return '<h4>Recorded Federal Electric Goods</h4>'+(goods.length?goods.map(v=>'<p>'+esc(v.units)+' '+esc(v.productId)+' units</p>').join(''):'<p>No Federal Electric consignment has reached this storehouse.</p>')+
+   '<h4>Physical Merchant Cargo</h4>'+(lots.length?lots.map(v=>'<p>'+esc(v.units+' '+v.name)+' · landed by '+esc(v.shipName||'merchant vessel')+' · invoice #'+esc(v.id)+'</p>').join(''):
+    '<p>No merchant cargo has actually been landed here.</p>');
  }
- if(zone==='market')return '<h4>Trade Agent</h4><p>'+(fleet.ports.includes(port)?
-  'This destination is commercially verified. Real receipts are handled by the shipping office.':
-  'This destination is not verified for commercial shipments.')+'</p>';
+ if(zone==='market'){
+  const lots=Array.isArray(fleet.tradeHold?.[port])?fleet.tradeHold[port]:[];
+  const authorized=fleet.ports.includes(port);
+  return '<h4>Harbour Trade Agent</h4><p>'+(authorized?
+   'Port trade authorization is on record. Real merchant cargo can be sold here, with local commission and customs duty.':
+   'This destination is not verified for commercial shipments. Visiting does not create a trade license.')+'</p>'+
+   (authorized?lots.map(lot=>{
+    const quote=root.FE_MERCHANT_TRADE?.saleQuote?.(save,port,lot);
+    return '<p>'+esc(lot.units+' '+lot.name)+' · manifest #'+esc(lot.id)+
+     (quote?.ok?' · net receipt '+money(quote.net):'')+
+     ' '+button('sell-trade:'+lot.id,'Sell Actual Landed Cargo · 15 min')+'</p>';
+   }).join(''):'')+(authorized&&!lots.length?'<p>No delivered merchant cargo is currently available to sell.</p>':'');
+ }
  if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
   return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
 }
@@ -166,6 +179,7 @@ function click(e){
  if(cmd==='recover'){changed(actions?.recover?.());return}
  if(cmd==='cabin-rest'){changed(actions?.cabinRest?.());return}
  if(cmd==='harbor-rest'){changed(actions?.harborRest?.());return}
+ if(cmd.startsWith('sell-trade:')){changed(actions?.portTradeSale?.(cmd.slice(11)));return}
  if(cmd==='galley-meal'){changed(actions?.galleyMeal?.());return}
  if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
