@@ -54,7 +54,7 @@ function sync(save){
  if(passed>0){
   for(const [key,rate] of Object.entries(RATES)){
    const previousMeter=state.meters[key];
-   const nextMeter=clamp(previousMeter-(key==='energy'&&(save.sleepingAtHome===true||save.sleepingAboardPassenger===true)?0:passed*rate));
+   const nextMeter=clamp(previousMeter-(key==='energy'&&(save.sleepingAtHome===true||save.sleepingAboardPassenger===true||save.sleepingAtForeignHarbor===true)?0:passed*rate));
    state.meters[key]=nextMeter;
    if(key==='hunger'||key==='thirst'){
     const depleted=rate>0?Math.max(0,passed-Math.max(0,previousMeter)/rate):0;
