@@ -78,3 +78,19 @@ body.merchant-world-open{overflow:hidden}
  .career-desk .career-desk-shipping img{height:53px}
  .career-desk .career-desk-shipping small{font-size:9px}
 }
+
+
+/* Chart directory and saved annotations: confined to the maritime overlay. */
+.ocean-chart-directory{border:1px solid #b29c79;background:#f2e5cb;margin-bottom:10px;padding:7px}
+.ocean-chart-directory summary{cursor:pointer;font-weight:bold;padding:4px 2px;font-size:14px}
+.ocean-chart-directory h4{margin:10px 4px 5px}
+.ocean-directory-links{display:flex;gap:3px;flex-wrap:wrap}
+.merchant-world-sidebar .ocean-directory-links button{padding:5px 7px;min-height:31px;font-size:12px;margin:2px}
+.ocean-voyage-facts{display:grid;grid-template-columns:minmax(90px,1fr) minmax(110px,1.5fr);
+ gap:6px;font-size:13px;margin:10px 0}
+.ocean-voyage-facts dt{font-weight:bold}
+.ocean-voyage-facts dd{margin:0;overflow-wrap:anywhere}
+.ocean-voyage-log{border-top:1px solid #b5a17c;margin:11px 0;padding:7px 0}
+.ocean-voyage-log summary{cursor:pointer;font-weight:bold}
+.ocean-voyage-log p{border-bottom:1px dashed #ccbaa0;padding-bottom:5px;font-size:12px}
+#merchantPinKind{display:block;width:100%;margin:6px 0;font-size:14px}
