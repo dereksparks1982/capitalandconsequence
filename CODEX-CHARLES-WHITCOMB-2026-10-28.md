@@ -5,6 +5,14 @@
 **Updated:** 28 October 2026  
 **Status:** Approved 1878 opening character and initial gameplay; later industrial expansion remains an unfinished simulation.
 
+## Heritage, family and financing (November 2, 2026)
+
+Charlie has **British and Egyptian parentage**. His father is a former British military man who served outside Egypt and later established a prosperous **land-based trading enterprise in Alexandria**, without owning a maritime fleet. His mother is Egyptian. Both parents' names beyond the Whitcomb surname, their religions and the father's exact regiment/rank remain undecided. He is emotionally restrained, stern and exacting in his finances, but regards Charlie's progress as both a beloved son's opportunity and a serious investment, not a handout.
+
+Charlie is a wealthy-family son **indebted to the family that financed his Washington business**. His father holds an original **25% voting equity stake** while Charlie retains a **75% majority**, in addition to the separate **secured monthly business loan**. Loan repayment does not silently buy out the father's shares. If the company incorporates and later goes public, the father's actual shares persist with voting and dividend rights; he has a designated board seat while his holding is at least 15%. His private-trade network may eventually introduce Charlie to real shipping contacts, but that expansion is **future design, not free port access**.
+
+The financed American enterprise, cash, shop and property already exist on the game's January 1878 start. The current **$7,500 principal, $45 monthly due, and 4% nominal annual loan rate are explicitly provisional gameplay figures**, not verified 1878 contracts; no second starting cash is awarded. Falling behind produces dated notices, a creditor demand, and potentially loss of factory management plus family estrangement, without ending Charlie's playable life. The intended Alexandria-to-Washington shipboard introduction is **story direction only** until properly implemented and approved, leaving the existing four protagonist locations and permanent Washington map intact.
+
 ## Starting life and ownership
 Charlie **already owns** Federal Electric on January 2, 1878. He is **not** a newly hired factory employee and does not start with an unearned industrial empire. His modest Washington component works initially manufactures telegraph and early electrical apparatus, contacts, relays, insulated wire and related fittings. An incandescent-lamp business is a later technological and licensing possibility, not a first-day product.
 
