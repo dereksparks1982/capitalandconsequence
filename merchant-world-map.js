@@ -206,7 +206,20 @@ function portPanel(name){
    ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong> · Steamship: <strong>'+
    steam.days+' days</strong></p><p class="fine">This is a route estimate, not a booked journey or verified period sailing schedule.</p></div>';
  }
- html+=action('port-scene:'+name,'Explore Harbour Layout')+action('walk-open:'+name,'Open Walkable Harbour Survey');
+ if(name!=='Baltimore'&&root.FE_PASSENGER_SEA){
+  const passage=root.FE_PASSENGER_SEA;
+  const rateS=passage.BOAT_RATES.schooner,rateT=passage.BOAT_RATES.steamer;
+  if(quote&&steam){
+   const schoonerFare=rateS.base+rateS.perNM*quote.nauticalMiles+passage.TRANSFER_DAYS*4;
+   const steamerFare=rateT.base+rateT.perNM*steam.nauticalMiles+passage.TRANSFER_DAYS*4;
+   html+='<section class="ocean-quote-details"><h4>Passenger Passage From Washington</h4>'+
+    '<p>Schooner: '+(quote.days+passage.TRANSFER_DAYS)+' game days · '+cash(schoonerFare)+'</p>'+
+    '<p>Steamship: '+(steam.days+passage.TRANSFER_DAYS)+' game days · '+cash(steamerFare)+'</p>'+
+    '<p class="fine">Includes the estimated two-day Washington-to-Baltimore feeder. Personal ticket purchase requires physical boarding at the Potomac Passenger Pier.</p></section>';
+  }
+ }
+ html+=action('passenger-tickets:'+name,'Passenger Ticket Office')+
+  action('port-scene:'+name,'Explore Harbour Layout')+action('walk-open:'+name,'Open Walkable Harbour Survey');
  if(session.scene===name){
   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
   html+=portMiniScene();
@@ -323,6 +336,15 @@ function onClick(e){
  const command=e.target.closest('[data-ocean-action]')?.dataset.oceanAction;
  if(command){
   if(command==='close')return close();
+  if(command.startsWith('passenger-tickets:')){
+   const allowed=(session.save.currentLocation?.locationId==='potomacFishingBank'&&
+     session.save.currentLocation?.roomId==='passenger-pier')||
+     (session.save.currentLocation?.locationId==='foreignHarbor'&&
+     !!session.save.passengerSea?.port);
+   if(!allowed){setStatus('Passenger tickets must be booked in person at the Potomac Passenger Pier or at a foreign harbour reached by sea.');return}
+   const target=command.slice(18),save=session.save,onChange=session.onChange;
+   close();root.FE_PASSENGER_UI?.showBooking?.(save,{...root.FE_PASSENGER_ACTIONS,changed:onChange},target);return;
+  }
   if(command==='walk-close'){session.walking=null;return draw(false)}
   if(command.startsWith('walk-open:')){
    const name=command.slice(10),survey=root.FE_MERCHANT_HARBOR_WALK?.preview?.(session.save,name);
