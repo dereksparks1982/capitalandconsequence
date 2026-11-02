@@ -3039,6 +3039,7 @@ function openCityRoom(locationId,roomId,options={}){
   const encounter=document.getElementById('cityRoomEncounter');
   if(encounter)encounter.textContent='';
  }
+ window.FE_PASSENGER_UI?.updatePier?.(S,window.FE_PASSENGER_ACTIONS);
  return true;
 }
 function closeCityRoom(){
@@ -3253,7 +3254,6 @@ function openLocalVenueActivity(id){
   btn.onclick=event=>{event.stopImmediatePropagation();restoreLocalVenueActivity();window.FE_VENUES?.renderRoomOpportunities?.(currentCityLocation().locationId)};
  });
  window.FE_VENUES.renderRoomOpportunities(currentCityLocation().locationId);
- window.FE_PASSENGER_UI?.updatePier?.(S,window.FE_PASSENGER_ACTIONS);
  return true;
 }
 window.FE_CITY={
