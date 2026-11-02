@@ -2,6 +2,8 @@
 
 **One city. Countless lives. Every choice has consequences.**
 
+**Project references:** [Company Bible: development rules](COMPANY_BIBLE.md) · [Game Lore & Canon: setting and owner-approved decisions](GAME_LORE.md) · [Roadmap: implementation and QA](ROADMAP.md). GitHub Actions and compute are permitted **sparingly**, not for routine unnecessary runs.
+
 A nineteenth-century, alternate-history Washington life simulation where Charles runs Federal Electric, Sam patrols the District, Elias navigates Washington's underworld, and Edmund works at the District Asylum. Your actions use one world clock and carry consequences across work, money, travel and personal health.
 
 **Development v0.7.88 (paid passenger crossings and physical overseas harbours, source-only):** Charles can travel in person by first visiting the **Passenger Pier** room at the existing Potomac River Fishing Bank, purchasing a separately priced ticket with *personal* money, and boarding a schooner or steamship on a multi-day voyage. The crossing advances on the saved game clock; a separate passenger marker moves across the original EcoClipper chart. At the end of the trip, Charles actually occupies one of six small foreign-port sectors and walks through them one in-game minute at a time. A separately paid return brings him to the original Washington passenger pier. Ordinary Washington travel cannot shortcut the voyage. Galley meals, water, cabin sleep and maritime medical care use the existing needs and cash systems. **Feeder travel, fares, schedules and generic harbour sections remain gameplay estimates, not verified 1878 passenger services.** Full Ubuntu Electron testing and owner acceptance remain outstanding. See `docs/RELEASE-NOTES-v0.7.88-dev.md`.
