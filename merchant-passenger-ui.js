@@ -40,6 +40,24 @@ function quote(){
  const st=sea.ensure(save);const next=st.port?'Baltimore':dest;
  return sea.quote(save,next,shipType);
 }
+function localRecords(port,zone){
+ const fleet=root.FE_EMPIRE?.ensure?.(save)?.fleet;
+ if(!fleet)return'<p>Fleet records are unavailable.</p>';
+ if(zone==='quay'){
+  const ships=fleet.ships.filter(v=>v.status==='in-port'&&v.port===port);
+  return '<h4>Ships Actually Alongside</h4>'+(ships.length?ships.map(v=>'<p>'+esc(v.name)+' · hull '+Number(v.condition||0).toFixed(0)+'%</p>').join(''):'<p>No personally owned merchant vessel is at this quay.</p>');
+ }
+ if(zone==='warehouse'){
+  const goods=Array.isArray(fleet.electric?.[port])?fleet.electric[port]:[];
+  return '<h4>Recorded Federal Electric Goods</h4>'+(goods.length?goods.map(v=>'<p>'+esc(v.units)+' '+esc(v.productId)+' units</p>').join(''):'<p>No Federal Electric consignment has reached this storehouse.</p>');
+ }
+ if(zone==='market')return '<h4>Trade Agent</h4><p>'+(fleet.ports.includes(port)?
+  'This destination is commercially verified. Real receipts are handled by the shipping office.':
+  'This destination is not verified for commercial shipments.')+'</p>';
+ if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
+ if(zone==='lodging')return'<h4>Sailors’ Lodging</h4><p>Passenger rest and room charges are not yet available. The paid ticket covers passage only.</p>';
+ return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
+}
 function cargoScene(){
  const state=sea.ensure(save),p=state.position,grid=walk.tiles(p.zone);
  let html='<p class="passenger-stage-label">Actually ashore at '+esc(state.port)+'. Every movement uses the game clock.</p>'+
@@ -55,7 +73,7 @@ function cargoScene(){
   if(allowed)html+='<button type="button" class="passenger-cell '+esc(cell)+'" data-passenger-action="walk:'+x+':'+y+'" aria-label="'+esc(label)+'">'+sym+'</button>';
   else html+='<span class="passenger-cell '+esc(cell)+(active?' person':'')+'" aria-label="'+esc(label)+'">'+sym+'</span>';
  }
- html+='</div><p class="fine">WASD or arrow keys walk one tile. Choose another section to move to its public approach (one game minute). Locked barriers remain impassable.</p>';
+ html+='</div><div class="passenger-local-register">'+localRecords(state.port,p.zone)+'</div><p class="fine">WASD or arrow keys walk one tile. Choose another section to move to its public approach (one game minute). Locked barriers remain impassable.</p>';
  return html;
 }
 function draw(){
