@@ -56,7 +56,7 @@ function localRecords(port,zone){
   'This destination is commercially verified. Real receipts are handled by the shipping office.':
   'This destination is not verified for commercial shipments.')+'</p>';
  if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
- if(zone==='lodging')return'<h4>Sailors’ Lodging</h4><p>Passenger rest and room charges are not yet available. The paid ticket covers passage only.</p>';
+ if(zone==='lodging')return'<h4>Sailors’ Lodging</h4><p>A simple bed costs '+money(sea.LODGING_COST)+' personal cash per rest (provisional price). The normal world clock and energy rules apply.</p>'+button('harbor-rest','Pay for Bed & Rest · '+money(sea.LODGING_COST));
  return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
 }
 function cargoScene(){
@@ -102,8 +102,11 @@ function draw(){
   const meters=save.characterNeeds?.meters||{};
   body='<div class="passenger-voyage-summary"><p>From <b>'+esc(trip.from)+'</b> to <b>'+esc(trip.to)+'</b> · '+esc(trip.type)+'</p>'+
    '<p>Estimated arrival: <b>'+esc(trip.etaDate)+'</b> · '+travel.daysRemaining+' days remaining.</p>'+
-   '<p>'+(travel.feeder?'On the river/coastal transfer.':'At sea along the charted ocean route.')+
-   ' · '+Math.floor(travel.progress*100)+'% of total passage elapsed.</p></div>'+
+   '<p>'+(travel.feeder?(trip.returning?'On the final Baltimore-to-Washington river/coastal connection.':'On the initial Washington-to-Baltimore river/coastal connection.'):'At sea along the charted ocean route.')+
+   ' · '+Math.floor(travel.progress*100)+'% of total passage elapsed.</p>'+
+   (trip.weather?.observed&&trip.weather.delayMinutes?
+    '<p class="passenger-weather-notice">Rough-sea delay recorded: '+(trip.weather.delayMinutes/60).toFixed(0)+' hours. Revised arrival: <strong>'+esc(trip.etaDate)+'</strong>.</p>':
+    '<p class="fine">Arrival is an estimate. Rough seas may change the schedule during the crossing.</p>')+'</div>'+
    '<div class="passenger-sea-map"><svg viewBox="0 0 800 600" role="img" aria-label="Current passenger vessel on the original maritime route chart">'+
    '<image href="'+esc(nav.MAP)+'" width="800" height="600"/>'+
    '<polyline points="'+trip.points.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="4" stroke-dasharray="9 6"/>'+
@@ -122,6 +125,10 @@ function draw(){
    button('galley-meal','Galley Meal · $0.50')+
    button('galley-water','Drinking Water · $0.10')+
    '<p class="fine">These actions spend in-game time and use the existing health meters. Shipboard medical care and exhaustion are recorded without teleporting to Washington.</p></section>';
+  const notices=st.history.filter(e=>e.id===trip.id&&(e.kind==='embarked'||e.kind==='weather-delay')).slice(-3);
+  if(notices.length)body+='<section class="passenger-voyage-notices"><h3>Captain’s Passage Register</h3>'+
+    notices.map(e=>'<p>'+esc(e.date)+' · '+(e.kind==='weather-delay'?
+     'Rough seas delayed arrival by '+Math.round(e.delayMinutes/60)+' hours.':'Fare paid and berth issued.')+'</p>').join('')+'</section>';
   if(save.phase==='report')body+='<div class="passenger-day-report"><h3>Daily Report · '+esc(save.gameDate)+'</h3>'+
    '<p>Company close: '+money(save.dailyReport?.companyEnd??save.companyCash)+
    ' · Personal cash: '+money(save.dailyReport?.personalAtClose??save.personalCash)+'</p></div>';
@@ -158,6 +165,7 @@ function click(e){
  if(cmd==='toggle-pause'){changed(actions?.togglePause?.());return}
  if(cmd==='recover'){changed(actions?.recover?.());return}
  if(cmd==='cabin-rest'){changed(actions?.cabinRest?.());return}
+ if(cmd==='harbor-rest'){changed(actions?.harborRest?.());return}
  if(cmd==='galley-meal'){changed(actions?.galleyMeal?.());return}
  if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
