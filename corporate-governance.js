@@ -296,7 +296,7 @@ function removePresident(save,cause){
 }
 function advanceDay(save){
  const c=ensure(save);if(!validDate(save.gameDate)||c.lastAdvanceDate===save.gameDate)return null;
- const familyOutcome=family.advanceDay(save);
+ const familyOutcome=save.characterRoute==='industrialist'?family.advanceDay(save):null;
  if(familyOutcome){c.president='whitcomb-father';register(save,'family-foreclosure',familyOutcome.message);return familyOutcome;}
  const previous=c.lastAdvanceDate;c.lastAdvanceDate=save.gameDate;
  const elapsed=previous?Math.max(1,Math.min(90,Math.round((Date.parse(save.gameDate)-Date.parse(previous))/86400000))):1;
