@@ -4,6 +4,8 @@
  */
 (function(root){
  'use strict';
+ const journal=typeof module==='object'&&module.exports?require('./ward-service-register.js'):root.FE_WARD_SERVICE_REGISTER;
+ if(!journal)throw Error('Orderly service register must load before ward duties.');
  const VENUE='blackwoodAsylum',STATION='orderly-station',WARD='patient-ward',
   WAGE_CENTS=35,MAX_ASSIGNMENTS=3;
  const ASSIGNMENTS=Object.freeze([
@@ -90,6 +92,8 @@
   d.wagesEarnedCents+=WAGE_CENTS;
   save.personalCash=Math.round(((Number.isFinite(save.personalCash)?save.personalCash:0)*100+WAGE_CENTS))/100;
   d.lastAction=p.result+' Filing completed and ordinary wage received.';
+  // Derived only from the successfully reported real ward work.
+  journal.record(save,log);
   return {ok:true,log,wageCents:WAGE_CENTS};
  }
  function task(save){return BY_ID.get(ensure(save).pending?.taskId)||null}

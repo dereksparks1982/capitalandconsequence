@@ -60,6 +60,7 @@
  }
  function refresh(){
   mount();
+  window.FE_WARD_SERVICE_REGISTER_UI?.render?.();
   const active=S?.characterRoute==='wardman'&&!!activeProfileId();
   const desk=node('orderlyDesk'),room=node('orderlyWardPanel'),pos=where();
   if(desk)desk.hidden=!active;

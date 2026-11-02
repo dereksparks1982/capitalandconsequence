@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.77-dev · Edmund's documented institutional service
+- [x] Save actual reported ordinary ward assignments as independently verifiable services, with original task and response; no invented patient names or medical histories.
+- [x] Real **supply shortage/request** tasks can create tracked unresolved requisitions only after Edmund physically attends and files the source assignment. Inventory-check-only tasks do not automatically create a supply order.
+- [x] Allow a five-minute station follow-up on later in-game days and a separate two-day-later escalation to supervisory channels; no fictional receiving entry or guarantee that supplies arrived.
+- [x] Let Edmund submit a five-minute daily handover after three actually filed ordinary ward-service entries, including unresolved supply notices; no automatic brother/manager approval or promotion.
+- [x] Show pending requests and original service references inside his existing orderly station panel, protecting all other asylum and shared murder-case lore.
+- [x] Execute the legacy orderly service regression and a new complete-flow, wrong-role, exact-time, save-reload, and duplicate-token regression.
+- [ ] Full offline Node regression suite and native Ubuntu Electron gameplay QA remain unverified. Future actual supply delivery must use real institution staff/inventory sources rather than self-granted stock.
+
 ## November 1, 2026 · v0.7.76-dev · Golden Peacock door-book and employee consequences
 - [x] Give Eli Crowe a persistent record of actual paid nightclub entrance contacts rather than only a wages counter.
 - [x] An existing courier parcel chosen for **physical receipt** enters Eli's custody with the original numbered contact, date, and chain. Choosing to call for the manager does not create unearned stock or owner facts.
