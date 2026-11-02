@@ -94,3 +94,13 @@ body.merchant-world-open{overflow:hidden}
 .ocean-voyage-log summary{cursor:pointer;font-weight:bold}
 .ocean-voyage-log p{border-bottom:1px dashed #ccbaa0;padding-bottom:5px;font-size:12px}
 #merchantPinKind{display:block;width:100%;margin:6px 0;font-size:14px}
+
+
+.ocean-port-scene .ocean-tile.selected{
+ outline:3px solid #7a2d1c;outline-offset:-3px;
+ box-shadow:inset 0 0 0 2px #ffecb7;
+ position:relative;z-index:1;
+}
+.ocean-voyage-quote{margin:11px 0;padding:9px;background:#ece1c7;border:1px solid #ba9f77}
+.ocean-voyage-quote h4{margin:0 0 6px}
+.ocean-voyage-quote p{margin:5px 0}
