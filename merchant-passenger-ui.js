@@ -30,8 +30,9 @@ function updatePier(s,handlers){
   s.currentLocation?.roomId==='passenger-pier'&&!sea.ensure(s).voyage;
  entry.hidden=!allowed;
 }
-function showBooking(s,handlers){
+function showBooking(s,handlers,target=null){
  if(!s||s.characterRoute!=='industrialist')return false;
+ if(target&&Object.prototype.hasOwnProperty.call(nav.PORTS,target)&&target!=='Baltimore'&&target!=='Philadelphia')dest=target;
  save=s;actions=handlers;booking=true;
  ensureHost();draw();return true;
 }
