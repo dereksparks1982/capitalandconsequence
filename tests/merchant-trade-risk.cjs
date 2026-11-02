@@ -20,7 +20,7 @@ for(let k=0;k<400;k++){
   month=Number(landing.slice(5,7));
  const risk=.048*(1+(100-8)/65)*(month>=6&&month<=11?2:1);
  const threshold=risk*.17+.002*.22;
- if(roll('1|'+day+'|Havana|trade')<threshold){badDay=day;break}
+ if(roll('1|'+day+'|Havana|trade|risk')<threshold){badDay=day;break}
 }
 assert(badDay,'fixture must provide at least one deterministic storm/piracy loss');
 const s=make(badDay);assert(empire.buyShip(s,'schooner').ok);
