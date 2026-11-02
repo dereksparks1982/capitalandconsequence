@@ -1,3 +1,15 @@
+## November 2, 2026 · v0.7.88-dev · paid overseas passenger loop (source only)
+- [x] Add Passenger Pier to the existing Potomac River Fishing Bank, without changing Washington's map image or existing pin coordinates.
+- [x] Require Charles to physically reach the pier and buy passage with personal money before moving him to a saved passenger-vessel location. Include a provisional two-day Chesapeake/Baltimore feeder and real ocean-route days from the existing shipping chart.
+- [x] Display a separate passenger marker across the unaltered EcoClipper chart and an onboard crossing screen. The saved world clock advances in normal bounded game actions; physical arrival requires elapsed days and settles only once.
+- [x] Give arriving Charles six small **physical** foreign harbour sectors with WASD/arrow walking and one-minute movement; read the actual docked-owned-vessel and Federal Electric cargo records, without creating imaginary inventory.
+- [x] Offer a distinct personally paid and clock-advanced return journey, landing at the same Washington Passenger Pier. Ordinary Washington map travel is blocked while away.
+- [x] Connect shipboard cabin sleep, galley food/water and doctor expenses to existing personal cash, human needs and medical systems, keeping collapse recovery on the boat/in foreign harbour.
+- [x] Add dedicated offline source tests for boarding, exact fares, clock progress, unique arrivals, foreign walking, safe return and maritime medical care.
+- [ ] Run full local Node test suite and Ubuntu Electron end-to-end gameplay. Confirm city-room boarding UX, original map layers, health survival and long-journey day/report transitions with owner approval.
+- [ ] Verify period sailing/feeder geography, passenger fares, chart redistribution permission, weather-delay realism and next-layer authentic foreign trade/social scenes.
+See `docs/RELEASE-NOTES-v0.7.88-dev.md`. No Actions, binaries or release tags.
+
 ## November 2, 2026 · v0.7.87-dev · walkable harbor plans and voyage preflight (source only)
 - [x] Six deliberately generic 12×9 survey floorplans (quay, warehouse, customs, market, sailors' lodging, street) with walls, water and furnishings; one-tile WASD/arrows/adjacent-click movement and collision.
 - [x] Open those small planning scenes from a named commercial port or owner-marked harbour candidate on the exact existing EcoClipper chart. Save **independent** survey cursor positions for each port and section; do not move Charles or advance time from a map preview.
