@@ -62,6 +62,8 @@ function commit(save,token,action){
 }
 function check(save,site,role=true){
  if(save.paused||save.phase!=='day')return 'Company offices are closed or the game is paused.';
+ if(save.characterRoute==='industrialist'&&family.ensure(save).status==='repossessed')
+  return 'Whitcomb family foreclosure has removed Charles from management of Federal Electric.';
  if(role&&save.characterRoute!=='industrialist')return 'Only Charles Whitcomb may direct Federal Electric.';
  if(site&&save.currentLocation?.locationId!==site)return site==='factory'?'Conduct this business at Federal Electric.':'Visit the stockbroker in person.';
  return null;
