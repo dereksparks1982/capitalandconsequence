@@ -41,8 +41,7 @@
    for(let y=1;y<H-1;y++)for(let x=4;x<=7;x++)paint(x,y,'road');
    paint(2,2,'crate');paint(9,5,'barrel');paint(2,5,'bollard');
   }
-  // A passage at the bottom and top is retained for future true port travel.
-  paint(6,H-1,'floor');paint(6,0,'floor');
+  // The survey boundary remains closed; select other sectors with the tabs.
   return g;
  }
  const passable=t=>['floor','road','dock'].includes(t);
