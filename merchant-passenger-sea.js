@@ -10,6 +10,7 @@
  const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
  const ZONES=['quay','warehouse','customs','market','lodging','street'];
  const TRANSFER_DAYS=2;
+ const LODGING_COST=1.25; // Provisional game balance, not an authenticated 1878 room rate.
  const BOAT_RATES=Object.freeze({schooner:{base:12,perNM:.012},steamer:{base:25,perNM:.018}});
  const validPort=p=>Object.prototype.hasOwnProperty.call(nav.PORTS,p);
  const rounded=n=>Math.round(n*100)/100;
@@ -24,6 +25,18 @@
   if(!Number.isSafeInteger(st.nextId)||st.nextId<0)st.nextId=0;
   return st;
  }
+ // Deterministic voyage exposure: a forecast is not a guaranteed arrival date.
+ // Recorded once on embarkation and revealed only as the vessel reaches rough seas.
+ // These are bounded game-balance estimates, not a historical weather database.
+ function modeledDelay(from,to,type,departMinute,legs){
+  if(!Array.isArray(legs)||!legs.some(l=>['transatlantic','atlantic','eastern'].includes(l.kind)))return 0;
+  const key=[from,to,type,Math.floor(departMinute/1440)].join('|');
+  let hash=2166136261;
+  for(let i=0;i<key.length;i++)hash=Math.imul(hash^key.charCodeAt(i),16777619)>>>0;
+  const month=new Date(departMinute*60000).getUTCMonth();
+  const risk=(month===11||month<=1?30:month>=5&&month<=10?22:14)+(type==='schooner'?10:0);
+  return hash%100<risk?(1+Math.floor(hash/101)%4)*720:0;
+ }
  function position(save){
   const state=ensure(save),trip=state.voyage;
   if(!trip)return {phase:state.port?'ashore':'washington',port:state.port};
@@ -31,12 +44,21 @@
   const elapsed=Number.isSafeInteger(now)?Math.max(0,now-trip.departMinute):0;
   const duration=trip.arrivalMinute-trip.departMinute;
   const fraction=duration>0?Math.min(1,elapsed/duration):0;
-  const oceanFraction=Math.max(0,Math.min(1,(elapsed-trip.transferDays*1440)/(duration-trip.transferDays*1440)));
+  const transferMinutes=trip.transferDays*1440,seaMinutes=trip.seaDays*1440;
+  // Departing Washington: feeder BEFORE ocean. Returning: ocean BEFORE feeder.
+  const oceanStart=trip.returning?0:transferMinutes;
+  const oceanElapsed=Math.max(0,elapsed-oceanStart);
+  const weather=trip.weather,delay=weather?.observed?weather.delayMinutes:0;
+  const interruptionAt=weather?weather.triggerMinute-trip.departMinute-oceanStart:seaMinutes;
+  const effectiveOcean=delay>0&&oceanElapsed>interruptionAt?
+   Math.max(interruptionAt,oceanElapsed-delay):oceanElapsed;
+  const oceanFraction=Math.max(0,Math.min(1,effectiveOcean/Math.max(1,seaMinutes)));
+  const feeder=trip.returning?elapsed>=seaMinutes+delay:elapsed<transferMinutes;
   const xy=nav.xyAt(trip.points,oceanFraction);
   return {phase:'at-sea',port:null,from:trip.from,to:trip.to,progress:fraction,
    seaProgress:oceanFraction,coordinates:xy,etaDate:trip.etaDate,
    daysRemaining:Math.max(0,Math.ceil((trip.arrivalMinute-(now??trip.departMinute))/1440)),
-   feeder:elapsed<trip.transferDays*1440};
+   feeder,weatherDelayMinutes:delay};
  }
  function quote(save,to,type='steamer'){
   if(!save||save.characterRoute!=='industrialist')return result(false,'Only Charles can purchase a passenger berth.');
@@ -78,10 +100,14 @@
   // No separate treasury: this is a personal trip, not a shipment of company stock.
   save.personalCash=rounded(save.personalCash-q.fare);
   const id=++st.nextId;
+  const delayMinutes=modeledDelay(q.from,q.to,q.type,q.departMinute,q.legs);
+  const oceanStart=q.departMinute+(q.returning?0:q.transferDays*1440);
   st.voyage={id,from:q.from,to:q.to,type:q.type,days:q.days,seaDays:q.seaDays,
    transferDays:q.transferDays,nauticalMiles:q.nauticalMiles,fare:q.fare,
    departMinute:q.departMinute,arrivalMinute:q.arrivalMinute,etaDate:q.etaDate,
-   points:q.points,legs:q.legs,returning:q.returning};
+   points:q.points,legs:q.legs,returning:q.returning,
+   weather:{triggerMinute:oceanStart+Math.floor(q.seaDays*1440*.45),
+    delayMinutes,observed:false,description:'Modeled rough-sea delay; historical conditions unverified.'}};
   st.port=null;
   save.currentLocation={locationId:'passengerVessel',roomId:'cabin'};
   st.history.push({id,date:save.gameDate,kind:'embarked',from:q.from,to:q.to,fare:q.fare,eta:q.etaDate});
@@ -91,7 +117,21 @@
  function sync(save){
   const st=ensure(save),trip=st.voyage,
    now=save.worldCalendarStatus==='ready'&&Number.isSafeInteger(save.worldCalendar?.worldMinute)?save.worldCalendar.worldMinute:null;
-  if(!trip||!Number.isSafeInteger(now)||now<trip.arrivalMinute)return result(false,'No passenger arrival due.');
+  if(!trip||!Number.isSafeInteger(now))return result(false,'No passenger arrival due.');
+  // The schedule changes once when the voyage reaches the affected ocean leg.
+  // Repeated renders, reloads, daily reports and large clock jumps never reroll it.
+  const weather=trip.weather;
+  if(weather&&!weather.observed&&Number.isSafeInteger(weather.triggerMinute)&&now>=weather.triggerMinute){
+   weather.observed=true;
+   if(Number.isSafeInteger(weather.delayMinutes)&&weather.delayMinutes>0){
+    trip.arrivalMinute+=weather.delayMinutes;
+    trip.etaDate=new Date(trip.arrivalMinute*60000).toISOString().slice(0,10);
+    st.history.push({id:trip.id,kind:'weather-delay',date:save.gameDate,
+     delayMinutes:weather.delayMinutes,eta:trip.etaDate});
+    st.history=st.history.slice(-80);
+   }
+  }
+  if(now<trip.arrivalMinute)return result(false,'No passenger arrival due.');
   const isReturn=!!trip.returning;
   st.voyage=null;
   st.port=isReturn?null:trip.to;
@@ -101,6 +141,37 @@
   st.history.push({id:trip.id,date:save.gameDate,kind:'arrived',port:trip.to,returning:isReturn});
   st.history=st.history.slice(-80);
   return result(true,isReturn?'Returned to the Washington Passenger Pier.':'Arrived at '+trip.to+'.',{port:st.port,returned:isReturn});
+ }
+ function lodgingQuote(save){
+  if(!save||save.characterRoute!=='industrialist')return result(false,'Only Charles may rent a harbour bed.');
+  const st=ensure(save);
+  if(st.voyage||!st.port||save.currentLocation?.locationId!=='foreignHarbor'||
+    save.currentLocation?.roomId!=='lodging'||st.position.zone!=='lodging')
+   return result(false,'Reach the Sailors’ Lodging section in person to rent a bed.');
+  if(save.paused||save.phase==='report'||root.FE_MEDICAL_RECORDS?.pending?.(save))
+   return result(false,'Lodging is unavailable while paused, at daily report or during medical recovery.');
+  if(!Number.isSafeInteger(save.worldCalendar?.worldMinute)||save.worldCalendarStatus!=='ready')
+   return result(false,'The saved world clock is unavailable.');
+  if(!Number.isFinite(save.personalCash)||save.personalCash<LODGING_COST)
+   return result(false,'Insufficient personal money for lodging.',{fare:LODGING_COST});
+  return result(true,'A modest lodging bed is available.',{fare:LODGING_COST});
+ }
+ function payLodging(save,minutes){
+  const st=ensure(save),now=nav.gameMinute(save);
+  if(st.voyage||!st.port||save.currentLocation?.locationId!=='foreignHarbor'||
+    save.currentLocation?.roomId!=='lodging'||st.position.zone!=='lodging')
+   return result(false,'Not physically in the foreign harbour lodging.');
+  if(!Number.isInteger(minutes)||minutes<60||minutes>480||!Number.isSafeInteger(now))
+   return result(false,'Only a completed one-to-eight-hour rest may be settled.');
+  if(!Number.isFinite(save.personalCash)||save.personalCash<LODGING_COST)
+   return result(false,'Insufficient personal money to settle this stay.');
+  if(st.history.some(h=>h.kind==='lodging'&&h.minute===now&&h.port===st.port))
+   return result(false,'This completed lodging stay is already in the register.');
+  save.personalCash=rounded(save.personalCash-LODGING_COST);
+  const receipt={id:++st.nextId,kind:'lodging',date:save.gameDate,
+   port:st.port,minute:now,minutes,fare:LODGING_COST};
+  st.history.push(receipt);st.history=st.history.slice(-80);
+  return result(true,'Paid '+LODGING_COST.toFixed(2)+' for '+minutes+' minutes of harbour rest.',{receipt});
  }
  function canWalk(save,zone,x,y){
   const st=ensure(save);
@@ -124,7 +195,7 @@
   save.currentLocation={locationId:'foreignHarbor',roomId:zone};
   return result(true,'Moved within '+st.port+': '+zone+'.',{position:{...st.position}});
  }
- const api=Object.freeze({TRANSFER_DAYS,BOAT_RATES,ZONES,ensure,position,quote,embark,sync,canWalk,move});
+ const api=Object.freeze({TRANSFER_DAYS,BOAT_RATES,LODGING_COST,ZONES,modeledDelay,ensure,position,quote,embark,sync,lodgingQuote,payLodging,canWalk,move});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_PASSENGER_SEA=api;
 })(typeof window!=='undefined'?window:globalThis);
