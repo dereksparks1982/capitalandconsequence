@@ -115,6 +115,23 @@ function portMiniScene(){
  }
  return html+'</div>';
 }
+function focusPoint(point,minimumScale=1){
+ const viewport=host?.querySelector('.merchant-world-viewport');
+ if(!point||!viewport)return;
+ session.scale=Math.max(session.scale,minimumScale);
+ session.x=viewport.clientWidth/2-point[0]*session.scale;
+ session.y=viewport.clientHeight/2-point[1]*session.scale;
+ resize(false);
+}
+function chartDirectory(){
+ const marks=state().pins,ports=Object.keys(nav.PORTS),opened=new Set(fleet().ports);
+ let html='<details class="ocean-chart-directory"><summary>Ports & Your Chart Marks · '+(ports.length+marks.length)+'</summary>';
+ html+='<h4>Known ports</h4><div class="ocean-directory-links">'+ports.map(port=>
+  action('focus-port:'+port,(opened.has(port)?'● ':'○ ')+port)).join('')+'</div>';
+ if(marks.length)html+='<h4>My marked areas</h4><div class="ocean-directory-links">'+marks.map(pin=>
+  action('focus-pin:'+pin.id,(pin.kind==='harbor'?'⚓ ':pin.kind==='coast'?'◇ ':pin.kind==='sea'?'≈ ':'◆ ')+pin.name)).join('')+'</div>';
+ html+='</details>';return html;
+}
 function portPanel(name){
  const data=regions.port(name);if(!data)return '<p>Port not found.</p>';
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
@@ -186,7 +203,7 @@ function draw(reset){
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
   '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Original EcoClipper shipping-lines world map">'+plot()+'</div></div>'+
-  '<aside class="merchant-world-sidebar"><div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
+  '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
    session.selection.type==='pin'?pinPanel(session.selection.id):shipPanel(session.selection.id))+'</section>'+
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
@@ -214,6 +231,17 @@ function onClick(e){
   if(command==='mark'){session.mode=session.mode==='inspect'?'mark':'inspect';return draw(false)}
   if(command.startsWith('move-pin:')){session.mode='move-pin';session.movingPin=+command.slice(9);return draw(false)}
   if(command.startsWith('tab:')){session.tab=command.slice(4);return draw(false)}
+  if(command.startsWith('focus-port:')){
+   const port=command.slice(11),p=nav.PORTS[port];if(!p)return;
+   session.selection={type:'port',id:port};session.tab='selection';session.scene=null;
+   draw(false);root.requestAnimationFrame(()=>focusPoint(p,1.1));return;
+  }
+  if(command.startsWith('focus-pin:')){
+   const id=+command.slice(10),pin=state().pins.find(p=>p.id===id);
+   if(!pin)return;
+   session.selection={type:'pin',id};session.tab='selection';
+   draw(false);root.requestAnimationFrame(()=>focusPoint([pin.x,pin.y],1.1));return;
+  }
   if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.tab='selection';return draw(false)}
   if(command.startsWith('port-scene:')){session.scene=command.slice(11);session.tab='selection';return draw(false)}
   if(command.startsWith('zone:')){session.zone=command.slice(5);return draw(false)}
