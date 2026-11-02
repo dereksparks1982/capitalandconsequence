@@ -12,7 +12,7 @@
   if(!scene)return '<p>The selected area has no survey layout.</p>';
   const name=place.startsWith('mark:')?regions.ensure(save).pins.find(v=>'mark:'+v.id===place)?.name||'Harbour Candidate':place;
   const current=regions.ZONES.find(z=>z.id===scene.zone);
-  let html='<section class="merchant-harbor-walk" role="region" aria-label="Harbor sector planning survey"><div class="merchant-harbor-walk-head">'+
+  let html='<section class="merchant-harbor-walk" tabindex="0" role="region" aria-label="Harbor sector planning survey"><div class="merchant-harbor-walk-head">'+
    '<div><small>GENERIC PORT LAYOUT · SURVEY ONLY</small><h3>'+escape(name)+'</h3><p>'+escape(current?.name||scene.zone)+'</p></div>'+
    '<button type="button" data-ocean-action="walk-close" aria-label="Close district preview">✕</button></div>';
   html+='<p class="merchant-harbor-walk-caution">Survey cursor only. This is not Charles; no passenger travel or physical arrival has occurred.</p>';
