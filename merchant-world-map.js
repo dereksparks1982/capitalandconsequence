@@ -156,6 +156,13 @@ function portPanel(name){
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
  let html='<h3>'+esc(name)+'</h3><p>'+ (authorized?'Established commercial port':'Not yet verified as a commercial destination')+'.</p>';
  html+='<p>'+inPort.length+' owned ship(s) currently berthed.</p>';
+ const quote=nav.plan('Baltimore',name,'schooner'),steam=nav.plan('Baltimore',name,'steamer');
+ if(quote&&steam){
+  html+='<div class="ocean-voyage-quote"><h4>Passage estimate from Baltimore</h4>'+
+   '<p>'+quote.nauticalMiles.toLocaleString('en-US')+' nautical miles along '+quote.legs.length+
+   ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong> · Steamship: <strong>'+
+   steam.days+' days</strong></p><p class="fine">This is a route estimate, not a booked journey or verified period sailing schedule.</p></div>';
+ }
  html+=action('port-scene:'+name,'Explore Harbour Layout');
  if(session.scene===name){
   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
