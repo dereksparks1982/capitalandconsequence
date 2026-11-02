@@ -1,0 +1,11 @@
+# Capital & Consequence v0.7.83-dev | Real Owned Railway Wear & Repairs
+November 1, 2026 · Source-only update, unaccepted Ubuntu release.
+
+Owned Federal Electric locomotives and constructed railway corridors now have independent saved physical-serviceability condition. Every genuine, fuel-paid locomotive dispatch takes four condition points from its actual engine and two points from the paid track. An unsafe asset (condition below 30/100) refuses another dispatch. A second purchased healthy locomotive can continue running where track itself remains fit.
+
+From his Federal Electric workplace during the business day, the controlling businessman can contract a railway gang to restore 40 line condition points in 90 game minutes for $65 in **company** funds. He can pay fitters to restore 40 locomotive points in 120 minutes for $50. Condition stops at 100; neither action can spend company cash when no repair is needed. Lines currently occupied by a moving train and locomotives still in transit are protected from repairs, including when the clock changes across a day boundary. All repair costs, receipts and exact condition updates are saved in the same canonical owned railway ledger. They appear in the original Rail Editor financial tools and in Charlie's page-turning private Business Ledger.
+
+These are fictional initial game-balance wear rates. No history has been changed, no company has been granted free locomotive upgrades, and original rail-rights contracts, component freight, destination depot stock, physical map art and World’s Fair gates are untouched. No passenger or third-party freight revenue is invented by repair actions.
+
+## Focused verification
+Re-ran previous v0.7.80 paid railroad and v0.7.81 freight regression scenarios unchanged against the latest owned-rail engine. Both passed. New v0.7.83 maintenance regression passed 18 paid trips, declining serviceability, unsafe locomotive refusal, blocking repairs of occupied lines or moving engines, exact repair minutes and costs, save reload and replay protection. Full Node suite and native Linux Electron UI/test playthrough remain unverified. No GitHub Actions, installer or formal release.

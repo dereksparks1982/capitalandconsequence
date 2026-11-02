@@ -6,7 +6,8 @@
 (function(root){
 'use strict';
 const RAIL=()=>root.FE_RAILWAY;
-const TYPES=Object.freeze({charter:'charter',rights:'rights',build:'build',engine:'engine',dispatch:'dispatch'});
+const TYPES=Object.freeze({charter:'charter',rights:'rights',build:'build',engine:'engine',dispatch:'dispatch',
+ 'line-repair':'line-repair','engine-repair':'engine-repair'});
 const CHARTER=25000,ENGINE=140000,CREW_SHIFT=90,CREW_COST=3500;
 const clone=x=>JSON.parse(JSON.stringify(x));
 const blank=()=>({version:1,charter:null,lines:[],engines:[],trips:[],receipts:{},ledger:[],serial:0});
@@ -72,9 +73,30 @@ function preflight(save,{action,from,to,lineId,date,postTime=false}){
     Number.isSafeInteger(save.worldCalendar?.worldMinute)&&
     save.worldCalendar.worldMinute<t.departMinute+t.durationMinutes);
    if(active)return {ok:false,reason:'The railway locomotive is already in service.'};
-   if(!company.engines.length)return {ok:false,reason:'No paid locomotive has been delivered to Federal Electric.'};
+   const engine=company.engines.find(e=>Number.isFinite(e.condition)?e.condition>=30:true);
+   if(!engine)return {ok:false,reason:'Locomotive unserviceable; pay for workshop repair first.'};
+   if(Number.isFinite(line.condition)&&line.condition<30)
+    return {ok:false,reason:'Line unsafe for traffic; pay a track repair crew first.'};
    seconds=15*60;costCents=1200;
-   details={id:line.id,durationMinutes:Math.max(10,Math.ceil(line.length/24)),trainId:company.engines[0].id};
+   details={id:line.id,durationMinutes:Math.max(10,Math.ceil(line.length/24)),trainId:engine.id};
+  }else if(action==='line-repair'){
+   const line=company.lines.find(x=>x.id===lineId&&x.status==='open');
+   if(!line)return {ok:false,reason:'Only constructed company lines require track repairs.'};
+   if(company.trips.some(t=>t.lineId===line.id&&t.status==='running'&&
+      Number.isSafeInteger(save.worldCalendar?.worldMinute)&&
+      save.worldCalendar.worldMinute<t.departMinute+t.durationMinutes))
+    return {ok:false,reason:'Wait for the moving train to clear the line before track repair.'};
+   if((line.condition??100)>=100)return {ok:false,reason:'The line is already in full condition.'};
+   seconds=90*60;costCents=6500;details={id:lineId,previousCondition:line.condition??100};
+  }else if(action==='engine-repair'){
+   const engine=company.engines.find(e=>e.id===lineId);
+   if(!engine)return {ok:false,reason:'Only an owned locomotive can enter the repair shop.'};
+   if(company.trips.some(t=>t.engineId===engine.id&&t.status==='running'&&
+      Number.isSafeInteger(save.worldCalendar?.worldMinute)&&
+      save.worldCalendar.worldMinute<t.departMinute+t.durationMinutes))
+    return {ok:false,reason:'A locomotive must reach its depot before entering the repair shop.'};
+   if((engine.condition??100)>=100)return {ok:false,reason:'The engine is already in full condition.'};
+   seconds=120*60;costCents=5000;details={id:engine.id,previousCondition:engine.condition??100};
   }
  }
  if(costCents>cash(save))return {ok:false,reason:'Insufficient company funds. Required $'+(costCents/100).toFixed(2)+'.'};
@@ -128,10 +150,27 @@ function transact(save,request){
   // Starting a train alone never transfers stock, creates a buyer or pays fares.
   const cargo=Array.isArray(entity.freight)?entity.freight.find(x=>x.lineId===allowed.id&&x.status==='origin-loaded'):null;
   if(cargo){cargo.status='in-transit';cargo.tripId=t.id;t.cargoManifestId=cargo.id;}
+  // Use is never free: wear occurs on the one authentic paid departure.
+  const runningLine=entity.lines.find(l=>l.id===allowed.id);
+  const runningEngine=entity.engines.find(e=>e.id===allowed.trainId);
+  runningLine.condition=Math.max(0,(runningLine.condition??100)-2);
+  runningEngine.condition=Math.max(0,(runningEngine.condition??100)-4);
+  t.lineConditionAfter=runningLine.condition;
+  t.engineConditionAfter=runningEngine.condition;
   entity.trips.push(t);if(entity.trips.length>120)entity.trips.splice(0,entity.trips.length-120);
   result={tripId:t.id,cargoManifestId:cargo?.id||null,
    description:'Owned locomotive dispatched.'+(cargo?' Carrying genuine factory components for depot receipt.':'')+
     ' Fuel paid; no unsupported ticket or freight revenue.'};
+ }else if(action==='line-repair'){
+  const line=entity.lines.find(l=>l.id===allowed.id);
+  line.condition=Math.min(100,(line.condition??100)+40);
+  result={lineId:line.id,condition:line.condition,
+   description:'Paid a maintenance gang for the owned railway right-of-way. Condition restored to '+line.condition+'/100.'};
+ }else if(action==='engine-repair'){
+  const engine=entity.engines.find(e=>e.id===allowed.id);
+  engine.condition=Math.min(100,(engine.condition??100)+40);
+  result={engineId:engine.id,condition:engine.condition,
+   description:'Paid locomotive fitters for repair work. Engine condition restored to '+engine.condition+'/100.'};
  }
  save.companyCash=(cash(save)-allowed.costCents)/100;
  if(save.componentWorks)save.componentWorks.cashCents=Math.round(save.companyCash*100);

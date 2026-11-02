@@ -1,3 +1,13 @@
+## November 1, 2026 · v0.7.83-dev · owned rail serviceability and workshop repairs
+- [x] Real paid company train departures gradually wear the owned line (2/100) and the actual purchased locomotive (4/100). No wear on map-editor demonstration sprites or automatic world-clock progression.
+- [x] A line below 30/100 or a locomotive below 30/100 cannot authorize another revenue-independent company departure. Other purchased serviceable locomotives may still be used.
+- [x] Paid track maintenance restores up to 40 condition points for $65 company funds and 90 game minutes, and locomotive fitters restore up to 40 points for $50 and 120 game minutes. Full-condition assets cannot trigger unnecessary charges.
+- [x] Maintenance cannot run while a genuine train still occupies its line or while a purchased locomotive is away on its unfinished trip; no repairs by unauthorized characters or a removed company president.
+- [x] Condition is tracked in the canonical railway ownership ledger, shown beside line and locomotive controls and in Charles's read-only Business Ledger, and restored deterministically after save/reload.
+- [x] Focused maintenance regression covers 18 genuine paid runs, condition loss, unsafe-engine lockout, paid repair, occupied-track lockout, cost, replay safety, and no fictional passenger revenue.
+- [x] Re-ran earlier real railroad charter/construction and freight-inventory tests against the modified engine; both passed unchanged.
+- [ ] Real payroll staffing, rail/engine age, operating risk, third-party transport markets, full Node suite and native Ubuntu Electron gameplay remain future work. No Actions or release tags.
+
 ## November 1, 2026 · v0.7.82-dev · tactile, paid-clockwork carnival challenge
 - [x] Add **Clockwork Duck Challenge** as a seventh independent booth rather than overwriting any of the six already implemented carnival games and their saved rules.
 - [x] Actual duck target changes between five aim lanes by deliberately winding the mechanism for an extra thirty Washington game seconds. The old carnival's paid booth admission and score/prize ledgers still apply.

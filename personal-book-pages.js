@@ -100,11 +100,12 @@ function industrialistPages(save){
    ['No passenger or third-party freight revenue is assumed before a real paying customer settles.'],[
     item('Railway charter',railway.charter?'Registered '+railway.charter.date+' for '+money(railway.charter.feeCents/100):'Not registered'),
     item('Constructed lines',String(lines.filter(l=>l.status==='open').length)+' of '+lines.length+' purchased corridors'),
-    item('Locomotives owned',String(engines.length))
+    item('Locomotives owned',String(engines.length)+
+      (engines.length?' · '+engines.map(e=>e.id+' condition '+(e.condition??100)+'/100').join('; '):''))
    ].concat(lines.slice(-ROWS).map(l=>item(l.id+' · '+l.status,
     (l.stations||[]).map(s=>s.name).join(' to ')+' · rights '+money(l.rightsCents/100)+
     ' · construction '+money(l.constructionCostCents/100)+
-    ' · '+l.crewShiftsCompleted+'/'+l.crewShiftsRequired+' paid shifts')))));
+    ' · '+l.crewShiftsCompleted+'/'+l.crewShiftsRequired+' paid shifts · condition '+(l.condition??100)+'/100')))));
   const cargo=Array.isArray(railway.freight)?railway.freight:[];
   if(cargo.length)pages.push(page('company-railway-cargo','Railway Accounts','Real Factory Cargo',
    'Finished physical goods moved without creating customer revenue',

@@ -33,7 +33,9 @@ function mount(){
   const request={action,date:root.FE_WASHINGTON_TIME?.now?.(S)?.date||S.gameDate};
   if(action==='rights'){
    request.from=$('titleMapRailFrom')?.value;request.to=$('titleMapRailTo')?.value;
-  }else if(action==='build'||action==='dispatch')request.lineId=$('railCompanyLine')?.value;
+  }else if(action==='build'||action==='dispatch'||action==='line-repair')
+   request.lineId=$('railCompanyLine')?.value;
+  else if(action==='engine-repair')request.lineId=b.dataset.engineId;
   const proposed=company.preflight(S,request);
   if(!proposed.ok){$('railCompanyNotice').textContent=proposed.reason;return;}
   b.disabled=true;
@@ -54,6 +56,7 @@ function mount(){
 }
 function actionButton(holder,name,action,request){
  const button=el('button',name);button.type='button';button.dataset.railCompany=action;
+ if(action==='engine-repair')button.dataset.engineId=request.lineId;
  const terms=company.preflight(S,{action,date:root.FE_WASHINGTON_TIME?.now?.(S)?.date||S.gameDate,...request});
  button.disabled=!terms.ok;
  button.title=terms.ok?'$'+(terms.costCents/100).toFixed(2)+' · '+terms.seconds/60+' game minutes':terms.reason;
@@ -87,14 +90,27 @@ function render(){
    if(!line)return;
    feedback.appendChild(el('p',line.stations.map(s=>s.name).join(' to ')+' · '+line.length+
     ' map pixels · '+line.crewShiftsCompleted+'/'+line.crewShiftsRequired+
-    ' paid construction shifts · '+line.status+'.'));
+    ' paid construction shifts · '+line.status+' · track condition '+(line.condition??100)+'/100.'));
    if(line.status!=='open')actionButton(feedback,'Pay crew and build track · 90 min','build',{lineId:line.id});
-   else actionButton(feedback,'Run paid locomotive · 15 min · fuel $12','dispatch',{lineId:line.id});
+   else{
+    actionButton(feedback,'Run paid locomotive · 15 min · fuel $12','dispatch',{lineId:line.id});
+    if((line.condition??100)<100)
+     actionButton(feedback,'Pay track maintenance crew · 90 min · $65','line-repair',{lineId:line.id});
+   }
   };
   selected.addEventListener('change',draw);draw();
  }
  if(state.lines.some(l=>l.status==='open'))
   actionButton(actions,'Buy locomotive · $1,400 · 120 min','engine',{});
+ if(state.engines.length){
+  const shop=el('div');shop.appendChild(el('h4','Locomotive Condition & Fitter Repairs'));
+  for(const engine of state.engines){
+   shop.appendChild(el('p',engine.id+' · engine condition '+(engine.condition??100)+'/100'));
+   if((engine.condition??100)<100)
+    actionButton(shop,'Repair '+engine.id+' · 120 min · $50','engine-repair',{lineId:engine.id});
+  }
+  actions.appendChild(shop);
+ }
  const last=company.trips(S).at(-1);
  if(last)actions.appendChild(el('p','Latest actual paid trip '+last.id+' · '+last.status+
   ' · no speculative ticket or freight proceeds.'));
