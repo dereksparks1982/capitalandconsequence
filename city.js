@@ -300,13 +300,29 @@
    ]
   },
   {
+   id:'passengerVessel',name:'Passenger Vessel · At Sea',area:'Aboard a coastal or ocean vessel',
+   hiddenFromDirectory:true,category:'transport',map:null,defaultRoom:'cabin',
+   description:'A paid passenger berth traveling along the game clock, not a Washington destination.',
+   rooms:[{id:'cabin',name:'Passenger Cabin',description:'An ordinary paid berth below deck.'},
+    {id:'deck',name:'Passenger Deck',description:'The ship is underway; the coastline is far away.'}]
+  },
+  {
+   id:'foreignHarbor',name:'Foreign Port · Arrival',area:'A distant port reached after actual days at sea',
+   hiddenFromDirectory:true,category:'transport',map:null,defaultRoom:'quay',
+   description:'A simple distant harbour with small walkable sections. The specific port is in the passenger record.',
+   rooms:[{id:'quay',name:'Quayside'},{id:'warehouse',name:'Storehouse'},
+    {id:'customs',name:'Customs Desk'},{id:'market',name:'Merchant Square'},
+    {id:'lodging',name:'Sailors’ Lodging'},{id:'street',name:'Harbour Street'}]
+  },
+  {
    id:'potomacFishingBank',
    name:'Potomac River Fishing Bank',
    area:'Potomac shoreline · southwest Washington, D.C. (provisional access point)',
    category:'leisure',
    description:'A public riverbank fishing spot in 1878 Washington. The location is accessible from the city map; fishing requires owned tackle; casting and fighting fish are available at the shore.',
    map:null,defaultRoom:'riverbank',rooms:[
-    {id:'riverbank',name:'Riverbank',description:'A quiet stretch of the Potomac suitable for shore fishing. Fishing actions and your saved creel are available here.'}
+    {id:'riverbank',name:'Riverbank',description:'A quiet stretch of the Potomac suitable for shore fishing. Fishing actions and your saved creel are available here.'},
+    {id:'passenger-pier',name:'Passenger Pier',description:'A small public riverboat boarding desk. Paid passage begins with a river connection to Baltimore, then a separate ocean crossing. The shipping chart records the long sea route.'}
    ]
   },
   {
