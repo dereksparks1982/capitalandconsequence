@@ -17,7 +17,9 @@ function numeric(value,min,max,step=1){const n=node('input');n.type='number';n.m
 function message(host,text){const p=node('p',text);p.className='fine';p.setAttribute('role','status');host.appendChild(p);return p;}
 function perform(name,fn){
  const ctx=context(),api=corp();if(!ctx?.save||!api)return;
- const token='corp:'+name+':'+api.ensure(ctx.save).nextId;
+ const token=name.startsWith('family-payment')?
+  'family-payment:'+family().ensure(ctx.save).nextId:
+  'corp:'+name+':'+api.ensure(ctx.save).nextId;
  const seconds=name.startsWith('offer')||name.startsWith('tender')||name.startsWith('squeeze')?900:
    name.startsWith('elect')||name.startsWith('charter')?600:300;
  if(!root.FE_WASHINGTON_TIME?.canSpend?.(ctx.save,seconds)){
