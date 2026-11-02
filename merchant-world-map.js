@@ -8,7 +8,7 @@ const nav=typeof module==='object'&&module.exports?require('./merchant-navigatio
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cash=v=>'$'+(Number(v)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-let host=null,session=null;
+let host=null,session=null,ticker=null;
 const action=(key,label)=>'<button type="button" data-ocean-action="'+esc(key)+'">'+esc(label)+'</button>';
 function ensuredHost(){
  if(host)return host;
@@ -39,12 +39,20 @@ function open(save,onChange){
  session.focus=document.activeElement;
  ensuredHost();host.hidden=false;
  document.body.classList.add('merchant-world-open');
- draw(true);host.querySelector('[data-ocean-action="close"]')?.focus();
+ draw(true);
+ if(ticker!==null)root.clearInterval(ticker);
+ ticker=root.setInterval(()=>{
+  if(host?.hidden||!session)return;
+  const overlay=host.querySelector('svg.merchant-world-overlays');
+  if(overlay)overlay.outerHTML=plot(); // display-only; no time or money advanced
+ },2500);
+ host.querySelector('[data-ocean-action="close"]')?.focus();
  return true;
 }
 function close(){
  if(!host||host.hidden)return;
  host.hidden=true;document.body.classList.remove('merchant-world-open');
+ if(ticker!==null){root.clearInterval(ticker);ticker=null}
  session?.focus?.focus?.();
 }
 function resize(first=false){
@@ -121,7 +129,7 @@ function pinPanel(id){
  if(!pin)return'<p>Chart mark is missing.</p>';
  return '<h3>Personal Chart Mark</h3><p>Image position '+pin.x+', '+pin.y+'</p>'+
   '<label>Name <input id="merchantPinName" maxlength="64" value="'+esc(pin.name)+'"></label>'+
-  action('rename-pin:'+pin.id,'Save Pin Name')+action('remove-pin:'+pin.id,'Remove Mark')+
+  action('rename-pin:'+pin.id,'Save Pin Name')+action('move-pin:'+pin.id,'Reposition Mark')+action('remove-pin:'+pin.id,'Remove Mark')+
   '<p class="fine">Your private chart mark is not an established port, trading permission or a playable character destination.</p>';
 }
 function shipPanel(id){
@@ -168,7 +176,7 @@ function draw(reset){
    session.selection.type==='pin'?pinPanel(session.selection.id):shipPanel(session.selection.id))+'</section>'+
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
-  (session.mode==='mark'?'Click the chart to drop a personal pin.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
+  (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
   '</span><span>Reference routes are illustrative; voyage durations are estimates.</span></footer></div>';
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
  const onCommerce=session.tab==='commerce';sel.hidden=!!onCommerce;commerce.hidden=!onCommerce;
@@ -188,7 +196,8 @@ function onClick(e){
   if(command==='zoom-in')return zoom(1.25);
   if(command==='zoom-out')return zoom(.8);
   if(command==='fit')return resize(true);
-  if(command==='mark'){session.mode=session.mode==='mark'?'inspect':'mark';return draw(false)}
+  if(command==='mark'){session.mode=session.mode==='inspect'?'mark':'inspect';return draw(false)}
+  if(command.startsWith('move-pin:')){session.mode='move-pin';session.movingPin=+command.slice(9);return draw(false)}
   if(command.startsWith('tab:')){session.tab=command.slice(4);return draw(false)}
   if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.tab='selection';return draw(false)}
   if(command.startsWith('port-scene:')){session.scene=command.slice(11);session.tab='selection';return draw(false)}
@@ -227,10 +236,10 @@ function onClick(e){
  if(pin){session.selection={type:'pin',id:pin};session.tab='selection';return draw(false)}
  const ship=e.target.closest('[data-ocean-ship]')?.dataset.oceanShip;
  if(ship){session.shipId=ship;session.selection={type:'ship',id:ship};session.tab='selection';return draw(false)}
- if(session.mode==='mark'&&e.target.closest('.merchant-world-stage')){
+ if((session.mode==='mark'||session.mode==='move-pin')&&e.target.closest('.merchant-world-stage')){
   const box=host.querySelector('.merchant-world-stage').getBoundingClientRect();
   const x=(e.clientX-box.left)*800/box.width,y=(e.clientY-box.top)*600/box.height;
-  const out=regions.addPin(session.save,x,y);
+  const out=session.mode==='move-pin'?regions.move(session.save,session.movingPin,x,y):regions.addPin(session.save,x,y);
   if(out.ok){session.selection={type:'pin',id:out.pin.id};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
   else setStatus(out.reason);
  }
