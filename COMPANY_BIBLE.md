@@ -9,9 +9,9 @@
 
 > **FIX THE PROBLEM. PRESERVE THE WORLD.**
 
-This Bible records the ten rules the owner explicitly directed the developer to follow after unauthorized changes to established Capital & Consequence gameplay. It applies to every assistant, developer, automated process, future build, refactor, test revision, documentation update, and handoff.
+This Bible records the ten rules the owner explicitly directed the developer to follow after unauthorized development changes. It applies to every assistant, developer, automated process, future build, refactor, test revision, documentation update, and handoff.
 
-**Read this file before touching the project.** Read the relevant existing canon and decisions too. This Bible does **not** replace the story bible, character codices, map canon, or owner-approved decisions. It protects them **until the owner approves a revision**. No creative decision is inherently permanent or beyond criticism.
+**Read this file before touching the project.** Read the relevant existing canon and decisions too. This document contains **development procedures only**, not lore. See [GAME_LORE.md](GAME_LORE.md) and its linked canon files for the story and world; those decisions remain authoritative **until the owner approves a revision**. No creative decision is inherently permanent or beyond criticism.
 
 ## THE TEN NON-NEGOTIABLE RULES
 
@@ -45,26 +45,8 @@ Record what was changed, why, what was explicitly authorized, and what was actua
 ### 10. STOP MEANS STOP
 When the owner says **stop**, stop making changes. No more editing, committing, pushing, testing that mutates project state, or carrying on with the same task until the owner explicitly gives a new instruction. A new instruction authorizes only its stated scope.
 
-## CAPITAL & CONSEQUENCE: PROTECTED INTERPRETATIONS
+## CHANGE-SCOPE AND REVIEW DISCIPLINE
 
-### Alternate history is not a universal override
-The story begins in an alternate 1878 Washington, and the owner may authorize inventions, institutions, or events earlier than their real-world dates, including ideas historically associated with later decades. **Every such authorization is specific.** A developer must never infer that *all* dates and gates are now optional.
-
-### The World's Fair is part of the story
-**November 1, 2026 owner-approved revision:** Most of alternate Washington already has electric power in 1878. The District streetlighting contract precedes the late-1878 World's Fair. The old 1893 Fair date and after-Fair streetlight contract are superseded. The exact opening date and contract awards are still undecided. This is a specific approved revision, not general permission to rewrite other stories.
-
-**Preserve the World's Fair's already established opening date, event schedule, prerequisites, and story integration.** Do not open the Fair early, remove its narrative gates, rewrite its date, or change its consequences without the owner's **specific** permission. The owner did not authorize any change to the World's Fair merely by authorizing unrelated alternate-history exceptions.
-
-A location's map visibility or general visitability is **not** permission to trigger a gated event or skip its story. Being able to visit a mapped destination does not automatically mean its fairgrounds event, ceremonies, attractions, characters, quests, or time-limited activities have begun. Preserve that distinction wherever it is present in existing canon.
-
-### The world, map, cast, and UI are not disposable
-- Preserve the owner's **single approved Washington map image across every playable year**. Never replace, redraw, automatically reposition, or date-swap the artwork.
-- Keep owner-set location coordinates, approved pin behavior, and user-approved UI geometry unless specifically directed otherwise.
-- Preserve the four protagonist identities, careers, relationships, private knowledge, progression, and story arcs. Do not grant one character another's knowledge through private player books or developer shortcuts.
-- Preserve political canon, location and institution rules, NPC behavior boundaries, and explicitly approved narrative choices.
-- An individual feature request does not silently revoke any of these protections.
-
-### Scope and review discipline
 Before a change, a developer must be able to state:
 1. **Exact request:** What did the owner actually authorize?
 2. **Affected scope:** Which files, behaviors, locations, dates, and story gates should change?
@@ -76,8 +58,8 @@ If the requested work cannot be done without an unapproved collateral change, **
 
 ## DEVELOPMENT AND RELEASE RULES
 
-- **GitHub Actions policy (owner revised November 2, 2026; shared DK LAB rule):** GitHub Actions are permitted again because usage limits have reset, but **only sparingly and when genuinely needed**. Prefer local Linux tests. Reserve Actions for meaningful integration, compatibility, and release verification that cannot reasonably be covered locally. Do not add workflows or trigger runs simply because a small change was committed.
-- For justified Actions runs, keep jobs targeted and efficient; minimize billed minutes and artifact uploads, storage, and retention. Do not accumulate unnecessary artifacts. Accurately report which checks ran and which remain unverified.
+- **GitHub Actions and compute policy (owner revised November 2, 2026; shared DK LAB rule):** GitHub Actions **and** limited or billable compute are permitted, but **use both sparingly**. Prefer local Linux checks when they adequately verify a change. Run hosted tests or compute jobs only when they bring clear verification or development value, not automatically after every commit.
+- Keep necessary Actions jobs and other compute work targeted, efficient, and proportionate; avoid wasteful reruns, large artifact uploads, unnecessary retention, and avoidable resource charges. Do not infer unlimited usage merely because quotas have reset. Record what was actually executed and verified.
 - **Linux-first.** Work in the existing project and existing installed game; do not silently create a replacement project or duplicate installation.
 - No password prompts, SSH-agent or keyring dependencies, automatic browser opens, or `set -e` commands.
 - Do not split or reorganize existing source files merely for style, size, or aesthetics.
@@ -88,17 +70,9 @@ If the requested work cannot be done without an unapproved collateral change, **
 
 ## REQUIRED READING BEFORE FUTURE WORK
 
-Start with this Bible, then check the documents relevant to the change:
+Read **this Company Bible** for how the game is developed. Read [Game Lore & Canon](GAME_LORE.md) and its linked owner decisions and source documents for the world itself. Read [ROADMAP.md](ROADMAP.md) and [CONTINUE-HERE.md](CONTINUE-HERE.md) for implementation and test status. **Do not place story facts, characters, plot dates, map coordinates, or gameplay canon into this build-rules document.**
 
-- [Recorded owner decisions](DECISIONS.md)
-- [Current project handoff](CONTINUE-HERE.md)
-- [World rules](WORLD-RULES-2026-10-21.md)
-- [Permanent map canon](MAP-CANON.md)
-- [Character canon index](CODEX-INDEX.md)
-- [Story, missions, morgue and asylum canon](docs/OCT-29-2026-MISSIONS-RECORDS-AND-ASYLUM-CANON.md)
-- [Roadmap and implementation status](ROADMAP.md)
-
-Older proposals and old release notes do not override a later explicit owner decision. If the current documents disagree, establish what the owner actually approved rather than deciding unilaterally.
+Older proposals and release notes do not override a later explicit owner decision. If documents disagree, determine what was actually approved instead of making a unilateral change.
 
 ## WHEN A DEVELOPER GETS IT WRONG
 
