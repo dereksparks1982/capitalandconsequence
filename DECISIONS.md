@@ -1,3 +1,5 @@
+> **CURRENT DEVELOPMENT POLICY · NOVEMBER 2, 2026:** [COMPANY_BIBLE.md](COMPANY_BIBLE.md) contains **development/build/release rules only**; [GAME_LORE.md](GAME_LORE.md) indexes story, world, character, map, and gameplay canon. The owner **allows GitHub Actions and other compute, both sparingly**. Prefer appropriate local Linux checks and use hosted resources only when justified. Older dated “No GitHub Actions” statements below are preserved as history and are **superseded**, not current prohibitions. No gameplay or release authorization follows from this documentation change.
+
 ## LATEST OWNER DECISION · NOVEMBER 1, 2026 · COMPONENTS → STREETLIGHTS → BULBS → FAIR
 
 **The following decisions supersede all older 1893 World's Fair and later streetlighting references below.** Those passages remain as historical records.
