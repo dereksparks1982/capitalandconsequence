@@ -1,9 +1,11 @@
 /* Capital & Consequence v0.6.57-dev: ordinary nighttime door work.
- * The proprietor's name and nightclub history are not yet settled.
+ * Le Paon d’Or and proprietor Lucien “Lui” Delacroix are approved canon.
  * One modest wage per completed shift segment; never a criminal promotion.
  */
 (function(root){
  'use strict';
+ const register=typeof module==='object'&&module.exports?require('./peacock-door-register.js'):root.FE_PEACOCK_DOOR_REGISTER;
+ if(!register)throw Error('Golden Peacock door register must be loaded before door duty.');
  const ROOM='doorman-post',VENUE='secondNightclub',WAGE_CENTS=30,MAX_SEGMENTS=4;
  const ENCOUNTERS=Object.freeze([
   Object.freeze({id:'unexpected-guest',title:'Visitor without an invitation',
@@ -80,6 +82,9 @@
   duty.wagesEarnedCents+=WAGE_CENTS;
   save.personalCash=Math.round((previous*100+WAGE_CENTS))/100;
   duty.lastAction=choice.result+' Earned $'+(WAGE_CENTS/100).toFixed(2)+' for the completed segment.';
+  // The paid contact, not an invented crowd or automatic event, is the only
+  // authority to record a parcel in Eli's physical door book.
+  register.record(save,log);
   return {ok:true,log,wageCents:WAGE_CENTS};
  }
  function encounter(save){return BY_ID.get(ensure(save).pending?.typeId)||null}

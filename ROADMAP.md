@@ -1,3 +1,13 @@
+## November 1, 2026 · v0.7.76-dev · Golden Peacock door-book and employee consequences
+- [x] Give Eli Crowe a persistent record of actual paid nightclub entrance contacts rather than only a wages counter.
+- [x] An existing courier parcel chosen for **physical receipt** enters Eli's custody with the original numbered contact, date, and chain. Choosing to call for the manager does not create unearned stock or owner facts.
+- [x] Let Eli transfer an actual held parcel to the floor manager in a new five-minute nighttime door action, recording provenance and preserving unresolved contents.
+- [x] After four existing real paid segments, let Eli submit a single five-minute nightly floor-manager report recording visitors, manager referrals, tense contacts, routine resolutions, and unresolved parcel responsibilities.
+- [x] Save/reload and duplicate tokens do not pay wages twice, create a second parcel, or submit duplicate nightly reports. Reporting never grants criminal rank, property, favors, club ownership, or automatic promotions.
+- [x] Existing Golden Peacock location, doorman station, proprietor canon, other stories and map art unchanged; add controls within Eli's current venue panel.
+- [x] The legacy doorman regression plus new parcel and manager-report regression passed in isolated JavaScript execution.
+- [ ] Autonomous named patron schedules and the owner-approved broader nightclub social arc remain future work. Full Node suite and Ubuntu Electron gameplay unverified.
+
 ## November 1, 2026 · v0.7.75-dev · actual Hillsdale lost-property custody
 - [x] Ground police property in Sam's already witnessed Hillsdale incident. Only selecting **Take into station custody** creates an item and dated collection record; selecting **Record the finder's account** is statement-only.
 - [x] The Metropolitan Police duty-room report transfers the existing item to station intake. A preexisting report with no contemporaneous custody is not retroactively invented as property.

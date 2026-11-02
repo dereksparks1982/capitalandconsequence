@@ -215,6 +215,7 @@
  }
  function refresh(){
   mount();
+  window.FE_PEACOCK_DOOR_REGISTER_UI?.render?.();
   const on=S?.characterRoute==='criminal'&&!!activeProfileId(),desk=node('doormanDesk'),door=node('doormanDoorPanel');
   if(desk)desk.hidden=!on;
   const loc=current();
