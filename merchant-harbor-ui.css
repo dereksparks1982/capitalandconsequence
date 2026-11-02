@@ -1,0 +1,42 @@
+/* Coarse 32x32-style harbor-survey board. No changes to approved Washington art. */
+.merchant-harbor-walk{position:absolute;z-index:20;inset:12px;overflow:auto;background:#e7ddc6;
+ border:4px double #57412a;box-shadow:0 5px 24px #000a;padding:10px;color:#3f3021;
+ display:flex;flex-direction:column;align-items:center;font-family:Georgia,serif}
+.merchant-harbor-walk-head{align-self:stretch;display:flex;justify-content:space-between;
+ gap:14px;align-items:flex-start;border-bottom:2px solid #a18a64;padding-bottom:6px}
+.merchant-harbor-walk-head h3{margin:3px 0;font-size:19px}
+.merchant-harbor-walk-head p,.merchant-harbor-walk-head small{margin:0;font-size:12px}
+.merchant-harbor-walk-head button{background:#92382f;color:white;border:1px solid #5c332e;font-size:19px;min-width:40px}
+.merchant-harbor-walk-caution{font-size:12px;margin:9px 0;font-weight:bold}
+.merchant-harbor-zone-tabs{display:flex;flex-wrap:wrap;gap:4px;align-self:stretch;justify-content:center;margin:3px 0 10px}
+.merchant-harbor-zone-tabs button{font:12px Georgia,serif;padding:5px;background:#f7eddb;border:1px solid #8a7457;cursor:pointer}
+.merchant-harbor-zone-tabs button[aria-pressed=true]{background:#665438;color:#fff}
+.merchant-harbor-board{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));width:min(480px,100%);
+ aspect-ratio:12/9;background:#8f876e;border:4px solid #4e4130;flex:none}
+.merchant-harbor-tile{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;
+ padding:0;margin:0;border:1px solid #4b493a!important;border-radius:0!important;
+ font:700 clamp(10px,2.4vw,25px) monospace;color:#403528;text-align:center;box-shadow:none}
+.merchant-harbor-board button.merchant-harbor-tile{cursor:pointer}
+.merchant-harbor-board button.merchant-harbor-tile:focus-visible{outline:3px solid #2c6c8b;z-index:3;position:relative}
+.merchant-harbor-tile.wall{background:#777266;color:#403b31}
+.merchant-harbor-tile.floor{background:#baa984}
+.merchant-harbor-tile.water{background:#547c98;color:#dfedeb}
+.merchant-harbor-tile.road{background:#938d7c}
+.merchant-harbor-tile.dock{background:#a08159}
+.merchant-harbor-tile.crate{background:#9a7149}
+.merchant-harbor-tile.barrel{background:#91704f}
+.merchant-harbor-tile.bollard{background:#686559}
+.merchant-harbor-tile.counter{background:#9d8d6e}
+.merchant-harbor-tile.books{background:#8a8068}
+.merchant-harbor-tile.stall{background:#8d8666}
+.merchant-harbor-tile.bed{background:#9d9883}
+.merchant-harbor-tile.table{background:#7e6d51}
+.merchant-harbor-tile.walker{background:#f0d279;color:#302618;outline:2px solid #6f3d20;outline-offset:-2px;font-size:22px}
+.merchant-harbor-pad{display:flex;flex-direction:column;align-items:center;margin:8px auto;gap:3px}
+.merchant-harbor-pad span{display:flex;gap:3px}
+.merchant-harbor-pad button{font:700 18px monospace;min-width:39px;min-height:33px;padding:3px;
+ background:#f4e8c9;border:1px solid #66533a;cursor:pointer}
+.merchant-harbor-walk>.fine{font-size:11px;align-self:stretch;margin:5px 0}
+@media(max-width:710px){.merchant-harbor-walk{inset:3px;padding:6px}.merchant-harbor-walk-head h3{font-size:16px}
+ .merchant-harbor-zone-tabs button{font-size:10px;padding:4px}.merchant-harbor-board{width:min(420px,100%)}
+ .merchant-harbor-walk-caution{margin:5px 0;font-size:11px}}
