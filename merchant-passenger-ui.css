@@ -45,3 +45,15 @@ span.passenger-cell{cursor:default}
  .merchant-passenger-card>header{padding:7px 10px}.merchant-passenger-card>header h2{font-size:18px}
  .merchant-passenger-body{padding:8px}.merchant-passenger-zones button{font-size:11px}
  .merchant-passenger-board{width:100%}.passenger-cell{font-size:clamp(9px,3vw,18px)}}
+
+
+.passenger-amenities{margin:18px 0;border:1px solid #94805e;background:#fff6e4;padding:10px 12px}
+.passenger-amenities h3{margin:3px 0 7px}
+.passenger-amenities p{margin:6px 0 9px}
+.passenger-amenities button{background:#e7d3a4}
+.passenger-sea-map{max-width:540px;min-width:0;margin:10px auto;
+ background:#f5edda;border:2px solid #9e8661}
+.passenger-sea-map svg{display:block;width:100%;height:auto}
+.passenger-local-register{padding:10px;background:#f6ebd2;border:1px solid #b29a71}
+.passenger-local-register h4{margin:2px 0 7px}
+.passenger-local-register p{margin:4px 0 7px;font-size:13px}
