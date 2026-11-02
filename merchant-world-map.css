@@ -104,3 +104,8 @@ body.merchant-world-open{overflow:hidden}
 .ocean-voyage-quote{margin:11px 0;padding:9px;background:#ece1c7;border:1px solid #ba9f77}
 .ocean-voyage-quote h4{margin:0 0 6px}
 .ocean-voyage-quote p{margin:5px 0}
+
+
+.ocean-harbor-register{background:#fdf6e7;border:1px solid #b19f80;margin:9px 0;padding:8px;font-size:12px}
+.ocean-harbor-register h5{font-size:13px;margin:0 0 6px;color:#48371c}
+.ocean-harbor-register p{margin:4px 0 6px}
