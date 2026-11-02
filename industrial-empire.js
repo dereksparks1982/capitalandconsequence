@@ -223,6 +223,7 @@ function render(save,onChange){
  html+='</article><article><h4>Capital Branch Railway</h4>';
  html+=!r.owned?'<p>Thirty-five-mile short line: '+money(PRICE.rail)+' plus $10,000 reserve.</p>'+button('buy-rail','Acquire Railroad'):'<p>Cash '+money(r.cash)+' · '+r.miles+' track miles · Condition '+r.condition.toFixed(0)+'%</p><p>Passenger and freight receipts balanced against wages, coal, rolling stock and repairs.</p>'+button('repair-track','Repair Railway');
  html+='</article></div><h4>Merchant Fleet</h4><p>Fleet treasury '+money(f.cash)+' · '+f.ships.filter(x=>x.status!=='lost').length+' active ships · Established ports: '+f.ports.map(esc).join(', ')+'</p>';
+ html+='<p>'+button('world-shipping-map','Open World Shipping Map · Routes, Ports, Fleet Operations')+'</p>';
  html+=button('buy-schooner','Buy Schooner · '+money(PRICE.schooner))+button('buy-steamer','Buy Steamship · '+money(PRICE.steamer));
  for(const lead of f.leads)html+='<p class="empire-lead">Captain '+esc(lead.captain)+' learned of '+esc(lead.port)+' while in '+esc(lead.from)+'. '+button('verify:'+lead.port,'Verify port · $35')+'</p>';
  for(const ship of f.ships){
@@ -240,6 +241,7 @@ function render(save,onChange){
   const target=event.target.closest('[data-empire-action]');if(!target)return;
   const key=target.dataset.empireAction;
   let outcome;
+  if(key==='world-shipping-map'){root.FE_MERCHANT_MAP?.open?.(save,onChange);return}
   if(key.startsWith('ship-info:')){host.dataset.selectedShip=key.slice(10);render(save,onChange);return}
   if(key==='buy-steel')outcome=buy(save,'steel');
   else if(key==='buy-rail')outcome=buy(save,'rail');
