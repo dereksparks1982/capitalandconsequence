@@ -42,7 +42,8 @@
   if(!save||save.characterRoute!=='industrialist')return result(false,'Only Charles can purchase a passenger berth.');
   if(!BOAT_RATES[type])return result(false,'Unknown passenger vessel type.');
   if(save.paused||save.phase==='report')return result(false,'Passenger bookings are unavailable while paused or during a report.');
-  if(!Number.isSafeInteger(nav.gameMinute(save)))return result(false,'The authoritative saved clock is unavailable.');
+  if(save.worldCalendarStatus!=='ready'||!Number.isSafeInteger(save.worldCalendar?.worldMinute))
+   return result(false,'Passenger passage requires the authoritative saved 24-hour clock.');
   const st=ensure(save);
   if(st.voyage)return result(false,'A passenger voyage is already underway.');
   const atHome=!st.port,physical=save.currentLocation||{};
@@ -88,7 +89,8 @@
   return result(true,'Passenger boarded. Use the normal world clock and daily reports during the voyage.',{voyage:st.voyage});
  }
  function sync(save){
-  const st=ensure(save),trip=st.voyage,now=nav.gameMinute(save);
+  const st=ensure(save),trip=st.voyage,
+   now=save.worldCalendarStatus==='ready'&&Number.isSafeInteger(save.worldCalendar?.worldMinute)?save.worldCalendar.worldMinute:null;
   if(!trip||!Number.isSafeInteger(now)||now<trip.arrivalMinute)return result(false,'No passenger arrival due.');
   const isReturn=!!trip.returning;
   st.voyage=null;
