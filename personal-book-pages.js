@@ -47,6 +47,32 @@ function industrialistPages(save){
     item('Employees',Number.isFinite(save.workers)?String(save.workers):'Not recorded')
    ])
  ];
+ const family=save.whitcombFamily,corp=save.corporateGovernance;
+ if(family?.version===1&&corp?.version===1){
+  const initialShares=corp.issuedShares||10000;
+  const percent=n=>(100*(n||0)/initialShares).toFixed(2)+'%';
+  pages.push(page('whitcomb-family-finance','Company Accounts','Alexandria Family Financing',
+   'Recorded shareholder rights and the secured founding loan',
+   ['Family financing paid for the existing modest factory, property, equipment and opening working capital. This is the original investment, not fresh cash granted by opening this record.',
+    'Father and son hold separate voting equity. Settling the loan does not transfer the father’s shares to Charles.'],
+   [item('Family investor','Whitcomb Senior · former British soldier; overland merchant based in Alexandria, Egypt'),
+    item('Loan principal',money(family.principalCents/100)),
+    item('Monthly installment',money(family.monthlyCents/100)),
+    item('Accrued interest and overdue principal',money((family.interestDueCents+family.principalDueCents)/100)),
+    item('Next due',family.nextDue||'Not recorded'),item('Loan status',family.status||'Not recorded'),
+    item('Charles voting shares',String(corp.founderShares||0)+' of '+initialShares+' · '+percent(corp.founderShares)),
+    item('Father voting shares',String(corp.familyShares||0)+' of '+initialShares+' · '+percent(corp.familyShares)),
+    item('Family equity dividends',money((family.dividendIncomeCents||0)/100))
+   ]));
+  if(family.payments?.length)pages.push(page('whitcomb-family-payments','Company Accounts','Family Loan Receipts',
+   'Actual payments from company money',[],
+   family.payments.slice(-ROWS).reverse().map(p=>item(p.date+' · '+money(p.amountCents/100),
+    'Interest '+money(p.interestPaidCents/100)+' · principal '+money(p.principalPaidCents/100)+
+    ' · remaining '+money(p.balanceCents/100)))));
+  if(family.letters?.length)pages.push(page('whitcomb-family-letters','Personal Letters','Alexandria Correspondence',
+   'Dated formal notices from the Whitcomb family',[],
+   family.letters.slice(-ROWS).reverse().map(l=>item(l.date+' · '+l.kind,l.message))));
+ }
  if(ledger.length)pages.push(page('ledger','Company Accounts','Ledger Entries','Recent saved business records',
   [],ledger.slice(-ROWS).reverse().map((entry,i)=>item('Entry '+(ledger.length-i),
     typeof entry==='string'?entry:JSON.stringify(entry).slice(0,850)))));
