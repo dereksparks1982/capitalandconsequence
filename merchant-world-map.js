@@ -300,6 +300,7 @@ function draw(reset){
   '</span><span>Reference routes are illustrative; voyage durations are estimates.</span></footer></div>';
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
  const onCommerce=session.tab==='commerce';sel.hidden=!!onCommerce;commerce.hidden=!onCommerce;
+ if(session.walking)host.querySelector('.merchant-harbor-walk')?.focus();
  if(reset||!session.ready)requestAnimationFrame(()=>resize(true));
  else requestAnimationFrame(()=>resize(false));
 }
