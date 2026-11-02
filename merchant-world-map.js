@@ -98,6 +98,9 @@ function zoom(factor,clientX,clientY){
 function plot(){
  const e=fleet(),m=state();
  let svg='<svg class="merchant-world-overlays" viewBox="0 0 800 600" role="group" aria-label="Chart ports, owned vessels and personal map pins">';
+ if(session.quote?.ok&&Array.isArray(session.quote.points)){
+  svg+='<polyline class="ocean-quoted-route" points="'+session.quote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
+ }
  for(const ship of e.ships){
   if(ship.status!=='at-sea'||!ship.trip)continue;
   const line=ship.trip.routePoints||nav.route(ship.trip.from,ship.trip.to)?.points;
@@ -243,10 +246,18 @@ function shipPanel(id){
  else if(s.status==='in-port'){
   const destinations=fleet().ports.filter(v=>v!==s.port);
   html+='<p>Berth: '+esc(s.port)+'</p><div class="ocean-form"><label>Destination<select data-ocean-destination="'+s.id+'">'+
-   destinations.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')+'</select></label>'+
-   '<label>Cargo<select data-ocean-cargo="'+s.id+'"><option value="freight">Merchant freight</option><option value="electric">Federal Electric finished goods</option></select></label>'+
-   '<label><input type="checkbox" data-ocean-insurance="'+s.id+'"> Hull insurance</label>'+
-   action('dispatch:'+s.id,'Dispatch Voyage')+action('repair:'+s.id,'Repair Hull')+'</div>';
+   destinations.map(v=>'<option value="'+esc(v)+'"'+(session.quote?.shipId===s.id&&session.quote.to===v?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
+   '<label>Cargo<select data-ocean-cargo="'+s.id+'"><option value="freight"'+(session.quote?.cargo==='freight'?' selected':'')+'>Merchant freight</option><option value="electric"'+(session.quote?.cargo==='electric'?' selected':'')+'>Federal Electric finished goods</option></select></label>'+
+   '<label><input type="checkbox" data-ocean-insurance="'+s.id+'"'+(session.quote?.insured?' checked':'')+'> Hull insurance</label>'+
+   action('quote:'+s.id,'Preview Voyage')+action('dispatch:'+s.id,'Dispatch Voyage')+action('repair:'+s.id,'Repair Hull')+'</div>';
+  if(session.quote?.ok&&session.quote.shipId===s.id){
+   const q=session.quote;
+   html+='<section class="ocean-quote-details"><h4>Route Proposal · Not Dispatched</h4><p>'+esc(q.from)+' → '+esc(q.to)+' · '+q.nauticalMiles.toLocaleString('en-US')+' nautical miles</p>'+
+    '<p>Sailing estimate: <strong>'+q.days+' days</strong>. Arrival '+esc(q.eta)+'.</p>'+
+    '<p>Departure charges: '+cash(q.fee)+'; insurance '+cash(q.insurance)+'; total '+cash(q.due)+' from fleet treasury.</p>'+
+    '<p>Manifest: '+esc(q.cargoDescription)+'</p><ol>'+q.legs.map(v=>'<li>'+esc(v.from)+' → '+esc(v.to)+' · '+v.nm.toLocaleString('en-US')+' nautical miles</li>').join('')+'</ol>'+
+    '<p class="fine">This is an estimate; no ship moved and no cash or cargo was transferred.</p></section>';
+  }
  }
  return html;
 }
@@ -341,7 +352,7 @@ function onClick(e){
    session.selection={type:'pin',id};session.tab='selection';
    draw(false);root.requestAnimationFrame(()=>focusPoint([pin.x,pin.y],1.1));return;
   }
-  if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.tab='selection';return draw(false)}
+  if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.quote=null;session.tab='selection';return draw(false)}
   if(command.startsWith('port-scene:')){session.scene=command.slice(11);session.tab='selection';return draw(false)}
   if(command.startsWith('zone:')){session.zone=command.slice(5);return draw(false)}
   if(command.startsWith('rename-pin:')){
@@ -357,6 +368,14 @@ function onClick(e){
    const id=+command.slice(11),out=regions.remove(session.save,id);
    if(out.ok){session.selection={type:'port',id:'Baltimore'};session.onChange?.();draw(false)}
    else setStatus(out.reason);return;
+  }
+  if(command.startsWith('quote:')){
+   const id=+command.slice(6),quote=root.FE_MERCHANT_ROUTE_QUOTE?.quote?.(
+    session.save,id,host.querySelector('[data-ocean-destination="'+id+'"]')?.value,
+    host.querySelector('[data-ocean-cargo="'+id+'"]')?.value,
+    !!host.querySelector('[data-ocean-insurance="'+id+'"]')?.checked);
+   if(quote?.ok){session.quote=quote;draw(false)}else setStatus(quote?.reason||'Voyage could not be quoted.');
+   return;
   }
   let out=null;const empire=root.FE_EMPIRE;
   if(command.startsWith('buy:'))out=empire.buyShip(session.save,command.slice(4));
@@ -374,6 +393,7 @@ function onClick(e){
    if(out.ok&&command.startsWith('buy:')){
     session.shipId=String(fleet().ships.at(-1)?.id||'');session.selection={type:'ship',id:session.shipId};
    }
+   if(out.ok&&command.startsWith('dispatch:'))session.quote=null;
    changed(out);return;
   }
  }
