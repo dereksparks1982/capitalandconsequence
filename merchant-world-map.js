@@ -194,7 +194,7 @@ function portPanel(name){
    ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong> · Steamship: <strong>'+
    steam.days+' days</strong></p><p class="fine">This is a route estimate, not a booked journey or verified period sailing schedule.</p></div>';
  }
- html+=action('port-scene:'+name,'Explore Harbour Layout');
+ html+=action('port-scene:'+name,'Explore Harbour Layout')+action('walk-open:'+name,'Open Walkable Harbour Survey');
  if(session.scene===name){
   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
   html+=portMiniScene();
@@ -214,7 +214,7 @@ function pinPanel(id){
   '<label>Area type <select id="merchantPinKind">'+['study','harbor','coast','sea'].map(k=>'<option value="'+k+'"'+(kind===k?' selected':'')+'>'+({study:'Unclassified study mark',harbor:'Harbour candidate',coast:'Coastline',sea:'Open sea'})[k]+'</option>').join('')+'</select></label>'+
   action('classify-pin:'+pin.id,'Save Area Type')+
   '<p class="fine">A chart mark is a personal annotation, not a verified commercial port or a visited location.</p>';
- if(kind==='harbor')html+=action('inspect-mark:'+pin.id,'Examine Harbour Sections');
+ if(kind==='harbor')html+=action('inspect-mark:'+pin.id,'Examine Harbour Sections')+action('walk-open:mark:'+pin.id,'Open Walkable Harbour Survey');
  if(session.scene==='mark:'+pin.id){
   const zone=regions.ZONES.find(z=>z.id===session.zone)||regions.ZONES[0];
   html+='<h4>Proposed Harbour District</h4>'+portMiniScene()+
@@ -278,7 +278,8 @@ function draw(reset){
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
-  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Original EcoClipper shipping-lines world map">'+plot()+'</div></div>'+
+  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Original EcoClipper shipping-lines world map">'+plot()+'</div>'+
+  (session.walking&&root.FE_MERCHANT_HARBOR_UI?.render?.(session.save,session.walking)||'')+'</div>'+ 
   '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
    session.selection.type==='pin'?pinPanel(session.selection.id):shipPanel(session.selection.id))+'</section>'+
@@ -301,6 +302,28 @@ function onClick(e){
  const command=e.target.closest('[data-ocean-action]')?.dataset.oceanAction;
  if(command){
   if(command==='close')return close();
+  if(command==='walk-close'){session.walking=null;return draw(false)}
+  if(command.startsWith('walk-open:')){
+   const name=command.slice(10),survey=root.FE_MERCHANT_HARBOR_WALK?.preview?.(session.save,name);
+   if(!survey){setStatus('No supported harbour survey is registered here.');return}
+   session.walking=name;return draw(false);
+  }
+  if(command.startsWith('walk-zone:')){
+   if(!session.walking)return;
+   const name=command.slice(10),survey=root.FE_MERCHANT_HARBOR_WALK?.preview?.(session.save,session.walking,name);
+   if(survey){session.onChange?.();draw(false)}
+   return;
+  }
+  if(command.startsWith('walk-step:')||command.startsWith('walk-cell:')){
+   if(!session.walking)return;
+   const coords=command.split(':');
+   const result=coords[0]==='walk-step'?
+    root.FE_MERCHANT_HARBOR_WALK?.step?.(session.save,session.walking,Number(coords[1]),Number(coords[2])):
+    root.FE_MERCHANT_HARBOR_WALK?.walkTo?.(session.save,session.walking,Number(coords[1]),Number(coords[2]));
+   if(result?.ok){session.onChange?.();draw(false)}
+   else setStatus(result?.reason||'Blocked by harbour scenery.');
+   return;
+  }
   if(command==='zoom-in')return zoom(1.25);
   if(command==='zoom-out')return zoom(.8);
   if(command==='fit')return resize(true);
@@ -370,6 +393,16 @@ function onClick(e){
 }
 function onChange(){}
 function onKey(e){
+ if(session?.walking&&!(e.target.closest('input,textarea,select,[contenteditable]'))){
+  if(e.key==='Escape'){e.preventDefault();session.walking=null;draw(false);return}
+  const keys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
+  const step=keys[e.key];if(step){
+   e.preventDefault();
+   const result=root.FE_MERCHANT_HARBOR_WALK?.step?.(session.save,session.walking,...step);
+   if(result?.ok){session.onChange?.();draw(false)}else setStatus(result?.reason||'Blocked by harbour scenery.');
+   return;
+  }
+ }
  const p=e.target.closest('[data-ocean-port],[data-ocean-ship],[data-ocean-pin]');
  if(p&&(e.key==='Enter'||e.key===' ')){
   e.preventDefault();
@@ -392,7 +425,7 @@ function onPointerMove(e){
 }
 function onPointerUp(e){if(session?.drag?.id===e.pointerId)session.drag=null}
 function onWheel(e){
- if(!e.target.closest('.merchant-world-viewport')||!session)return;
+ if(!e.target.closest('.merchant-world-viewport')||!session||e.target.closest('.merchant-harbor-walk'))return;
  e.preventDefault();zoom(e.deltaY>0?.85:1.15,e.clientX,e.clientY);
 }
 root.addEventListener?.('resize',()=>{if(host&&!host.hidden)resize(true)});
