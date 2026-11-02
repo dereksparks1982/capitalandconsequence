@@ -338,7 +338,11 @@ function onClick(e){
 function onChange(){}
 function onKey(e){
  const p=e.target.closest('[data-ocean-port],[data-ocean-ship],[data-ocean-pin]');
- if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();p.click();return}
+ if(p&&(e.key==='Enter'||e.key===' ')){
+  e.preventDefault();
+  p.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+  return;
+ }
  if(e.key==='Escape'){e.preventDefault();close()}
 }
 function onPointerDown(e){
