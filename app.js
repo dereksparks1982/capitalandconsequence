@@ -3066,6 +3066,7 @@ function closeCityRoom(){
  updateTitleDevCityControls();
 }
 function returnCityRoomToMap(){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port))return;
  const locationId=cityRoomSession.locationId;
  if(!locationId)return;
  closeCityRoom();
@@ -4666,6 +4667,9 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
+ if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port)){
+  note('Charles is away by sea. Complete the passenger journey before using the Washington street map.');return;
+ }
  // Viewing the Washington map requires one player-controlled minute.
  // Opening an already-visible map never costs again. The menu is free.
  const viewer=$('#titleMapViewer');
