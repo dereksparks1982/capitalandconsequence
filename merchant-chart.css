@@ -1,0 +1,21 @@
+/* Maritime chart is confined to the existing merchant-fleet sheet.
+   No positioning rules from the approved Washington map or career desk are changed. */
+.industrial-empire .merchant-chart{margin:16px 0;padding:11px;background:#eee4ce;border:1px solid #928060;max-width:100%}
+.industrial-empire .merchant-chart summary{cursor:pointer;font-weight:700;font-size:17px;color:#30281e;min-height:32px}
+.industrial-empire .merchant-chart summary:focus-visible{outline:3px solid #32638a;outline-offset:3px}
+.industrial-empire .merchant-chart-layout{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(180px,1fr);gap:12px;align-items:start}
+.industrial-empire .merchant-chart-map{min-width:0;background:#fff;border:1px solid #7d6f53;overflow:hidden}
+.industrial-empire .merchant-chart-map svg{display:block;width:100%;height:auto}
+.industrial-empire .merchant-active-route{fill:none;stroke:#202d46;stroke-width:2.8;stroke-dasharray:5 5;opacity:.63;pointer-events:none}
+.industrial-empire .merchant-active-route[data-selected="true"]{stroke:#9c2e26;stroke-width:3.2;opacity:.87}
+.industrial-empire .merchant-ship{cursor:pointer}
+.industrial-empire .merchant-ship:focus-visible{outline:none;filter:drop-shadow(0 0 4px #002b47)}
+.industrial-empire .merchant-ship.is-selected circle{stroke:#9b321d}
+.industrial-empire .merchant-chart-details{min-width:0;padding:12px;background:#faf6eb;border:1px solid #a99c7f}
+.industrial-empire .merchant-chart-details h5{margin:12px 0 9px;font-size:16px}
+.industrial-empire .merchant-chart-details select{max-width:100%;margin:6px 0 5px;font-size:14px}
+.industrial-empire .merchant-chart-details dl{display:grid;grid-template-columns:1fr 1.25fr;gap:5px 7px;margin:0}
+.industrial-empire .merchant-chart-details dt{font-weight:700}
+.industrial-empire .merchant-chart-details dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:700px){.industrial-empire .merchant-chart-layout{grid-template-columns:1fr}.industrial-empire .merchant-chart-details dl{grid-template-columns:minmax(100px,1fr) minmax(0,1.3fr)}}
+@media(prefers-reduced-motion:reduce){.industrial-empire .merchant-ship{transition:none}}
