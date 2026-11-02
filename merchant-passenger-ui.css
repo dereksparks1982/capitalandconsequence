@@ -1,0 +1,47 @@
+/* Overseas passenger scene: separate from the original Washington city map. */
+.merchant-passenger-overlay[hidden],#merchantPassengerPierAccess[hidden]{display:none!important}
+.merchant-passenger-overlay{position:fixed;z-index:810;inset:0;background:#1d2831e6;
+ display:flex;align-items:center;justify-content:center;padding:10px;color:#332719;font-family:Georgia,serif}
+.merchant-passenger-card{width:min(980px,100%);max-height:97vh;overflow:hidden;display:flex;flex-direction:column;
+ background:#f2e8d0;border:6px double #695537;box-shadow:0 8px 36px #000b}
+.merchant-passenger-card>header{background:#4a3c2d;color:#fff0cb;padding:12px 19px}
+.merchant-passenger-card>header h2{font-size:23px;margin:5px 0}
+.merchant-passenger-card>header p{font-size:13px;margin:4px 0}
+.merchant-passenger-body{padding:16px 21px;overflow:auto;max-height:calc(97vh - 96px)}
+.merchant-passenger-body h3{margin:7px 0;font-size:19px}
+.merchant-passenger-body p{line-height:1.45}
+.merchant-passenger-body button,#merchantPassengerPierAccess{background:#f7e7be;color:#2d2d25;
+ border:1px solid #7a6241;cursor:pointer;padding:7px 10px;margin:5px;min-height:35px;font:700 13px Georgia,serif}
+.merchant-passenger-body button:focus-visible{outline:3px solid #286d8a}
+#merchantPassengerPierAccess{display:block;margin:12px auto}
+.merchant-passenger-body label{display:block;max-width:380px;margin:10px 0}
+.merchant-passenger-body select{display:block;width:100%;padding:8px;font:15px Georgia,serif}
+.passenger-quote{background:#fff8df;border:1px solid #ad9166;padding:12px}
+.passenger-error{border:1px solid #a45638;background:#f2d8bd;padding:11px}
+.passenger-progress{height:22px;background:#acb0a5;border:2px solid #65543e;overflow:hidden}
+.passenger-progress>span{display:block;height:100%;background:#577d7a}
+.passenger-voyage-summary{border:1px solid #b6a685;padding:8px 13px;background:#eee1c7}
+.passenger-time-actions{text-align:center;margin:19px auto}
+.passenger-time-actions button{font-size:17px;padding:11px 22px;background:#e7c98f}
+.passenger-day-report{border:1px solid #907e61;margin:12px 0;padding:10px;background:#fdf8ec}
+.merchant-passenger-zones{display:flex;flex-wrap:wrap;gap:3px}
+.merchant-passenger-board{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+ width:min(576px,100%);aspect-ratio:12/9;margin:12px auto;border:5px ridge #5c5140;background:#baa989}
+.passenger-cell{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;
+ border:1px solid #5b5547;box-sizing:border-box;margin:0!important;padding:0!important;border-radius:0;
+ font:700 clamp(13px,3vw,23px) monospace}
+span.passenger-cell{cursor:default}
+.passenger-cell.wall{background:#756f62}.passenger-cell.water{background:#567991;color:#eef3ea}
+.passenger-cell.floor{background:#c0ad88}.passenger-cell.dock{background:#9a7b54}
+.passenger-cell.road{background:#99907d}.passenger-cell.crate{background:#94754c}
+.passenger-cell.counter,.passenger-cell.books{background:#958871}
+.passenger-cell.barrel,.passenger-cell.bollard{background:#887253}
+.passenger-cell.stall,.passenger-cell.bed,.passenger-cell.table{background:#95866b}
+.passenger-cell.person{background:#e9ce75;color:#3c321e;outline:2px solid #884021;outline-offset:-2px}
+.passenger-port-actions{display:flex;justify-content:center;flex-wrap:wrap;margin:12px auto}
+#merchantPassengerStatus{min-height:17px;font-weight:bold;font-size:13px}
+.merchant-world-viewer{z-index:860}
+@media(max-width:650px){.merchant-passenger-overlay{padding:2px}.merchant-passenger-card{max-height:99vh}
+ .merchant-passenger-card>header{padding:7px 10px}.merchant-passenger-card>header h2{font-size:18px}
+ .merchant-passenger-body{padding:8px}.merchant-passenger-zones button{font-size:11px}
+ .merchant-passenger-board{width:100%}.passenger-cell{font-size:clamp(9px,3vw,18px)}}
