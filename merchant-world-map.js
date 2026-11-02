@@ -151,6 +151,37 @@ function chartDirectory(){
   action('focus-pin:'+pin.id,(pin.kind==='harbor'?'⚓ ':pin.kind==='coast'?'◇ ':pin.kind==='sea'?'≈ ':'◆ ')+pin.name)).join('')+'</div>';
  html+='</details>';return html;
 }
+function harborRegister(name,zone){
+ const f=fleet(),e=root.FE_EMPIRE.ensure(session.save),valid=Object.prototype.hasOwnProperty.call(nav.PORTS,name);
+ if(!valid)return'';
+ if(zone==='quay'){
+  const vessels=f.ships.filter(ship=>ship.status==='in-port'&&ship.port===name);
+  return '<h5>Harbour Berth Register</h5>'+
+   (vessels.length?vessels.map(ship=>'<p>'+esc(ship.name)+' · '+esc(ship.type)+
+    ' · Hull '+Number(ship.condition).toFixed(0)+'%</p>').join(''):'<p>No owned ships are currently berthed here.</p>');
+ }
+ if(zone==='warehouse'){
+  const crates=Array.isArray(f.electric?.[name])?f.electric[name]:[];
+  return '<h5>Recorded Federal Electric Cargo</h5>'+
+   (crates.length?crates.map(c=>'<p>'+esc(c.units)+' '+esc(c.productId)+' · awaiting local sale</p>').join(''):
+    '<p>No delivered Federal Electric cargo is recorded at this port.</p>');
+ }
+ if(zone==='customs'){
+  const receipts=(e.log||[]).filter(line=>line.includes(' in '+name)||line.includes(' to '+name)).slice(0,3);
+  return '<h5>Existing Voyage Notices</h5>'+
+   (receipts.length?receipts.map(ln=>'<p>'+esc(ln)+'</p>').join(''):
+    '<p>There are no relevant saved voyage notices here.</p>')+
+   '<p class="fine">These are commercial log entries, not a customs clearance.</p>';
+ }
+ if(zone==='market'){
+  const known=f.ports.includes(name);
+  return '<h5>Commercial Access</h5><p>'+(known?
+   'Trade access has been verified through the existing port-agent system.':
+   'Trade access is not yet verified. Inspecting a market cannot authorize a shipment.')+'</p>';
+ }
+ if(zone==='lodging')return'<h5>Accommodation</h5><p>No passenger booking or paid berth is recorded. Overnight stays require future travel mechanics.</p>';
+ return'<h5>Local Streets</h5><p>No player location transition is authorized by a survey of this district.</p>';
+}
 function portPanel(name){
  const data=regions.port(name);if(!data)return '<p>Port not found.</p>';
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
@@ -167,7 +198,9 @@ function portPanel(name){
  if(session.scene===name){
   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
   html+=portMiniScene();
-  html+='<h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p><p class="fine">This is a small, generic planning scene. Opening it does not move Charles to the port or charge a journey. Character boarding and local visits still require a separate travel integration.</p>';
+  html+='<h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p>'+
+   '<div class="ocean-harbor-register">'+harborRegister(name,zone.id)+'</div>'+
+   '<p class="fine">This survey does not move Charles to the port. Physical character travel and on-site interactions require a separate integration.</p>';
  }
  return html;
 }
