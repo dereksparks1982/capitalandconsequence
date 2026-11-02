@@ -1271,6 +1271,53 @@ function buyPeddlerGood(id){
  if(result.ok){window.FE_NPC_DISCOVERY?.learn?.(S,'silasPike','encounter','trading in person');save(true)}
  return result;
 }
+// Paid passenger passage and genuinely foreign local movement. All mutations
+// use the existing saved world clock; no new wall-clock or freight treasury.
+window.FE_PASSENGER_ACTIONS=Object.freeze({
+ changed:()=>{save(true);render()},
+ board:(to,type)=>{
+  const passage=window.FE_PASSENGER_SEA;
+  const proposal=passage?.quote?.(S,to,type);
+  if(!proposal?.ok)return proposal||{ok:false,reason:'Passenger service unavailable.'};
+  if((window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<=60)
+   return {ok:false,reason:'Boarding requires more than one minute before the next clock boundary.'};
+  const spent=advanceWorldSimulation(60,true,'action');
+  if(spent!==60)return {ok:false,reason:'Could not complete the one-minute boarding procedure.'};
+  const receipt=passage.embark(S,to,type);
+  if(receipt.ok){save(true);render();}
+  return receipt;
+ },
+ advance:()=>{
+  if(!S.passengerSea?.voyage)return {ok:false,reason:'Charles is not aboard a passenger vessel.'};
+  if(S.paused)return {ok:false,reason:'Resume the game before advancing passage time.'};
+  if(window.FE_MEDICAL_RECORDS?.pending?.(S))return {ok:false,reason:'Medical treatment is required before travel can continue.'};
+  if(S.phase==='report'){
+   beginNextDay();
+   window.FE_PASSENGER_SEA?.sync?.(S);
+   save(true);render();
+   return {ok:true,reason:'Daily report recorded; the world advances to the next morning.'};
+  }
+  const span=window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0;
+  if(span<=0)return {ok:false,reason:'The existing world clock cannot advance this phase.'};
+  const advanced=advanceWorldSimulation(span,true,'sea-passenger');
+  if(advanced<=0)return {ok:false,reason:'The passage was interrupted by a world-clock or medical event.'};
+  window.FE_PASSENGER_SEA?.sync?.(S);
+  save(true);render();
+  return {ok:true,reason:'The journey advanced '+Math.floor(advanced/60)+' real in-game minutes.'};
+ },
+ move:(zone,x,y)=>{
+  const passage=window.FE_PASSENGER_SEA;
+  const allowed=passage?.canWalk?.(S,zone,x,y);
+  if(!allowed?.ok)return allowed||{ok:false,reason:'Port walking is unavailable.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60))
+   return {ok:false,reason:'The remaining clock cannot accommodate this one-minute walk.'};
+  if(advanceWorldSimulation(60,true,'action')!==60)
+   return {ok:false,reason:'The world clock interrupted walking.'};
+  const receipt=passage.move(S,zone,x,y);
+  if(receipt.ok){save(true);render()}
+  return receipt;
+ }
+});
 window.advanceWorldTime=(seconds,away=false)=>advanceWorldSimulation(Math.max(0,Math.floor(seconds||0)),away,'action');
 /* Booking a wager takes one minute regardless of stake or game type.
    Only accepted wagers call chargeMinute, once per accepted ticket.
