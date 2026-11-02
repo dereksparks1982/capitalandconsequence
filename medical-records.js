@@ -8,8 +8,8 @@ const VERSION=1;
 const WORK=Object.freeze({industrialist:'factory',investigator:'metropolitanPolice',wardman:'blackwoodAsylum',criminal:'secondNightclub'});
 const DANGER=new Set(['hillsdale','oldChinatown','chinatown','blacktown']);
 const PLAYER_NAMES=Object.freeze({industrialist:'Charles Whitcomb',investigator:'Samuel Harlan',criminal:'Elias Crowe',wardman:'Edmund Wardman'});
-const FEES=Object.freeze({home:0,work:400,street:1200,danger:1200});
-const MINUTES=Object.freeze({home:90,work:120,street:180,danger:180});
+const FEES=Object.freeze({home:0,work:400,street:1200,danger:1200,maritime:450});
+const MINUTES=Object.freeze({home:90,work:120,street:180,danger:180,maritime:120});
 const safeId=id=>typeof id==='string'&&/^(?:player|npc):[a-zA-Z0-9_-]{1,75}$/.test(id);
 const dateMinute=n=>Number.isSafeInteger(n)?new Date(n*60000).toISOString().slice(0,16):null;
 function minute(save){return save?.worldCalendarStatus==='ready'&&Number.isSafeInteger(save.worldCalendar?.worldMinute)?save.worldCalendar.worldMinute:null;}
@@ -54,6 +54,9 @@ function energyCap(save){
  return state==='severe'?65:state==='chronic'?80:100;
 }
 function locationKind(save,locationId){
+ if(save?.characterRoute==='industrialist'&&
+    (locationId==='passengerVessel'||locationId==='foreignHarbor')&&
+    (save.passengerSea?.voyage||save.passengerSea?.port))return 'maritime';
  if(locationId==='home')return 'home';
  if(DANGER.has(locationId))return 'danger';
  if(WORK[save?.characterRoute]===locationId)return 'work';
@@ -94,7 +97,7 @@ function collapse(save,locationId){
  const payer=where==='work'&&locationId==='factory'&&save.characterRoute==='industrialist'?'company':'personal';
  const charge=bill(save,patient,FEES[where],payer);
  const record=append(patient,{kind:'collapse',minute:now,date:dateMinute(now),locationId,
-  setting:where,minutesLost:MINUTES[where],doctorFeeCents:where==='work'?FEES[where]:0,
+  setting:where,minutesLost:MINUTES[where],doctorFeeCents:where==='work'||where==='maritime'?FEES[where]:0,
   hospitalFeeCents:where==='street'||where==='danger'?FEES[where]:0,
   payer,paidCents:charge.paidCents,owedCents:charge.owedCents,stolenCents});
  patient.collapses=count;patient.recoveryNights=0;
