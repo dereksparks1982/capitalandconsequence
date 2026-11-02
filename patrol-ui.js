@@ -77,6 +77,7 @@
  }
  function refresh(){
   create();
+  window.FE_PATROL_PROPERTY_UI?.render?.();
   const isCop=S?.characterRoute==='investigator'&&!!activeProfileId();
   const desk=$$('patrolDutyDesk');
   if(desk)desk.hidden=!isCop;

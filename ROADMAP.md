@@ -1,3 +1,12 @@
+## November 1, 2026 · v0.7.75-dev · actual Hillsdale lost-property custody
+- [x] Ground police property in Sam's already witnessed Hillsdale incident. Only selecting **Take into station custody** creates an item and dated collection record; selecting **Record the finder's account** is statement-only.
+- [x] The Metropolitan Police duty-room report transfers the existing item to station intake. A preexisting report with no contemporaneous custody is not retroactively invented as property.
+- [x] Five-minute sealed bag, identity-check and station-clerk transfer steps preserve an auditable personal custody chain, saved original incident ID, intact station record, chronological action receipts and duplicate protection.
+- [x] Property-clerk transfer cannot occur before sealing and inspection; the owner remains unknown and unverified. No evidence of an actual crime, police warrant, new rank or invented plaintiff is created.
+- [x] Add property register panel inside Sam's existing patrol duty desk, restricted to his actual career and station office; preserve his one-beat jurisdiction, fixed map and all original UI geometry.
+- [x] Focused source regression covers witness-versus-custody, station entry, office restrictions, time validation, replay-safety, genuine chain entries, profile save reload and no fabricated owner.
+- [ ] Full offline Node regression suite and native Ubuntu Electron testing remain owner-unaccepted. Other policing careers, independent complainants and case progression remain future substantive work.
+
 ## November 1, 2026 · v0.7.74-dev · supervised production office and order priorities
 - [x] Add the production office below existing Federal Electric Component Works controls, without changing accepted map or page geometry.
 - [x] Persist prioritized existing production orders; initial order defaults to earliest contractual due date, and moving one to the front costs 5 Washington minutes.

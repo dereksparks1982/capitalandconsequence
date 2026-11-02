@@ -4,6 +4,8 @@
  */
 (function(root){
  'use strict';
+ const property=typeof module==='object'&&module.exports?require('./patrol-property.js'):root.FE_PATROL_PROPERTY;
+ if(!property)throw Error('Patrol property register must load before the Hillsdale patrol engine.');
  const STREETS=Object.freeze([
   Object.freeze({id:'hillsdale',name:'Hillsdale neighborhood street'})
  ]);
@@ -121,6 +123,12 @@
   duty.contacts++;
   if(scene.id==='wagon-obstruction'&&choice.id==='summons')duty.summons++;
   duty.lastAction=pending.disposition+' Return to the station to file the report.';
+  // A statement about an item does not create custody; only Sam's explicit
+  // physical collection on Hillsdale is logged in the property chain.
+  if(scene.id==='lost-property'&&choice.id==='custody'){
+   const custody=property.accept(save,pending);
+   if(custody.ok)pending.propertyId=custody.item.id;
+  }
   return {ok:true,incident:{...pending}};
  }
  function report(save,{locationId,roomId,spentSeconds}){
@@ -129,6 +137,10 @@
   if(!pending||pending.status!=='awaiting-report')return {ok:false,reason:'There is no completed incident waiting for a station report.'};
   if(spentSeconds!==300)return {ok:false,reason:'Five charged minutes are required for written paperwork.'};
   const record={...pending,status:'filed',reportText:pending.disposition};
+  if(record.typeId==='lost-property'){
+   const filed=property.file(save,record);
+   if(filed.item)record.propertyId=filed.item.id;
+  }
   duty.logs.push(record);if(duty.logs.length>80)duty.logs.shift();
   duty.reportsFiled++;duty.pending=null;
   duty.lastAction='Filed '+record.id+': '+record.disposition;
