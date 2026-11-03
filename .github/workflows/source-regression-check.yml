@@ -1,0 +1,24 @@
+# One narrow source-suite run on this workflow's introduction/update, then manual only.
+# Owner approved sparing GitHub Actions use November 2, 2026.
+name: Capital and Consequence source regression
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/source-regression-check.yml
+permissions:
+  contents: read
+jobs:
+  offline-source:
+    name: All offline source regressions (Node 22)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source (no build artifacts)
+        uses: actions/checkout@v4
+      - name: Configure Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run complete offline source QA suite
+        run: node tests/run-all.cjs

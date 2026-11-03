@@ -1,3 +1,11 @@
+> **LATEST SOURCE · v0.7.100-dev · NOVEMBER 3, 2026 (unaccepted):** The seven-failure repair from v0.7.99 exposed one additionally stale IPO test expectation dating from before the owner-approved 75% Charles / 25% father cap table. Actual IPO logic already respects family equity. The underwriter test now asserts the correct 53.85% Charles / 19.23% father voting split, 2,500 preserved family votes, 13,000 issued shares, real receipts, invalid-price blocking and majority-loss warnings. An isolated full IPO scenario passed. Set up one targeted offline Node 22 source-suite workflow on GitHub, triggered only when the workflow file changes and manually thereafter, to avoid repeated full Linux builds. No gameplay economics/canon/geometry changed. Source is still not an accepted Linux release; see `docs/RELEASE-NOTES-v0.7.100-dev.md`.
+
+## November 3, 2026 · v0.7.100-dev · approved family IPO and one-shot offline QA
+- [x] Rebase outdated underwriter test expectations on owner-approved 75/25 Whitcomb family equity rather than returning to obsolete all-Charles control.
+- [x] Verify both independent votes and dilution, founder-only sale, correct $2,850 company and $475 personal net proceeds, 15-minute game time, and invalid-offer protection.
+- [x] Add a sparingly triggered GitHub Node 22 source regression check, no artifacts, no schedules and no build downloads.
+- [ ] Verify the actual hosted source QA result before claiming a full 246+ test pass; Linux Electron runtime build and hands-on QA still outstanding.
+
 > **LATEST SOURCE · v0.7.99-dev · NOVEMBER 3, 2026 (unaccepted):** Repair of seven failures reported in Ubuntu v0.7.98 suite (238 passed, 7 failed). Separate the 42 Washington mapped destinations from 2 nonmapped but still playable transport locations, preserve restricted city pins, retire competing desk mini-chart caption, move unchanged approved 1878 event sequence up in DECISIONS, restore IPO 'Founder voting stake' label, make map-return focus safe without global S, and separately gate the neutral menu and unfinished Whitcomb prelude. No existing tests weakened, canonical maps/years/shares untouched. Targeted source/V8 checks pass; native full Node/Linux Electron acceptance pending. See `docs/RELEASE-NOTES-v0.7.99-dev.md`.
 
 ## November 3, 2026 · v0.7.99-dev · full suite regression repair

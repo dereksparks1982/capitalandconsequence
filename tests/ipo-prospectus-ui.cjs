@@ -18,6 +18,9 @@ const save={gameDate:'1878-02-05',phase:'day',paused:false,
  companyCash:2500,personalCash:600,reputation:55,
  ledger:[{},{},{},{}],brokerage:{visits:2},portfolio:{},stocks:{}};
 assert.equal(C.incorporate(save,'charter').ok,true);
+// Owner approved November 2, 2026: 75% Charles / 25% father, independent votes.
+assert.equal(C.ownership(save).founderPercent,75);
+assert.equal(C.ownership(save).familyPercent,25);
 assert.equal(C.vote(save,'ipo','board').passed,true);
 save.currentLocation.locationId='brokerOffice';
 let finished=null,minutes=0;
@@ -40,18 +43,18 @@ assert.ok(action&&!action.disabled,'Approved underwriter offer must be available
 assert.equal(inputs.length,3,'New issues, secondary founder sales and price remain editable');
 assert.match(preview(),/Company receives \$2850\.00/);
 assert.match(preview(),/Charles personally receives \$475\.00/);
-assert.match(preview(),/Founder voting stake 73\.08%/);
+assert.match(preview(),/Founder voting stake 53\.85%, father 19\.23%/);
 const before=JSON.stringify(save);
 inputs[2].value='20';inputs[2].handlers.input();
 assert.equal(action.disabled,true,'Offer above valuation range must not be submitted');
 assert.match(preview(),/NOT READY:/);
 assert.equal(JSON.stringify(save),before,'Pricing preview does not debit cash or create shares');
 inputs[2].value='1';inputs[2].handlers.input();
-inputs[1].value='9500';inputs[1].handlers.input();
+inputs[1].value='6500';inputs[1].handlers.input();
 assert.equal(action.disabled,false);
 assert.match(preview(),/lose majority voting control/);
 inputs[1].value='500';inputs[1].handlers.input();
-assert.match(preview(),/Founder voting stake 73\.08%/);
+assert.match(preview(),/Founder voting stake 53\.85%, father 19\.23%/);
 action.handlers.click();
 assert.equal(finished?.ok,true,'Confirming the IPO must really issue FEC shares');
 assert.equal(minutes,900,'Real underwriter business consumes 15 in-game minutes');
@@ -60,5 +63,12 @@ assert.equal(save.stocks.FEC.issuedShares,13000);
 assert.equal(save.stocks.FEC.sharesOffered,3500);
 assert.equal(save.companyCash,5275);
 assert.equal(save.personalCash,1075);
-assert.equal(C.ownership(save).founderPercent,73.08);
-console.log('PASS live IPO underwriter preview, blocked invalid price, control-risk warnings, real listing and business-time charge');
+assert.equal(C.ownership(save).founderPercent,53.85,'Charles retains 53.85% of votes after offering');
+assert.equal(C.ownership(save).familyPercent,19.23,'His father retains his separate 19.23% voting interest');
+assert.equal(C.ownership(save).founder,7000,'Charles may sell only his own founder shares');
+assert.equal(C.ownership(save).family,2500,"Father's original 2,500 votes were not sold");
+assert.equal(C.ownership(save).issued,13000,'Public issue created precisely 3,000 new shares');
+assert.equal((C.ownership(save).founderPercent+C.ownership(save).familyPercent).toFixed(2),'73.08',
+ 'Combined Whitcomb family interest after this public offering');
+assert.ok(C.ensure(save).directors.some(d=>d.id==='whitcomb-father'),'Father retains designated investor board seat');
+console.log('PASS family-protected IPO dilution, independent voting shares, majority warnings and real broker charge');
