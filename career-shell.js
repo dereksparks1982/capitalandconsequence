@@ -180,7 +180,7 @@
     <div class="career-desk-art" aria-label="${escape(route.name)} desk with paper map and record book">
       <div id="careerDeskBlotter" class="career-desk-blotter" aria-label="Movable map, book and collected possessions">
        <button type="button" id="careerDeskMap" data-desk-move="map" class="career-desk-map career-desk-movable" title="Click to open the Washington map; drag to rearrange" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
-        ${route.id==='industrialist'?'<button type="button" id="careerDeskShippingMap" data-desk-move="shipping" class="career-desk-shipping career-desk-movable" title="Open World Shipping Chart; drag to rearrange" aria-label="Open world shipping chart"><img src="assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg" alt="" draggable="false"><small>SHIPPING ROUTES</small></button>':''}
+        ${route.id==='industrialist'?'<button type="button" id="careerDeskShippingMap" data-desk-move="shipping" class="career-desk-shipping career-desk-movable" title="Open World Shipping Chart; drag to rearrange" aria-label="Open world shipping chart"><img src="assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg" alt="" draggable="false"></button>':''}
        <button type="button" id="careerDeskLedger" data-desk-move="ledger" class="career-desk-ledger career-desk-movable" title="Click to open ${escape(bookTitle)}; drag to rearrange" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
       </div>
       <div class="career-desk-pencil" aria-hidden="true"></div>

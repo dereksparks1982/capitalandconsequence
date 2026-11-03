@@ -1,3 +1,12 @@
+> **LATEST SOURCE · v0.7.99-dev · NOVEMBER 3, 2026 (unaccepted):** Repair of seven failures reported in Ubuntu v0.7.98 suite (238 passed, 7 failed). Separate the 42 Washington mapped destinations from 2 nonmapped but still playable transport locations, preserve restricted city pins, retire competing desk mini-chart caption, move unchanged approved 1878 event sequence up in DECISIONS, restore IPO 'Founder voting stake' label, make map-return focus safe without global S, and separately gate the neutral menu and unfinished Whitcomb prelude. No existing tests weakened, canonical maps/years/shares untouched. Targeted source/V8 checks pass; native full Node/Linux Electron acceptance pending. See `docs/RELEASE-NOTES-v0.7.99-dev.md`.
+
+## November 3, 2026 · v0.7.99-dev · full suite regression repair
+- [x] The two maritime stage areas remain addressable but are excluded from the 42 mapped Washington location cards. All Washington underground rooms/pins remain.
+- [x] Remove competing mini-chart caption while retaining original desk geometry and mini shipping-chart button.
+- [x] Preserve owner-approved November 1 1878 sequence and original financing; correct source/preview wording.
+- [x] Map return focus regression isolated safely, and both neutral-menu and Alexandria introduction simulation clock freezes retained.
+- [ ] Run full native source suite and Linux executable smoke, then visual playtest. Never claim acceptance early.
+
 > **LATEST SOURCE · v0.7.98-dev · NOVEMBER 3, 2026 (unaccepted):** The owner-requested Linux in-place GitHub builder no longer creates timestamped source backup archives in `~/DKLab/Archives`. Updates still stage files in the original project and retain only temporary rollback copies deleted with the build's temporary directory. The developer build script remains noninteractive, preserves the approved Washington map and continues its existing Linux smoke process. Added a regression that exercises the Python file synchronizer in a temporary directory. JS test syntax and static script-policy checks passed; full native Node suite, actual end-to-end Linux build and graphical playthrough remain unverified. `docs/RELEASE-NOTES-v0.7.98-dev.md`.
 
 ## November 3, 2026 · v0.7.98-dev · no-archive in-place Linux updater

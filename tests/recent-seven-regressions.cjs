@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const ctx={window:{}};vm.runInNewContext(read('city.js'),ctx);
+const city=ctx.window.FederalElectricCity;
+assert.equal(city.listLocations().length,42,'Washington directory has the 42 mapped destinations');
+assert.equal(city.mapLocations().length,42);
+assert.equal(city.listLocations().some(x=>x.id==='passengerVessel'||x.id==='foreignHarbor'),false);
+for(const id of ['passengerVessel','foreignHarbor','privateFightHall','cockfightingDen'])
+ assert.ok(city.getLocation(id),id+' remains addressable');
+assert.equal(city.getRoom('foreignHarbor','market')?.id,'market','Foreign port remains visitable');
+assert.ok(city.listLocations().some(x=>x.id==='privateFightHall'),'Restricted fighting venue remains registered');
+const app=read('app.js'),desk=read('career-shell.js'),ui=read('corporate-governance-ui.js');
+assert(app.includes('function titleScreenBlocksSimulation(){return careerMainMenuVisible()}'));
+assert(app.includes('function whitcombIntroBlocksSimulation(){'));
+assert(app.includes('!titleScreenBlocksSimulation()&&!whitcombIntroBlocksSimulation()&&businessOpen()'));
+assert(app.includes('||titleScreenBlocksSimulation()||whitcombIntroBlocksSimulation())return;'));
+assert(app.includes("if(typeof S!=='undefined'&&S.characterRoute==='industrialist'"));
+const art=desk.slice(desk.indexOf('<div class="career-desk-art"'),desk.indexOf('<p class="career-desk-summary">'));
+assert(!art.includes('<small>'),'No extra competing desk captions');
+assert(art.includes('careerDeskShippingMap')&&art.includes('careerDeskLedger'));
+const decisions=read('DECISIONS.md').slice(0,2000);
+assert(decisions.indexOf('First, Charlie manufactures')>=0);
+assert(decisions.indexOf('First, Charlie manufactures')<decisions.indexOf('Then, Charlie may research'));
+assert(decisions.indexOf('streetlighting improvement contract')<decisions.indexOf("World's Fair follows"));
+assert(ui.includes("'. Founder voting stake '+terms.founderPercent.toFixed(2)"));
+console.log('PASS targeted regressions: Washington vs. sea locations, family finance preview, map return and intro clock gates');

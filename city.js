@@ -617,7 +617,7 @@
   if(location.people)copy.people=location.people.map(p=>({...p,dialogue:[...(p.dialogue||[])]}));
   return copy;
  }
- function listLocations(){return LOCATIONS.map(copyLocation)}
+ function listLocations(){return LOCATIONS.filter(location=>!!location.map).map(copyLocation)}
  function getLocation(id){
   const location=LOCATIONS.find(v=>v.id===id);
   return location?copyLocation(location):null;

@@ -154,7 +154,7 @@ function broker(){
     '. Company receives '+$(terms.companyProceedsCents/100)+
     '; Charles personally receives '+$(terms.founderProceedsCents/100)+
     '; underwriter retains '+$(terms.feesCents/100)+
-    '. Charles voting stake '+terms.founderPercent.toFixed(2)+'%, father '+terms.familyPercent.toFixed(2)+'%. '+terms.note+
+    '. Founder voting stake '+terms.founderPercent.toFixed(2)+'%, father '+terms.familyPercent.toFixed(2)+'%. '+terms.note+
     (terms.ok?' READY TO SUBMIT.':' NOT READY: '+terms.problems.join(' '));
   };
   for(const field of [newQty,oldQty,offer])field.addEventListener('input',update);
