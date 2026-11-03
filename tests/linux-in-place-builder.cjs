@@ -27,7 +27,7 @@ const python=[
 '    m.synchronize(staged,["source.js"],temp)',
 '    assert (m.ROOT/"source.js").read_text()=="current version"',
 '    assert not (temp/"DKLab"/"Archives").exists()'
-].join('\\n');
+].join('\n');
 const r=cp.spawnSync('python3',['-c',python],{cwd:path.join(__dirname,'..'),encoding:'utf8',timeout:15000});
 assert.equal(r.status,0,(r.stderr||r.stdout||r.error?.message||'Python updater test failed').slice(0,3000));
 console.log('Linux updater PASS: in-place source replacement with ephemeral rollback and zero permanent backup archives');
