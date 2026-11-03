@@ -1,5 +1,18 @@
 > **CURRENT DEVELOPMENT POLICY · NOVEMBER 2, 2026:** [COMPANY_BIBLE.md](COMPANY_BIBLE.md) contains **development/build/release rules only**; [GAME_LORE.md](GAME_LORE.md) indexes story, world, character, map, and gameplay canon. The owner **allows GitHub Actions and other compute, both sparingly**. Prefer appropriate local Linux checks and use hosted resources only when justified. Older dated “No GitHub Actions” statements below are preserved as history and are **superseded**, not current prohibitions. No gameplay or release authorization follows from this documentation change.
 
+## November 2, 2026 · v0.7.92-dev · Charles's Alexandria opening and father-son business confidence (source only)
+- [x] Add an authored four-scene new-campaign prelude: Alexandria family trade office, departure quay, passenger cabin and arrival at the **unchanged** Washington factory in January 1878. Three decisions per scene, saved once each; no uncharted commercial port, new map coordinate, fabricated boarding receipt or extra paid voyage.
+- [x] Auto-enter the intro only for new industrialist profiles on the established January 1878 opening date, and resume an unfinished chapter on profile reload. Never overwrite old saves or impose Charlie's opening on Samuel, Edmund or Elias.
+- [x] Freeze regular Washington time, hidden market and other player-initiated time jumps while the story card is open; do not change factory starting cash, warehouse materials, existing company shares, loan or map geometry.
+- [x] Preserve chosen answers in the family-finance model with deterministic, replay-proof father-son business confidence. Genuine timely loan payments can increase that confidence; delinquency can damage it.
+- [x] Incorporate the saved relationship into father's actual corporate investor voting. Keep his 25% initial family shares, separate secured debt, shareholder rights, dividends and later public dilution unchanged.
+- [x] Add isolated accessible intro interface, original styling, Corporate Affairs confidence and Charlie-only personal-book pages for the four recorded choices.
+- [x] Source/engine regression `tests/whitcomb-intro.cjs` passed alongside the prior three family/corporate/IPO regressions in a focused connector-side JavaScript harness. This does NOT establish native Ubuntu Electron or complete Node suite acceptance.
+- [x] Rewrite the README as a brief player-facing game-back-cover description with a conventional GitHub Pages address; preserve the entire existing copyright/legal section and links to proprietary/third-party license records. Put technical updates here and in versioned release notes, NOT in README.
+- [ ] Build physical Alexandria port, verified international route and full introductory sea journey only after separate research and real in-world navigation integration. Do not invent a historical 1878 crossing schedule or move either approved map.
+- [ ] Full Node test suite, Ubuntu Electron visual/playthrough verification, opening overlays on mobile, profile save/reload and owner acceptance are still outstanding.
+See `docs/RELEASE-NOTES-v0.7.92-dev.md`. No GitHub Actions, expensive compute, accepted binary, backup or release tag.
+
 ## November 2, 2026 · v0.7.91-dev · Whitcomb family investor & secured factory loan (source only)
 - [x] Approve and record Charlie's British father/Egyptian mother; his father's prior British Army service outside Egypt, stern yet well-intentioned character and Alexandria **overland trading** enterprise. Exact parent names, family religion and service record remain unspecified.
 - [x] Original Federal Electric 10,000-vote cap table: **7,500 Charles (75%), 2,500 father (25%)**. Make his investment real equity, not a phantom cash bonus or a substitute for loan repayment.
