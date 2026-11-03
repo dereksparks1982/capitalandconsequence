@@ -1,0 +1,22 @@
+/* Self-contained opening chapter: no inherited desk, room or map geometry changes. */
+.whitcomb-intro-overlay{position:fixed;inset:0;z-index:5200;background:rgba(10,10,12,.94);display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vw,40px);overflow:auto}
+.whitcomb-intro-card{max-width:780px;width:100%;box-sizing:border-box;max-height:94vh;overflow:auto;background:#28241f;color:#f1e2c4;border:3px solid #927650;box-shadow:0 14px 55px #000b;padding:clamp(18px,3vw,34px);font-family:Georgia,'Times New Roman',serif}
+.whitcomb-intro-heading{text-align:center;border-bottom:2px double #a89061;padding-bottom:16px}
+.whitcomb-intro-kicker{font-size:12px;color:#e8c58f;letter-spacing:2px}
+.whitcomb-intro-heading h2{font-size:clamp(26px,4vw,36px);margin:8px 0 4px}
+.whitcomb-intro-place{color:#d1bf9b;font-size:16px;margin:0}
+.whitcomb-intro-progress{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+.whitcomb-intro-progress span{border:1px solid #756445;padding:7px 9px;font-size:11px;letter-spacing:.5px}
+.whitcomb-intro-progress .complete{color:#acc89d}
+.whitcomb-intro-progress .current{border-color:#e8c58f;background:#57472a;color:#fff4d8}
+.whitcomb-intro-progress .pending{color:#b1a58d}
+.whitcomb-intro-story{margin-top:20px;line-height:1.7;font-size:17px}
+.whitcomb-intro-story h3,.whitcomb-intro-choices h3{font-size:19px;color:#e8c58f;margin:10px 0}
+.whitcomb-intro-narrative{margin:10px 0 16px}
+.whitcomb-intro-context{border-left:3px solid #927650;padding-left:15px;color:#d1c7ad}
+.whitcomb-intro-choices{display:grid;gap:8px;margin-top:20px}
+.whitcomb-intro-choice{font:inherit;text-align:left;color:#f5e9d1;background:#453c31;border:1px solid #aa8a58;padding:12px 15px;cursor:pointer;white-space:normal;line-height:1.35}
+.whitcomb-intro-choice:hover,.whitcomb-intro-choice:focus-visible{background:#665138;outline:2px solid #f6d797;outline-offset:1px}
+.whitcomb-intro-error{min-height:20px;color:#ffbbb6;font:14px system-ui,sans-serif}
+.whitcomb-intro-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;border-top:1px solid #66563c;padding-top:13px;color:#c9b79a;font:12px system-ui,sans-serif}
+@media(max-width:560px){.whitcomb-intro-card{max-height:96vh;padding:16px}.whitcomb-intro-story{font-size:15px}.whitcomb-intro-footer{display:block}.whitcomb-intro-footer span{display:block;margin:5px 0}}
