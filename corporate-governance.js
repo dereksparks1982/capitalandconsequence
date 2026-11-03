@@ -114,8 +114,8 @@ function boardSupport(save,resolution,d){
  if(d.id==='charles')return resolution!=='remove';
  if(d.id==='whitcomb-father'){
   const debt=family.report(save);
-  if(resolution==='ipo')return !['demand','repossessed'].includes(debt.status);
-  if(resolution==='dividend')return debt.overdueCents===0&&(save.companyCash||0)>=1200;
+  if(resolution==='ipo')return !['demand','repossessed'].includes(debt.status)&&debt.confidence>=40;
+  if(resolution==='dividend')return debt.overdueCents===0&&debt.confidence>=35&&(save.companyCash||0)>=1200;
   if(resolution==='reinstate')return debt.status!=='repossessed';
   return false;
  }
