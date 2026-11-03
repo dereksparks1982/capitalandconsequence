@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.91-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.92-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -447,6 +447,23 @@ function marketIndex(){const rows=Object.entries(S.stocks).filter(([k,x])=>stock
 function signed(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
 function note(t){$('#notice').textContent=t;$('#productionNote').textContent=t}
 window.FE_CORPORATE_CONTEXT=()=>({save:S,finish:(result)=>{const line=result?.message||result?.reason||'Corporate action was not completed.';note(line);if(result?.ok){save(true);render();}window.FE_CORPORATE_UI?.broker?.();}});
+function refreshWhitcombIntro(){
+ const root=document.getElementById('titleScreen'),active=S.characterRoute==='industrialist'&&
+  S.whitcombIntro?.started&&!S.whitcombIntro?.finished;
+ if(!active||!root?.hidden){window.FE_WHITCOMB_INTRO_UI?.hide?.();return;}
+ window.FE_WHITCOMB_INTRO_UI?.show?.(S,decision=>{
+  const before=JSON.stringify({intro:S.whitcombIntro,family:S.whitcombFamily});
+  const result=window.FE_WHITCOMB_INTRO?.choose?.(S,decision);
+  if(!result?.ok)return result||{ok:false,reason:'The choice is unavailable.'};
+  if(!save(true)){
+   const restore=JSON.parse(before);
+   S.whitcombIntro=restore.intro;S.whitcombFamily=restore.family;
+   return {ok:false,reason:'The opening decision could not be saved. No choice was committed.'};
+  }
+  render();
+  return result;
+ });
+}
 function render(){
  if(S.characterRoute==='industrialist'){
   window.FE_WHITCOMB_FAMILY?.ensure?.(S);
@@ -475,7 +492,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.();refreshWhitcombIntro()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -1032,6 +1049,7 @@ function advanceHiddenMarket(seconds){
 // World time moves at 1:1. Player actions add their duration, split at
 // schedule/shift boundaries to simulate other lives chronologically.
 function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopClose=false){
+ if(S.characterRoute==='industrialist'&&S.whitcombIntro?.started&&!S.whitcombIntro?.finished)return 0;
  // A collapsed character cannot initiate another player action before waking.
  if(kind!=='medical'&&window.FE_MEDICAL_RECORDS?.pending?.(S))return 0;
  if(S.paused||S.phase==='report'||!Number.isSafeInteger(seconds)||seconds<=0)return 0;
@@ -1961,7 +1979,7 @@ const titleRadioBackgroundFeeds=new Map();
 let titleScreenDeskBreak=false;
 function careerMainMenuVisible(){const el=document.getElementById('careerMainMenu');return !!(el&&!el.hidden)}
 function titleScreenVisible(){const el=document.getElementById('titleScreen');return !!(el&&!el.hidden)}
-function titleScreenBlocksSimulation(){return careerMainMenuVisible()}
+function titleScreenBlocksSimulation(){return careerMainMenuVisible()||!!(S.characterRoute==='industrialist'&&S.whitcombIntro?.started&&!S.whitcombIntro?.finished)}
 function currentTitleRadioStation(){return TITLE_RADIO_STATIONS[titleRadioStationIndex]||TITLE_RADIO_STATIONS[0]}
 function titleRadioStationAvailable(index){
  const station=TITLE_RADIO_STATIONS[index];
@@ -2560,7 +2578,12 @@ function createProfile(name,routeId='industrialist'){
  }
  const start=window.FE_CHARACTERS?.get?.(S.characterRoute)?.startingLocationId;
  if(start){const loc=window.FederalElectricCity?.getLocation?.(start);if(loc)S.currentLocation={locationId:start,roomId:window.FE_CHARACTERS.get(S.characterRoute)?.startingRoomId||(S.characterRoute==='wardman'?'orderly-station':loc.defaultRoom)}}
- profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();
+ if(S.characterRoute==='industrialist'&&S.gameDate==='1878-01-02'){
+  window.FE_WHITCOMB_FAMILY?.ensure?.(S);
+  window.FE_CORPORATE?.ensure?.(S);
+  window.FE_WHITCOMB_INTRO?.begin?.(S);
+ }
+ profileSaveReadBlocked=false;save(true);selectedStockTicker=null;render();closeTitleScreen();refreshWhitcombIntro();
 }
 function showSavedCityLocation(){
  if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port)){
@@ -2589,7 +2612,7 @@ function loadProfileById(id){
   catch(err){renderProfileManager('The shared Washington record is unavailable. Your saved character has not been overwritten.');return false}
  }
  setActiveProfileId(id);S=candidate;profileSaveReadBlocked=false;
- selectedStockTicker=null;save(true);render();closeTitleScreen();showSavedCityLocation();
+ selectedStockTicker=null;save(true);render();closeTitleScreen();showSavedCityLocation();refreshWhitcombIntro();
  return true;
 }
 function deleteProfileById(id){
