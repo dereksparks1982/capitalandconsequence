@@ -1,3 +1,12 @@
+> **LATEST SOURCE · v0.7.98-dev · NOVEMBER 3, 2026 (unaccepted):** The owner-requested Linux in-place GitHub builder no longer creates timestamped source backup archives in `~/DKLab/Archives`. Updates still stage files in the original project and retain only temporary rollback copies deleted with the build's temporary directory. The developer build script remains noninteractive, preserves the approved Washington map and continues its existing Linux smoke process. Added a regression that exercises the Python file synchronizer in a temporary directory. JS test syntax and static script-policy checks passed; full native Node suite, actual end-to-end Linux build and graphical playthrough remain unverified. `docs/RELEASE-NOTES-v0.7.98-dev.md`.
+
+## November 3, 2026 · v0.7.98-dev · no-archive in-place Linux updater
+- [x] Honor no persistent backups while synchronizing changed sources from GitHub into the original project folder.
+- [x] Retain only temporary, automatically deleted rollback files if synchronization fails partway through.
+- [x] Add a native Python synchronization regression invoked by Node source suite; source syntax checked.
+- [ ] First invocation from a machine still holding the prior old builder must bootstrap the new script, or its old code will still create an archive. Do not give the obsolete old-script command.
+- [ ] Full Ubuntu compile, smoke and actual game playtest remain outstanding before acceptance.
+
 > **LATEST SOURCE · v0.7.97-dev · NOVEMBER 3, 2026 (unaccepted):** Passenger deck boards now support clicking any reachable floor or station tile. A shortest-path solver finds lawful orthogonal routes without crossing walls or crew-only spaces, and each tile is charged one game minute on the existing real voyage clock. Hatch/stair changes, original vessel and Washington maps, established art style, WASD, onboard activities, weather and shipmate schedules remain untouched. Syntax and targeted V8 steamer/schooner path checks passed; native Node suite and Ubuntu Electron playthrough remain pending. `docs/RELEASE-NOTES-v0.7.97-dev.md`.
 
 ## November 3, 2026 · v0.7.97-dev · click-to-walk ship interiors

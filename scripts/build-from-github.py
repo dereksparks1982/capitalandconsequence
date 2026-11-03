@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fetch GitHub's current source, preserve the map, and locally build the game.
-No Git, sudo, GitHub Actions, AppImage, or second project folder.
+No Git, sudo, permanent source backups, GitHub Actions, AppImage, or second project folder.
 """
 import filecmp
 import io
@@ -13,11 +13,9 @@ import tarfile
 import tempfile
 import urllib.request
 import zipfile
-from datetime import datetime
 from pathlib import Path, PurePosixPath
 
 ROOT = Path.home() / "DKLab" / "Projects" / "Capital&Consequence"
-ARCHIVES = Path.home() / "DKLab" / "Archives"
 ZIP_URL = "https://github.com/dereksparks1982/capitalandconsequence/archive/refs/heads/main.zip"
 MAPS = {"assets/artwork/maps/title-map-1938.jpg", "assets/title-map-1938.jpg"}
 
@@ -109,14 +107,8 @@ def synchronize(staging, paths, temp):
             raise RuntimeError("Unsafe existing source path: " + str(target))
         changed.append(name)
     old = temp / "old-source"
-    replaced = [name for name in changed if (ROOT / name).exists()]
-    if replaced:
-        ARCHIVES.mkdir(parents=True, exist_ok=True)
-        backup = ARCHIVES / ("capital-source-before-build-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".tar.gz")
-        info("Saving original source backup: " + str(backup))
-        with tarfile.open(backup, "w:gz") as archive:
-            for name in replaced:
-                archive.add(ROOT / name, arcname=name, recursive=False)
+    # Only temporary rollback copies under temp/old-source. These disappear
+    # automatically with the temporary build directory: no archives kept.
     installed = []
     try:
         for name in changed:
