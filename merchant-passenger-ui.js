@@ -108,7 +108,12 @@ function shipScene(){
   '<p class="fine">These are ordinary fellow travelers, not introduced Washington residents. Their deck positions follow the same game clock as the vessel.</p>'+
   '<div class="shipboard-people-list">'+life.onDeck(save,st.deck).map(p=>
    '<p>'+esc(p.label)+' · '+(p.moving?'walking across the vessel':'present on this deck')+'</p>').join('')+'</div>'+
-  '<div class="shipboard-nearby">'+nearbyPeople()+'</div></div><div class="shipboard-controls">';
+  '<div class="shipboard-nearby">'+nearbyPeople()+'</div>'+
+  '<section class="shipboard-conversation-book"><h4>Conversations This Crossing</h4>'+
+  (life.ensure(save).conversations.length?life.ensure(save).conversations.slice(-5).reverse().map(e=>
+    '<p>'+esc(life.PEOPLE.find(p=>p.id===e.id)?.label||'Traveler')+': '+esc(e.answer)+'</p>').join(''):
+    '<p class="fine">No conversations recorded on this passage yet.</p>')+
+  '</section></div><div class="shipboard-controls">';
  if(ship.tile(save,st.deck,st.x,st.y)==='H'){
   const i=decks.findIndex(d=>d.id===st.deck);
   if(i>0)h+=button('ship-deck:'+decks[i-1].id,'Climb to '+decks[i-1].name+' · 1 min');
