@@ -4,6 +4,7 @@
 (function(root){
 'use strict';
 const sea=typeof module==='object'&&module.exports?require('./merchant-passenger-sea.js'):root.FE_PASSENGER_SEA;
+const ship=typeof module==='object'&&module.exports?require('./merchant-shipboard.js'):root.FE_SHIPBOARD;
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
@@ -72,6 +73,53 @@ function localRecords(port,zone){
  if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
   return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
 }
+function shipScene(){
+ const st=ship.ensure(save),decks=ship.decks(save);
+ if(!st)return '';
+ const layout=ship.deck(save,st.deck),r=st.game.round;
+ let h='<section class="shipboard-scene"><h3>Walk Aboard · '+esc(layout.name)+'</h3>'+
+  '<p class="fine">This entire vessel sails while you explore. One tile or staircase costs one game minute on the same world clock.</p>'+
+  '<div class="shipboard-deck-list">'+decks.map(d=>'<span class="'+(d.id===st.deck?'selected':'')+'">'+esc(d.name)+'</span>').join('')+'</div>'+
+  '<div class="shipboard-grid" role="grid" aria-label="Walkable passenger ship deck">';
+ for(let y=0;y<9;y++)for(let x=0;x<12;x++){
+  const t=layout.rows[y][x],here=st.x===x&&st.y===y;
+  const adj=Math.abs(st.x-x)+Math.abs(st.y-y)===1&&ship.allowed(t);
+  const sym=here?'♟':({'#':'▓','.':'','H':'↕','B':'▰','G':'▤','W':'◉','C':'♣','O':'◎','X':'×','~':'≈'}[t]??'');
+  const label=here?'Charles':({'#':'Wall','.':'Deck','H':'Stairs','B':'Passenger berth','G':'Galley',
+   'W':'Drinking water','C':'Card table','O':'Lookout','X':'Crew only','~':'Water'}[t]||'Tile')+' at '+(x+1)+','+(y+1);
+  const klass='shipboard-cell tile-'+({'#':'wall','.':'floor','X':'restricted','~':'sea'}[t]||t.toLowerCase())+(here?' traveler':'');
+  if(adj)h+='<button type="button" class="'+klass+'" data-passenger-action="ship-walk:'+x+':'+y+'" aria-label="'+esc(label)+'">'+sym+'</button>';
+  else h+='<span class="'+klass+'" aria-label="'+esc(label)+'">'+sym+'</span>';
+ }
+ h+='</div><div class="shipboard-controls">';
+ if(ship.tile(save,st.deck,st.x,st.y)==='H'){
+  const i=decks.findIndex(d=>d.id===st.deck);
+  if(i>0)h+=button('ship-deck:'+decks[i-1].id,'Climb to '+decks[i-1].name+' · 1 min');
+  if(i<decks.length-1)h+=button('ship-deck:'+decks[i+1].id,'Climb to '+decks[i+1].name+' · 1 min');
+ }else h+='<p class="fine">Move to ↕ for deck stairs. The × areas are reserved for the crew.</p>';
+ h+='</div><div class="passenger-amenities"><h3>Things to Do Aboard</h3>'+
+  '<p>Energy '+Math.round(save.characterNeeds?.meters?.energy??0)+'/100 · Hunger '+
+  Math.round(save.characterNeeds?.meters?.hunger??0)+'/100 · Thirst '+
+  Math.round(save.characterNeeds?.meters?.thirst??0)+'/100 · Personal cash '+money(save.personalCash)+'</p>';
+ if(ship.at(save,'rest'))h+=button('cabin-rest','Sleep at Your Berth');
+ if(ship.at(save,'meal'))h+=button('galley-meal','Galley Meal · $0.50');
+ if(ship.at(save,'water'))h+=button('galley-water','Drinking Water · $0.10');
+ if(ship.at(save,'lookout'))h+=button('ship-lookout','Watch the Sea · 5 min');
+ if(ship.at(save,'cards')){
+  h+='<h4>Twenty-One · Casual Game, No Wagers</h4>';
+  if(!r||r.status!=='playing')h+=button('ship-card:start','Deal a Hand · 10 min');
+  if(r){
+   h+='<p>Your hand: '+esc(r.player.map(ship.cardLabel).join(' '))+' ('+ship.score(r.player)+
+    ') · Opponent: '+(r.status==='playing'?esc(ship.cardLabel(r.house[0]))+' ?':
+    esc(r.house.map(ship.cardLabel).join(' '))+' ('+ship.score(r.house)+')')+'</p>';
+   if(r.status==='playing')h+=button('ship-card:hit','Draw · 5 min')+button('ship-card:stand','Stand · 10 min');
+   else h+='<p>Result: <strong>'+esc(r.status)+'</strong>. No cash has changed hands.</p>';
+  }
+ }
+ if(!['rest','meal','water','lookout','cards'].some(kind=>ship.at(save,kind)))
+  h+='<p class="fine">Walk to a berth ▰, galley ▤, water ◉, card table ♣ or lookout ◎ to use its facilities.</p>';
+ return h+'</div></section>';
+}
 function cargoScene(){
  const state=sea.ensure(save),p=state.position,grid=walk.tiles(p.zone);
  let html='<p class="passenger-stage-label">Actually ashore at '+esc(state.port)+'. Every movement uses the game clock.</p>'+
@@ -120,10 +168,10 @@ function draw(){
    (trip.weather?.observed&&trip.weather.delayMinutes?
     '<p class="passenger-weather-notice">Rough-sea delay recorded: '+(trip.weather.delayMinutes/60).toFixed(0)+' hours. Revised arrival: <strong>'+esc(trip.etaDate)+'</strong>.</p>':
     '<p class="fine">Arrival is an estimate. Rough seas may change the schedule during the crossing.</p>')+'</div>'+
-   '<div class="passenger-sea-map"><svg viewBox="0 0 800 600" role="img" aria-label="Current passenger vessel on the original maritime route chart">'+
+   shipScene()+'<div class="passenger-sea-map"><svg viewBox="0 0 800 600" role="img" aria-label="Current passenger vessel on the original maritime route chart">'+
    '<image href="'+esc(nav.MAP)+'" width="800" height="600"/>'+
    '<polyline points="'+trip.points.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="4" stroke-dasharray="9 6"/>'+
-   (travel.coordinates?'<circle cx="'+travel.coordinates.x+'" cy="'+travel.coordinates.y+'" r="14" fill="#f4d16d" stroke="#432a1e" stroke-width="3"/>'+
+   (travel.coordinates?'<circle id="passengerLiveShip" cx="'+travel.coordinates.x+'" cy="'+travel.coordinates.y+'" r="14" fill="#f4d16d" stroke="#432a1e" stroke-width="3"/>'+
    '<text x="'+travel.coordinates.x+'" y="'+(travel.coordinates.y+5)+'" text-anchor="middle" fill="#251f1b" font-size="17">♟</text>':'')+
    '</svg></div>'+
    '<div class="passenger-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(travel.progress*100)+'"><span style="width:'+Math.floor(travel.progress*100)+'%"></span></div>'+
@@ -131,13 +179,7 @@ function draw(){
     button('shipping-map','Inspect Full World Shipping Chart')+
     button('advance-day',save.phase==='report'?'Review Complete · Begin Next Day':'Advance Through Current Phase')+
     '<p class="fine">All hours pass through the saved Washington clock. Daily reports, health, world events and expenses remain active. No real-time skipping.</p></div>';
-  body+='<section class="passenger-amenities"><h3>Passenger Cabin & Galley</h3>'+
-   '<p>Energy '+Math.round(meters.energy??0)+'/100 · Hunger '+Math.round(meters.hunger??0)+
-   '/100 · Thirst '+Math.round(meters.thirst??0)+'/100 · Personal cash '+money(save.personalCash)+'</p>'+
-   button('cabin-rest','Sleep in Passenger Cabin')+
-   button('galley-meal','Galley Meal · $0.50')+
-   button('galley-water','Drinking Water · $0.10')+
-   '<p class="fine">These actions spend in-game time and use the existing health meters. Shipboard medical care and exhaustion are recorded without teleporting to Washington.</p></section>';
+
   const notices=st.history.filter(e=>e.id===trip.id&&(e.kind==='embarked'||e.kind==='weather-delay')).slice(-3);
   if(notices.length)body+='<section class="passenger-voyage-notices"><h3>Captain’s Passage Register</h3>'+
     notices.map(e=>'<p>'+esc(e.date)+' · '+(e.kind==='weather-delay'?
@@ -182,6 +224,10 @@ function click(e){
  if(cmd.startsWith('sell-trade:')){changed(actions?.portTradeSale?.(cmd.slice(11)));return}
  if(cmd==='galley-meal'){changed(actions?.galleyMeal?.());return}
  if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
+ if(cmd.startsWith('ship-walk:')){const [,x,y]=cmd.split(':');changed(actions?.shipWalk?.(+x,+y));return}
+ if(cmd.startsWith('ship-deck:')){changed(actions?.shipDeck?.(cmd.slice(10)));return}
+ if(cmd.startsWith('ship-card:')){changed(actions?.shipCard?.(cmd.slice(10)));return}
+ if(cmd==='ship-lookout'){changed(actions?.shipLookout?.());return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
  if(cmd.startsWith('walk:')){
   const parts=cmd.split(':');changed(actions?.move?.(sea.ensure(save).position.zone,+parts[1],+parts[2]));
@@ -195,13 +241,22 @@ function keydown(e){
  if(e.target?.closest('input,textarea,select,[contenteditable]'))return;
  if(e.key==='Escape'&&booking){booking=false;draw();return}
  const state=sea.ensure(save);
- if(!state.port||state.voyage)return;
+ if(!state.port&&!state.voyage)return;
  const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
   w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
  const dir=moves[e.key];if(!dir)return;
  e.preventDefault();
+ if(state.voyage){const pos=ship.ensure(save);if(pos)changed(actions?.shipWalk?.(pos.x+dir[0],pos.y+dir[1]));return}
  changed(actions?.move?.(state.position.zone,state.position.x+dir[0],state.position.y+dir[1]));
 }
+// Display-only refresher. The authoritative game tick moves the ship, never this interval.
+root.setInterval?.(()=>{
+ if(!host||host.hidden||booking||!save?.passengerSea?.voyage)return;
+ const live=sea.position(save),dot=host.querySelector('#passengerLiveShip');
+ if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y)}
+ const pct=Math.floor((live.progress||0)*100),bar=host.querySelector('.passenger-progress');
+ if(bar){bar.setAttribute('aria-valuenow',pct);const fill=bar.querySelector('span');if(fill)fill.style.width=pct+'%'}
+},1000);
 const api=Object.freeze({refresh,updatePier,showBooking});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_PASSENGER_UI=api;
