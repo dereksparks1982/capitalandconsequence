@@ -45,6 +45,11 @@ A prolonged, unremedied secured-loan default may lead to warnings, a formal dema
 ### Aboard the moving passenger vessel · v0.7.93-dev
 An implemented development-source vessel interior now allows Charles to walk across small top-down deck maps while the **previously built** maritime passenger route advances on the original saved Washington world clock. Both steamer and schooner have accessible berth, galley, water, card-table and lookout where available. Stair hatches connect neighboring decks and crew-only areas remain closed. Casual twenty-one is played for no money; named/independently scheduled passengers and substantial shipboard social storylines are still open. The ship is a moving location, never a separate timer or a grant of shipping-company ownership. **This is not yet the actual Alexandria-origin introduction:** Charlie's existing opening remains four authored choice scenes. An explorable Alexandria waterfront and properly planned Egypt-to-America passenger voyage require further work.
 
+### Walkable Alexandria and anonymous shipmates · v0.7.94-dev
+A **source-only staged Alexandria neighborhood** now exists within Charlie's four-scene introductory chapter. It represents the approved family overland trade premises, courtyard, land storehouse and departure waterfront using simple traversable squares, with a cabin floor during the third story chapter. The prelude can be walked and inspected but **does not advance actual world time, issue paid passage or send Charlie along the maritime chart**; the original Federal Electric starting minute on January 2, 1878 remains unchanged. This is a first physical-location layer, NOT the full starting city or actual route from Egypt to America.
+
+The separately implemented full-clock passenger-voyage system now depicts three anonymous shipboard people with position and nearby conversation driven solely by that voyage's authoritative saved minute. These are deliberately unconfirmed traveler identities, not additions to the established named Washington cast or invented family contacts. Actual face-to-face dialogue is saved; no independent clock or payments are created.
+
 ## PRIMARY CANON RECORDS
 
 - [Recorded owner approvals and supersessions](DECISIONS.md): chronological decisions; older dated material is preserved, not silently converted into new authority.
