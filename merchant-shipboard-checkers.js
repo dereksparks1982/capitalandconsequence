@@ -30,6 +30,7 @@ function offerStart(save){
   return no('The original checkers rules are not loaded.');
  const st=ensure(save);if(st.active)return no('Finish or resign your previous draughts match first.');
  if(ship.ensure(save).dominoes?.hand?.status==='playing')return no('Finish or resign your dominoes hand first.');
+ if(ship.ensure(save).game?.round?.status==='playing')return no('Finish your Twenty-One hand first.');
  const minute=save.worldCalendar.worldMinute;
  if(!opponentClose(save,minute)||!opponentClose(save,minute+10))
   return no('Wait until the card-table passenger is present for a full opening game.');

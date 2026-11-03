@@ -102,6 +102,7 @@ function cardOffer(s,choice){
  const a=stationOffer(s,'cards',seconds);if(!a.ok)return a;
  const r=ensure(s).game.round;
  if(choice==='start'&&ensure(s).dominoes?.hand?.status==='playing')return no('Finish your dominoes hand first.');
+ if(choice==='start'&&root.FE_SHIP_CHECKERS?.ensure?.(s)?.active)return no('Finish your draughts game first.');
  if(choice==='start'&&r?.status==='playing')return no('Finish the current hand first.');
  if(choice!=='start'&&r?.status!=='playing')return no('Deal a hand first.');
  return yes('Card-table turn ready.',{seconds});

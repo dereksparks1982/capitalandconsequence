@@ -1,3 +1,11 @@
+> **LATEST SOURCE · v0.7.96-dev · NOVEMBER 3, 2026 (unaccepted):** Charles can now keep his own saved voyage journal by writing at his real shipboard berth, spending ten world-clock minutes per page. Pages persist and can be reviewed in foreign harbors; author text is escaped, empty/oversize entries refused, drafts held through refresh. Also prevents simultaneous unfinished Twenty-One and checkers games, matching existing dominoes exclusion. Focused V8 tests and source syntax passed; full native source suite and Ubuntu Electron test still pending. See `docs/RELEASE-NOTES-v0.7.96-dev.md`.
+
+## November 3, 2026 · v0.7.96-dev · passenger travel journal
+- [x] Author 800-character voyage diary pages at a physical berth, each costing ten real game minutes, preserved through save/reload and after landing.
+- [x] Escape diary content in the UI and preserve drafts during live world renders. Do not invent Charles's thoughts.
+- [x] Complete tabletop interlock among Twenty-One, dominoes and draughts.
+- [ ] Test full native Node suite and Ubuntu Electron passage flow; researched Alexandria-origin itinerary still pending.
+
 > **LATEST SOURCE · v0.7.95-dev · NOVEMBER 3, 2026 (unaccepted):** Added playable double-six dominoes at the existing ship saloon table: a full 28-bone set, seven-bone hands, legal left/right placement, real boneyard draws, pass/blocked-hand scoring, simple computer response, resignation, and save-safe bounded results. Shared voyage time advances 3 to 10 minutes for actions using the original world simulation; no new clock, stakes, cash, trade routes, characters, lore or map changes. Dominoes, Twenty-One and checkers cannot be started on top of another unfinished table game. Source syntax and focused V8 gameplay smoke passed; native full Node suite and Ubuntu Electron playthrough remain unverified. `docs/RELEASE-NOTES-v0.7.95-dev.md`.
 
 ## November 3, 2026 · v0.7.95-dev · shipboard dominoes

@@ -6,6 +6,7 @@
 const sea=typeof module==='object'&&module.exports?require('./merchant-passenger-sea.js'):root.FE_PASSENGER_SEA;
 const ship=typeof module==='object'&&module.exports?require('./merchant-shipboard.js'):root.FE_SHIPBOARD;
 const domino=typeof module==='object'&&module.exports?require('./merchant-shipboard-dominoes.js'):root.FE_SHIP_DOMINOES;
+const journal=typeof module==='object'&&module.exports?require('./merchant-shipboard-journal.js'):root.FE_SHIP_JOURNAL;
 const life=typeof module==='object'&&module.exports?require('./merchant-shipboard-life.js'):root.FE_SHIPBOARD_LIFE;
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
@@ -13,13 +14,14 @@ const regions=typeof module==='object'&&module.exports?require('./merchant-regio
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'$'+Number(v||0).toFixed(2);
 let host=null,save=null,actions=null,booking=false,shipType='steamer',dest='Liverpool',status='',checkersSelected=null;
+let journalDraft='',journalOwner=null,journalVoyage=null;
 function button(key,text){return '<button type="button" data-passenger-action="'+esc(key)+'">'+esc(text)+'</button>'}
 function ensureHost(){
  if(host)return host;
  host=document.createElement('div');host.id='merchantPassengerOverlay';host.className='merchant-passenger-overlay';
  host.hidden=true;host.setAttribute('role','dialog');host.setAttribute('aria-modal','true');
  host.setAttribute('aria-labelledby','merchantPassengerHeading');document.body.appendChild(host);
- host.addEventListener('click',click);host.addEventListener('change',change);host.addEventListener('keydown',keydown);
+ host.addEventListener('click',click);host.addEventListener('change',change);host.addEventListener('input',input);host.addEventListener('keydown',keydown);
  return host;
 }
 function updatePier(s,handlers){
@@ -121,6 +123,31 @@ function shipCheckers(){
   button('ship-draughts-resign','Resign & Leave Table')+'</section>';
  return result;
 }
+function resetJournalDraft(){
+ const id=save?.passengerSea?.voyage?.id??null;
+ if(journalOwner!==save||journalVoyage!==id){
+  journalDraft='';journalOwner=save;journalVoyage=id;
+ }
+ return journalDraft;
+}
+function journalBook(writable){
+ const past=journal.pages(save);
+ if(!writable&&!past.length)return '';
+ let html='<section class="shipboard-journal"><h4>Charles’s Personal Passage Journal</h4>'+
+  '<p class="fine">These are your own notes, not the captain’s log. Your pages remain after docking.</p>';
+ if(writable)html+='<label for="shipJournalDraft">Write at Your Berth</label>'+
+  '<textarea id="shipJournalDraft" maxlength="'+journal.MAX_TEXT+'" rows="4" placeholder="Write what Charles saw, learned or thought.">'+
+  esc(resetJournalDraft())+'</textarea>'+button('ship-journal-write','Record Page · 10 min');
+ if(past.length){
+  html+='<details class="shipboard-journal-pages"><summary>Read Past Pages ('+past.length+')</summary>';
+  for(const p of past.slice(-12).reverse()){
+   html+='<article><p class="fine">'+esc(p.date||'Undated')+' · '+esc(p.from)+' → '+esc(p.to)+'</p>'+
+    '<p class="shipboard-journal-written">'+esc(p.body)+'</p></article>';
+  }
+  html+='</details>';
+ }
+ return html+'</section>';
+}
 function shipDominoes(){
  const d=domino.ensure(save),h=d?.hand;
  if(!d)return '';
@@ -189,7 +216,7 @@ function shipScene(){
   '<p>Energy '+Math.round(save.characterNeeds?.meters?.energy??0)+'/100 · Hunger '+
   Math.round(save.characterNeeds?.meters?.hunger??0)+'/100 · Thirst '+
   Math.round(save.characterNeeds?.meters?.thirst??0)+'/100 · Personal cash '+money(save.personalCash)+'</p>';
- if(ship.at(save,'rest'))h+=button('cabin-rest','Sleep at Your Berth');
+ if(ship.at(save,'rest')){h+=button('cabin-rest','Sleep at Your Berth');h+=journalBook(true)}
  if(ship.at(save,'meal'))h+=button('galley-meal','Galley Meal · $0.50');
  if(ship.at(save,'water'))h+=button('galley-water','Drinking Water · $0.10');
  if(ship.at(save,'lookout'))h+=button('ship-lookout','Watch the Sea · 5 min');
@@ -230,6 +257,9 @@ function cargoScene(){
 }
 function draw(){
  if(!save)return;
+ // Do not destroy an in-progress handwritten page during continuous world renders.
+ if(typeof document!=='undefined'&&document.activeElement?.id==='shipJournalDraft'&&
+  sea.position(save).phase==='at-sea'&&ship.at(save,'rest'))return;
  const st=sea.ensure(save),travel=sea.position(save),h=ensureHost();
  const shown=booking||travel.phase==='at-sea'||travel.phase==='ashore';
  if(!shown){h.hidden=true;return}
@@ -278,7 +308,7 @@ function draw(){
    '<p>Company close: '+money(save.dailyReport?.companyEnd??save.companyCash)+
    ' · Personal cash: '+money(save.dailyReport?.personalAtClose??save.personalCash)+'</p></div>';
  }else{
-  body='<h3>Port of '+esc(st.port)+'</h3>'+cargoScene()+
+  body='<h3>Port of '+esc(st.port)+'</h3>'+cargoScene()+journalBook(false)+
    '<div class="passenger-port-actions">'+button('ticket','Book Return Passage')+
    button('shipping-map','Open Shipping Chart')+'</div>';
  }
@@ -333,6 +363,11 @@ function click(e){
   if(legal.some(m=>m.from===to)){checkersSelected=to;draw();return}
   checkersSelected=null;notify('Select a red piece with a legal move.');draw();return;
  }
+ if(cmd==='ship-journal-write'){
+  const output=actions?.shipJournalWrite?.(resetJournalDraft());
+  if(output?.ok)journalDraft='';
+  changed(output);return;
+ }
  if(cmd.startsWith('ship-domino:')){
   const [,kind,rawIndex,side]=cmd.split(':');
   if(kind==='resign')changed(actions?.shipDominoResign?.());
@@ -347,6 +382,7 @@ function click(e){
   const parts=cmd.split(':');changed(actions?.move?.(sea.ensure(save).position.zone,+parts[1],+parts[2]));
  }
 }
+function input(e){if(e.target?.id==='shipJournalDraft')journalDraft=e.target.value;}
 function change(e){
  if(e.target?.id==='passengerDestination'){dest=e.target.value;draw()}
  if(e.target?.id==='passengerShipType'){shipType=e.target.value;draw()}
