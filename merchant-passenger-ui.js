@@ -11,7 +11,7 @@ const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-w
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'$'+Number(v||0).toFixed(2);
-let host=null,save=null,actions=null,booking=false,shipType='steamer',dest='Liverpool',status='';
+let host=null,save=null,actions=null,booking=false,shipType='steamer',dest='Liverpool',status='',checkersSelected=null;
 function button(key,text){return '<button type="button" data-passenger-action="'+esc(key)+'">'+esc(text)+'</button>'}
 function ensureHost(){
  if(host)return host;
@@ -84,6 +84,42 @@ function nearbyPeople(){
   button('ship-talk:'+p.id+':cards','Ask About Cards · 2 min')+'</div>').join(''):
   '<p class="fine">Walk beside another passenger or steward to talk.</p>';
 }
+function shipCheckers(){
+ const game=root.FE_SHIP_CHECKERS,engine=root.FE_CHECKERS,match=game?.ensure?.(save);
+ if(!match||!engine)return '';
+ let result='<section class="shipboard-draughts"><h4>American Draughts · Casual Checkers</h4>';
+ if(!match.active){
+  result+=game.opponentClose(save,save.worldCalendar?.worldMinute||0)?
+   button('ship-draughts-start','Challenge the Card-Table Passenger · 10 min'):
+   '<p class="fine">The other passenger must be at the table to begin draughts.</p>';
+  const record=match.results.at(-1);if(record)result+='<p class="fine">Last game: '+
+    (record.winner==='r'?'Charles won.':record.winner==='b'?'The passenger won.':'Drawn game.')+' '+record.ply+' half-moves.</p>';
+  return result+'</section>';
+ }
+ const pos=match.active.position,legal=engine.options(pos);
+ const sources=new Set(legal.map(m=>m.from));
+ const destinations=new Set(legal.filter(m=>m.from===checkersSelected).map(m=>m.to));
+ result+='<p>Red pieces are yours. Captures are compulsory. A crowned king moves both ways.</p>'+
+  '<div class="shipboard-draughts-grid" role="group" aria-label="Eight by eight playable shipboard checkers game">';
+ for(let i=0;i<64;i++){
+  const piece=pos.board[i],dark=(Math.floor(i/8)+i%8)%2===1;
+  const canPick=dark&&(sources.has(i)||destinations.has(i)||checkersSelected===i);
+  const mark=piece?(piece.toLowerCase()==='r'?'●':'○')+(piece===piece.toUpperCase()?'★':''):'';
+  const klass='shipboard-draughts-cell '+(dark?'dark':'light')+
+   (sources.has(i)?' source':'')+(destinations.has(i)?' destination':'')+
+   (checkersSelected===i?' selected':'');
+  const desc='Row '+(Math.floor(i/8)+1)+' column '+(i%8+1)+', '+
+   (piece?(piece.toLowerCase()==='r'?'red':'black')+(piece===piece.toUpperCase()?' king':' man'):'empty');
+  if(canPick)result+='<button type="button" class="'+klass+'" data-passenger-action="ship-draughts-square:'+i+
+   '" aria-label="'+desc+'">'+mark+'</button>';
+  else result+='<span class="'+klass+'" aria-label="'+desc+'">'+mark+'</span>';
+ }
+ result+='</div><p class="fine">'+(pos.forced!==null?'Continue your compulsory capture with the same piece.':
+   'Choose a highlighted red piece, then a legal destination. Each move advances the voyage by five minutes.')+'</p>'+
+  '<p>Half-moves: '+pos.ply+' · No money wagered.</p>'+
+  button('ship-draughts-resign','Resign & Leave Table')+'</section>';
+ return result;
+}
 function shipScene(){
  const st=ship.ensure(save),decks=ship.decks(save);
  if(!st)return '';
@@ -128,6 +164,7 @@ function shipScene(){
  if(ship.at(save,'water'))h+=button('galley-water','Drinking Water · $0.10');
  if(ship.at(save,'lookout'))h+=button('ship-lookout','Watch the Sea · 5 min');
  if(ship.at(save,'cards')){
+  h+=shipCheckers();
   h+='<h4>Twenty-One · Casual Game, No Wagers</h4>';
   if(!r||r.status!=='playing')h+=button('ship-card:start','Deal a Hand · 10 min');
   if(r){
@@ -248,6 +285,23 @@ function click(e){
  if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
  if(cmd.startsWith('ship-walk:')){const [,x,y]=cmd.split(':');changed(actions?.shipWalk?.(+x,+y));return}
  if(cmd.startsWith('ship-deck:')){changed(actions?.shipDeck?.(cmd.slice(10)));return}
+ if(cmd==='ship-draughts-start'){checkersSelected=null;changed(actions?.shipCheckerStart?.());return}
+ if(cmd==='ship-draughts-resign'){checkersSelected=null;changed(actions?.shipCheckerResign?.());return}
+ if(cmd.startsWith('ship-draughts-square:')){
+  const to=Number(cmd.slice('ship-draughts-square:'.length));
+  const game=root.FE_SHIP_CHECKERS?.ensure?.(save)?.active?.position;
+  const engine=root.FE_CHECKERS;
+  if(!game||!engine)return;
+  const legal=engine.options(game);
+  if(legal.some(m=>m.from===checkersSelected&&m.to===to)){
+   const from=checkersSelected;
+   const result=actions?.shipCheckerMove?.(from,to);
+   checkersSelected=result?.ok&&result.continues?to:null;
+   changed(result);return;
+  }
+  if(legal.some(m=>m.from===to)){checkersSelected=to;draw();return}
+  checkersSelected=null;notify('Select a red piece with a legal move.');draw();return;
+ }
  if(cmd.startsWith('ship-card:')){changed(actions?.shipCard?.(cmd.slice(10)));return}
  if(cmd==='ship-lookout'){changed(actions?.shipLookout?.());return}
  if(cmd.startsWith('ship-talk:')){const [,id,topic]=cmd.split(':');changed(actions?.shipTalk?.(id,topic));return}
@@ -261,7 +315,7 @@ function change(e){
  if(e.target?.id==='passengerShipType'){shipType=e.target.value;draw()}
 }
 function keydown(e){
- if(e.target?.closest('input,textarea,select,[contenteditable]'))return;
+ if(e.target?.closest('input,textarea,select,[contenteditable],.shipboard-draughts-grid'))return;
  if(e.key==='Escape'&&booking){booking=false;draw();return}
  const state=sea.ensure(save);
  if(!state.port&&!state.voyage)return;
