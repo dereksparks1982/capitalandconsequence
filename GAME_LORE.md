@@ -42,6 +42,9 @@ A prolonged, unremedied secured-loan default may lead to warnings, a formal dema
 
 **Separate future design, not part of the current loan build:** Different maritime-port icon treatments and merchant contacts may reflect **local earned reputation and honorable or dishonest conduct**, inspired by honor-gated missions. Existing physical ports remain the same positions, and no moral label is assigned to every inhabitant of a port. The elder Whitcomb's Alexandria land-trade contacts could provide earned introductions and mutually accountable shipping contracts **once an Alexandria port and actual character travel have been expressly integrated**. Do not grant all ocean ports, free cargo, or private contacts merely because Charlie is related to him.
 
+### Aboard the moving passenger vessel · v0.7.93-dev
+An implemented development-source vessel interior now allows Charles to walk across small top-down deck maps while the **previously built** maritime passenger route advances on the original saved Washington world clock. Both steamer and schooner have accessible berth, galley, water, card-table and lookout where available. Stair hatches connect neighboring decks and crew-only areas remain closed. Casual twenty-one is played for no money; named/independently scheduled passengers and substantial shipboard social storylines are still open. The ship is a moving location, never a separate timer or a grant of shipping-company ownership. **This is not yet the actual Alexandria-origin introduction:** Charlie's existing opening remains four authored choice scenes. An explorable Alexandria waterfront and properly planned Egypt-to-America passenger voyage require further work.
+
 ## PRIMARY CANON RECORDS
 
 - [Recorded owner approvals and supersessions](DECISIONS.md): chronological decisions; older dated material is preserved, not silently converted into new authority.
