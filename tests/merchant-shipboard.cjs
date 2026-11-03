@@ -64,11 +64,17 @@ s.phase='report';assert(!ship.cardOffer(s,'start').ok);s.phase='day';
 s.worldCalendar.worldMinute=s.passengerSea.voyage.arrivalMinute-1;
 assert(!ship.cardOffer(s,'start').ok,'no card session beyond arrival');
 assert(!ship.moveOffer(s,3,3).ok,'no walking while docked');
+// A rough-sea delay must become effective before arrival. Do not bypass it.
+if(s.passengerSea.voyage.weather?.delayMinutes){
+ s.worldCalendar.worldMinute=s.passengerSea.voyage.weather.triggerMinute;
+ assert(!sea.sync(s).ok);
+}
 s.worldCalendar.worldMinute=s.passengerSea.voyage.arrivalMinute;
 s.gameDate=s.passengerSea.voyage.etaDate;
 assert(sea.sync(s).ok);assert.equal(ship.ensure(s),null);
 const app=read('app.js'),html=read('index.html'),ui=read('merchant-passenger-ui.js');
 assert(app.includes("shipCard:(choice)=>")&&app.includes("passenger-shipboard"));
+assert(app.includes('const arrival=window.FE_PASSENGER_SEA?.sync?.(S);'),'ambient real-time ticks must dock the vessel');
 assert(app.includes("stationOffer?.(S,'meal'")&&app.includes("stationOffer?.(S,'water'"));
 assert(app.includes("stationOffer?.(S,'rest'"));
 assert(ui.includes('function shipScene()')&&ui.includes('ship-walk:')&&ui.includes('ship-deck:'));
