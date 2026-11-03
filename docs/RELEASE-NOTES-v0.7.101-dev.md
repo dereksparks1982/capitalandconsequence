@@ -19,3 +19,8 @@ Hosted source suite first pass at GitHub commit `7ea848ff69952666e30520bf8e975fa
 Added proportional migration for saved map camera centers from legacy 800x600 chart to 800x434 display, with chartVersion 2 as future migration marker. Added a sharpness cap tied to the actual source JPEG width and device pixel ratio so zoom does not magnify beyond its physical source pixels. These are presentation-only and do not change game accounting, discovery, passage or map pins.
 
 Retire only the unused EcoClipper *binary* source asset from active GitHub repository when the map has switched, without deleting any historical documentation or original Washington art. A new full source QA run is necessary before claiming success.
+
+
+## Verified regression suite after chart replacement
+
+GitHub Actions Ubuntu 24.04 / Node 22 at source commit `c7a3e7c54d170ea58bebd2d7c751f6fb6569980e` (run **41630814289**) reports **247 passed, 0 failed, 247 total**. New `merchant-admiralty-chart.cjs`, existing shipboard, trade, navigation, original-city-map and source-contract regressions all passed. The 25MB file limit was tested against the checked-in JPEG. Both earlier stale-asset test failures are fixed. Source QA pass does not prove the Linux Electron executable was packaged/smoke-tested or that manually recalibrated port markers look perfect on-screen. Those are deferred to owner gameplay verification. No approved release/tag.
