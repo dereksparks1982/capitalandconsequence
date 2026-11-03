@@ -64,6 +64,12 @@ function industrialistPages(save){
     item('Father voting shares',String(corp.familyShares||0)+' of '+initialShares+' · '+percent(corp.familyShares)),
     item('Family equity dividends',money((family.dividendIncomeCents||0)/100))
    ]));
+  if(save.whitcombIntro?.history?.length){
+   pages.push(page('whitcomb-departure','Personal Records','From Alexandria to Washington',
+    'Choices made before the established January 1878 campaign',
+    ['The sea journey is an introductory memoir. No new map route, ticket, cargo or business funds were granted by these decisions.'],
+    save.whitcombIntro.history.slice(-ROWS).map(row=>item(row.title||row.option,row.description||row.scene))));
+  }
   if(family.payments?.length)pages.push(page('whitcomb-family-payments','Company Accounts','Family Loan Receipts',
    'Actual payments from company money',[],
    family.payments.slice(-ROWS).reverse().map(p=>item(p.date+' · '+money(p.amountCents/100),
