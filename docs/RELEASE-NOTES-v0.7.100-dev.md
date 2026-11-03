@@ -7,3 +7,8 @@ The owner's November 2, 2026 approval established Charles at 75% of initial voti
 An in-memory V8 run of the complete underwriter scenario confirmed 75/25 opening ownership, 53.85/19.23 post-offering, 13,000 shares, 3,500 offered, cash $5,275 company and $1,075 Charles, price rejection, majority-loss warning and exactly 900 seconds charged. The modified test parsed successfully. No changes to actual IPO gameplay logic.
 
 Added `.github/workflows/source-regression-check.yml` to run `node tests/run-all.cjs` on Ubuntu Node 22 only when its own workflow file is added/edited or explicitly invoked. This uses the owner-permitted sparing Actions budget, avoids Electron build/network/artifact uploads, and should prove the full offline source suite without making the owner reinstall prematurely. No CI success or Linux runnable artifact is asserted before a completed run. The approved event chronology, map, story, and user files remain unchanged.
+
+## Verified hosted source QA
+
+On November 3, 2026, GitHub Actions workflow **Capital and Consequence source regression** completed at commit `cae9da923f12b9f1511b8dcacde01da30878decc` (run ID **41623029430**, Node 22 on ubuntu-24.04). Its logs report **246 passed, 0 failed, 246 total**, including the previously failed seven areas, the preserved family IPO ownership regression, and the new integration regression. No test was disabled to achieve green QA. No compiled Electron binary or graphical app was run; this result is **source QA only** and does not constitute owner acceptance.
+
