@@ -20,3 +20,26 @@
 .whitcomb-intro-error{min-height:20px;color:#ffbbb6;font:14px system-ui,sans-serif}
 .whitcomb-intro-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;border-top:1px solid #66563c;padding-top:13px;color:#c9b79a;font:12px system-ui,sans-serif}
 @media(max-width:560px){.whitcomb-intro-card{max-height:96vh;padding:16px}.whitcomb-intro-story{font-size:15px}.whitcomb-intro-footer{display:block}.whitcomb-intro-footer span{display:block;margin:5px 0}}
+
+/* Introductory Alexandria prototype: deliberately crude and separately scoped. */
+.whitcomb-alexandria-area{margin:16px 0;border:1px solid #91734d;padding:9px;background:#3c3328}
+.whitcomb-alexandria-area h3{font-size:18px;margin:3px 0 8px}
+.whitcomb-intro-map-note{font-size:12px;line-height:1.35;color:#e1caa6}
+.whitcomb-intro-tile-board{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));width:min(480px,100%);
+ aspect-ratio:12/9;margin:10px auto;border:4px ridge #927755;background:#aa936d}
+.whitcomb-intro-tile{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;
+ border:1px solid #66563e!important;border-radius:0!important;box-sizing:border-box;
+ margin:0!important;padding:0!important;font:700 clamp(11px,2.5vw,20px) monospace!important;color:#30251b}
+.whitcomb-intro-tile.kind-floor{background:#c6ad80}
+.whitcomb-intro-tile.kind-wall{background:#635f50;color:#d4c4a7}
+.whitcomb-intro-tile.kind-water{background:#4e7888;color:#e2eef0}
+.whitcomb-intro-tile.kind-stored{background:#998064}
+.whitcomb-intro-tile.kind-d,.whitcomb-intro-tile.kind-h{background:#9c8c70}
+.whitcomb-intro-tile.kind-f,.whitcomb-intro-tile.kind-r,
+.whitcomb-intro-tile.kind-m,.whitcomb-intro-tile.kind-b,.whitcomb-intro-tile.kind-p{background:#a58b61}
+.whitcomb-intro-tile.current{background:#e6c35e!important;outline:2px solid #803c22;outline-offset:-2px}
+.whitcomb-intro-tile:focus-visible{outline:3px solid #7dd7fa}
+.whitcomb-intro-exits{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.whitcomb-intro-exits button{background:#e1c597;color:#34271b;padding:7px 9px;border:1px solid #927755;cursor:pointer}
+.whitcomb-intro-walk-message{font-size:13px;min-height:15px;color:#fff1ca}
+@media(max-width:620px){.whitcomb-alexandria-area{padding:4px}.whitcomb-intro-tile{font-size:12px!important}}
