@@ -36,6 +36,11 @@ const conscious=medical.wake(save,120*60);
 assert(conscious.ok);
 assert.equal(save.currentLocation.locationId,'passengerVessel','shipboard recovery must not teleport');
 assert.equal(medical.pending(save),null);
+// A modeled rough-sea delay first becomes observable during the ocean crossing.
+if(save.passengerSea.voyage.weather?.delayMinutes){
+ save.worldCalendar.worldMinute=save.passengerSea.voyage.weather.triggerMinute;
+ assert(!sea.sync(save).ok,'rough-sea notification delays actual arrival');
+}
 save.worldCalendar.worldMinute=save.passengerSea.voyage.arrivalMinute;
 save.gameDate=save.passengerSea.voyage.etaDate;
 assert(sea.sync(save).ok);
