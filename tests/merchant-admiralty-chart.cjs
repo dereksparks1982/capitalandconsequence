@@ -38,8 +38,11 @@ const world=fs.readFileSync(path.join(root,'merchant-world-map.js'),'utf8');
 const desk=fs.readFileSync(path.join(root,'career-shell.js'),'utf8');
 assert(desk.includes(nav.MAP)&&world.includes('nav.displayPosition('));
 assert(world.includes('nav.displayRoute(')&&world.includes('nav.displayMarkToSaved('));
-assert(world.includes('function sharpZoomLimit()')&&world.includes('view.chartVersion=2')&&
- world.includes('nav.CHART.height/600'),'Zoom cap and old camera need explicit compatibility');
+assert(world.includes('function sharpZoomLimit()')&&world.includes('camera.restored(state().view')&&
+ world.includes('view.chartVersion=record.chartVersion'),'Zoom cap and old camera must migrate through functional camera helper');
+const camera=fs.readFileSync(path.join(root,'merchant-chart-camera.js'),'utf8');
+assert(camera.includes('saved.cy*chart.height/600')&&camera.includes('function limit('),
+ 'Legacy camera migration and Retina limit must retain functional coverage');
 for(const src of [world,desk,fs.readFileSync(path.join(root,'merchant-chart.js'),'utf8')])
  assert(!src.includes('SHIPPING-LINES-ECOCLIPPER-small.jpg'),'Old image still used in live scene');
 console.log('PASS Admiralty chart: 25MB ceiling, zoom ratio, 8 ports, saved ship and user mark display');

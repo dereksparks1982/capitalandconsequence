@@ -1,3 +1,5 @@
+> **v0.7.102-dev CAMERA QA FOLLOW-UP:** Hosted run first attempt: 246/248 passed; two failures traced to obsolete inline camera assertion and an offscreen camera-center fixture. Legitimate edge bounds stay enforced. Also repaired first opening's saved-camera restore priority; re-run full tests before claiming pass. No lore/economic/map asset changes.
+
 > **LATEST DEV SOURCE · v0.7.102-dev · NOVEMBER 3, 2026 (unaccepted):** Substantive usability build for owner-selected Admiralty chart: fitted/Retina-capped cursor zoom, bounded RMB pan, genuine zoom preservation when resizing, existing saved camera migration and stable-size ship/port markers. Corrected all eight *visual-only* port overlay locations and seven illustrative coast-aware routes against the actual scan. Existing 800×600 saved voyage/commerce geography and personal map marks are unchanged; original Washington map and 1878 story untouched. New functional camera QA; full source suite and Electron game still require independent verification. See `docs/RELEASE-NOTES-v0.7.102-dev.md`.
 
 ## November 3, 2026 · v0.7.102-dev · maritime chart UX (source snapshot)

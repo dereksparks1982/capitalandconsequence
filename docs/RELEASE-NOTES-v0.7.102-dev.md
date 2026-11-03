@@ -10,3 +10,7 @@ Requested: Continue the previously approved owner's Admiralty shipping chart. No
 - No changes whatsoever to economic trip coordinates (800×600 source), saved itineraries, passenger fares, established trade access, shipping distances, ship timing, cash, charter, World’s Fair timing, four protagonists or the protected Washington map.
 - Added `tests/merchant-chart-camera.cjs` for limits, focus, pan, resize, serialized view migration, save-safe routes and fixed port baselines; the existing image asset stays 1,643,745 bytes (<25 MB). Changed selected HTML script cache keys to ensure updated image controls are loaded.
 - Full native Node regression suite and Electron UI smoke remain to be tested. GitHub workflows limited to relevant maritime changes; no automatic executable release or UI acceptance.
+
+## Full-source QA first pass and follow-up · November 3
+
+GitHub Actions at source commit `1ea81d20703d98a034054b8464500bd12c3fa33f` completed with **246 passed, 2 failed of 248**. One test still inspected the removed inline camera-migration implementation after the refactor to `merchant-chart-camera.js`; it now verifies the real new function and the UI import. The other tested centering on a point physically outside the permitted panning bounds. It now tests an interior focus that can be preserved, while the camera separately guards edges. The initial-opening call order was also corrected to restore the saved view *before* the explicit Fit button branch. This does not relax any legitimate gameplay test; source QA rerun is required.

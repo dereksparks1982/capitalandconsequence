@@ -82,8 +82,8 @@ function resize(first=false){
  const nativeWidth=host.querySelector('.merchant-world-stage>img')?.naturalWidth||nav.CHART.nativeWidth;
  const dpr=root.devicePixelRatio||1;
  let next=null;
- if(first){next=camera.fitted(vp);}
- else if(!session.ready){next=camera.restored(state().view,vp,nativeWidth,dpr);}
+ if(!session.ready){next=camera.restored(state().view,vp,nativeWidth,dpr);}
+ else if(first){next=camera.fitted(vp);}
  else if(session.viewportSize&&(session.viewportSize.width!==vp.width||
           session.viewportSize.height!==vp.height)){
   // Responsive reflow preserves the chart coordinate under the screen center.
