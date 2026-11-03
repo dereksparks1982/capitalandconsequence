@@ -45,9 +45,17 @@ function canAct(s,seconds=0){
   return no('The ship is approaching its berth. Finish docking before further shipboard activities.');
  return yes('Aboard, with game time available.',{seconds});
 }
+// A brief modeled squall closes exposed decks only after the real saved
+// voyage has recorded rough seas. It never rerolls or changes the ship's ETA.
+function roughWeather(s){
+ const w=s?.passengerSea?.voyage?.weather,minute=s?.worldCalendar?.worldMinute;
+ return !!w?.observed&&Number.isSafeInteger(w.triggerMinute)&&w.delayMinutes>0&&
+  Number.isSafeInteger(minute)&&minute>=w.triggerMinute&&minute<w.triggerMinute+360;
+}
 function at(s,kind){const p=ensure(s);return !!p&&tile(s,p.deck,p.x,p.y)===STATIONS[kind]}
 function stationOffer(s,kind,seconds=0){
  const a=canAct(s,seconds);if(!a.ok)return a;
+ if(kind==='lookout'&&roughWeather(s))return no('The open-deck lookout is closed during rough seas.');
  if(!at(s,kind))return no('Walk to the '+({rest:'passenger berth',meal:'galley counter',water:'water stand',cards:'card table',lookout:'upper-deck lookout'}[kind]||'station')+' first.');
  return yes('At '+kind+'.',{seconds});
 }
@@ -66,10 +74,12 @@ function deckOffer(s,id){
  const a=canAct(s,60);if(!a.ok)return a;
  const p=ensure(s),list=decks(s),before=list.findIndex(v=>v.id===p.deck),after=list.findIndex(v=>v.id===id);
  if(after<0||Math.abs(before-after)!==1)return no('Only neighboring decks connect by this hatch.');
+ if(id==='upper'&&roughWeather(s))return no('The captain closed the exposed upper deck until the squall passes.');
  return tile(s,p.deck,p.x,p.y)==='H'?yes('Stairs available.',{seconds:60}):no('Stand on the stair hatch first.');
 }
 function changeDeck(s,id){
  const p=ensure(s),list=decks(s);
+ if(id==='upper'&&roughWeather(s))return no('The open deck is closed during rough weather.');
  if(!p||tile(s,p.deck,p.x,p.y)!=='H'||Math.abs(list.findIndex(v=>v.id===id)-list.findIndex(v=>v.id===p.deck))!==1)return no('Connected stairs required.');
  const d=deck(s,id),y=d.rows.findIndex(row=>row.includes('H'));
  p.deck=id;p.x=d.rows[y].indexOf('H');p.y=y;
@@ -123,11 +133,12 @@ function cardAct(s,choice){
 }
 function lookout(s){
  const p=ensure(s);if(!p||!at(s,'lookout'))return no('Reach the upper-deck lookout first.');
+ if(roughWeather(s))return no('The lookout is shut during rough seas.');
  p.observations.push({minute:s.worldCalendar.worldMinute,voyageId:p.voyageId});
  p.observations=p.observations.slice(-20);
  return yes('Watched the sea for five minutes while the ship continued moving.');
 }
-const api=Object.freeze({MAPS,STATIONS,decks,deck,tile,allowed,ensure,canAct,at,stationOffer,moveOffer,move,deckOffer,changeDeck,cardOffer,cardAct,cardLabel,score,lookout});
+const api=Object.freeze({MAPS,STATIONS,decks,deck,tile,allowed,ensure,canAct,roughWeather,at,stationOffer,moveOffer,move,deckOffer,changeDeck,cardOffer,cardAct,cardLabel,score,lookout});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_SHIPBOARD=api;
 })(typeof window!=='undefined'?window:globalThis);
