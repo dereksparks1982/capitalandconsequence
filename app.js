@@ -5159,6 +5159,14 @@ let lastNeedsUiMinute=null;
 clockTimer=setInterval(()=>{
  if(!bootstrapReady||document.hidden||S.phase==='report'||S.paused||capitalTravelBusy||titleDevFreezeTime||titleScreenBlocksSimulation())return;
  advanceWorldSimulation(1,false,'tick');
+ // A moving vessel reaches port through ordinary unpaused real-time ticking too,
+ // not only when Charlie chooses a shipboard skip or opens another screen.
+ const voyage=S.characterRoute==='industrialist'?S.passengerSea?.voyage:null;
+ if(voyage){
+  const weatherSeen=!!voyage.weather?.observed;
+  const arrival=window.FE_PASSENGER_SEA?.sync?.(S);
+  if(arrival?.ok||(!weatherSeen&&voyage.weather?.observed)){save(true);render()}
+ }
  $('#dayClock').textContent=clockText();
  $('#businessDate').textContent=displayHeaderDate()+' · '+displayHeaderTurn();
  window.FE_WORLD_BANNER?.sync?.();
