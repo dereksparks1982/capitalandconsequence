@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.96-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.97-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -1346,6 +1346,18 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
   const moved=board.move(S,x,y);
   if(moved.ok){save(true);render()}
   return moved;
+ },
+ shipWalkTo:(x,y)=>{
+  const board=window.FE_SHIPBOARD,quote=board?.pathOffer?.(S,x,y);
+  if(!quote?.ok)return quote||{ok:false,reason:'This location cannot be reached.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,quote.seconds)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<quote.seconds)
+   return {ok:false,reason:'Not enough uninterrupted game time for this walking route.'};
+  if(advanceWorldSimulation(quote.seconds,true,'passenger-shipboard')!==quote.seconds)
+   return {ok:false,reason:'The shipboard walk was interrupted by the shared world clock.'};
+  const outcome=board.walkTo(S,x,y);
+  if(outcome.ok){save(true);render()}
+  return outcome;
  },
  shipDeck:(id)=>{
   const board=window.FE_SHIPBOARD,offer=board?.deckOffer?.(S,id);

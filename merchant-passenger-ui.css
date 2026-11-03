@@ -124,3 +124,8 @@ span.passenger-cell{cursor:default}
 .shipboard-journal-pages{margin-top:9px}
 .shipboard-journal-pages article{border-top:1px solid #ccbb98;padding:6px 2px}
 .shipboard-journal-written{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0}
+
+/* Reachable click-to-walk tiles, preserving the existing deck grid geometry. */
+.shipboard-cell[data-passenger-action^="ship-go:"]{cursor:pointer}
+.shipboard-cell[data-passenger-action^="ship-go:"]:hover,
+.shipboard-cell[data-passenger-action^="ship-go:"]:focus-visible{outline:2px solid #367179;outline-offset:-2px}

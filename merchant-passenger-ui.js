@@ -181,20 +181,25 @@ function shipScene(){
  if(!st)return '';
  const layout=ship.deck(save,st.deck),r=st.game.round,people=life.onDeck(save,st.deck);
  let h='<section class="shipboard-scene"><h3>Walk Aboard · '+esc(layout.name)+'</h3>'+
-  '<p class="fine">This entire vessel sails while you explore. One tile or staircase costs one game minute on the same world clock.</p>'+
+  '<p class="fine">Click any reachable tile to walk the shortest legal route, or use WASD/arrows. Each tile or staircase costs one game minute on the same world clock.</p>'+
   (ship.roughWeather(save)?'<p class="passenger-weather-notice">Rough seas: the captain has temporarily closed the exposed upper deck and lookout. Return below if already on deck.</p>':'')+
   '<div class="shipboard-deck-list">'+decks.map(d=>'<span class="'+(d.id===st.deck?'selected':'')+'">'+esc(d.name)+'</span>').join('')+'</div>'+
   '<div class="shipboard-grid" role="grid" aria-label="Walkable passenger ship deck">';
  for(let y=0;y<9;y++)for(let x=0;x<12;x++){
   const t=layout.rows[y][x],here=st.x===x&&st.y===y,occupants=people.filter(p=>p.x===x&&p.y===y);
   const adj=Math.abs(st.x-x)+Math.abs(st.y-y)===1&&ship.allowed(t);
+  const route=!here&&ship.allowed(t)?ship.findPath(save,x,y):null;
+  const reachable=!!route?.length;
   const base=({'#':'▓','.':'','H':'↕','B':'▰','G':'▤','W':'◉','C':'♣','O':'◎','X':'×','~':'≈'}[t]??'');
   const sym=here?'♟':occupants.length?'◇':base;
   const label=here?'Charles':occupants.length?occupants.map(p=>p.label).join(', '):({'#':'Wall','.':'Deck','H':'Stairs','B':'Passenger berth','G':'Galley',
    'W':'Drinking water','C':'Card table','O':'Lookout','X':'Crew only','~':'Water'}[t]||'Tile')+' at '+(x+1)+','+(y+1);
   const klass='shipboard-cell tile-'+({'#':'wall','.':'floor','X':'restricted','~':'sea'}[t]||t.toLowerCase())+(here?' traveler':occupants.length?' shipmate':'');
   const data=' data-ship-square="'+x+':'+y+'" data-ship-base="'+esc(base)+'"';
-  if(adj)h+='<button type="button" class="'+klass+'"'+data+' data-passenger-action="ship-walk:'+x+':'+y+'" aria-label="'+esc(label)+'">'+sym+'</button>';
+  if(reachable)h+='<button type="button" class="'+klass+'"'+data+
+   ' data-passenger-action="'+(adj?'ship-walk:':'ship-go:')+x+':'+y+
+   '" aria-label="'+esc(label)+'; walk '+route.length+' tile'+(route.length===1?'':'s')+
+   ', '+route.length+' game minute'+(route.length===1?'':'s')+'">'+sym+'</button>';
   else h+='<span class="'+klass+'"'+data+' aria-label="'+esc(label)+'">'+sym+'</span>';
  }
  h+='</div><div class="shipboard-people"><h4>Travelers Aboard</h4>'+
@@ -345,6 +350,7 @@ function click(e){
  if(cmd==='galley-meal'){changed(actions?.galleyMeal?.());return}
  if(cmd==='galley-water'){changed(actions?.galleyWater?.());return}
  if(cmd.startsWith('ship-walk:')){const [,x,y]=cmd.split(':');changed(actions?.shipWalk?.(+x,+y));return}
+ if(cmd.startsWith('ship-go:')){const [,x,y]=cmd.split(':');changed(actions?.shipWalkTo?.(+x,+y));return}
  if(cmd.startsWith('ship-deck:')){changed(actions?.shipDeck?.(cmd.slice(10)));return}
  if(cmd==='ship-draughts-start'){checkersSelected=null;changed(actions?.shipCheckerStart?.());return}
  if(cmd==='ship-draughts-resign'){checkersSelected=null;changed(actions?.shipCheckerResign?.());return}

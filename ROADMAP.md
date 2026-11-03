@@ -1,3 +1,12 @@
+> **LATEST SOURCE · v0.7.97-dev · NOVEMBER 3, 2026 (unaccepted):** Passenger deck boards now support clicking any reachable floor or station tile. A shortest-path solver finds lawful orthogonal routes without crossing walls or crew-only spaces, and each tile is charged one game minute on the existing real voyage clock. Hatch/stair changes, original vessel and Washington maps, established art style, WASD, onboard activities, weather and shipmate schedules remain untouched. Syntax and targeted V8 steamer/schooner path checks passed; native Node suite and Ubuntu Electron playthrough remain pending. `docs/RELEASE-NOTES-v0.7.97-dev.md`.
+
+## November 3, 2026 · v0.7.97-dev · click-to-walk ship interiors
+- [x] BFS routes across only publicly walkable tiles on the current deck, without diagonal movement or wall/crew bypass.
+- [x] Click any reachable tile; charge real voyage time proportional to shortest route length, not free teleportation.
+- [x] Keep hatch transfers separate and preserve all existing map artwork and app layouts.
+- [ ] Animated tile-by-tile movement, native full source suite and Ubuntu UI playtest remain pending.
+- [ ] Alexandria origin voyage still needs approved historical schedule and campaign chronology resolution.
+
 > **LATEST SOURCE · v0.7.96-dev · NOVEMBER 3, 2026 (unaccepted):** Charles can now keep his own saved voyage journal by writing at his real shipboard berth, spending ten world-clock minutes per page. Pages persist and can be reviewed in foreign harbors; author text is escaped, empty/oversize entries refused, drafts held through refresh. Also prevents simultaneous unfinished Twenty-One and checkers games, matching existing dominoes exclusion. Focused V8 tests and source syntax passed; full native source suite and Ubuntu Electron test still pending. See `docs/RELEASE-NOTES-v0.7.96-dev.md`.
 
 ## November 3, 2026 · v0.7.96-dev · passenger travel journal

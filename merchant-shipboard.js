@@ -70,6 +70,43 @@ function move(s,x,y){
  if(!p||Math.abs(p.x-x)+Math.abs(p.y-y)!==1||!allowed(tile(s,p.deck,x,y)))return no('Deck movement refused.');
  p.x=x;p.y=y;return yes('Walked on '+deck(s,p.deck).name+'.',{position:{deck:p.deck,x,y}});
 }
+// Shortest walkable footpath on the CURRENT deck. No cross-deck teleport.
+function findPath(s,x,y){
+ const p=ensure(s),floor=p&&deck(s,p.deck);
+ if(!floor||!Number.isInteger(x)||!Number.isInteger(y)||!allowed(tile(s,p.deck,x,y)))return null;
+ if(p.x===x&&p.y===y)return [];
+ const width=floor.rows[0].length,height=floor.rows.length,
+  key=(cx,cy)=>cy*width+cx,goal=key(x,y),start=key(p.x,p.y);
+ const seen=new Map([[start,null]]),queue=[start];
+ for(let i=0;i<queue.length;i++){
+  const here=queue[i],cx=here%width,cy=Math.floor(here/width);
+  for(const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]){
+   const nx=cx+dx,ny=cy+dy;
+   if(nx<0||nx>=width||ny<0||ny>=height||!allowed(tile(s,p.deck,nx,ny)))continue;
+   const next=key(nx,ny);if(seen.has(next))continue;
+   seen.set(next,here);queue.push(next);
+  }
+  if(seen.has(goal))break;
+ }
+ if(!seen.has(goal))return null;
+ const route=[];
+ for(let at=goal;at!==start;at=seen.get(at))
+  route.push({x:at%width,y:Math.floor(at/width)});
+ return route.reverse();
+}
+function pathOffer(s,x,y){
+ const route=findPath(s,x,y);
+ if(!route?.length)return no('Choose a different reachable tile on this deck.');
+ const seconds=route.length*60,gate=canAct(s,seconds);
+ return gate.ok?yes('Shortest deck route is open.',{route,steps:route.length,seconds}):gate;
+}
+function walkTo(s,x,y){
+ const p=ensure(s),route=findPath(s,x,y);
+ if(!p||!route?.length)return no('No legal route to this tile.');
+ const goal=route[route.length-1];p.x=goal.x;p.y=goal.y;
+ return yes('Walked '+route.length+' tiles on '+deck(s,p.deck).name+'.',
+  {steps:route.length,position:{deck:p.deck,x:p.x,y:p.y}});
+}
 function deckOffer(s,id){
  const a=canAct(s,60);if(!a.ok)return a;
  const p=ensure(s),list=decks(s),before=list.findIndex(v=>v.id===p.deck),after=list.findIndex(v=>v.id===id);
@@ -140,7 +177,7 @@ function lookout(s){
  p.observations=p.observations.slice(-20);
  return yes('Watched the sea for five minutes while the ship continued moving.');
 }
-const api=Object.freeze({MAPS,STATIONS,decks,deck,tile,allowed,ensure,canAct,roughWeather,at,stationOffer,moveOffer,move,deckOffer,changeDeck,cardOffer,cardAct,cardLabel,score,lookout});
+const api=Object.freeze({MAPS,STATIONS,decks,deck,tile,allowed,ensure,canAct,roughWeather,at,stationOffer,moveOffer,move,findPath,pathOffer,walkTo,deckOffer,changeDeck,cardOffer,cardAct,cardLabel,score,lookout});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_SHIPBOARD=api;
 })(typeof window!=='undefined'?window:globalThis);
