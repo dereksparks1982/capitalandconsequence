@@ -1335,12 +1335,63 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
   if(settled?.ok){save(true);render();}
   return settled;
  },
+ shipWalk:(x,y)=>{
+  const board=window.FE_SHIPBOARD,offer=board?.moveOffer?.(S,x,y);
+  if(!offer?.ok)return offer||{ok:false,reason:'Passenger interior unavailable.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<60)
+   return {ok:false,reason:'Not enough game time to walk the deck.'};
+  if(advanceWorldSimulation(60,true,'passenger-shipboard')!==60)
+   return {ok:false,reason:'The shared world clock interrupted the walk.'};
+  const moved=board.move(S,x,y);
+  if(moved.ok){save(true);render()}
+  return moved;
+ },
+ shipDeck:(id)=>{
+  const board=window.FE_SHIPBOARD,offer=board?.deckOffer?.(S,id);
+  if(!offer?.ok)return offer||{ok:false,reason:'Stairs unavailable.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,60)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<60)
+   return {ok:false,reason:'Not enough game time to climb.'};
+  if(advanceWorldSimulation(60,true,'passenger-shipboard')!==60)
+   return {ok:false,reason:'The shared world clock interrupted climbing.'};
+  const moved=board.changeDeck(S,id);
+  if(moved.ok){save(true);render()}
+  return moved;
+ },
+ shipCard:(choice)=>{
+  const board=window.FE_SHIPBOARD,offer=board?.cardOffer?.(S,choice);
+  if(!offer?.ok)return offer||{ok:false,reason:'Card table unavailable.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,offer.seconds)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<offer.seconds)
+   return {ok:false,reason:'Not enough game time before the next report for this hand.'};
+  if(advanceWorldSimulation(offer.seconds,true,'passenger-shipboard')!==offer.seconds)
+   return {ok:false,reason:'The shared world clock interrupted the card hand.'};
+  const dealt=board.cardAct(S,choice);
+  if(dealt.ok){save(true);render()}
+  return dealt;
+ },
+ shipLookout:()=>{
+  const board=window.FE_SHIPBOARD,offer=board?.stationOffer?.(S,'lookout',300);
+  if(!offer?.ok)return offer||{ok:false,reason:'Lookout unavailable.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,300)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<300)
+   return {ok:false,reason:'Not enough time before the next shipboard report.'};
+  if(advanceWorldSimulation(300,true,'passenger-shipboard')!==300)
+   return {ok:false,reason:'The shared world clock interrupted the lookout visit.'};
+  const observed=board.lookout(S);
+  if(observed.ok){save(true);render()}
+  return observed;
+ },
  cabinRest:()=>{
   if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
    return {ok:false,reason:'Charles must be aboard his passenger vessel.'};
+  const berth=window.FE_SHIPBOARD?.stationOffer?.(S,'rest',3600);
+  if(!berth?.ok)return berth||{ok:false,reason:'Reach your berth before sleeping.'};
   if(S.paused||S.phase==='report')return {ok:false,reason:'Cabin rest is not available right now.'};
-  const span=Math.min(8*3600,window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0);
-  if(span<3600)return {ok:false,reason:'Not enough clock time remains for cabin rest before the next boundary.'};
+  const minutesBeforeDock=S.passengerSea.voyage.arrivalMinute-S.worldCalendar.worldMinute-1;
+  const span=Math.min(8*3600,Math.max(0,minutesBeforeDock*60),window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0);
+  if(span<3600)return {ok:false,reason:'Not enough clock time remains to sleep before the next boundary or docking.'};
   S.sleepingAboardPassenger=true;
   let passed=0;
   try{passed=advanceWorldSimulation(span,true,'sleep')}
@@ -1353,6 +1404,8 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
  galleyMeal:()=>{
   if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
    return {ok:false,reason:'Meals are served aboard the passenger vessel.'};
+  const galley=window.FE_SHIPBOARD?.stationOffer?.(S,'meal',600);
+  if(!galley?.ok)return galley||{ok:false,reason:'Walk to the galley first.'};
   if(S.paused||S.phase==='report'||S.personalCash<.50)
    return {ok:false,reason:'A galley meal requires fifty cents personal cash and active game time.'};
   const current=window.FE_CHARACTER_NEEDS?.ensure?.(S);
@@ -1370,6 +1423,8 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
  galleyWater:()=>{
   if(!S.passengerSea?.voyage||S.currentLocation?.locationId!=='passengerVessel')
    return {ok:false,reason:'Water is available at the vessel galley.'};
+  const stand=window.FE_SHIPBOARD?.stationOffer?.(S,'water',120);
+  if(!stand?.ok)return stand||{ok:false,reason:'Walk to the water stand first.'};
   if(S.paused||S.phase==='report'||S.personalCash<.10)
    return {ok:false,reason:'Water requires ten cents personal cash and active game time.'};
   const available=window.FE_CHARACTER_NEEDS?.availability?.(S,'water');
