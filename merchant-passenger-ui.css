@@ -81,3 +81,13 @@ span.passenger-cell{cursor:default}
 .shipboard-scene .passenger-amenities{margin:9px 0 0}
 .shipboard-scene h4{font-size:15px;margin:9px 0 4px}
 @media(max-width:650px){.shipboard-scene{padding:5px}.shipboard-cell{font-size:clamp(10px,3vw,17px)!important}}
+
+/* Passenger silhouettes are deliberately simple; positions come from world time. */
+.shipboard-cell.shipmate{background:#8f7864!important;color:#fff1bb}
+.shipboard-people{border:1px solid #8e7959;background:#f7e9cc;padding:7px;margin:10px 0}
+.shipboard-people h4{font-size:15px;margin:3px 0}
+.shipboard-people-list{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
+.shipboard-people-list p{font:12px Georgia,serif;background:#ede0c5;border:1px solid #ad9775;margin:0;padding:4px 7px}
+.shipboard-nearby-person{border-left:3px solid #7a6343;margin:8px 0;padding:6px;background:#fff4df}
+.shipboard-nearby-person p{font:13px Georgia,serif}
+.shipboard-nearby-person button{font-size:12px!important}
