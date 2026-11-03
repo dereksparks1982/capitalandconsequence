@@ -250,7 +250,8 @@ function keydown(e){
  changed(actions?.move?.(state.position.zone,state.position.x+dir[0],state.position.y+dir[1]));
 }
 // Display-only refresher. The authoritative game tick moves the ship, never this interval.
-root.setInterval?.(()=>{
+// Browser-only: requiring the UI in Node regression tests must not leave a live timer.
+if(typeof document!=='undefined')root.setInterval?.(()=>{
  if(!host||host.hidden||booking||!save?.passengerSea?.voyage)return;
  const live=sea.position(save),dot=host.querySelector('#passengerLiveShip');
  if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y);const icon=host.querySelector('#passengerLiveLabel');if(icon){icon.setAttribute('x',live.coordinates.x);icon.setAttribute('y',live.coordinates.y+5)}}
