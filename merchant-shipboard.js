@@ -101,6 +101,7 @@ function cardOffer(s,choice){
  const seconds={start:600,hit:300,stand:600}[choice];if(!seconds)return no('Unknown card action.');
  const a=stationOffer(s,'cards',seconds);if(!a.ok)return a;
  const r=ensure(s).game.round;
+ if(choice==='start'&&ensure(s).dominoes?.hand?.status==='playing')return no('Finish your dominoes hand first.');
  if(choice==='start'&&r?.status==='playing')return no('Finish the current hand first.');
  if(choice!=='start'&&r?.status!=='playing')return no('Deal a hand first.');
  return yes('Card-table turn ready.',{seconds});

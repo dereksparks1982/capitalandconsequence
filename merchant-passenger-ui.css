@@ -106,3 +106,11 @@ span.passenger-cell{cursor:default}
 .shipboard-draughts-cell.selected{box-shadow:inset 0 0 0 4px #4b74ac}
 .shipboard-draughts-cell.destination{box-shadow:inset 0 0 0 4px #589763}
 .shipboard-draughts-cell:focus-visible{outline:3px solid #259bc7;z-index:1}
+
+/* Double-six shipboard game. Same modest graphics as the established cabin deck. */
+.shipboard-dominoes{background:#f0e1bf;border:1px solid #987954;padding:8px;margin:10px 0}
+.shipboard-domino-hand{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.shipboard-domino-bone{display:flex;align-items:center;gap:3px;flex-wrap:wrap;
+  padding:3px 6px;border:1px solid #867151;background:#f9edd6}
+.shipboard-domino-bone strong{font:700 16px monospace;color:#322619}
+.shipboard-domino-bone button{font-size:12px;min-height:28px;margin:2px}

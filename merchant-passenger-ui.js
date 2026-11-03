@@ -5,6 +5,7 @@
 'use strict';
 const sea=typeof module==='object'&&module.exports?require('./merchant-passenger-sea.js'):root.FE_PASSENGER_SEA;
 const ship=typeof module==='object'&&module.exports?require('./merchant-shipboard.js'):root.FE_SHIPBOARD;
+const domino=typeof module==='object'&&module.exports?require('./merchant-shipboard-dominoes.js'):root.FE_SHIP_DOMINOES;
 const life=typeof module==='object'&&module.exports?require('./merchant-shipboard-life.js'):root.FE_SHIPBOARD_LIFE;
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
@@ -120,6 +121,34 @@ function shipCheckers(){
   button('ship-draughts-resign','Resign & Leave Table')+'</section>';
  return result;
 }
+function shipDominoes(){
+ const d=domino.ensure(save),h=d?.hand;
+ if(!d)return '';
+ let html='<section class="shipboard-dominoes"><h4>Double-Six Dominoes · Casual Game, No Wagers</h4>';
+ if(!h||h.status!=='playing')html+=button('ship-domino:start','Shuffle & Deal · 10 min');
+ if(h){
+  html+='<p>Board: '+esc(h.chain.length?h.chain.map(b=>'['+b.a+'|'+b.b+']').join(' '):'(empty)')+
+   ' · Opponent '+h.opponent.length+' bones · Boneyard '+h.boneyard.length+'</p>';
+  if(h.status==='playing'){
+   html+='<div class="shipboard-domino-hand" aria-label="Your dominoes hand">';
+   h.player.forEach((bone,index)=>{
+    html+='<div class="shipboard-domino-bone"><strong>['+bone.a+'|'+bone.b+']</strong>';
+    for(const side of domino.options(h,bone)){
+     html+=button('ship-domino:play:'+index+':'+side,
+       h.chain.length?'Play '+side+' · 5 min':'Play · 5 min');
+    }
+    html+='</div>';
+   });
+   html+='</div>';
+   if(!h.player.some(b=>domino.options(h,b).length))
+    html+=h.boneyard.length?button('ship-domino:draw','Draw Bone · 3 min'):
+     button('ship-domino:pass','Pass · 3 min');
+   html+=button('ship-domino:resign','Resign & Put Dominoes Away');
+  }else html+='<p>Last hand: <strong>'+esc(h.status)+'</strong>. '+
+    esc(h.reason)+' No money was wagered.</p>';
+ }
+ return html+'</section>';
+}
 function shipScene(){
  const st=ship.ensure(save),decks=ship.decks(save);
  if(!st)return '';
@@ -166,6 +195,7 @@ function shipScene(){
  if(ship.at(save,'lookout'))h+=button('ship-lookout','Watch the Sea · 5 min');
  if(ship.at(save,'cards')){
   h+=shipCheckers();
+  h+=shipDominoes();
   h+='<h4>Twenty-One · Casual Game, No Wagers</h4>';
   if(!r||r.status!=='playing')h+=button('ship-card:start','Deal a Hand · 10 min');
   if(r){
@@ -302,6 +332,12 @@ function click(e){
   }
   if(legal.some(m=>m.from===to)){checkersSelected=to;draw();return}
   checkersSelected=null;notify('Select a red piece with a legal move.');draw();return;
+ }
+ if(cmd.startsWith('ship-domino:')){
+  const [,kind,rawIndex,side]=cmd.split(':');
+  if(kind==='resign')changed(actions?.shipDominoResign?.());
+  else changed(actions?.shipDomino?.(kind,rawIndex===undefined?undefined:Number(rawIndex),side));
+  return;
  }
  if(cmd.startsWith('ship-card:')){changed(actions?.shipCard?.(cmd.slice(10)));return}
  if(cmd==='ship-lookout'){changed(actions?.shipLookout?.());return}
