@@ -57,3 +57,27 @@ span.passenger-cell{cursor:default}
 .passenger-local-register{padding:10px;background:#f6ebd2;border:1px solid #b29a71}
 .passenger-local-register h4{margin:2px 0 7px}
 .passenger-local-register p{margin:4px 0 7px;font-size:13px}
+
+/* v0.7.93 ship interiors: low-detail grid with deliberately simple square tiles. */
+.shipboard-scene{border:2px solid #705838;background:#ddcaa5;margin:10px 0;padding:9px}
+.shipboard-scene h3{font-size:17px;margin:2px 0 6px}
+.shipboard-deck-list{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0}
+.shipboard-deck-list span{padding:5px 8px;background:#ccb38c;border:1px solid #806f58;font:12px monospace}
+.shipboard-deck-list .selected{background:#58452e;color:#fff0c5}
+.shipboard-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+ width:min(600px,100%);aspect-ratio:12/9;background:#334e67;
+ border:5px ridge #58432a;margin:9px auto}
+.shipboard-cell{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;
+ box-sizing:border-box;border:1px solid #655b4b!important;border-radius:0!important;
+ margin:0!important;padding:0!important;font:700 clamp(12px,3vw,23px) monospace!important}
+.shipboard-cell.tile-wall{background:#5f5649;color:#d9c8ac}
+.shipboard-cell.tile-floor{background:#c6ac7b}
+.shipboard-cell.tile-sea{background:#486680;color:#e7f2f9}
+.shipboard-cell.tile-restricted{background:#82624c;color:#e1b395}
+.shipboard-cell.tile-b,.shipboard-cell.tile-g,.shipboard-cell.tile-w{background:#a89579}
+.shipboard-cell.tile-c,.shipboard-cell.tile-o,.shipboard-cell.tile-h{background:#a78b5d}
+.shipboard-cell.traveler{background:#eed27f!important;color:#35251a;outline:2px solid #782e20;outline-offset:-2px}
+.shipboard-controls{text-align:center;margin:6px 0}
+.shipboard-scene .passenger-amenities{margin:9px 0 0}
+.shipboard-scene h4{font-size:15px;margin:9px 0 4px}
+@media(max-width:650px){.shipboard-scene{padding:5px}.shipboard-cell{font-size:clamp(10px,3vw,17px)!important}}
