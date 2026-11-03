@@ -1,6 +1,6 @@
-/* Interactive merchant map. Original EcoClipper bitmap is unchanged.
- * Ships, port markers, saved owner annotations and generic harbor scenes are overlays.
- * Operations delegate to the original industrial merchant fleet economy.
+/* Interactive merchant map on the owner-selected 1888 Admiralty scan.
+ * Printed art remains unchanged; port symbols, ship routes and saved marks are overlays.
+ * All trade permissions and the authoritative Washington game clock remain intact.
  */
 (function(root){
 'use strict';
@@ -60,11 +60,11 @@ function close(){
 function persistView(){
  if(!host||host.hidden||!session?.ready)return;
  const vp=host.querySelector('.merchant-world-viewport');if(!vp)return;
- const fit=Math.max(.25,Math.min((vp.clientWidth-12)/800,(vp.clientHeight-12)/600));
+ const fit=Math.max(.25,Math.min((vp.clientWidth-12)/nav.CHART.width,(vp.clientHeight-12)/nav.CHART.height));
  const view=state().view;
  view.zoom=Math.round(session.scale/fit*10000)/10000;
- view.cx=Math.max(0,Math.min(800,(vp.clientWidth/2-session.x)/session.scale));
- view.cy=Math.max(0,Math.min(600,(vp.clientHeight/2-session.y)/session.scale));
+ view.cx=Math.max(0,Math.min(nav.CHART.width,(vp.clientWidth/2-session.x)/session.scale));
+ view.cy=Math.max(0,Math.min(nav.CHART.height,(vp.clientHeight/2-session.y)/session.scale));
  session.onChange?.();
 }
 function resize(first=false){
@@ -72,9 +72,9 @@ function resize(first=false){
  const vp=host.querySelector('.merchant-world-viewport'),stage=host.querySelector('.merchant-world-stage');
  if(!vp||!stage)return;
  if(!session.ready||first){
-  const restore=!session.ready,fit=Math.max(.25,Math.min((vp.clientWidth-12)/800,(vp.clientHeight-12)/600));
-  session.scale=fit;session.x=(vp.clientWidth-800*fit)/2;
-  session.y=(vp.clientHeight-600*fit)/2;
+  const restore=!session.ready,fit=Math.max(.25,Math.min((vp.clientWidth-12)/nav.CHART.width,(vp.clientHeight-12)/nav.CHART.height));
+  session.scale=fit;session.x=(vp.clientWidth-nav.CHART.width*fit)/2;
+  session.y=(vp.clientHeight-nav.CHART.height*fit)/2;
   const view=state().view;
   if(restore&&Number.isFinite(view.zoom)&&view.zoom>0&&Number.isFinite(view.cx)&&Number.isFinite(view.cy)){
    session.scale=Math.max(.3,Math.min(3.5,fit*view.zoom));
@@ -97,40 +97,42 @@ function zoom(factor,clientX,clientY){
 }
 function plot(){
  const e=fleet(),m=state();
- let svg='<svg class="merchant-world-overlays" viewBox="0 0 800 600" role="group" aria-label="Chart ports, owned vessels and personal map pins">';
+ let svg='<svg class="merchant-world-overlays" viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" role="group" aria-label="Admiralty chart ports, ships and personal marks">';
  if(session.quote?.ok&&Array.isArray(session.quote.points)){
-  svg+='<polyline class="ocean-quoted-route" points="'+session.quote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
+  svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.quote.from,session.quote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
  }
  if(session.tradeQuote?.ok&&Array.isArray(session.tradeQuote.points)){
-  svg+='<polyline class="ocean-quoted-route" points="'+session.tradeQuote.points.map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
+  svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.tradeQuote.from,session.tradeQuote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
  }
  const passage=root.FE_PASSENGER_SEA?.position?.(session.save);
  if(passage?.phase==='at-sea'){
   const trip=root.FE_PASSENGER_SEA.ensure(session.save).voyage;
-  if(trip?.points?.length){
-   svg+='<polyline class="ocean-passenger-route" points="'+trip.points.map(p=>p.join(',')).join(' ')+'"><title>Passenger route '+esc(trip.from)+' to '+esc(trip.to)+'</title></polyline>';
-   const p=passage.coordinates;
+  const visual=trip&&nav.displayRoute(trip.from,trip.to);
+  if(visual?.points?.length){
+   svg+='<polyline class="ocean-passenger-route" points="'+visual.points.map(p=>p.join(',')).join(' ')+'"><title>Passenger route '+esc(trip.from)+' to '+esc(trip.to)+'</title></polyline>';
+   const p=nav.xyAt(visual.points,passage.seaProgress);
    if(p)svg+='<g class="ocean-passenger-ship" role="img" aria-label="Charles aboard passenger vessel, '+Math.floor(passage.progress*100)+' percent completed"><circle cx="'+p.x+'" cy="'+p.y+'" r="15"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle">♟</text></g>';
   }
  }
  for(const ship of e.ships){
   if(ship.status!=='at-sea'||!ship.trip)continue;
-  const line=ship.trip.routePoints||nav.route(ship.trip.from,ship.trip.to)?.points;
+  const line=nav.displayRoute(ship.trip.from,ship.trip.to)?.points;
   if(!Array.isArray(line)||line.length<2)continue;
   svg+='<polyline class="ocean-route" points="'+line.map(p=>p.map(n=>Number(n).toFixed(1)).join(',')).join(' ')+'"/>';
  }
- for(const [name,p]of Object.entries(nav.PORTS)){
+ for(const [name,p]of Object.entries(nav.DISPLAY_PORTS)){
   const selected=session.selection.type==='port'&&session.selection.id===name;
   const active=e.ports.includes(name);
   svg+='<g class="ocean-port'+(selected?' selected':'')+(active?' open-port':' locked-port')+'" data-ocean-port="'+esc(name)+'" tabindex="0" role="button" aria-label="Inspect '+esc(name)+' port"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="11"/><text x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle">⚓</text><title>'+esc(name)+(active?' established':' unverified')+'</title></g>';
  }
  for(const pin of m.pins){
-  svg+='<g class="ocean-custom-pin'+(session.selection.type==='pin'&&+session.selection.id===pin.id?' selected':'')+'" data-ocean-pin="'+pin.id+'" tabindex="0" role="button" aria-label="Chart mark '+esc(pin.name)+'"><path d="M'+pin.x+' '+(pin.y+10)+' l-9-14 a11 11 0 1 1 18 0z"/><circle cx="'+pin.x+'" cy="'+(pin.y-6)+'" r="3"/><title>'+esc(pin.name)+'</title></g>';
+  const [,shownY]=nav.savedMarkToDisplay(pin);
+  svg+='<g class="ocean-custom-pin'+(session.selection.type==='pin'&&+session.selection.id===pin.id?' selected':'')+'" data-ocean-pin="'+pin.id+'" tabindex="0" role="button" aria-label="Chart mark '+esc(pin.name)+'"><path d="M'+pin.x+' '+(shownY+10)+' l-9-14 a11 11 0 1 1 18 0z"/><circle cx="'+pin.x+'" cy="'+(shownY-6)+'" r="3"/><title>'+esc(pin.name)+'</title></g>';
  }
  const portCount={};
  for(const ship of e.ships){
   if(ship.status==='lost')continue;
-  const p=nav.position(ship,session.save);if(!p)continue;
+  const p=nav.displayPosition(ship,session.save);if(!p)continue;
   const offset=ship.status==='in-port'?(portCount[ship.port]=(portCount[ship.port]||0)+1)-1:0;
   const x=p.x+(offset?Math.cos(offset*2.4)*12:0),y=p.y+(offset?Math.sin(offset*2.4)*12:0);
   svg+='<g class="ocean-ship'+(String(ship.id)===String(session.shipId)?' selected':'')+'" data-ocean-ship="'+ship.id+'" role="button" tabindex="0" aria-label="Select '+esc(ship.name)+'"><circle cx="'+x+'" cy="'+y+'" r="13"/><path d="M'+(x-9)+' '+(y+3)+'h18l-4 6h-10z M'+x+' '+(y-13)+'v16 M'+(x-1)+' '+(y-10)+'l-8 11h8z" stroke-width="1.2"/><title>'+esc(ship.name)+'</title></g>';
@@ -360,7 +362,7 @@ function draw(reset){
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
-  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Original EcoClipper shipping-lines world map">'+plot()+'</div>'+
+  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="British Admiralty sailing and low-powered steam navigation chart, published 1888">'+plot()+'</div>'+
   (session.walking&&root.FE_MERCHANT_HARBOR_UI?.render?.(session.save,session.walking)||'')+'</div>'+ 
   '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
@@ -368,7 +370,7 @@ function draw(reset){
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
   (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
-  '</span><span>Reference routes are illustrative; voyage durations are estimates.</span></footer></div>';
+  '</span><span>Admiralty print dated 1888; visible routes are illustrative, not 1878 records.</span></footer></div>';
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
  const onCommerce=session.tab==='commerce';sel.hidden=!!onCommerce;commerce.hidden=!onCommerce;
  if(session.walking)host.querySelector('.merchant-harbor-walk')?.focus();
@@ -423,7 +425,7 @@ function onClick(e){
   if(command.startsWith('move-pin:')){session.mode='move-pin';session.movingPin=+command.slice(9);return draw(false)}
   if(command.startsWith('tab:')){session.tab=command.slice(4);return draw(false)}
   if(command.startsWith('focus-port:')){
-   const port=command.slice(11),p=nav.PORTS[port];if(!p)return;
+   const port=command.slice(11),p=nav.DISPLAY_PORTS[port];if(!p)return;
    session.selection={type:'port',id:port};session.tab='selection';session.scene=null;
    draw(false);root.requestAnimationFrame(()=>focusPoint(p,1.1));return;
   }
@@ -431,7 +433,7 @@ function onClick(e){
    const id=+command.slice(10),pin=state().pins.find(p=>p.id===id);
    if(!pin)return;
    session.selection={type:'pin',id};session.tab='selection';
-   draw(false);root.requestAnimationFrame(()=>focusPoint([pin.x,pin.y],1.1));return;
+   draw(false);root.requestAnimationFrame(()=>focusPoint(nav.savedMarkToDisplay(pin),1.1));return;
   }
   if(command.startsWith('select-ship:')){session.shipId=command.slice(12);session.selection={type:'ship',id:session.shipId};session.quote=null;session.tradeQuote=null;session.tab='selection';return draw(false)}
   if(command.startsWith('port-scene:')){session.scene=command.slice(11);session.tab='selection';return draw(false)}
@@ -508,7 +510,9 @@ function onClick(e){
  if(ship){session.shipId=ship;session.selection={type:'ship',id:ship};session.tab='selection';return draw(false)}
  if((session.mode==='mark'||session.mode==='move-pin')&&e.target.closest('.merchant-world-stage')){
   const box=host.querySelector('.merchant-world-stage').getBoundingClientRect();
-  const x=(e.clientX-box.left)*800/box.width,y=(e.clientY-box.top)*600/box.height;
+  const x=(e.clientX-box.left)*nav.CHART.width/box.width;
+  const screenY=(e.clientY-box.top)*nav.CHART.height/box.height;
+  const [,y]=nav.displayMarkToSaved(x,screenY);
   const out=session.mode==='move-pin'?regions.move(session.save,session.movingPin,x,y):regions.addPin(session.save,x,y);
   if(out.ok){session.selection={type:'pin',id:out.pin.id};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
   else setStatus(out.reason);

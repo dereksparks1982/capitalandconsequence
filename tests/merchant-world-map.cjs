@@ -14,7 +14,7 @@ const html=read('index.html');
 const desk=read('career-shell.js');
 const arrange=read('desk-collection.js');
 const css=read('merchant-world-map.css');
-assert(fs.existsSync(path.join(root,nav.MAP)),'original EcoClipper art must remain available');
+assert(fs.existsSync(path.join(root,nav.MAP)),'owner-selected Admiralty art must be bundled');
 assert(src.includes('FE_MERCHANT_MAP'), 'shipping map API must exist');
 assert(src.includes('merchant-world-viewport')&&src.includes('merchant-world-stage'), 'full map viewport missing');
 assert(src.includes('onPointerDown')&&src.includes('e.button!==2'), 'right mouse panning must be present');
@@ -31,7 +31,7 @@ assert(src.includes('function portMiniScene(')&&src.includes('aria-pressed'), 'c
 assert(src.includes('Passage estimate from Baltimore'), 'historical-style voyage estimator missing');
 assert(!src.includes('S.currentLocation='), 'chart must not teleport a playable character');
 assert(desk.includes('careerDeskShippingMap')&&desk.includes('careerDeskShippingButton'), 'accessible desk chart opener missing');
-assert(desk.includes('assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg'), 'desk art must be original image');
+assert(desk.includes(nav.MAP), 'desk art must use the owner-selected Admiralty chart');
 assert(arrange.includes("pos('shipping')")&&arrange.includes("shipping:Object.freeze"), 'draggable map position must save');
 assert(html.includes('merchant-world-map.js')&&html.includes('merchant-world-map.css')&&html.includes('merchant-regions.js'));
 assert(html.includes('title-map-1938.jpg'), 'original Washington map must not be swapped out');

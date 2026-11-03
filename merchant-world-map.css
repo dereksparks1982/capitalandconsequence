@@ -16,9 +16,9 @@ body.merchant-world-open{overflow:hidden}
 .merchant-world-columns{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(245px,1fr);min-height:0;flex:1}
 .merchant-world-viewport{position:relative;background:#b9b5a7;min-width:0;min-height:220px;
  cursor:crosshair;overflow:hidden;touch-action:pan-y;outline-offset:-4px}
-.merchant-world-stage{position:absolute;top:0;left:0;width:800px;height:600px;transform-origin:0 0}
-.merchant-world-stage>img{display:block;width:800px;height:600px;max-width:none;user-select:none;pointer-events:none}
-.merchant-world-overlays{position:absolute;inset:0;width:800px;height:600px;overflow:visible;pointer-events:none}
+.merchant-world-stage{position:absolute;top:0;left:0;width:800px;height:434px;transform-origin:0 0}
+.merchant-world-stage>img{display:block;width:800px;height:434px;max-width:none;user-select:none;pointer-events:none}
+.merchant-world-overlays{position:absolute;inset:0;width:800px;height:434px;overflow:visible;pointer-events:none}
 .merchant-world-overlays .ocean-port,.merchant-world-overlays .ocean-ship,
 .merchant-world-overlays .ocean-custom-pin{pointer-events:all;cursor:pointer}
 .merchant-world-overlays .ocean-port circle{stroke:#fff9e7;stroke-width:2;fill:#b3b1a6}

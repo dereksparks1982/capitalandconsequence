@@ -1,3 +1,12 @@
+> **LATEST DEV SOURCE · NOVEMBER 3, 2026 · v0.7.101-dev (unaccepted):** Replaced every active EcoClipper shipping chart appearance with owner-uploaded British Admiralty 1888 JPG (1.64MB, under the 25MB cap). Natural image proportions 800x434, repositioned visual ports/routes, preserved independent world clock, existing saved sea routes, original desk geometry, right-button pan, wheel zoom and fixed Washington map. The 1888 date is image provenance only, NOT a change of 1878 story chronology. One new size/coordinate compatibility test; full source CI and Electron smoke pending. See `docs/RELEASE-NOTES-v0.7.101-dev.md`.
+
+## November 3, 2026 · v0.7.101-dev · maritime image replacement
+- [x] New Admiralty JPEG under 25MB as all active shipping chart art and movable desk thumbnail.
+- [x] Retain original 1878 lore, saved routes/coordinates and shipping business rules.
+- [x] Reproject visible ship/port paths and saved custom chart pins onto the 800x434 new chart without modifying saved records.
+- [x] Keep zoom, fit and right mouse panning, both map and fleet views.
+- [ ] Verify hosted source suite and real Ubuntu Electron zoom/visual game.
+
 > **SOURCE QA VERIFIED · v0.7.100-dev · November 3, 2026:** GitHub Actions Ubuntu 24.04 / Node 22 full offline `node tests/run-all.cjs`: **246 passed, 0 failed, 246 total**. One targeted source QA run `41623029430`, completed successfully; this confirms the source suite including all seven previously failed regressions. **Actual local Electron packaging/smoke and owner's playtest are still NOT verified**. The workflow only reruns on its own changes or manual invocation. No accepted release/tag.
 
 > **LATEST SOURCE · v0.7.100-dev · NOVEMBER 3, 2026 (unaccepted):** The seven-failure repair from v0.7.99 exposed one additionally stale IPO test expectation dating from before the owner-approved 75% Charles / 25% father cap table. Actual IPO logic already respects family equity. The underwriter test now asserts the correct 53.85% Charles / 19.23% father voting split, 2,500 preserved family votes, 13,000 issued shares, real receipts, invalid-price blocking and majority-loss warnings. An isolated full IPO scenario passed. Set up one targeted offline Node 22 source-suite workflow on GitHub, triggered only when the workflow file changes and manually thereafter, to avoid repeated full Linux builds. No gameplay economics/canon/geometry changed. Source is still not an accepted Linux release; see `docs/RELEASE-NOTES-v0.7.100-dev.md`.

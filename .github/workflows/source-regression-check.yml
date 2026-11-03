@@ -1,4 +1,4 @@
-# One narrow source-suite run on this workflow's introduction/update, then manual only.
+# Sparse source QA on relevant maritime-chart source updates; otherwise manual only.
 # Owner approved sparing GitHub Actions use November 2, 2026.
 name: Capital and Consequence source regression
 on:
@@ -6,6 +6,11 @@ on:
   push:
     paths:
       - .github/workflows/source-regression-check.yml
+      - merchant-navigation.js
+      - merchant-chart.js
+      - merchant-world-map.js
+      - merchant-world-map.css
+      - tests/merchant-admiralty-chart.cjs
 permissions:
   contents: read
 jobs:

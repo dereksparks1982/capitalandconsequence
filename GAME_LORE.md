@@ -65,7 +65,7 @@ The separately implemented full-clock passenger-voyage system now depicts three 
 ## SUPERSEDED, PROVISIONAL, AND IMPLEMENTATION NOTES
 
 - The November 1, 2026 decision in `DECISIONS.md` supersedes earlier 1893 World's Fair chronology. The approved Fair is in **late 1878**, with the District streetlighting contract **before** it. Its exact opening date is **undecided**; the October 1 Q4 boundary recorded in decisions is provisional access timing only.
-- The existing Washington city-map artwork remains the sole city map across years. The separate original EcoClipper maritime chart provides shipping and overseas-travel navigation; it does not replace the city map.
+- The existing Washington city-map artwork remains the sole city map across years. The separate owner-selected British Admiralty world chart provides the maritime visual background; its 1888 print date documents the artwork, not a change to the game's 1878 setting. The original Washington city map is unchanged.
 - Historical release notes, old handoffs, or unbuilt design concepts are records, not automatic present-day game behavior. Do not present planning scenes as completed physical visits or untested source snapshots as an accepted executable.
 - **Gameplay design canon belongs here and in the linked records; development rules belong in `COMPANY_BIBLE.md`.**
 

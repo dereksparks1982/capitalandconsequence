@@ -18,21 +18,21 @@
   const vessels=Array.isArray(fleet?.ships)?fleet.ships:[];
   const selected=vessels.find(s=>String(s.id)===String(selectedId))||vessels.find(s=>s.status!=='lost')||vessels[0];
   const inService=vessels.filter(s=>s.status!=='lost');
-  let svg='<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EcoClipper shipping lines with saved positions of the merchant fleet"><image href="'+esc(nav.MAP)+'" x="0" y="0" width="800" height="600"/>';
+  let svg='<svg viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Admiralty shipping chart and positions of the merchant fleet"><image href="'+esc(nav.MAP)+'" x="0" y="0" width="'+nav.CHART.width+'" height="'+nav.CHART.height+'"/>';
   const portSet=new Set(fleet.ports||[]);
-  for(const [port,xy] of Object.entries(nav.PORTS)){
+  for(const [port,xy] of Object.entries(nav.DISPLAY_PORTS)){
    const active=portSet.has(port);
    svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="'+(active?4.4:2.5)+'" fill="'+(active?'#123d3e':'#75634b')+'" stroke="#fff8e9" stroke-width="1.2"><title>'+esc(port)+(active?' (trade access)':' (not yet verified)')+'</title></circle>';
   }
   for(const ship of vessels){
    if(ship.status!=='at-sea'||!ship.trip)continue;
-   const p=ship.trip.routePoints||nav.route(ship.trip.from,ship.trip.to)?.points;
+   const p=nav.displayRoute(ship.trip.from,ship.trip.to)?.points;
    if(!p?.length)continue;
    svg+='<polyline points="'+p.map(x=>x.map(n=>Number(n).toFixed(1)).join(',')).join(' ')+'" class="merchant-active-route" '+(selected?.id===ship.id?'data-selected="true"':'')+'><title>'+esc(ship.name)+' route</title></polyline>';
   }
   const portCounts={};
   for(const ship of vessels){
-   const point=nav.position(ship,save);
+   const point=nav.displayPosition(ship,save);
    if(!point)continue;
    const inPort=ship.status!=='at-sea';
    const overlap=inPort?(portCounts[ship.port]=(portCounts[ship.port]||0)+1)-1:0;
@@ -43,7 +43,7 @@
   svg+='</svg>';
   let detail='<p class="fine">There are no purchased vessels yet. Acquire a schooner or steamship above to see it on this chart.</p>';
   if(selected){
-   const point=nav.position(selected,save),trip=selected.trip;
+   const point=nav.displayPosition(selected,save),trip=selected.trip;
    const route=trip?nav.route(trip.from,trip.to):null;
    const distance=trip?.nauticalMiles||route?.nauticalMiles||null;
    const state=selected.status==='lost'?'Lost at sea':selected.status==='at-sea'?'Under sail':'In port';
@@ -55,7 +55,7 @@
   }
   const options=vessels.map(s=>'<option value="'+esc(s.id)+'"'+(selected?.id===s.id?' selected':'')+'>'+esc(s.name)+(s.status==='lost'?' (lost)':'')+'</option>').join('');
   const selector=vessels.length?'<label for="merchantChartShip">Select vessel </label><select id="merchantChartShip" data-merchant-ship-select>'+options+'</select>':'';
-  return '<details class="merchant-chart"'+(expanded?' open':'')+'><summary>Fleet Sailing Chart · '+inService.length+' vessels</summary><p class="fine">Historical-style EcoClipper reference image, preserved as supplied. The vessel paths are an initial manually traced approximation of its printed lines, not a verified 1878 navigation survey. Ships advance only when the saved game clock advances.</p><div class="merchant-chart-layout"><div class="merchant-chart-map">'+svg+'</div><aside class="merchant-chart-details">'+selector+detail+'</aside></div><p class="fine">Click a ship icon or choose a vessel to inspect it. White-backed markers represent your ships; the original chart remains unedited.</p></details>';
+  return '<details class="merchant-chart"'+(expanded?' open':'')+'><summary>Fleet Sailing Chart · '+inService.length+' vessels</summary><p class="fine">British Admiralty chart published in 1888, used as visual reference for an alternate-1878 game. Ship overlays are illustrative, not verified Admiralty tracks; passage times follow saved game records. Ships advance only when the saved game clock advances.</p><div class="merchant-chart-layout"><div class="merchant-chart-map">'+svg+'</div><aside class="merchant-chart-details">'+selector+detail+'</aside></div><p class="fine">Click a ship icon or choose a vessel to inspect it. White-backed markers represent your ships; the original chart remains unedited.</p></details>';
  }
  const api=Object.freeze({render:chart});
  if(typeof module==='object'&&module.exports)module.exports=api;

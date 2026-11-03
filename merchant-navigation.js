@@ -1,11 +1,28 @@
-/* Capital & Consequence: image-coordinate maritime lanes and saved-clock navigation.
- * Coordinates trace the bundled EcoClipper shipping-lines image at 800 x 600.
- * Early, illustrative lane survey: not certified historical port tracks or a live AIS feed.
- * Never alter the underlying reference image. No independent wall-clock simulation.
+/* Saved-clock routes with display-only overlay on the owner-selected 1888 Admiralty image.
+ * Existing 800x600 voyage geometry is kept unchanged for legacy games.
+ * The new map's 800x434 overlay is separate from economic passage state.
+ * The print date is historical-art provenance, not a change to the game's 1878 start.
  */
 (function(root){
  'use strict';
- const MAP='assets/artwork/maps/SHIPPING-LINES-ECOCLIPPER-small.jpg';
+ const MAP='assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg';
+ const CHART=Object.freeze({width:800,height:434});
+ // Pixel locations on the unaltered Admiralty scan, approximate study points.
+ const DISPLAY_PORTS=Object.freeze({
+  Baltimore:[320,181],Philadelphia:[322,175],'New York':[325,169],
+  Liverpool:[451,168],Hamburg:[469,171],Havana:[302,223],
+  Singapore:[627,246],'Hong Kong':[684,206]
+ });
+ const DISPLAY_LANES=Object.freeze([
+  {a:'Baltimore',b:'Philadelphia',points:[[320,181],[329,185],[332,180],[322,175]]},
+  {a:'Philadelphia',b:'New York',points:[[322,175],[328,180],[333,174],[325,169]]},
+  {a:'New York',b:'Liverpool',points:[[325,169],[351,147],[382,142],[416,146],[451,168]]},
+  {a:'Liverpool',b:'Hamburg',points:[[451,168],[456,180],[468,179],[469,171]]},
+  {a:'New York',b:'Havana',points:[[325,169],[338,190],[328,211],[315,222],[302,223]]},
+  {a:'Hamburg',b:'Singapore',points:[[469,171],[452,187],[442,219],[443,262],
+   [454,302],[489,344],[522,347],[556,328],[587,291],[612,268],[627,246]]},
+  {a:'Singapore',b:'Hong Kong',points:[[627,246],[639,233],[655,218],[670,209],[684,206]]}
+ ]);
  const PORTS=Object.freeze({
   Baltimore:[208,324],Philadelphia:[214,319],'New York':[220,311],
   Liverpool:[361,282],Hamburg:[379,281],Havana:[211,361],
@@ -108,7 +125,34 @@
   return {...xyAt(points,fraction),progress:fraction,atSea:true,
    remainingDays:end===null||now===null?null:Math.max(0,Math.ceil((end-now)/1440))};
  }
- const api=Object.freeze({MAP,PORTS,LANES,route,plan,sailingDays,gameMinute,position,xyAt});
+ function displayRoute(a,b){
+  const planned=route(a,b);if(!planned)return null;
+  const points=[];
+  for(const leg of planned.legs){
+   const lane=DISPLAY_LANES.find(v=>(v.a===leg.from&&v.b===leg.to)||(v.a===leg.to&&v.b===leg.from));
+   if(!lane)return null;
+   const forward=lane.a===leg.from;
+   const section=(forward?lane.points:lane.points.slice().reverse()).map(p=>p.slice());
+   if(points.length)section.shift();
+   points.push(...section);
+  }
+  return {...planned,points,survey:'admiralty-1888-visual-only'};
+ }
+ function displayPosition(ship,save){
+  const legacy=position(ship,save);if(!legacy)return null;
+  if(legacy.atSea&&ship?.trip){
+   const shown=displayRoute(ship.trip.from,ship.trip.to);
+   return shown?{...legacy,...xyAt(shown.points,legacy.progress)}:null;
+  }
+  const p=DISPLAY_PORTS[ship?.port];
+  return p?{...legacy,x:p[0],y:p[1]}:null;
+ }
+ // Saved personal pins still use the original 800x600 chart grid.
+ function savedMarkToDisplay(mark){return [mark.x,mark.y*CHART.height/600]}
+ function displayMarkToSaved(x,y){return [x,y*600/CHART.height]}
+ const api=Object.freeze({MAP,CHART,PORTS,LANES,DISPLAY_PORTS,DISPLAY_LANES,
+  route,displayRoute,plan,sailingDays,gameMinute,position,displayPosition,xyAt,
+  savedMarkToDisplay,displayMarkToSaved});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_MERCHANT_NAV=api;
 })(typeof window!=='undefined'?window:globalThis);
