@@ -462,7 +462,7 @@ function refreshWhitcombIntro(){
   }
   render();
   return result;
- });
+ },()=>save(true)); // Intro physical exploration saves its own cursor only, not world time.
 }
 function render(){
  if(S.characterRoute==='industrialist'){
