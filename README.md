@@ -6,15 +6,19 @@
 
 In an alternate America shaped by a different course of history, Washington is a city of opportunity, inequality, intrigue, and shifting loyalties. Its streets are filled with merchants and politicians, working people and wealthy patrons, lawmen and criminals. Every life has its own story, and the choices you make can change more than your own future.
 
-**Choose whose life you'll live.**
+**Choose whose life you'll live.** Six character portraits now appear together in the horizontally scrollable “Choose a Life” menu. Drag its scrollbar, use the mouse wheel while hovering, or swipe on mobile. Character names are shown in full; save IDs remain compatible.
 
-**Charles “Charlie” Whitcomb** arrives from a wealthy British-Egyptian family to build Federal Electric, a modest electrical-components company financed by his demanding father. Every contract matters, every installment comes due, and success could bring independence, influence, or an empire. Failure could cost him the business itself.
+**Charles Whitecomb** comes from a British-Egyptian family and begins Federal Electric's industrial career, balancing contracts, finances and his father's investment.
 
-**Samuel “Sam” Harlan** is a rookie patrolman walking the streets of Hillsdale. Keep the peace, meet the people of your beat, and decide what kind of officer you'll become in a city where justice is rarely simple.
+**Samuel Harlan** is a Black rookie patrolman assigned to Hillsdale. Clock in, walk his assigned beat and complete duty reports.
 
-**Elias “Eli” Crowe**, a Washington-born nightclub doorman, works the entrance to the Golden Peacock. Behind the music and polished doors lie favors, secrets, and dangerous opportunities. How far will you go to rise?
+**Elias Crowe** works the entrance of the Golden Peacock, earning wages and handling the night's visitors.
 
-**Edmund Wardman** serves as an orderly at the District Asylum, an institution where family influence and hidden truths can be as dangerous as the patients' troubles. Keep your position, question what you see, or risk everything.
+**Edmund Wardman** serves as an orderly at District Asylum, where his older brother controls the institution.
+
+**Bridget Kennedy**, an Irish businesswoman, owns the Star Club. Madame Star manages daily affairs while Bridget oversees the business. Her proprietor office is a career foundation, not yet a complete ownership economy.
+
+**Benjamin Leach** is a self-made shipping merchant based at a fictional Salem wharf office. His route includes a Salem harbor foundation and access to the world shipping chart; a complete maritime trade economy remains in development.
 
 Work for a living, manage your money, build businesses, travel, trade, gamble, make acquaintances, and follow the opportunities that find you. Reputations grow, debts accumulate, relationships change, and yesterday's decisions can return when you least expect them.
 

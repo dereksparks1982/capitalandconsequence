@@ -1,5 +1,5 @@
-/* Capital & Consequence v0.6.57. Shared title and career desk foundation.
-   Does not simulate unbuilt police, civilian or hospital careers. */
+/* Capital & Consequence v0.7.103. Six-character illustrated title and career desk.
+   New careers begin with honest playable foundations, not fabricated full economies. */
 (function(){
  'use strict';
  const routes=window.FE_CHARACTERS;
@@ -14,12 +14,12 @@
    <p class="career-menu-motto">One city. Countless lives. Every choice has consequences.</p>
    <p class="career-nation-premise">After the Civil War, the United States abolished state borders and reorganized into districts serving national needs.</p>
    <output id="careerMenuDate">No profile selected</output></header>
-   <section class="career-menu-careers" aria-label="Four playable character foundations"><h2>Choose a Life</h2><div id="careerMenuRoutes" class="career-menu-routes"></div></section>
+   <section class="career-menu-careers" aria-label="Six selectable character lives"><h2>Choose a Life</h2><p class="career-menu-hint">Scroll over the portraits, drag the bar below, or swipe sideways to see every life.</p><div id="careerMenuRoutes" class="career-menu-routes" role="group" aria-label="Character portraits, horizontally scrollable" tabindex="0"></div></section>
    <section class="career-menu-records" aria-label="Saved lives"><h2>Saved Profiles</h2><div id="careerMenuProfiles"></div></section>
    <section id="careerMenuCreateBox" class="career-menu-create" hidden><label>Character / Profile Name <input id="careerMenuName" type="text" maxlength="28" autocomplete="off" placeholder="Enter a name"></label><p id="careerMenuCreateRoute"></p><button id="careerMenuCreateConfirm" type="button">Start This Life</button><button id="careerMenuCreateCancel" type="button">Cancel</button></section>
    <p id="careerMenuMessage" class="career-menu-message" role="status" aria-live="polite"></p>
    <div class="career-menu-buttons"><button id="careerMenuContinue" type="button">Continue</button><button id="careerMenuNew" type="button">New Profile</button><button id="careerMenuArchives" type="button">Archives</button><button id="careerMenuDistricts" type="button">District Register</button><button id="careerMenuOptions" type="button">Options</button></div>
-   <footer>FOUR LIVES · ONE WASHINGTON · AUTOSAVE ENABLED</footer>
+   <footer>SIX LIVES · WASHINGTON &amp; SALEM · AUTOSAVE ENABLED</footer>
  </div>`;
  document.body.appendChild(menu);
  // Keep the old markup only as a noninteractive compatibility/archive scaffold
@@ -91,7 +91,10 @@
  function renderMenu(){
   const profiles=readProfiles(),active=activeProfileId();
   menu.querySelector('#careerMenuDate').textContent=dateLabel(profiles.find(p=>p.id===active)||profiles[0]);
-  menu.querySelector('#careerMenuRoutes').innerHTML=routes.list().map(r=>`<button type="button" data-career-pick="${escape(r.id)}" class="career-menu-route ${r.id===choice?'selected':''}" aria-pressed="${r.id===choice}" data-color="${escape(r.deskColor)}"><b>${escape(r.characterName||r.name)}</b><small>${escape(r.name)} · ${r.status==='playable'?'BUSINESS CAREER':'DESK & CITY FOUNDATION'}</small><span>${escape(r.summary)}</span></button>`).join('');
+  const cards=menu.querySelector('#careerMenuRoutes');
+  const previousLeft=cards.scrollLeft;
+  cards.innerHTML=routes.list().map(r=>`<button type="button" data-career-pick="${escape(r.id)}" class="career-menu-route ${r.id===choice?'selected':''}" aria-pressed="${r.id===choice}" data-color="${escape(r.deskColor)}"><img class="career-menu-portrait" src="${escape(encodeURI(r.portrait))}" alt="" loading="lazy" decoding="async"><b>${escape(r.characterName)}</b><small>${escape(r.name)} · ${r.status==='playable'?'BUSINESS CAREER':'CAREER FOUNDATION'}</small><span>${escape(r.summary)}</span></button>`).join('');
+  cards.scrollLeft=previousLeft;
   menu.querySelector('#careerMenuProfiles').innerHTML=profiles.length?profiles.map(p=>{
    let saved=null;try{saved=JSON.parse(localStorage.getItem(profileSaveKey(p.id))||'null')}catch(e){}
    const route=routes.label(saved?.characterRoute);
@@ -175,11 +178,11 @@
   if(lastRenderedRoute!==route.id){
    lastRenderedRoute=route.id;
    desk.dataset.route=route.id;
-   const bookTitle=route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':'Duty Journal';
+   const bookTitle=route.id==='industrialist'?'Business Ledger':route.id==='investigator'?'Casebook':route.id==='criminal'?'Personal Journal':route.id==='proprietor'?'Star Club Ledger':route.id==='mariner'?'Shipping Journal':'Duty Journal';
    desk.innerHTML=`<div class="career-desk-heading"><div><small>PERSONAL HEADQUARTERS · ${escape(route.name.toUpperCase())}</small><h2>${escape(route.deskTitle)}</h2><p id="careerDeskDate"></p></div><span class="career-desk-seal">${escape(route.name)}</span></div>
     <div class="career-desk-art" aria-label="${escape(route.name)} desk with paper map and record book">
       <div id="careerDeskBlotter" class="career-desk-blotter" aria-label="Movable map, book and collected possessions">
-       <button type="button" id="careerDeskMap" data-desk-move="map" class="career-desk-map career-desk-movable" title="Click to open the Washington map; drag to rearrange" aria-label="Open Washington map"><img src="assets/artwork/maps/title-map-1938.jpg?v=desktop1" alt="" draggable="false"></button>
+       <button type="button" id="careerDeskMap" data-desk-move="map" class="career-desk-map career-desk-movable" title="${route.id==='mariner'?'Open shipping chart':'Open Washington map'}; drag to rearrange" aria-label="${route.id==='mariner'?'Open world shipping chart':'Open Washington map'}"><img src="${route.id==='mariner'?'assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg':'assets/artwork/maps/title-map-1938.jpg?v=desktop1'}" alt="" draggable="false"></button>
         ${route.id==='industrialist'?'<button type="button" id="careerDeskShippingMap" data-desk-move="shipping" class="career-desk-shipping career-desk-movable" title="Open World Shipping Chart; drag to rearrange" aria-label="Open world shipping chart"><img src="assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg" alt="" draggable="false"></button>':''}
        <button type="button" id="careerDeskLedger" data-desk-move="ledger" class="career-desk-ledger career-desk-movable" title="Click to open ${escape(bookTitle)}; drag to rearrange" aria-label="Open ${escape(bookTitle)}"><span class="career-desk-book-spine" aria-hidden="true"></span><strong>${escape(bookTitle)}</strong></button>
       </div>
@@ -188,14 +191,14 @@
     ${route.id==='industrialist'?'<section id="careerDeskCollection" class="career-desk-collection" aria-label="Personal belongings"><div class="career-desk-inventory"><h3>On Your Person</h3><div id="careerDeskCarried"></div></div><div class="career-desk-inventory"><h3>On the Desk</h3><div id="careerDeskPlaced"></div></div><div id="careerDeskItemDetail" class="career-desk-item-detail" aria-live="polite"></div></section>':''}
     <p class="career-desk-summary">${escape(route.summary)}</p>
     ${route.id==='investigator'?'<p class="career-desk-readiness">Station orders: walk your assigned beat, respond to disturbances and prepare your duty papers. Detective casework is not authorized at rookie rank.</p>':''}
-    ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has ordinary paid doorman shifts; Edmund now performs limited report-gated orderly rounds; promotions remain in development. The factory belongs to Charles Whitcomb.</p>'}
-    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">Washington Map</button>${route.id==='industrialist'?'<button type="button" id="careerDeskShippingButton">Shipping Map</button>':''}<button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
+    ${route.id==='industrialist'?'<p class="career-desk-readiness">Company accounts, investments and personal records are kept in the book on your desk.</p>':route.id==='proprietor'?'<p class="career-desk-readiness">Star Club ownership foundation: inspect the club and your private office. Madame Star remains the resident manager; the full proprietor ledger is not yet operational.</p>':route.id==='mariner'?'<p class="career-desk-readiness">Salem foundation: visit the fictional wharf office and study the shipping chart. Cargo contracts and passenger trade remain under development.</p>':'<p class="career-desk-readiness">Career foundation: your desk, saved time and Washington are usable. Sam has a patrol-and-report loop and Eli has paid doorman shifts; Edmund performs limited orderly rounds. The factory belongs to Charles Whitecomb.</p>'}
+    <div class="career-desk-actions"><button type="button" id="careerDeskEnterLocation">Enter Current Location</button><button type="button" id="careerDeskMapButton">${route.id==='mariner'?'World Shipping Chart':'Washington Map'}</button>${route.id==='industrialist'?'<button type="button" id="careerDeskShippingButton">Shipping Map</button>':''}<button type="button" id="careerDeskWait">${route.id==='industrialist'?'Coffee Break':'Spend 5 Minutes'}</button><button type="button" id="careerDeskMenu">Main Menu</button></div>
     ${route.id==='industrialist'?'<section id="careerDeskCoffee" class="career-desk-coffee" hidden aria-label="Coffee break"><h3>Five-minute break</h3><p>Choose a refreshment or speak to somebody who is actually here.</p><div class="career-desk-coffee-actions"><button type="button" data-desk-refreshment="coffee">Coffee</button><button type="button" data-desk-refreshment="water">Water</button><button type="button" data-desk-refreshment="snack">Small Snack</button><button type="button" data-desk-refreshment="rest">Rest Break</button></div><p id="careerDeskNeeds" class="character-needs-meter"></p><p id="careerDeskCoffeeNext" class="career-desk-coffee-next"></p><div id="careerDeskCoffeePeople" class="career-desk-coffee-people"></div><output id="careerDeskCoffeeStatus" class="career-desk-coffee-status" role="status" aria-live="polite"></output></section>':''}`;
    window.FE_DESK_COLLECTION?.attach?.(desk);
-   desk.querySelector('#careerDeskMap').onclick=()=>openTitleMap();
-   desk.querySelector('#careerDeskMapButton').onclick=()=>openTitleMap();
+   const openShipping=()=>window.FE_MERCHANT_MAP?.open?.(S,()=>{save(true);render()});
+   desk.querySelector('#careerDeskMap').onclick=route.id==='mariner'?openShipping:()=>openTitleMap();
+   desk.querySelector('#careerDeskMapButton').onclick=route.id==='mariner'?openShipping:()=>openTitleMap();
     if(route.id==='industrialist'){
-     const openShipping=()=>window.FE_MERCHANT_MAP?.open?.(S,()=>{save(true);render()});
      desk.querySelector('#careerDeskShippingMap').onclick=openShipping;
      desk.querySelector('#careerDeskShippingButton').onclick=openShipping;
     }
@@ -280,7 +283,12 @@
  }
  menu.addEventListener('click',e=>{
   const button=e.target.closest('button');if(!button)return;
-  if(button.dataset.careerPick){choice=routes.normalize(button.dataset.careerPick);message();renderMenu();return}
+  if(button.dataset.careerPick){
+   choice=routes.normalize(button.dataset.careerPick);message();renderMenu();
+   const picked=menu.querySelector('[data-career-pick="'+choice+'"]');
+   picked?.focus({preventScroll:true});picked?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+   return;
+  }
   if(button.dataset.careerLoad){load(button.dataset.careerLoad);return}
   if(button.dataset.careerDelete){
    deleteProfileById(button.dataset.careerDelete);
@@ -302,6 +310,27 @@
    }
    case 'careerMenuOptions':openTitleDialog('Options','<p>Period menu settings will be added in later builds.</p>');break;
   }
+ });
+ const cardRail=menu.querySelector('#careerMenuRoutes');
+ cardRail.addEventListener('wheel',event=>{
+  // Use the vertical wheel to move the card row only while it can scroll that way.
+  // Let normal page scrolling resume at either end; retain trackpad horizontal input.
+  if(event.ctrlKey||event.metaKey||Math.abs(event.deltaX)>=Math.abs(event.deltaY))return;
+  const max=cardRail.scrollWidth-cardRail.clientWidth;
+  if(max<=0)return;
+  const canMove=event.deltaY<0?cardRail.scrollLeft>0:cardRail.scrollLeft<max-1;
+  if(canMove){event.preventDefault();cardRail.scrollLeft+=event.deltaY;}
+ },{passive:false});
+ cardRail.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  const cards=[...cardRail.querySelectorAll('button[data-career-pick]')];
+  const current=cards.indexOf(document.activeElement);
+  const next=event.key==='Home'?0:event.key==='End'?cards.length-1:
+   Math.max(0,Math.min(cards.length-1,(current<0?0:current)+(event.key==='ArrowRight'?1:-1)));
+  const target=cards[next];
+  if(!target)return;
+  event.preventDefault();target.focus({preventScroll:true});
+  target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
  });
  menu.querySelector('#careerMenuName').addEventListener('keydown',e=>{if(e.key==='Enter')create()});
  document.addEventListener('keydown',e=>{

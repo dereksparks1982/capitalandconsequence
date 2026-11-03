@@ -42,6 +42,8 @@
    if(room.id==='production-floor'&&(role==='industrialist'||(person==='foremanSullivan'&&actor.onDuty)))
     return {ok:true,locationId:id,roomId:room.id};
   }
+  if(id==='star'&&room.id==='owner-office'&&role==='proprietor')return {ok:true,locationId:id,roomId:room.id};
+  if(id==='salemHarbor'&&room.id==='leach-office'&&role==='mariner')return {ok:true,locationId:id,roomId:room.id};
   if(id==='secondNightclub'){
    if(room.id==='doorman-post'&&(role==='criminal'||(person==='eliCrowe'&&actor.onDuty)))return {ok:true,locationId:id,roomId:room.id};
    if(room.id==='proprietor-office'&&person==='luiDelacroix')return {ok:true,locationId:id,roomId:room.id};

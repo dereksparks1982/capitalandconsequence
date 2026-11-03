@@ -53,7 +53,21 @@
      {id:'dining-room',name:'Dining Room',description:'Guests may dine and take refreshments with quiet, period-appropriate salon music. Meals can be ordered at the existing tables. Dining costs personal money and advances the Washington clock; no cards or gambling.'},
      {id:'brandy-room',name:'Brandy Room',description:'A quieter smoking and conversation room for established patrons.'},
      {id:'madam-office',name:'Madam Star’s Private Office',restricted:true,description:'Madam Star grants entry by invitation. Her correspondence and affairs are not open to casual guests.'},
+     {id:'owner-office',name:'Proprietor’s Office',restricted:true,description:'Bridget Kennedy’s private office at the Star Club. Madame Star manages daily operations while the proprietor oversees the business.'},
      {id:'private-suites',name:'Private Rooms',restricted:true,description:'Private rooms are accessible only by permission. No gambling is permitted anywhere in the club.'}
+   ]
+  },
+  {
+   id:'salemHarbor',
+   name:'Salem Harbor',
+   area:'Salem, Massachusetts · fictional wharf office (address unverified)',
+   category:'port',
+   description:'Historic Salem harbor is the setting for Benjamin Leach’s fictional shipping career. This is not a surveyed 1878 address or a Washington map pin.',
+   map:null,
+   defaultRoom:'harbor-walk',
+   rooms:[
+    {id:'harbor-walk',name:'Salem Waterfront',description:'The working waterfront and arriving vessels. Detailed local streets and shipping commerce are in development.'},
+    {id:'leach-office',name:'Leach Wharf Office',restricted:true,description:'Benjamin Leach’s fictional office. Trade records and the world shipping chart are the starting foundation.'}
    ]
   },
   {
