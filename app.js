@@ -1371,6 +1371,18 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
   if(dealt.ok){save(true);render()}
   return dealt;
  },
+ shipTalk:(id,topic)=>{
+  const service=window.FE_SHIPBOARD_LIFE,offer=service?.offerTalk?.(S,id,topic);
+  if(!offer?.ok)return offer||{ok:false,reason:'No nearby shipmate to speak with.'};
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,offer.seconds)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<offer.seconds)
+   return {ok:false,reason:'Not enough game time for a full conversation before the next report.'};
+  if(advanceWorldSimulation(offer.seconds,true,'passenger-shipboard')!==offer.seconds)
+   return {ok:false,reason:'The world clock interrupted the conversation.'};
+  const reply=service.finishTalk(S,offer);
+  if(reply.ok){save(true);render()}
+  return reply;
+ },
  shipLookout:()=>{
   const board=window.FE_SHIPBOARD,offer=board?.stationOffer?.(S,'lookout',300);
   if(!offer?.ok)return offer||{ok:false,reason:'Lookout unavailable.'};
