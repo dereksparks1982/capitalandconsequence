@@ -58,6 +58,7 @@ function desk(){
    ' monthly · status '+account.status.toUpperCase()+'.');
   message(host,'The company owes this separate debt regardless of any stock listing. Father owns '+own.familyPercent.toFixed(2)+
    '% of voting shares and retains his investor seat while the holding is at least 15%. Total family dividends recorded: '+$(account.dividendIncomeCents/100)+'.');
+  message(host,'His confidence in Charles as an investor: '+account.confidence+'/100. Recorded opening decisions and actual repayment history influence his board votes; the family loan and equity remain legally separate.');
   if(account.overdueCents>0&&account.status!=='repossessed'){
    const payOpts=node('div');payOpts.className='trade-buttons';
    const amount=numeric(Math.min(account.overdueCents,account.paymentCents)/100,.01,account.overdueCents/100,.01);
