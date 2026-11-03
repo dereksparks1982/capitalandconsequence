@@ -126,6 +126,7 @@ function shipScene(){
  const layout=ship.deck(save,st.deck),r=st.game.round,people=life.onDeck(save,st.deck);
  let h='<section class="shipboard-scene"><h3>Walk Aboard · '+esc(layout.name)+'</h3>'+
   '<p class="fine">This entire vessel sails while you explore. One tile or staircase costs one game minute on the same world clock.</p>'+
+  (ship.roughWeather(save)?'<p class="passenger-weather-notice">Rough seas: the captain has temporarily closed the exposed upper deck and lookout. Return below if already on deck.</p>':'')+
   '<div class="shipboard-deck-list">'+decks.map(d=>'<span class="'+(d.id===st.deck?'selected':'')+'">'+esc(d.name)+'</span>').join('')+'</div>'+
   '<div class="shipboard-grid" role="grid" aria-label="Walkable passenger ship deck">';
  for(let y=0;y<9;y++)for(let x=0;x<12;x++){
