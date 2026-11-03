@@ -64,13 +64,14 @@ function finish(st,match,reason){
 function play(save,from,to){
  const st=ensure(save),match=st?.active;
  if(!match||!ship.at(save,'cards'))return no('No match at this shipboard table.');
+ const before=copy(match.position);
  const step=checkers.apply(match.position,from,to);
  if(!step.ok)return step;
  let opponent=[],receipt=null;
  if(match.position.status==='playing'&&!step.continues){
   const seed=[save.passengerSea.voyage.id,match.id,match.position.ply].join(':');
   try{opponent=checkers.npcTurn(match.position,seed,2)}
-  catch(error){return no('The computer player could not complete its legal move. This match remains open.')}
+  catch(error){match.position=before;return no('The computer player could not complete its legal move. This match remains open.')}
  }
  if(match.position.status==='finished'){
   match.endedMinute=save.worldCalendar.worldMinute;
