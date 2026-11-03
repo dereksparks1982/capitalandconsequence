@@ -1383,6 +1383,37 @@ window.FE_PASSENGER_ACTIONS=Object.freeze({
   if(reply.ok){save(true);render()}
   return reply;
  },
+ shipCheckerStart:()=>{
+  const engine=window.FE_SHIP_CHECKERS,offer=engine?.offerStart?.(S);
+  if(!offer?.ok)return offer||{ok:false,reason:'The shipboard checkers table is unavailable.'};
+  const seconds=offer.seconds;
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<seconds)
+   return {ok:false,reason:'The game requires ten uninterrupted minutes before the next daily report.'};
+  if(advanceWorldSimulation(seconds,true,'passenger-shipboard')!==seconds)
+   return {ok:false,reason:'The shared clock interrupted the game invitation.'};
+  const result=engine.start(S);
+  if(result.ok){save(true);render()}
+  return result;
+ },
+ shipCheckerMove:(from,to)=>{
+  const engine=window.FE_SHIP_CHECKERS,offer=engine?.offerMove?.(S,from,to);
+  if(!offer?.ok)return offer||{ok:false,reason:'No legal shipboard draughts move is available.'};
+  const seconds=offer.seconds;
+  if(!window.FE_WASHINGTON_TIME?.canSpend?.(S,seconds)||
+     (window.FE_WASHINGTON_TIME?.secondsToBoundary?.(S)||0)<seconds)
+   return {ok:false,reason:'The game needs five uninterrupted minutes before the daily report.'};
+  if(advanceWorldSimulation(seconds,true,'passenger-shipboard')!==seconds)
+   return {ok:false,reason:'The shared clock interrupted the draughts move.'};
+  const result=engine.play(S,from,to);
+  if(result.ok){save(true);render()}
+  return result;
+ },
+ shipCheckerResign:()=>{
+  const result=window.FE_SHIP_CHECKERS?.resign?.(S);
+  if(result?.ok){save(true);render()}
+  return result||{ok:false,reason:'No active shipboard match.'};
+ },
  shipLookout:()=>{
   const board=window.FE_SHIPBOARD,offer=board?.stationOffer?.(S,'lookout',300);
   if(!offer?.ok)return offer||{ok:false,reason:'Lookout unavailable.'};
