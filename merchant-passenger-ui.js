@@ -5,6 +5,7 @@
 'use strict';
 const sea=typeof module==='object'&&module.exports?require('./merchant-passenger-sea.js'):root.FE_PASSENGER_SEA;
 const ship=typeof module==='object'&&module.exports?require('./merchant-shipboard.js'):root.FE_SHIPBOARD;
+const life=typeof module==='object'&&module.exports?require('./merchant-shipboard-life.js'):root.FE_SHIPBOARD_LIFE;
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
@@ -73,25 +74,41 @@ function localRecords(port,zone){
  if(zone==='customs')return'<h4>Customs</h4><p>Formal cargo inspection and customs payments are not yet simulated. No clearance is automatically granted.</p>';
   return'<h4>Harbour Street</h4><p>The district is open for short walks. No fabricated merchants or resident schedules are present.</p>';
 }
+function nearbyPeople(){
+ if(!save?.passengerSea?.voyage)return '';
+ const friends=life.nearby(save);
+ return friends.length?friends.map(p=>'<div class="shipboard-nearby-person"><strong>'+
+  esc(p.label)+'</strong><p>'+esc(p.description)+'</p>'+
+  button('ship-talk:'+p.id+':voyage','Ask About the Voyage · 2 min')+
+  button('ship-talk:'+p.id+':ship','Ask About Life Aboard · 2 min')+
+  button('ship-talk:'+p.id+':cards','Ask About Cards · 2 min')+'</div>').join(''):
+  '<p class="fine">Walk beside another passenger or steward to talk.</p>';
+}
 function shipScene(){
  const st=ship.ensure(save),decks=ship.decks(save);
  if(!st)return '';
- const layout=ship.deck(save,st.deck),r=st.game.round;
+ const layout=ship.deck(save,st.deck),r=st.game.round,people=life.onDeck(save,st.deck);
  let h='<section class="shipboard-scene"><h3>Walk Aboard · '+esc(layout.name)+'</h3>'+
   '<p class="fine">This entire vessel sails while you explore. One tile or staircase costs one game minute on the same world clock.</p>'+
   '<div class="shipboard-deck-list">'+decks.map(d=>'<span class="'+(d.id===st.deck?'selected':'')+'">'+esc(d.name)+'</span>').join('')+'</div>'+
   '<div class="shipboard-grid" role="grid" aria-label="Walkable passenger ship deck">';
  for(let y=0;y<9;y++)for(let x=0;x<12;x++){
-  const t=layout.rows[y][x],here=st.x===x&&st.y===y;
+  const t=layout.rows[y][x],here=st.x===x&&st.y===y,occupants=people.filter(p=>p.x===x&&p.y===y);
   const adj=Math.abs(st.x-x)+Math.abs(st.y-y)===1&&ship.allowed(t);
-  const sym=here?'♟':({'#':'▓','.':'','H':'↕','B':'▰','G':'▤','W':'◉','C':'♣','O':'◎','X':'×','~':'≈'}[t]??'');
-  const label=here?'Charles':({'#':'Wall','.':'Deck','H':'Stairs','B':'Passenger berth','G':'Galley',
+  const base=({'#':'▓','.':'','H':'↕','B':'▰','G':'▤','W':'◉','C':'♣','O':'◎','X':'×','~':'≈'}[t]??'');
+  const sym=here?'♟':occupants.length?'◇':base;
+  const label=here?'Charles':occupants.length?occupants.map(p=>p.label).join(', '):({'#':'Wall','.':'Deck','H':'Stairs','B':'Passenger berth','G':'Galley',
    'W':'Drinking water','C':'Card table','O':'Lookout','X':'Crew only','~':'Water'}[t]||'Tile')+' at '+(x+1)+','+(y+1);
-  const klass='shipboard-cell tile-'+({'#':'wall','.':'floor','X':'restricted','~':'sea'}[t]||t.toLowerCase())+(here?' traveler':'');
-  if(adj)h+='<button type="button" class="'+klass+'" data-passenger-action="ship-walk:'+x+':'+y+'" aria-label="'+esc(label)+'">'+sym+'</button>';
-  else h+='<span class="'+klass+'" aria-label="'+esc(label)+'">'+sym+'</span>';
+  const klass='shipboard-cell tile-'+({'#':'wall','.':'floor','X':'restricted','~':'sea'}[t]||t.toLowerCase())+(here?' traveler':occupants.length?' shipmate':'');
+  const data=' data-ship-square="'+x+':'+y+'" data-ship-base="'+esc(base)+'"';
+  if(adj)h+='<button type="button" class="'+klass+'"'+data+' data-passenger-action="ship-walk:'+x+':'+y+'" aria-label="'+esc(label)+'">'+sym+'</button>';
+  else h+='<span class="'+klass+'"'+data+' aria-label="'+esc(label)+'">'+sym+'</span>';
  }
- h+='</div><div class="shipboard-controls">';
+ h+='</div><div class="shipboard-people"><h4>Travelers Aboard</h4>'+
+  '<p class="fine">These are ordinary fellow travelers, not introduced Washington residents. Their deck positions follow the same game clock as the vessel.</p>'+
+  '<div class="shipboard-people-list">'+life.onDeck(save,st.deck).map(p=>
+   '<p>'+esc(p.label)+' · '+(p.moving?'walking across the vessel':'present on this deck')+'</p>').join('')+'</div>'+
+  '<div class="shipboard-nearby">'+nearbyPeople()+'</div></div><div class="shipboard-controls">';
  if(ship.tile(save,st.deck,st.x,st.y)==='H'){
   const i=decks.findIndex(d=>d.id===st.deck);
   if(i>0)h+=button('ship-deck:'+decks[i-1].id,'Climb to '+decks[i-1].name+' · 1 min');
@@ -228,6 +245,7 @@ function click(e){
  if(cmd.startsWith('ship-deck:')){changed(actions?.shipDeck?.(cmd.slice(10)));return}
  if(cmd.startsWith('ship-card:')){changed(actions?.shipCard?.(cmd.slice(10)));return}
  if(cmd==='ship-lookout'){changed(actions?.shipLookout?.());return}
+ if(cmd.startsWith('ship-talk:')){const [,id,topic]=cmd.split(':');changed(actions?.shipTalk?.(id,topic));return}
  if(cmd.startsWith('zone:')){const next=cmd.slice(5);changed(actions?.move?.(next,6,7));return}
  if(cmd.startsWith('walk:')){
   const parts=cmd.split(':');changed(actions?.move?.(sea.ensure(save).position.zone,+parts[1],+parts[2]));
@@ -257,6 +275,21 @@ if(typeof document!=='undefined')root.setInterval?.(()=>{
  if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y);const icon=host.querySelector('#passengerLiveLabel');if(icon){icon.setAttribute('x',live.coordinates.x);icon.setAttribute('y',live.coordinates.y+5)}}
  const pct=Math.floor((live.progress||0)*100),bar=host.querySelector('.passenger-progress');
  if(bar){bar.setAttribute('aria-valuenow',pct);const fill=bar.querySelector('span');if(fill)fill.style.width=pct+'%'}
+ const board=ship.ensure(save);
+ if(board){
+  const occupants=life.onDeck(save,board.deck),nearby=host.querySelector('.shipboard-nearby');
+  for(const cell of host.querySelectorAll('[data-ship-square]')){
+   const [x,y]=cell.dataset.shipSquare.split(':').map(Number),other=occupants.filter(p=>p.x===x&&p.y===y);
+   const here=board.x===x&&board.y===y;
+   const glyph=here?'♟':other.length?'◇':cell.dataset.shipBase;
+   if(cell.textContent!==glyph)cell.textContent=glyph;
+   cell.classList.toggle('shipmate',!here&&other.length>0);
+   if(other.length)cell.setAttribute('title',other.map(p=>p.label).join(', '));
+   else cell.removeAttribute('title');
+  }
+  if(nearby){const next=nearbyPeople();if(nearby.innerHTML!==next)nearby.innerHTML=next}
+ }
+
 },1000);
 const api=Object.freeze({refresh,updatePier,showBooking});
 if(typeof module==='object'&&module.exports)module.exports=api;
