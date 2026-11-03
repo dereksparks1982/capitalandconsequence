@@ -1,3 +1,13 @@
+> **LATEST DEV SOURCE · v0.7.102-dev · NOVEMBER 3, 2026 (unaccepted):** Substantive usability build for owner-selected Admiralty chart: fitted/Retina-capped cursor zoom, bounded RMB pan, genuine zoom preservation when resizing, existing saved camera migration and stable-size ship/port markers. Corrected all eight *visual-only* port overlay locations and seven illustrative coast-aware routes against the actual scan. Existing 800×600 saved voyage/commerce geography and personal map marks are unchanged; original Washington map and 1878 story untouched. New functional camera QA; full source suite and Electron game still require independent verification. See `docs/RELEASE-NOTES-v0.7.102-dev.md`.
+
+## November 3, 2026 · v0.7.102-dev · maritime chart UX (source snapshot)
+- [x] True image-resolution zoom cap, including high-DPI displays, with mouse cursor anchor and no blurry overzoom.
+- [x] Bounded right-drag map pan and no chart disappearing off viewport.
+- [x] Preserve visible map center/zoom on resize, with saved legacy camera migration.
+- [x] Correct approximate visual-only shipping markers/coastal routes using the approved historical scan.
+- [x] Stable-size clickable ship and port symbols under zoom and dedicated camera regression tests.
+- [ ] Full Node source QA and native Ubuntu Electron visual walkthrough; owner acceptance remains pending.
+
 > **VERIFIED SOURCE QA · NOVEMBER 3, 2026 · v0.7.101-dev:** Owner-approved Admiralty shipping-map replacement passed the full Ubuntu 24.04 / Node 22 GitHub source regression run **247 passed, 0 failed, 247 total** at commit `c7a3e7c54d170ea58bebd2d7c751f6fb6569980e` (Actions run **41630814289**). The old EcoClipper asset is removed from current Git tree; new JPEG 1,643,745 bytes <25 MB. This is source QA only. Actual Electron packaged smoke, shipboard mouse zoom and visual port placement have NOT been playtested or accepted by owner. No release tag.
 
 > **CHART QA FOLLOW-UP · v0.7.101-dev:** First hosted source run was 245/247, with only two retired-EcoClipper-filename checks failing. Those are now updated to owner-approved Admiralty asset identity; source pixel-aware zoom limit and saved-camera migration added. Await rerun before declaring acceptance. Original Washington map and historical decisions unchanged.

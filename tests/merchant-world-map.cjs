@@ -19,6 +19,7 @@ assert(src.includes('FE_MERCHANT_MAP'), 'shipping map API must exist');
 assert(src.includes('merchant-world-viewport')&&src.includes('merchant-world-stage'), 'full map viewport missing');
 assert(src.includes('onPointerDown')&&src.includes('e.button!==2'), 'right mouse panning must be present');
 assert(src.includes('onWheel')&&src.includes("command==='zoom-in'"), 'wheel and button zoom must be present');
+assert(html.indexOf('merchant-chart-camera.js')<html.indexOf('merchant-world-map.js')&&html.includes('merchant-chart-camera.js'),'Pure chart camera loads before map UI');
 assert(src.includes('function persistView()')&&src.includes('view.zoom='), 'maritime camera settings must persist');
 assert(src.includes('focus-port:')&&src.includes('focus-pin:'), 'port and personal mark directory navigation missing');
 assert(src.includes('dispatchEvent(new MouseEvent'), 'SVG markers must support keyboard activation');

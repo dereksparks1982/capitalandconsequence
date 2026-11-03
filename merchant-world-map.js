@@ -6,6 +6,7 @@
 'use strict';
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
+const camera=typeof module==='object'&&module.exports?require('./merchant-chart-camera.js'):root.FE_MERCHANT_CAMERA;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cash=v=>'$'+(Number(v)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 let host=null,session=null,ticker=null;
@@ -60,51 +61,51 @@ function close(){
 function persistView(){
  if(!host||host.hidden||!session?.ready)return;
  const vp=host.querySelector('.merchant-world-viewport');if(!vp)return;
- const fit=Math.max(.25,Math.min((vp.clientWidth-12)/nav.CHART.width,(vp.clientHeight-12)/nav.CHART.height));
+ const record=camera.recorded(session,{width:vp.clientWidth,height:vp.clientHeight});
  const view=state().view;
- view.zoom=Math.round(session.scale/fit*10000)/10000;
- view.cx=Math.max(0,Math.min(nav.CHART.width,(vp.clientWidth/2-session.x)/session.scale));
- view.cy=Math.max(0,Math.min(nav.CHART.height,(vp.clientHeight/2-session.y)/session.scale));
- view.chartVersion=2; // distinguish new printed-chart camera from old 800x600 camera
+ view.zoom=record.zoom;view.cx=record.cx;view.cy=record.cy;
+ view.chartVersion=record.chartVersion;
  session.onChange?.();
 }
+function mapViewport(){
+ const vp=host?.querySelector('.merchant-world-viewport');
+ return vp?{width:vp.clientWidth,height:vp.clientHeight}:null;
+}
 function sharpZoomLimit(){
- // Do not upscale the scan beyond one image pixel per physical screen pixel.
- // A 3840-wide JPEG rendered on an 800-wide virtual chart has 4.8x source detail.
  const image=host?.querySelector('.merchant-world-stage>img');
- const nativeWidth=image?.naturalWidth||3840;
- const density=Math.max(1,Number(root.devicePixelRatio)||1);
- return Math.min(3.5,Math.max(.3,nativeWidth/(nav.CHART.width*density)));
+ return camera.limit(mapViewport(),image?.naturalWidth||nav.CHART.nativeWidth,root.devicePixelRatio||1);
 }
 function resize(first=false){
  if(!session||!host||host.hidden)return;
- const vp=host.querySelector('.merchant-world-viewport'),stage=host.querySelector('.merchant-world-stage');
+ const vp=mapViewport(),stage=host.querySelector('.merchant-world-stage');
  if(!vp||!stage)return;
- if(!session.ready||first){
-  const restore=!session.ready,fit=Math.max(.25,Math.min((vp.clientWidth-12)/nav.CHART.width,(vp.clientHeight-12)/nav.CHART.height));
-  session.scale=fit;session.x=(vp.clientWidth-nav.CHART.width*fit)/2;
-  session.y=(vp.clientHeight-nav.CHART.height*fit)/2;
-  const view=state().view;
-  if(restore&&Number.isFinite(view.zoom)&&view.zoom>0&&Number.isFinite(view.cx)&&Number.isFinite(view.cy)){
-   session.scale=Math.max(.3,Math.min(sharpZoomLimit(),fit*view.zoom));
-   session.x=vp.clientWidth/2-Math.max(0,Math.min(nav.CHART.width,view.cx))*session.scale;
-   // Existing player files may have centerY saved on EcoClipper's 600-unit canvas.
-   const cy=view.chartVersion===2?view.cy:view.cy*nav.CHART.height/600;
-   session.y=vp.clientHeight/2-Math.max(0,Math.min(nav.CHART.height,cy))*session.scale;
-  }
-  session.ready=true;
- }
+ const nativeWidth=host.querySelector('.merchant-world-stage>img')?.naturalWidth||nav.CHART.nativeWidth;
+ const dpr=root.devicePixelRatio||1;
+ let next=null;
+ if(first){next=camera.fitted(vp);}
+ else if(!session.ready){next=camera.restored(state().view,vp,nativeWidth,dpr);}
+ else if(session.viewportSize&&(session.viewportSize.width!==vp.width||
+          session.viewportSize.height!==vp.height)){
+  // Responsive reflow preserves the chart coordinate under the screen center.
+  next=camera.reflowed(session,session.viewportSize,vp,nativeWidth,dpr);
+ }else next=camera.constrain(session,vp);
+ Object.assign(session,next);
+ session.viewportSize=vp;session.ready=true;
  stage.style.transform='translate('+session.x+'px,'+session.y+'px) scale('+session.scale+')';
+ // Keep port/ship symbols the same usable screen size when paper is magnified.
+ stage.style.setProperty('--ocean-icon-inverse',String(1/session.scale));
  host.querySelector('#merchantWorldZoom')?.replaceChildren(document.createTextNode(Math.round(session.scale*100)+'%'));
 }
 function zoom(factor,clientX,clientY){
- const vp=host?.querySelector('.merchant-world-viewport');if(!vp)return;
- const rect=vp.getBoundingClientRect();
- const px=Number.isFinite(clientX)?clientX-rect.left:vp.clientWidth/2;
- const py=Number.isFinite(clientY)?clientY-rect.top:vp.clientHeight/2;
- const old=session.scale,next=Math.max(.3,Math.min(sharpZoomLimit(),old*factor));
- session.x=px-(px-session.x)*next/old;session.y=py-(py-session.y)*next/old;
- session.scale=next;resize();
+ const vp=mapViewport(),el=host?.querySelector('.merchant-world-viewport');
+ if(!vp||!el)return;
+ const rect=el.getBoundingClientRect();
+ const x=Number.isFinite(clientX)?clientX-rect.left:vp.width/2;
+ const y=Number.isFinite(clientY)?clientY-rect.top:vp.height/2;
+ const image=host.querySelector('.merchant-world-stage>img');
+ Object.assign(session,camera.zoomed(session,vp,factor,x,y,
+  image?.naturalWidth||nav.CHART.nativeWidth,root.devicePixelRatio||1));
+ resize(false);
 }
 function plot(){
  const e=fleet(),m=state();
@@ -165,9 +166,9 @@ function portMiniScene(){
 function focusPoint(point,minimumScale=1){
  const viewport=host?.querySelector('.merchant-world-viewport');
  if(!point||!viewport)return;
- session.scale=Math.max(session.scale,minimumScale);
- session.x=viewport.clientWidth/2-point[0]*session.scale;
- session.y=viewport.clientHeight/2-point[1]*session.scale;
+ const image=host.querySelector('.merchant-world-stage>img');
+ Object.assign(session,camera.focused(session,mapViewport(),point,minimumScale,
+  image?.naturalWidth||nav.CHART.nativeWidth,root.devicePixelRatio||1));
  resize(false);
 }
 function chartDirectory(){
@@ -577,7 +578,8 @@ function onPointerDown(e){
 }
 function onPointerMove(e){
  const d=session?.drag;if(!d||d.id!==e.pointerId)return;
- session.x=d.oldX+e.clientX-d.x;session.y=d.oldY+e.clientY-d.y;
+ Object.assign(session,camera.moved({scale:session.scale,x:d.oldX,y:d.oldY},
+  mapViewport(),e.clientX-d.x,e.clientY-d.y));
  resize(false);
 }
 function onPointerUp(e){if(session?.drag?.id===e.pointerId)session.drag=null}
@@ -585,7 +587,7 @@ function onWheel(e){
  if(!e.target.closest('.merchant-world-viewport')||!session||e.target.closest('.merchant-harbor-walk'))return;
  e.preventDefault();zoom(e.deltaY>0?.85:1.15,e.clientX,e.clientY);
 }
-root.addEventListener?.('resize',()=>{if(host&&!host.hidden)resize(true)});
+root.addEventListener?.('resize',()=>{if(host&&!host.hidden)resize(false)});
 const api=Object.freeze({open,close,isOpen:()=>!!host&&!host.hidden,refresh:()=>{if(host&&!host.hidden)draw(false)}});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_MERCHANT_MAP=api;

@@ -1,0 +1,52 @@
+'use strict';
+/* Functional camera regression: no Electron required. The view is pure math. */
+const assert=require('node:assert/strict');
+const c=require('../merchant-chart-camera.js'),nav=require('../merchant-navigation.js');
+const near=(x,y)=>assert.ok(Math.abs(x-y)<1e-6,x+' != '+y);
+const vp={width:1000,height:650};
+const base=c.fitted(vp),f=Math.min((vp.width-12)/800,(vp.height-12)/434);
+near(base.scale,f);near(base.x,(vp.width-800*f)/2);near(base.y,(vp.height-434*f)/2);
+assert.equal(c.limit(vp,3840,2),2.4,'Retina display stops zoom when physical JPEG pixels run out');
+assert.equal(c.limit(vp,3840,1),3.5,'Normal display respects nominal zoom ceiling');
+let zoom=c.zoomed(base,vp,1.4,650,300);
+assert(zoom.scale>base.scale);
+const oldPoint=[(650-base.x)/base.scale,(300-base.y)/base.scale];
+const newPoint=[(650-zoom.x)/zoom.scale,(300-zoom.y)/zoom.scale];
+near(oldPoint[0],newPoint[0]);near(oldPoint[1],newPoint[1]);
+const tooFar=c.moved({scale:2,x:-80,y:-40},vp,-5000,-5000);
+near(tooFar.x,vp.width-1600);near(tooFar.y,vp.height-868);
+const opposite=c.moved(tooFar,vp,8000,9000);near(opposite.x,0);near(opposite.y,0);
+const recorded=c.recorded(zoom,vp);
+assert.equal(recorded.chartVersion,2);
+const resumed=c.restored(recorded,vp);
+near(resumed.scale,zoom.scale);near(resumed.x,zoom.x);near(resumed.y,zoom.y);
+const oldSaved={zoom:1.2,cx:340,cy:510};
+const migration=c.restored(oldSaved,vp);
+const oldY=510*434/600;
+const observedY=(vp.height/2-migration.y)/migration.scale;
+near(observedY,oldY);
+const newSaved={zoom:1.2,cx:340,cy:oldY,chartVersion:2};
+near(c.restored(newSaved,vp).y,migration.y);
+const resized=c.reflowed({scale:1.6,x:-340,y:-110},vp,{width:1100,height:700});
+near((vp.width/2+340)/1.6,(1100/2-resized.x)/resized.scale);
+near((vp.height/2+110)/1.6,(700/2-resized.y)/resized.scale);
+const sharp=c.focused(base,vp,[298,175],4,3840,2);
+assert(sharp.scale<=2.4,'port focus may not silently override Retina sharpness cap');
+const compact={width:320,height:450};
+const compactFit=c.fitted(compact);
+const clampMax=c.limit(compact,3840,6);
+assert(clampMax>=compactFit.scale,'fit remains available even at high DPI');
+assert(c.constrain({scale:compactFit.scale,x:-900,y:400},compact).x>=0,
+ 'Small entire chart is centered instead of lost to pan');
+for(const a of Object.keys(nav.PORTS))for(const b of Object.keys(nav.PORTS)){
+ if(a===b)continue;
+ const before=nav.route(a,b),after=nav.displayRoute(a,b);
+ assert.equal(before.nauticalMiles,after.nauticalMiles);
+ assert.deepEqual(after.points[0],nav.DISPLAY_PORTS[a]);
+ assert.deepEqual(after.points.at(-1),nav.DISPLAY_PORTS[b]);
+}
+assert(nav.DISPLAY_PORTS['New York'][0]<nav.DISPLAY_PORTS.Liverpool[0]);
+assert(nav.DISPLAY_PORTS.Liverpool[1]<nav.DISPLAY_PORTS.Havana[1]);
+assert.deepEqual(nav.DISPLAY_PORTS.Baltimore,[289,182]);
+assert.deepEqual(nav.DISPLAY_PORTS.Hamburg,[449,149]);
+console.log('PASS merchant camera: fit, Retina zoom, pointer anchor, bounded pan, retained resize, old saves and calibrated ports');

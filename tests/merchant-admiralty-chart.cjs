@@ -8,6 +8,7 @@ const file=path.join(root,nav.MAP);
 assert(fs.existsSync(file),'New chart JPG must exist');
 assert(fs.statSync(file).size<=25*1024*1024,'Chart JPG exceeds 25MB');
 assert.deepEqual(nav.CHART,{width:800,height:434,nativeWidth:3840});
+assert.deepEqual(nav.DISPLAY_PORTS.Baltimore,[289,182],'Port overlay corrected against actual coastline');
 assert.deepEqual(Object.keys(nav.DISPLAY_PORTS).sort(),Object.keys(nav.PORTS).sort());
 for(const a of Object.keys(nav.PORTS))for(const b of Object.keys(nav.PORTS)){
  if(a===b)continue;

@@ -7,21 +7,23 @@
  'use strict';
  const MAP='assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg';
  const CHART=Object.freeze({width:800,height:434,nativeWidth:3840});
- // Pixel locations on the unaltered Admiralty scan, approximate study points.
+ // Visual survey refined against the owner's Admiralty scan, not invented port permissions.
+ // Pixel coordinates live ONLY in the 800x434 display overlay. The original 800x600
+ // navigation records, miles, freight schedules, authorized ports and save data stay intact.
  const DISPLAY_PORTS=Object.freeze({
-  Baltimore:[320,181],Philadelphia:[322,175],'New York':[325,169],
-  Liverpool:[451,168],Hamburg:[469,171],Havana:[302,223],
-  Singapore:[627,246],'Hong Kong':[684,206]
+  Baltimore:[289,182],Philadelphia:[294,178],'New York':[298,175],
+  Liverpool:[424,144],Hamburg:[449,149],Havana:[289,226],
+  Singapore:[645,242],'Hong Kong':[662,217]
  });
  const DISPLAY_LANES=Object.freeze([
-  {a:'Baltimore',b:'Philadelphia',points:[[320,181],[329,185],[332,180],[322,175]]},
-  {a:'Philadelphia',b:'New York',points:[[322,175],[328,180],[333,174],[325,169]]},
-  {a:'New York',b:'Liverpool',points:[[325,169],[351,147],[382,142],[416,146],[451,168]]},
-  {a:'Liverpool',b:'Hamburg',points:[[451,168],[456,180],[468,179],[469,171]]},
-  {a:'New York',b:'Havana',points:[[325,169],[338,190],[328,211],[315,222],[302,223]]},
-  {a:'Hamburg',b:'Singapore',points:[[469,171],[452,187],[442,219],[443,262],
-   [454,302],[489,344],[522,347],[556,328],[587,291],[612,268],[627,246]]},
-  {a:'Singapore',b:'Hong Kong',points:[[627,246],[639,233],[655,218],[670,209],[684,206]]}
+  {a:'Baltimore',b:'Philadelphia',points:[[289,182],[306,187],[310,181],[294,178]]},
+  {a:'Philadelphia',b:'New York',points:[[294,178],[307,181],[308,178],[298,175]]},
+  {a:'New York',b:'Liverpool',points:[[298,175],[313,163],[341,145],[369,136],[401,139],[418,145],[424,144]]},
+  {a:'Liverpool',b:'Hamburg',points:[[424,144],[430,148],[438,145],[449,149]]},
+  {a:'New York',b:'Havana',points:[[298,175],[313,189],[316,204],[307,219],[296,229],[289,226]]},
+  {a:'Hamburg',b:'Singapore',points:[[449,149],[436,147],[427,155],[423,181],[420,218],
+   [423,260],[447,301],[483,342],[522,347],[559,324],[597,290],[623,258],[645,242]]},
+  {a:'Singapore',b:'Hong Kong',points:[[645,242],[650,236],[655,224],[660,219],[662,217]]}
  ]);
  const PORTS=Object.freeze({
   Baltimore:[208,324],Philadelphia:[214,319],'New York':[220,311],

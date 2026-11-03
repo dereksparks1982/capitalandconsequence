@@ -20,7 +20,8 @@ body.merchant-world-open{overflow:hidden}
 .merchant-world-stage>img{display:block;width:800px;height:434px;max-width:none;user-select:none;pointer-events:none}
 .merchant-world-overlays{position:absolute;inset:0;width:800px;height:434px;overflow:visible;pointer-events:none}
 .merchant-world-overlays .ocean-port,.merchant-world-overlays .ocean-ship,
-.merchant-world-overlays .ocean-custom-pin{pointer-events:all;cursor:pointer}
+.merchant-world-overlays .ocean-custom-pin{pointer-events:all;cursor:pointer;
+ transform:scale(var(--ocean-icon-inverse,1));transform-box:fill-box;transform-origin:center}
 .merchant-world-overlays .ocean-port circle{stroke:#fff9e7;stroke-width:2;fill:#b3b1a6}
 .merchant-world-overlays .ocean-port.open-port circle{fill:#395c41}
 .merchant-world-overlays .ocean-port.selected circle{fill:#9d3729;stroke:#fff}

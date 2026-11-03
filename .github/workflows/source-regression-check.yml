@@ -10,6 +10,8 @@ on:
       - merchant-chart.js
       - merchant-world-map.js
       - merchant-world-map.css
+      - merchant-chart-camera.js
+      - tests/merchant-chart-camera.cjs
       - tests/merchant-admiralty-chart.cjs
 permissions:
   contents: read
