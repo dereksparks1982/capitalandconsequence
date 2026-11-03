@@ -172,7 +172,7 @@ function draw(){
    '<image href="'+esc(nav.MAP)+'" width="800" height="600"/>'+
    '<polyline points="'+trip.points.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="4" stroke-dasharray="9 6"/>'+
    (travel.coordinates?'<circle id="passengerLiveShip" cx="'+travel.coordinates.x+'" cy="'+travel.coordinates.y+'" r="14" fill="#f4d16d" stroke="#432a1e" stroke-width="3"/>'+
-   '<text x="'+travel.coordinates.x+'" y="'+(travel.coordinates.y+5)+'" text-anchor="middle" fill="#251f1b" font-size="17">♟</text>':'')+
+   '<text id="passengerLiveLabel" x="'+travel.coordinates.x+'" y="'+(travel.coordinates.y+5)+'" text-anchor="middle" fill="#251f1b" font-size="17">♟</text>':'')+
    '</svg></div>'+
    '<div class="passenger-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(travel.progress*100)+'"><span style="width:'+Math.floor(travel.progress*100)+'%"></span></div>'+
    '<div class="passenger-time-actions">'+
@@ -253,7 +253,7 @@ function keydown(e){
 root.setInterval?.(()=>{
  if(!host||host.hidden||booking||!save?.passengerSea?.voyage)return;
  const live=sea.position(save),dot=host.querySelector('#passengerLiveShip');
- if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y)}
+ if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y);const icon=host.querySelector('#passengerLiveLabel');if(icon){icon.setAttribute('x',live.coordinates.x);icon.setAttribute('y',live.coordinates.y+5)}}
  const pct=Math.floor((live.progress||0)*100),bar=host.querySelector('.passenger-progress');
  if(bar){bar.setAttribute('aria-valuenow',pct);const fill=bar.querySelector('span');if(fill)fill.style.width=pct+'%'}
 },1000);
