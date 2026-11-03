@@ -22,12 +22,16 @@ function initial(day='1878-01-02'){
   interestDueCents:0,principalDueCents:0,installments:[],payments:[],
   letters:[{id:1,date:day,kind:'investment',message:'Your father has arranged the American factory financing as a secured loan and a separate voting ownership interest. He expects punctual accounts, honest business conduct, and repayment, not gratitude for a gift.'}],
   dividendIncomeCents:0,consecutiveMisses:0,status:'current',personalStanding:'recognized',
+  confidence:50,introDecisions:[],introTokens:{},
   lastAdvanceDate:null,receipts:{},nextId:2};
 }
 function ensure(save){
  if(!save||typeof save!=='object')throw Error('A saved campaign is required.');
  if(!save.whitcombFamily)save.whitcombFamily=initial(save.gameDate||'1878-01-02');
  const f=save.whitcombFamily;
+ if(!Number.isSafeInteger(f.confidence))f.confidence=50;
+ if(!Array.isArray(f.introDecisions))f.introDecisions=[];
+ if(!f.introTokens||typeof f.introTokens!=='object')f.introTokens={};
  if(f.version!==1||!Number.isSafeInteger(f.principalCents)||f.principalCents<0||
   !Number.isSafeInteger(f.interestDueCents)||f.interestDueCents<0||
   !Number.isSafeInteger(f.principalDueCents)||f.principalDueCents<0||
@@ -38,12 +42,36 @@ function ensure(save){
  return f;
 }
 function overdue(f){return f.interestDueCents+f.principalDueCents;}
+const CHOICES=Object.freeze({
+ 'clear-accounts':{scene:'alexandria',confidence:6},'independence':{scene:'alexandria',confidence:-2},
+ consult:{scene:'alexandria',confidence:5},'mother-letter':{scene:'departure',confidence:1},
+ manifest:{scene:'departure',confidence:2},quiet:{scene:'departure',confidence:0},
+ reserve:{scene:'cabin',confidence:4},workshop:{scene:'cabin',confidence:2},
+ aspiration:{scene:'cabin',confidence:-1},'start-books':{scene:'washington',confidence:4},
+ 'start-works':{scene:'washington',confidence:2},'start-future':{scene:'washington',confidence:1}
+});
+function recordChoice(save,id,token){
+ if(save?.characterRoute!=='industrialist')return {ok:false,reason:'Only Charles has this father-son relationship.'};
+ const definition=CHOICES[id],state=save.whitcombIntro;
+ if(!definition||!state?.started||state.finished||!Array.isArray(state.history)||
+    token!=='intro:'+definition.scene+':'+id||
+    root.FE_WHITCOMB_INTRO?.current?.(save)?.id!==definition.scene)
+  return {ok:false,reason:'The choice does not belong to the current introduction scene.'};
+ const f=ensure(save);
+ if(f.introTokens[token])return {ok:false,reason:'This relationship choice has already been recorded.'};
+ f.introTokens[token]=true;
+ f.introDecisions.push({id,scene:definition.scene,confidenceDelta:definition.confidence});
+ f.confidence=Math.max(0,Math.min(100,f.confidence+definition.confidence));
+ return {ok:true,confidence:f.confidence};
+}
+
 function report(save){
  const f=ensure(save);
  return {status:f.status,principalCents:f.principalCents,interestDueCents:f.interestDueCents,
   principalDueCents:f.principalDueCents,overdueCents:overdue(f),paymentCents:f.monthlyCents,
   nextDue:f.nextDue,consecutiveMisses:f.consecutiveMisses,
-  dividendIncomeCents:f.dividendIncomeCents,personalStanding:f.personalStanding,letters:f.letters.slice(-5)};
+  dividendIncomeCents:f.dividendIncomeCents,personalStanding:f.personalStanding,
+  confidence:f.confidence,introDecisions:f.introDecisions.slice(),letters:f.letters.slice(-5)};
 }
 function notice(f,date,kind,message){
  const row={id:f.nextId++,date,kind,message};f.letters.push(row);
@@ -73,15 +101,15 @@ function advanceDay(save){
   // First due is a bill, not a missed payment. Default is based on
   // consecutive *past-due* cycles, with actual dated notices.
   if(f.consecutiveMisses>=3&&f.status==='current'){
-   f.status='warning';notice(f,due,'warning',
+   f.status='warning';f.confidence=Math.max(0,f.confidence-6);notice(f,due,'warning',
     'Alexandria requests overdue installments and an explanation of the factory accounts.');
   }
   if(f.consecutiveMisses>=5&&f.status!=='demand'){
-   f.status='demand';notice(f,due,'demand',
+   f.status='demand';f.confidence=Math.max(0,f.confidence-10);notice(f,due,'demand',
     'The secured creditor gives formal notice that the outstanding business loan is in default.');
   }
   if(f.consecutiveMisses>=6){
-   f.status='repossessed';f.personalStanding='disowned';notice(f,due,'foreclosure',
+   f.confidence=0;f.status='repossessed';f.personalStanding='disowned';notice(f,due,'foreclosure',
     'After repeated unpaid installments, the Whitcomb lender enforces the secured factory interest. Charles loses management authority and is disowned; his life continues outside control of the family firm.');
    outcome={kind:'family-foreclosure',message:'The Whitcomb family enforced its secured factory loan after sustained default.'};
    break;
@@ -116,7 +144,11 @@ function pay(save,amountCents,token){
  save.companyCash=Math.round((save.companyCash-amountCents/100)*100)/100;
  if(save.componentWorks&&Number.isFinite(save.companyCash))
   save.componentWorks.cashCents=Math.round(save.companyCash*100);
- if(overdue(f)===0){f.consecutiveMisses=0;f.status=f.principalCents===0?'settled':'current';}
+ if(overdue(f)===0){
+  const onTime=f.installments.length>0&&save.gameDate===f.installments.at(-1).date;
+  f.confidence=Math.min(100,f.confidence+(onTime?3:1));
+  f.consecutiveMisses=0;f.status=f.principalCents===0?'settled':'current';
+ }
  const receipt={ok:true,date:save.gameDate,amountCents,interestPaidCents:interestPaid,
   principalPaidCents:principalPaid,balanceCents:f.principalCents,
   message:'Paid '+money(amountCents)+' to the family lender. Remaining principal '+money(f.principalCents)+'.'};
@@ -129,7 +161,7 @@ function dividend(save,amountCents){
  const f=ensure(save);f.dividendIncomeCents+=amountCents;
  return f.dividendIncomeCents;
 }
-const api=Object.freeze({FAMILY_ID,LOAN_CENTS,MONTHLY_CENTS,APR_BPS,initial,ensure,overdue,report,advanceDay,pay,dividend});
+const api=Object.freeze({FAMILY_ID,LOAN_CENTS,MONTHLY_CENTS,APR_BPS,initial,ensure,overdue,report,recordChoice,advanceDay,pay,dividend});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_WHITCOMB_FAMILY=api;
 })(typeof window!=='undefined'?window:globalThis);
