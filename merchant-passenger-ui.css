@@ -91,3 +91,18 @@ span.passenger-cell{cursor:default}
 .shipboard-nearby-person{border-left:3px solid #7a6343;margin:8px 0;padding:6px;background:#fff4df}
 .shipboard-nearby-person p{font:13px Georgia,serif}
 .shipboard-nearby-person button{font-size:12px!important}
+
+/* Small shipboard draughts table, entirely separate from the Washington salon. */
+.shipboard-draughts{margin:9px 0;padding:8px;border:2px solid #796247;background:#eedfc1}
+.shipboard-draughts h4{margin:2px 0 7px;font-size:16px}
+.shipboard-draughts-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:min(392px,100%);
+ aspect-ratio:1;margin:10px auto;border:4px ridge #654c2c}
+.shipboard-draughts-cell{display:flex;justify-content:center;align-items:center;min-width:0;min-height:0;
+ box-sizing:border-box;border:0!important;margin:0!important;padding:0!important;border-radius:0!important;
+ font:700 clamp(10px,3vw,23px) monospace!important;position:relative}
+.shipboard-draughts-cell.dark{background:#8f6e4c;color:#491e19}
+.shipboard-draughts-cell.light{background:#e4c9a0;color:#222}
+.shipboard-draughts-cell.source{box-shadow:inset 0 0 0 2px #e2bd6a}
+.shipboard-draughts-cell.selected{box-shadow:inset 0 0 0 4px #4b74ac}
+.shipboard-draughts-cell.destination{box-shadow:inset 0 0 0 4px #589763}
+.shipboard-draughts-cell:focus-visible{outline:3px solid #259bc7;z-index:1}
