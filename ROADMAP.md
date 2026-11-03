@@ -1,3 +1,5 @@
+> **CHART QA FOLLOW-UP · v0.7.101-dev:** First hosted source run was 245/247, with only two retired-EcoClipper-filename checks failing. Those are now updated to owner-approved Admiralty asset identity; source pixel-aware zoom limit and saved-camera migration added. Await rerun before declaring acceptance. Original Washington map and historical decisions unchanged.
+
 > **LATEST DEV SOURCE · NOVEMBER 3, 2026 · v0.7.101-dev (unaccepted):** Replaced every active EcoClipper shipping chart appearance with owner-uploaded British Admiralty 1888 JPG (1.64MB, under the 25MB cap). Natural image proportions 800x434, repositioned visual ports/routes, preserved independent world clock, existing saved sea routes, original desk geometry, right-button pan, wheel zoom and fixed Washington map. The 1888 date is image provenance only, NOT a change of 1878 story chronology. One new size/coordinate compatibility test; full source CI and Electron smoke pending. See `docs/RELEASE-NOTES-v0.7.101-dev.md`.
 
 ## November 3, 2026 · v0.7.101-dev · maritime image replacement

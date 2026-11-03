@@ -65,7 +65,16 @@ function persistView(){
  view.zoom=Math.round(session.scale/fit*10000)/10000;
  view.cx=Math.max(0,Math.min(nav.CHART.width,(vp.clientWidth/2-session.x)/session.scale));
  view.cy=Math.max(0,Math.min(nav.CHART.height,(vp.clientHeight/2-session.y)/session.scale));
+ view.chartVersion=2; // distinguish new printed-chart camera from old 800x600 camera
  session.onChange?.();
+}
+function sharpZoomLimit(){
+ // Do not upscale the scan beyond one image pixel per physical screen pixel.
+ // A 3840-wide JPEG rendered on an 800-wide virtual chart has 4.8x source detail.
+ const image=host?.querySelector('.merchant-world-stage>img');
+ const nativeWidth=image?.naturalWidth||3840;
+ const density=Math.max(1,Number(root.devicePixelRatio)||1);
+ return Math.min(3.5,Math.max(.3,nativeWidth/(nav.CHART.width*density)));
 }
 function resize(first=false){
  if(!session||!host||host.hidden)return;
@@ -77,9 +86,11 @@ function resize(first=false){
   session.y=(vp.clientHeight-nav.CHART.height*fit)/2;
   const view=state().view;
   if(restore&&Number.isFinite(view.zoom)&&view.zoom>0&&Number.isFinite(view.cx)&&Number.isFinite(view.cy)){
-   session.scale=Math.max(.3,Math.min(3.5,fit*view.zoom));
-   session.x=vp.clientWidth/2-view.cx*session.scale;
-   session.y=vp.clientHeight/2-view.cy*session.scale;
+   session.scale=Math.max(.3,Math.min(sharpZoomLimit(),fit*view.zoom));
+   session.x=vp.clientWidth/2-Math.max(0,Math.min(nav.CHART.width,view.cx))*session.scale;
+   // Existing player files may have centerY saved on EcoClipper's 600-unit canvas.
+   const cy=view.chartVersion===2?view.cy:view.cy*nav.CHART.height/600;
+   session.y=vp.clientHeight/2-Math.max(0,Math.min(nav.CHART.height,cy))*session.scale;
   }
   session.ready=true;
  }
@@ -91,7 +102,7 @@ function zoom(factor,clientX,clientY){
  const rect=vp.getBoundingClientRect();
  const px=Number.isFinite(clientX)?clientX-rect.left:vp.clientWidth/2;
  const py=Number.isFinite(clientY)?clientY-rect.top:vp.clientHeight/2;
- const old=session.scale,next=Math.max(.3,Math.min(3.5,old*factor));
+ const old=session.scale,next=Math.max(.3,Math.min(sharpZoomLimit(),old*factor));
  session.x=px-(px-session.x)*next/old;session.y=py-(py-session.y)*next/old;
  session.scale=next;resize();
 }

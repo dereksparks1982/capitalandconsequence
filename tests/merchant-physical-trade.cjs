@@ -78,6 +78,6 @@ assert(read('index.html').indexOf('merchant-trade.js')<read('index.html').indexO
 assert(read('merchant-world-map.js').includes('trade-preview:'));
 assert(read('merchant-world-map.js').includes('trade-sell:'));
 assert(read('industrial-empire.js').includes('dispatchTrade'));
-assert(read('merchant-navigation.js').includes('SHIPPING-LINES-ECOCLIPPER-small.jpg'));
+assert(read('merchant-navigation.js').includes(nav.MAP)&&fs.existsSync(path.join(root,nav.MAP)),'Owner-selected chart remains bundled');
 assert(read('index.html').includes('title-map-1938.jpg'));
 console.log('merchant physical trade: immutable preview, finite weekly goods, paid ship, arrival inventory, insurance, tax, local sale, save isolation passed');

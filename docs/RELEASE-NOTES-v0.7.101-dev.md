@@ -11,3 +11,11 @@ Game and save compatibility: economic itinerary, shipping distances, existing ro
 Adjusted older image-identity test expectations to reflect the owner's specifically approved new chart and added a cross-port, size-ceiling and saved-coordinate source regression. A sparingly triggered full Node source QA workflow is configured for maritime map edits only.
 
 Focused V8 JS syntax and navigation checks were run before commit; full source suite and Electron smoke testing pending hosted/local results. No accepted release/tag.
+
+## v0.7.101-dev QA follow-up
+
+Hosted source suite first pass at GitHub commit `7ea848ff69952666e30520bf8e975fa2f820207f`: **245 passed, 2 failed, 247 total**. Both failures were hard-coded assertions demanding the now-retired EcoClipper *filename* in `tests/merchant-physical-trade.cjs` and `tests/merchant-shipboard.cjs`. The new image, trade mechanics, passenger gameplay, all other chart and source tests passed. The owner's explicit image replacement supersedes these old image-identity assertions; update them to verify the actual `nav.MAP` path and bundled image. Do not change cargo transactions or shipboard gameplay to satisfy obsolete artwork names.
+
+Added proportional migration for saved map camera centers from legacy 800x600 chart to 800x434 display, with chartVersion 2 as future migration marker. Added a sharpness cap tied to the actual source JPEG width and device pixel ratio so zoom does not magnify beyond its physical source pixels. These are presentation-only and do not change game accounting, discovery, passage or map pins.
+
+Retire only the unused EcoClipper *binary* source asset from active GitHub repository when the map has switched, without deleting any historical documentation or original Washington art. A new full source QA run is necessary before claiming success.

@@ -7,7 +7,7 @@ assert.equal(nav.MAP,'assets/artwork/Chart_of_the_world_showing_tracks_followed_
 const file=path.join(root,nav.MAP);
 assert(fs.existsSync(file),'New chart JPG must exist');
 assert(fs.statSync(file).size<=25*1024*1024,'Chart JPG exceeds 25MB');
-assert.deepEqual(nav.CHART,{width:800,height:434});
+assert.deepEqual(nav.CHART,{width:800,height:434,nativeWidth:3840});
 assert.deepEqual(Object.keys(nav.DISPLAY_PORTS).sort(),Object.keys(nav.PORTS).sort());
 for(const a of Object.keys(nav.PORTS))for(const b of Object.keys(nav.PORTS)){
  if(a===b)continue;
@@ -37,6 +37,8 @@ const world=fs.readFileSync(path.join(root,'merchant-world-map.js'),'utf8');
 const desk=fs.readFileSync(path.join(root,'career-shell.js'),'utf8');
 assert(desk.includes(nav.MAP)&&world.includes('nav.displayPosition('));
 assert(world.includes('nav.displayRoute(')&&world.includes('nav.displayMarkToSaved('));
+assert(world.includes('function sharpZoomLimit()')&&world.includes('view.chartVersion=2')&&
+ world.includes('nav.CHART.height/600'),'Zoom cap and old camera need explicit compatibility');
 for(const src of [world,desk,fs.readFileSync(path.join(root,'merchant-chart.js'),'utf8')])
  assert(!src.includes('SHIPPING-LINES-ECOCLIPPER-small.jpg'),'Old image still used in live scene');
 console.log('PASS Admiralty chart: 25MB ceiling, zoom ratio, 8 ports, saved ship and user mark display');

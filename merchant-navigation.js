@@ -6,7 +6,7 @@
 (function(root){
  'use strict';
  const MAP='assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg';
- const CHART=Object.freeze({width:800,height:434});
+ const CHART=Object.freeze({width:800,height:434,nativeWidth:3840});
  // Pixel locations on the unaltered Admiralty scan, approximate study points.
  const DISPLAY_PORTS=Object.freeze({
   Baltimore:[320,181],Philadelphia:[322,175],'New York':[325,169],

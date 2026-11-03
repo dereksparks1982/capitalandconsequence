@@ -80,5 +80,5 @@ assert(app.includes("stationOffer?.(S,'rest'"));
 assert(ui.includes('function shipScene()')&&ui.includes('ship-walk:')&&ui.includes('ship-deck:'));
 assert(html.indexOf('merchant-shipboard.js')<html.indexOf('merchant-passenger-ui.js'));
 assert(html.includes('title-map-1938.jpg'));
-assert(read('merchant-navigation.js').includes('SHIPPING-LINES-ECOCLIPPER-small.jpg'));
+assert(read('merchant-navigation.js').includes(require('../merchant-navigation.js').MAP),'Shipboard uses owner-selected chart');
 console.log('shipboard: physical decks, station and crew gates, casual card hand, persistence, one clock and original maps PASS');
