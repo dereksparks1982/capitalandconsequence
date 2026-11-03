@@ -28,7 +28,12 @@ function quote(save,text){
  return yes('Time available at your passenger berth.',{seconds:600});
 }
 function write(save,text){
- const validation=quote(save,text);if(!validation.ok)return validation;
+ // This is called AFTER the action has spent ten world-clock minutes.
+ // Require a valid berth now, not a second ten-minute future window.
+ const validation=ship.stationOffer(save,'rest',0);if(!validation.ok)return validation;
+ if(typeof text!=='string'||!text.trim()||text.trim().length>MAX_TEXT)
+  return no('The written page is empty or exceeds 800 characters.');
+ if(store(save)?.pages.length>=MAX_PAGES)return no('The notebook is full; old pages are preserved.');
  const book=store(save),voyage=save.passengerSea.voyage;
  const page={id:++book.next,voyageId:voyage.id,from:voyage.from,to:voyage.to,
   minute:save.worldCalendar.worldMinute,date:save.gameDate,body:text.trim()};

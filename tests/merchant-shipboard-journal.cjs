@@ -36,6 +36,16 @@ assert(!ship.cardOffer(s,'start').ok,'twenty-one blocked during dominoes');
 assert(!journal.quote(s,'Away from berth').ok,'must remain at berth to write');
 assert(!journal.write(s,'Away from berth').ok);
 assert(domino.resign(s).ok);
+// A page legitimately started with 15 minutes before docking must still
+// commit after its 10 minute action, even though only five minutes remain.
+p.deck='lower';p.x=3;p.y=5;
+const arrival=s.passengerSea.voyage.arrivalMinute;
+s.passengerSea.voyage.arrivalMinute=s.worldCalendar.worldMinute+15;
+assert(journal.quote(s,'Docking soon.').ok);
+s.worldCalendar.worldMinute+=10;
+assert(journal.write(s,'Docking soon.').ok,'do not charge a second future 10-minute window');
+assert.equal(journal.pages(s).length,2);
+s.passengerSea.voyage.arrivalMinute=arrival;
 const base=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(base,p),'utf8');
 const ui=read('merchant-passenger-ui.js'),app=read('app.js'),html=read('index.html');
 assert(ui.includes('function journalBook(writable)')&&ui.includes('shipJournalDraft'));
