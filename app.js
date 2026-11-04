@@ -3323,7 +3323,7 @@ function closeCityRoom(){
  updateTitleDevCityControls();
 }
 function returnCityRoomToMap(){
- if(S.characterRoute==='mariner'&&currentCityLocation().locationId==='salemHarbor'){
+ if(typeof S!=='undefined'&&S.characterRoute==='mariner'&&currentCityLocation().locationId==='salemHarbor'){
   closeCityRoom();window.FE_SALEM_MAP?.open?.(S,()=>save(true));return;
  }
  if(typeof S!=='undefined'&&S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port))return;
