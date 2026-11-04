@@ -149,7 +149,7 @@ check(routes.canStart('investigator')&&routes.canStart('criminal')&&routes.canSt
 check(routes.list().filter(r=>r.status==='foundation').length===3,'Unfinished careers are honestly marked as foundations');
 check(routes.get('industrialist').characterName==='Charles “Charlie” Whitcomb','Businessman name is recorded');
 check(routes.get('investigator').characterName==='Samuel “Sam” Harlan','Sam Harlan surname is recorded');
-check(routes.get('criminal').characterName==='Elias “Eli” Crowe','Doorman name is recorded');
+check(routes.get('criminal').characterName==='Elias “Eli” Crowe','Elias retains his approved identity');
 check(routes.get('wardman').characterName==='Edmund Wardman','Edmund Wardman is recorded');
 check(routes.get('industrialist').startingLocationId==='factory'&&routes.get('wardman').startingLocationId==='blackwoodAsylum','Four-route openings have stable locations');
 check(routes.get('investigator').deskColor==='blue'&&routes.get('wardman').deskColor==='cream','Personal desk colors are distinct');
@@ -631,11 +631,11 @@ check(!read('career-shell.js').includes('id="detectiveCasePanel"')&&read('career
 check(read('career-shell.css').includes('.detective-case-person'),'Casebook responsive styles exist');
 check(read('README.md').includes('[LEGAL.md](LEGAL.md)')&&read('LEGAL.md').includes('Contact'),'README and GitHub legal contact notice registered');
 check(mandatoryTest('tests/murder-cases.cjs'),'Procedural case regression test is mandatory');
-check(city.getRoom('secondNightclub','doorman-post')?.restricted===true,'Eli’s workplace is an authorized staff room');
+check(city.getRoom('secondNightclub','doorman-post')?.restricted===true,'Lui retains his private nightclub staff station');
 check(city.getRoom('secondNightclub','proprietor-office')?.restricted===true,'Proprietor office stays restricted');
-check(routes.get('criminal').startingRoomId==='doorman-post','Eli starts at his assigned workroom');
-check(require('../city-access.js').canRoom(city,{route:'criminal'},'secondNightclub','doorman-post','1890-01-02').ok,'Doorman can access his shift post');
-check(!require('../city-access.js').canRoom(city,{route:'criminal'},'secondNightclub','proprietor-office','1890-01-02').ok,'Unknown doorman cannot open proprietor office');
+check(routes.get('criminal').startingLocationId==='croweButcherShop'&&routes.get('criminal').startingRoomId==='shop-floor','Eli opens at his inherited butcher shop');
+check(require('../city-access.js').canRoom(city,{route:'criminal'},'croweButcherShop','cutting-room','1878-01-02').ok,'Elias may access his own shop cutting room');
+check(!require('../city-access.js').canRoom(city,{route:'criminal'},'secondNightclub','proprietor-office','1890-01-02').ok,'Elias does not own Lui’s club');
 check(mandatoryTest('tests/doorman-duty.cjs'),'Source QA executes doorman wage tests');
 check(mandatoryTest('tests/orderly-duty.cjs'),'Source QA tests Edmund Wardman live employment');
 check(index.includes('orderly-duty.js?v=')&&index.includes('orderly-ui.js?v='),'Edmund has a local institution duty engine and room/desk UI');

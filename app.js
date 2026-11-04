@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.102-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.106-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -472,6 +472,7 @@ function render(){
  if(S.characterRoute==='industrialist')window.FE_PASSENGER_SEA?.sync?.(S);
  window.FE_CHARACTER_NEEDS?.ensure?.(S);
  window.FE_MEDICAL_RECORDS?.player?.(S);
+ if(S.characterRoute==='criminal')window.FE_CROWE_BUTCHERY?.sync?.(S);
  // Seed private, empty records for every named person in the city registry
  // once per profile. Not one false diagnosis, prescription or visit is added.
  if(S.medicalRecords&&!S.medicalRecords.cityRegistryReady){
@@ -492,7 +493,7 @@ function render(){
  const idx=marketIndex();$('#marketIndex').textContent=idx.toFixed(2);$('#marketStory').textContent='Federal Exchange index stands at '+idx.toFixed(2)+'. '+S.marketWire;$('#marketWire').textContent=S.marketWire;const pv=portfolioValue(),ug=pv-portfolioCost();$('#portfolio').textContent=money(pv);$('#unrealized').textContent=cash(ug);$('#unrealized').className=ug>=0?'gain':'loss';
  $('#ledger').innerHTML=S.ledger.slice(-10).reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+money(x.rev)+'</td><td>'+money(x.exp)+'</td><td>'+money(x.rev-x.exp)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No closed business days yet.</td></tr>';
  $('#materials').innerHTML=Object.entries(MATERIAL_MARKET).filter(([k])=>k!=='tungsten'||S.gameDate>='1906-01-01').map(([k,m])=>'<tr><td>'+m.name+'</td><td id="material_stock_'+k+'">'+Math.floor(S.materials[k]).toLocaleString()+'</td><td>'+unitCash(m.unitPrice)+'/unit</td><td><div class="material-trade"><input id="material_qty_'+k+'" type="number" min="1" step="1" value="1000" aria-label="'+m.name+' quantity"><div class="trade-buttons"><button onclick="tradeMaterial(\''+k+'\',1)">Buy</button><button onclick="tradeMaterial(\''+k+'\',-1)">Sell</button><button onclick="sellAllMaterial(\''+k+'\')">Sell All</button></div></div></td></tr>').join('');
- renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.();refreshWhitcombIntro()
+ renderFactory();renderWarehouse();renderWorkforce();renderDelegation();renderContracts();refreshStockSectorFilter();renderStocks();renderHoldings();renderTransactions();renderNotes();renderArchive();renderWashington();window.FE_NPC_AI?.renderContactItineraries?.();renderUnresolvedPoker();if(window.FE_INSTITUTIONS?.renderConcept)window.FE_INSTITUTIONS.renderConcept();if(window.FE_TRANSPORT?.renderRegister)window.FE_TRANSPORT.renderRegister();renderTreasury();renderFactoryBreakRoom();window.FE_CHARACTER_NEEDS_UI?.render?.(S);window.FE_MEDICAL_UI?.render?.(S,recoverMedicalEpisode,sleepAtHome);window.FE_CARRIED_PROVISIONS?.refresh?.(S);window.FE_CHAMPIONSHIP_REGISTER?.render?.(S);renderDailyReport();renderCampaignEnd();window.FE_SKILLS?.render?.(S);window.FE_EMPIRE?.render?.(S,()=>{save(true);render()});window.FE_PASSENGER_UI?.refresh?.(S,window.FE_PASSENGER_ACTIONS);window.FE_FISHING_VESSELS?.advance?.(S);applyPauseLock();syncTopNavigation();window.FE_CAREER_SHELL?.refreshDesk?.();window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_CROWE_BUTCHERY_UI?.refresh?.();window.FE_COMPONENT_PANEL?.render?.();refreshWhitcombIntro()
 }
 function wagerBucket(bets){
  const out={wagered:0,payout:0,net:0,tickets:0};
@@ -1064,6 +1065,7 @@ function advanceWorldSimulation(seconds,away=false,kind='action',deferWorkshopCl
    const receipt=window.FE_WASHINGTON_TIME.advance(S,delta,kind);
    if(!receipt.applied)break;
    S.dayRemaining=window.FE_WASHINGTON_TIME.phaseSecondsRemaining(S);
+   if(S.characterRoute==='criminal')window.FE_CROWE_BUTCHERY?.sync?.(S);
    if(working){
     const factoryCollapse=kind==='medical'&&
       S.medicalRecords?.pending?.setting==='work'&&
@@ -1758,7 +1760,7 @@ if(goToLunch)goToLunch.onclick=()=>{
 const stepAwayDesk=$('#stepAwayDesk');if(stepAwayDesk)stepAwayDesk.onclick=stepAwayFromDesk
 const factoryCoffeeBreak=$('#factoryCoffeeBreak');if(factoryCoffeeBreak)factoryCoffeeBreak.onclick=()=>enterMapDestination('factory',null,'break-room')
 const nextDayBtn=$('#beginNextDay');if(nextDayBtn)nextDayBtn.onclick=beginNextDay
-function startFreshGame(){const route=S.characterRoute;clearPauseLock();S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(route)||'industrialist';selectedStockTicker=null;save();render()}
+function startFreshGame(){const route=S.characterRoute;clearPauseLock();S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(route)||'industrialist';if(S.characterRoute==='criminal'){const start=window.FE_CHARACTERS.get('criminal');S.currentLocation={locationId:start.startingLocationId,roomId:start.startingRoomId};window.FE_CROWE_BUTCHERY?.ensure?.(S)}selectedStockTicker=null;save();render()}
 $('#reset').onclick=()=>{if(confirm('You are about to start a new game. All previous progress will be lost. Continue?'))startFreshGame()}
 const continueEmpire=$('#continueEmpire');if(continueEmpire)continueEmpire.onclick=()=>{S.endlessMode=true;S.campaignCompleted=true;S.campaignEndPending=false;save(true);render();beginNextDay()};
 const campaignNewGame=$('#campaignNewGame');if(campaignNewGame)campaignNewGame.onclick=()=>startFreshGame();
@@ -2703,6 +2705,7 @@ function createProfile(name,routeId='industrialist'){
  }
  const id='p'+Date.now().toString(36),p={id,name:name.slice(0,28),created:Date.now(),lastPlayed:Date.now()};
  profiles.push(p);writeProfiles(profiles);setActiveProfileId(id);S=initial();S.characterRoute=window.FE_CHARACTERS?.normalize?.(routeId)||'industrialist';
+ if(S.characterRoute==='criminal')window.FE_CROWE_BUTCHERY?.ensure?.(S);
  // Only newly created characters join a shared campaign. Existing separate
  // profiles remain untouched unless they explicitly contain a world link.
  if(window.FE_SHARED_WORLD){
@@ -3248,7 +3251,7 @@ function openCityRoom(locationId,roomId,options={}){
   document.body.classList.add('city-room-open');
   guardedRoomPanel('chess table',()=>window.FE_CHESS_UI?.refresh?.());
    guardedRoomPanel('checkers table',()=>window.FE_CHECKERS_UI?.refresh?.());
-  guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
+  guardedRoomPanel('career activities',()=>{window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_CROWE_BUTCHERY_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.()});
   guardedRoomPanel('asylum inquiry',()=>window.FE_ASYLUM_CASE_UI?.refresh?.());
   guardedRoomPanel('venue audio',()=>setRadioLocationContext(location.radioContext||'office'));
   guardedRoomPanel('developer controls',()=>updateTitleDevCityControls());
@@ -3314,7 +3317,7 @@ function closeCityRoom(){
  const overlay=document.getElementById('cityRoomOverlay');if(overlay){overlay.hidden=true;delete overlay.dataset.locationId;}
  document.body.classList.remove('city-room-open');
  cityRoomSession={locationId:null,roomId:null,dev:false,source:'dev'};
- window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
+ window.FE_PATROL_UI?.refresh?.();window.FE_DOORMAN_UI?.refresh?.();window.FE_CROWE_BUTCHERY_UI?.refresh?.();window.FE_ORDERLY_UI?.refresh?.();
  setRadioLocationContext('office');
  updateTitleDevCityControls();
 }

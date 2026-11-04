@@ -1,4 +1,4 @@
-/* Capital & Consequence v0.6.57-dev: ordinary nighttime door work.
+/* Capital & Consequence: optional evening door work and courier offers for Eli.
  * Le Paon d’Or and proprietor Lucien “Lui” Delacroix are approved canon.
  * One modest wage per completed shift segment; never a criminal promotion.
  */
@@ -47,10 +47,57 @@
    save.doormanDuty={version:1,nextId:1,pending:null,segmentsByDate:{},totalSegments:0,wagesEarnedCents:0,logs:[],lastAction:null};
   return save.doormanDuty;
  }
+ function sidework(save){
+  const duty=ensure(save);
+  if(!duty.sidework)duty.sidework={date:null,kind:null,status:'none',destination:null,rewardCents:0,history:[]};
+  return duty.sidework;
+ }
+ function quoteOffer(save,kind){
+  if(save?.characterRoute!=='criminal')return {ok:false,reason:'Only Elias can take a private offer from Lui.'};
+  if(save.paused||save.phase!=='night')return {ok:false,reason:'Lui offers extra work in the evening.'};
+  if(save.currentLocation?.locationId!==VENUE||save.currentLocation?.roomId!=='main-room')
+   return {ok:false,reason:'Speak with Lui in the Golden Peacock public room.'};
+  if(!['door','package'].includes(kind))return {ok:false,reason:'Unknown work offer.'};
+  const d=sidework(save);
+  if(d.status==='pending')return {ok:false,reason:'Finish the current paid errand before asking for another.'};
+  if(d.date===save.gameDate)return {ok:false,reason:'Lui has no further work for you tonight.'};
+  return {ok:true,seconds:300,kind};
+ }
+ function takeOffer(save,kind,spentSeconds){
+  const can=quoteOffer(save,kind);if(!can.ok)return can;
+  if(spentSeconds!==can.seconds)return {ok:false,reason:'The meeting with Lui takes five minutes.'};
+  const d=sidework(save);
+  Object.assign(d,{date:save.gameDate,kind,status:kind==='door'?'accepted':'pending',
+   destination:kind==='package'?'workingPoker':null,rewardCents:kind==='package'?200:0});
+  return {ok:true,kind,message:kind==='door'?
+   'Lui agreed to let Elias cover the entrance tonight. Each finished visitor earns a small wage.':
+   'Lui handed Elias a sealed parcel for a contact at the Neighborhood Game. The contents are unknown. Deliver it in person to receive $2.'};
+ }
+ function quoteDelivery(save,locationId,roomId){
+  if(save?.characterRoute!=='criminal'||save.paused||save.phase==='report')
+   return {ok:false,reason:'The courier is not available.'};
+  const d=sidework(save);
+  if(d.status!=='pending'||d.kind!=='package')return {ok:false,reason:'There is no parcel to deliver.'};
+  if(locationId!==d.destination||roomId!=='card-room')return {ok:false,reason:'Take the parcel to the Neighborhood Game card room.'};
+  return {ok:true,seconds:300,rewardCents:d.rewardCents};
+ }
+ function deliver(save,locationId,roomId,spentSeconds){
+  const q=quoteDelivery(save,locationId,roomId);if(!q.ok)return q;
+  if(spentSeconds!==q.seconds)return {ok:false,reason:'A handoff takes five minutes.'};
+  const d=sidework(save),cents=q.rewardCents;
+  save.personalCash=(Math.round((+save.personalCash||0)*100)+cents)/100;
+  d.history.push({date:save.gameDate,kind:'package',rewardCents:cents,description:'Sealed parcel delivered to a waiting contact; contents remain unknown.'});
+  if(d.history.length>60)d.history.shift();
+  Object.assign(d,{status:'completed',destination:null,rewardCents:0});
+  return {ok:true,rewardCents:cents,message:'The contact accepted the sealed parcel. Lui paid Elias $'+(cents/100).toFixed(2)+' for the errand.'};
+ }
  function access(save,locationId,roomId){
   if(save?.characterRoute!=='criminal')return {ok:false,reason:'This job belongs to the nightclub doorman.'};
   if(save.paused||save.phase!=='night')return {ok:false,reason:'The nightclub door shift is worked during Washington Night.'};
   if(locationId!==VENUE||roomId!==ROOM)return {ok:false,reason:'You must be at the nightclub doorman’s post.'};
+  const d=sidework(save);
+  if(d.kind!=='door'||d.date!==save.gameDate||d.status!=='accepted')
+   return {ok:false,reason:'This is optional work. Ask Lui for a door shift in the public room first.'};
   return {ok:true};
  }
  function begin(save,{locationId,roomId,date,profileId,spentSeconds}){
@@ -90,7 +137,7 @@
  function encounter(save){return BY_ID.get(ensure(save).pending?.typeId)||null}
  function summary(save){const d=ensure(save);return {totalSegments:d.totalSegments,wagesEarnedCents:d.wagesEarnedCents,
   pending:d.pending?{...d.pending}:null,segmentsByDate:{...d.segmentsByDate},logs:d.logs.map(e=>({...e})),lastAction:d.lastAction};}
- const api=Object.freeze({VENUE,ROOM,WAGE_CENTS,MAX_SEGMENTS,ENCOUNTERS,ensure,access,begin,respond,encounter,summary});
+ const api=Object.freeze({VENUE,ROOM,WAGE_CENTS,MAX_SEGMENTS,ENCOUNTERS,ensure,sidework,quoteOffer,takeOffer,quoteDelivery,deliver,access,begin,respond,encounter,summary});
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.FE_DOORMAN_DUTY=api;
 })(typeof window!=='undefined'?window:globalThis);

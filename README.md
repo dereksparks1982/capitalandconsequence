@@ -12,7 +12,7 @@ In an alternate America shaped by a different course of history, Washington is a
 
 **Samuel Harlan** is a Black rookie patrolman assigned to Hillsdale. Clock in, walk his assigned beat and complete duty reports.
 
-**Elias Crowe** works the entrance of the Golden Peacock, earning wages and handling the night's visitors.
+**Elias Crowe** inherits the family butcher shop, manages meat, customers, and the till with his strong-willed cousin, and sometimes accepts paid evening favors from Lui at the Golden Peacock.
 
 **Edmund Wardman** serves as an orderly at District Asylum, where his older brother controls the institution.
 

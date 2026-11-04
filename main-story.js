@@ -31,16 +31,16 @@ const CAMPAIGNS=Object.freeze({
    {id:'reckoning',title:'V · Justice in the Capital',goal:'Confront the wider political forces behind the cases without a guaranteed promotion or conviction.',marker:null,playable:false}
   ])}),
  criminal:Object.freeze({
-  title:'Behind the Golden Peacock',
+  title:'Blood and the Butcher’s Book',
   protagonist:'Elias “Eli” Crowe',
-  premise:'An obscure doorman enters a dangerous network of favors, debts and secrets. He may protect his own, exploit them, or lose everything.',
-  themes:['loyalty','deception','money','personal freedom'],
+  premise:'A butcher inherits the family trade, but his capable cousin disputes every decision. Their shop thrives or falters under complicated loyalties and old family grievances.',
+  themes:['inheritance','trade','family loyalty','hidden accounts'],
   acts:Object.freeze([
-   {id:'threshold',title:'I · At the Peacock Door',goal:'Complete two paid visitor encounters at Lui’s club.',marker:'door',playable:true},
-   {id:'favour',title:'II · A Favor with a Price',goal:'Meet the patron, decide who receives the sealed envelope and face the outcome.',marker:'peacockFavor',playable:true},
-   {id:'leverage',title:'III · The Keeper of Secrets',goal:'Meet a suspicious regular, choose how to use the information and face the response.',marker:'peacockNetwork',playable:true},
-   {id:'betrayal',title:'IV · Debts Come Due',goal:'Respond to a contested claim of debt and learn what the regular does next.',marker:'peacockDebts',playable:true},
-   {id:'exit',title:'V · The Last Door',goal:'Choose a lawful future, a criminal empire, or a dangerous escape.',marker:null,playable:false}
+   {id:'inherited-trade',title:'I · The Shop Is Yours',goal:'Prepare meat and complete at least one genuine sale at the inherited shop.',marker:'croweTrade',playable:true},
+   {id:'books',title:'II · The Short Till',goal:'Count the shop till against its written accounts.',marker:'croweAudit',playable:true},
+   {id:'cousin',title:'III · Two Men at the Counter',goal:'Confront growing differences over the shop, without assuming who is right.',marker:null,playable:false},
+   {id:'inheritance',title:'IV · What the Will Said',goal:'Find independent evidence of what happened to the estate.',marker:null,playable:false},
+   {id:'reckoning',title:'V · Blood and Consequence',goal:'Decide what to do with proof, loyalty and the secrets you discover.',marker:null,playable:false}
   ])}),
  wardman:Object.freeze({
   title:'The Wardman Inheritance',
@@ -69,6 +69,8 @@ function mark(save){
   sergeant:save?.casePermissions?.['asylum-ward-death-1878']?.issuedBy==='station-sergeant'&&hasObservation(save,'stationMemo'),
   caseMemo:hasObservation(save,'policeMemo'),
   certificate:hasObservation(save,'policeWardmanCertify'),
+  croweTrade:(save?.croweButchery?.manualCuts||0)>=1&&(save?.croweButchery?.sales||0)>=1,
+  croweAudit:(save?.croweButchery?.auditCount||0)>=1,
   door:(save?.doormanDuty?.totalSegments||0)>=2,
   peacockFavor:save?.peacockStory?.stage==='resolved'&&!!save?.peacockStory?.finishedAt,
   peacockNetwork:save?.peacockNetwork?.stage==='resolved'&&!!save?.peacockNetwork?.completedAt,

@@ -165,7 +165,7 @@
   {
    id:'secondNightclub',name:'Le Paon d’Or',
    area:'Washington, D.C.',category:'social',
-   description:'Le Paon d’Or means “The Golden Peacock.” Lucien Étienne “Lui” Delacroix owns this extravagant French cabaret outright. French dancing, burlesque, orchestra, champagne and expensive entertainment attract patrons from Washington’s influential circles. Lui’s connections protect his standing despite scandalous, unverified gossip about his private affairs. Elias Crowe works its entrance.',
+   description:'Le Paon d’Or means “The Golden Peacock.” Lucien Étienne “Lui” Delacroix owns this extravagant French cabaret outright. French dancing, burlesque, orchestra, champagne and expensive entertainment attract patrons from Washington’s influential circles. Lui’s connections protect his standing despite scandalous, unverified gossip about his private affairs. Elias Crowe owns a butcher shop elsewhere in Washington and may occasionally accept voluntary evening jobs for Lui.',
    map:null,defaultRoom:'main-room',
    rooms:[
     {id:'main-room',name:'Public Cabaret Room',description:'Le Paon d’Or means “The Golden Peacock.” Lui Delacroix owns this glittering French cabaret outright: can-can, burlesque, music, champagne and indulgent entertainments draw well-connected patrons. Lui trades on powerful friendships as well as spectacle. Rumours about his private appetites are gossip, not established facts; guests do not gain access to his private rooms merely by entering.'},
@@ -447,6 +447,19 @@
    ]
   },
   {
+   id:'croweButcherShop',name:'Crowe Family Butchers',
+   area:'Washington, D.C. · exact street address not yet established',category:'commerce',
+   description:'Elias Crowe inherited this independent family butcher shop. His experienced cousin works here and resides permanently in the loft upstairs. The business opens onto the street; its exact map pin is not yet selected.',
+   map:null,defaultRoom:'shop-floor',
+   rooms:[
+    {id:'shop-floor',name:'Butcher’s Counter',description:'A working meat counter with a customer register, price board and separate shop till.'},
+    {id:'cutting-room',name:'Cutting Room',restricted:true,description:'Butcher’s blocks, knives and worktables where carcass cuts are trimmed and prepared.'},
+    {id:'stock-room',name:'Cold Larder and Stock Room',restricted:true,description:'Uncut carcass supplies, hanging meat and provisions kept from spoiling.'},
+    {id:'back-door',name:'Supplier Delivery Door',restricted:true,description:'Meat and supplies arrive through the rear of the shop.'},
+    {id:'loft',name:'Cousin’s Upstairs Loft',restricted:true,description:'The cousin lives permanently above the shop. His bed, wardrobe and washstand occupy this small private home.'}
+   ]
+  },
+  {
    id:'districtBank',name:'District Bank',
    area:'Downtown Washington financial district · fictional bank and provisional map placement',category:'finance',
    description:'A Washington bank where you may optionally maintain separate company, personal checking and general savings accounts. Deposits and withdrawals are physical transactions: bring the appropriate money to the teller.',
@@ -536,7 +549,7 @@
     embassyPoker: "In our Washington, the Embassy Room is an invitation-only private poker venue associated with the Chevy Chase Club. That room is a game invention, not a historical claim about the real club.",
     russianTradeHall: "Merchants, engineers and diplomats of Imperial Russia have an informal Washington meeting hall in this alternate timeline. Its business and conversations are written for the game.",
     washingtonFairgrounds: "The alternate-history capital already has widespread electricity in 1878. A streetlighting improvement contract precedes its planned late-1878 World’s Fair. No winning supplier is predetermined.",
-    secondNightclub: "Le Paon d’Or (The Golden Peacock) belongs outright to Lucien Étienne Delacroix, called Lui. His flamboyant French cabaret trades in music, dance, spectacle and extravagant hospitality. The proprietor’s powerful connections shelter his reputation. Rumors are rumors, not privileged truths; Eli Crowe works the entrance.",
+    secondNightclub: "Le Paon d’Or (The Golden Peacock) belongs outright to Lucien Étienne Delacroix, called Lui. His flamboyant French cabaret trades in music, dance, spectacle and extravagant hospitality. The proprietor’s powerful connections shelter his reputation. Rumors are rumors, not privileged truths; Eli Crowe is an independent butcher who sometimes accepts extra paid work for Lui.",
     districtBank: "District Bank is the fictional independent bank where Washington residents may optionally keep separate business, checking and untargeted savings balances. Cash must physically arrive or be collected.",
     capitolAirport: "Our fictional Capitol Airport operates near Benning, separate from the historical Washington-Hoover airfield. Its precise property is still undecided.",
     brokerOffice: "A Washington stockbroker receives Charlie's personal securities orders in our game world. The fictional office's actual building has not been chosen.",

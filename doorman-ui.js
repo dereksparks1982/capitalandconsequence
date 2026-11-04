@@ -1,4 +1,4 @@
-/* Capital & Consequence: Eli Crowe's modest paid nightclub shift UI. */
+/* Capital & Consequence: optional paid Golden Peacock visits and Eli's side work. */
 (function(){
  'use strict';
  const work=window.FE_DOORMAN_DUTY;
@@ -13,8 +13,8 @@
   const desk=node('careerDesk');
   if(desk&&!node('doormanDesk')){
    const area=document.createElement('section');area.className='doorman-work-box';area.id='doormanDesk';
-   area.setAttribute('aria-label','Eli Crowe personal employment ledger');
-   area.innerHTML='<h3>Elias “Eli” Crowe · Work Ledger</h3><p id="doormanDeskStats"></p><p id="doormanDeskInstruction"></p><p id="doormanDeskNotice" role="status"></p><h4>Recent Paid Shifts</h4><ol id="doormanDeskLog"></ol>';
+   area.setAttribute('aria-label','Eli Crowe optional Golden Peacock work register');
+   area.innerHTML='<h3>Elias “Eli” Crowe · Optional Club Work</h3><p id="doormanDeskStats"></p><p id="doormanDeskInstruction"></p><p id="doormanDeskNotice" role="status"></p><h4>Recent Paid Shifts</h4><ol id="doormanDeskLog"></ol>';
    desk.querySelector('.career-desk-actions')?.before(area);
   }
   const city=document.querySelector('.city-room-placeholder');
@@ -23,6 +23,12 @@
    area.setAttribute('aria-label','Nightclub entrance work');
    area.innerHTML='<h3>Nightclub Door · On Duty</h3><p id="doormanDoorText"></p><div id="doormanDoorActions"></div><p id="doormanDoorNotice" role="status"></p>';
    city.appendChild(area);
+  }
+  if(city&&!node('peacockOffersPanel')){
+   const offers=document.createElement('section');offers.id='peacockOffersPanel';offers.className='doorman-work-box';
+   offers.setAttribute('aria-label','Optional paid work offered by Lui');
+   offers.innerHTML='<h3>Lui’s Occasional Work</h3><p id="peacockOffersText"></p><div id="peacockOffersActions"></div><p id="peacockOffersNotice" role="status"></p>';
+   city.appendChild(offers);
   }
   const door=node('doormanDoorPanel');
   if(door&&!node('peacockStoryPanel')){
@@ -213,6 +219,53 @@
    if(!can.ok){const why=document.createElement('small');why.textContent=can.reason;actions.appendChild(why)}
   }
  }
+ function optionalAction(kind){
+  const place=current(),before=S,profile=activeProfileId(),preview=
+   kind==='deliver'?work.quoteDelivery(S,place.locationId,place.roomId):work.quoteOffer(S,kind);
+  if(!preview.ok){set('peacockOffersNotice',preview.reason);return}
+  if(S.dayRemaining<=preview.seconds||!window.FE_WASHINGTON_TIME?.canSpend?.(S,preview.seconds)){
+   set('peacockOffersNotice','Not enough Washington time remains.');return;
+  }
+  const spent=window.advanceWorldTime(preview.seconds,true);
+  if(spent!==preview.seconds||S!==before||activeProfileId()!==profile){
+   set('peacockOffersNotice','The work encounter was interrupted.');return;
+  }
+  const result=kind==='deliver'?
+   work.deliver(S,place.locationId,place.roomId,spent):work.takeOffer(S,kind,spent);
+  if(!result.ok){set('peacockOffersNotice',result.reason);return}
+  if(Array.isArray(S.notes)){
+   S.notes.push({date:S.gameDate,source:'Golden Peacock side work',text:result.message});
+   if(S.notes.length>320)S.notes.shift();
+  }
+  const saved=save(true);render();refresh();
+  set('peacockOffersNotice',saved?result.message:'Autosave failed. Keep the game open.');
+ }
+ function refreshOffers(){
+  const box=node('peacockOffersPanel'),actions=node('peacockOffersActions');
+  if(!box||!actions)return;
+  const place=current(),on=S?.characterRoute==='criminal'&&!!activeProfileId()&&
+   !node('cityRoomOverlay')?.hidden&&!window.FE_CITY?.isDevRoom?.();
+  const atLui=place.locationId===work.VENUE&&place.roomId==='main-room';
+  const delivery=place.locationId==='workingPoker'&&place.roomId==='card-room';
+  box.hidden=!on||(!atLui&&!delivery);if(box.hidden)return;
+  actions.replaceChildren();
+  const d=work.sidework(S);
+  set('peacockOffersText',d.status==='pending'?
+   'Lui’s sealed parcel is awaiting delivery to the Neighborhood Game card room. Its contents are unknown.':
+   atLui?'You own the butcher shop. You can ask Lui for occasional paid door work or an off-the-books delivery. Declining has no penalty.':
+   'A quiet contact may accept a parcel here, if Elias has agreed to deliver one.');
+  if(atLui){
+   for(const [kind,label] of [['door','Ask Lui for Evening Door Shift · 5 min'],
+    ['package','Ask Lui for a Parcel Errand · 5 min']]){
+    const permitted=work.quoteOffer(S,kind),b=button(label,()=>optionalAction(kind));
+    b.disabled=!permitted.ok||S.dayRemaining<=300; b.title=permitted.reason||'';actions.appendChild(b);
+   }
+  }
+  if(delivery&&d.status==='pending'){
+   const ready=work.quoteDelivery(S,place.locationId,place.roomId),b=button('Hand Over Sealed Parcel · 5 min · $2',()=>optionalAction('deliver'));
+   b.disabled=!ready.ok||S.dayRemaining<=300;b.title=ready.reason||'';actions.appendChild(b);
+  }
+ }
  function refresh(){
   mount();
   window.FE_PEACOCK_DOOR_REGISTER_UI?.render?.();
@@ -220,11 +273,12 @@
   if(desk)desk.hidden=!on;
   const loc=current();
   if(door)door.hidden=!on||loc.locationId!==work.VENUE||loc.roomId!==work.ROOM||!!node('cityRoomOverlay')?.hidden||!!window.FE_CITY?.isDevRoom?.();
-  if(!on)return;
+  if(!on){refreshOffers();return;}
+  refreshOffers();
   const book=work.summary(S),pending=book.pending,totalCents=book.wagesEarnedCents;
   set('doormanDeskStats','Completed duty segments: '+book.totalSegments+' · Total shift wages earned: $'+(totalCents/100).toFixed(2)+'.');
-  set('doormanDeskInstruction',pending?'You have a visitor waiting at the nightclub door. Complete that contact to earn the shift wage.':
-   'You are an ordinary employee. Work begins during Washington Night. You can also spend free time elsewhere in the city.');
+  set('doormanDeskInstruction',pending?'A club visitor is waiting at the door. Complete the accepted extra-work shift to earn the wage.':
+   'Butchery is your regular business. Lui may offer voluntary evening shifts or sealed-parcel errands; ask at the Golden Peacock.');
   const list=node('doormanDeskLog');if(list){
    list.replaceChildren();
    for(const entry of book.logs.slice(-6).reverse()){
@@ -246,13 +300,13 @@
     const b=button(c.label,()=>action('respond',c.id));b.disabled=disabled||S.dayRemaining<=300;choices.appendChild(b);
    }
   }else if((book.segmentsByDate[S.gameDate]||0)>=work.MAX_SEGMENTS){
-   set('doormanDoorText','You have completed the allotted paid segments tonight. The proprietor still barely knows who you are.');
+   set('doormanDoorText','You have completed your allotted paid evening contacts with Lui.');
   }else{
    set('doormanDoorText',S.phase==='night'?
-    'Watch the entrance, help visitors, and follow the floor manager’s directions. You hold no ownership or special rank.':
-    'The nightclub door shift begins at Washington Night. You may spend daytime hours as you please.');
+    'You may watch the entrance only after accepting an evening shift from Lui. The club belongs to Lui, not Elias.':
+    'Ask Lui for an optional shift once the club opens in the evening.');
    const b=button('Watch the Door · 10 Minutes',()=>action('begin'));
-   b.disabled=disabled||S.dayRemaining<=600;choices.appendChild(b);
+   b.disabled=disabled||S.dayRemaining<=600||!work.access(S,loc.locationId,loc.roomId).ok;choices.appendChild(b);
   }
  }
  window.FE_DOORMAN_UI=Object.freeze({refresh});

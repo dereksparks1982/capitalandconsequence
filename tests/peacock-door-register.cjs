@@ -3,8 +3,13 @@ const assert=require('node:assert/strict');
 const door=require('../doorman-duty.js');
 const register=require('../peacock-door-register.js');
 const PLACE={locationId:door.VENUE,roomId:door.ROOM},DAY='1878-02-05';
-const fresh=()=>({characterRoute:'criminal',phase:'night',paused:false,gameDate:DAY,
- personalCash:2.50,notes:[]});
+const fresh=()=>{
+ const s={characterRoute:'criminal',phase:'night',paused:false,gameDate:DAY,
+ personalCash:2.50,notes:[],currentLocation:{locationId:door.VENUE,roomId:'main-room'}};
+ assert.equal(door.takeOffer(s,'door',300).ok,true);
+ s.currentLocation.roomId=door.ROOM;
+ return s;
+};
 function scenario(choice){
  for(let i=0;i<180;i++){
   const save=fresh();
