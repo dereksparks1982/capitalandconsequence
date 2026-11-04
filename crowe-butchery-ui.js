@@ -80,11 +80,53 @@ function refresh(){
  panel.replaceChildren();
  const h=document.createElement('h3');h.textContent='Crowe Family Butchers · Working Counter';panel.appendChild(h);
  const notice=document.createElement('p');notice.textContent=message||'Cut meat, stock the counter, set your own prices, serve customers, and keep an eye on the till.';notice.setAttribute('role','status');panel.appendChild(notice);
+ const cold=s.coldRoom;
  if(S.currentLocation.roomId==='loft'){
   const upstairs=document.createElement('p');
   upstairs.textContent='Your cousin lives here permanently. The bed, washstand and wardrobe are his. Go downstairs to manage the meat and accounts.';
   panel.appendChild(upstairs);return;
  }
+ const iceRoom=document.createElement('section');iceRoom.className='sheet';
+ const iceHeading=document.createElement('h4');
+ iceHeading.textContent='Hanging Meat & Ice-Cooled Room';iceRoom.appendChild(iceHeading);
+ const iceDetail=document.createElement('p');
+ iceDetail.textContent='Ice stored: '+cold.iceBlocks+'/'+cold.iceCapacity+' blocks · Room: '+
+  cold.condition+' · Cleanliness: '+cold.cleanliness+'/100 · Iceman deliveries: '+cold.deliveries+'.';
+ iceRoom.appendChild(iceDetail);
+ const upkeep=document.createElement('p');
+ upkeep.textContent='Your cousin receives scheduled ice deliveries and cleans the room automatically. A maintained side of beef has no arbitrary expiry date. Regular cutting begins after 30 days; specific customers may request earlier cuts.';
+ iceRoom.appendChild(upkeep);
+ if(cold.condition!=='stable'){
+  const warning=document.createElement('p');warning.setAttribute('role','status');
+  warning.textContent='Cold-room attention: '+(cold.notices.at(-1)?.text||'Cooling should be checked.');
+  iceRoom.appendChild(warning);
+ }
+ function task(label,action,opts={}){
+  const q=shop.quote(S,action,opts),b=button(label,()=>doAction(action,opts));
+  b.disabled=!q.ok||!root.FE_WASHINGTON_TIME?.canSpend?.(S,q.seconds||0);
+  if(!q.ok)b.title=q.reason;
+  return b;
+ }
+ iceRoom.appendChild(task('Receive 10 Ice Blocks · 5 min','iceDelivery'));
+ iceRoom.appendChild(task('Clean & Inspect Hanging Room · 15 min','cleanRoom'));
+ iceRoom.appendChild(task('Receive a 320 lb Beef Side · $44.80 · 15 min','receiveSide'));
+ if(cold.sides.length){
+  const rail=document.createElement('ol');rail.setAttribute('aria-label','Beef sides hanging in the cooling room');
+  for(const side of cold.sides){
+   const li=document.createElement('li');
+   const age=document.createElement('p');
+   age.textContent='Side #'+side.id+' · '+side.weightLbs+' lb remaining · Hung '+side.receivedDate+
+    ' · Aging '+side.ageDays+' day(s) · '+(side.standardReady?'Standard cutting age reached.':'Target: 30 days.');
+   li.appendChild(age);
+   if(side.standardReady)li.appendChild(task('Break Down 24 lb from Aged Side · 30 min','cutSide',{sideId:side.id}));
+   else li.appendChild(task('Early Customer Request: 24 lb · 30 min','cutSide',{sideId:side.id,early:true}));
+   rail.appendChild(li);
+  }
+  iceRoom.appendChild(rail);
+ }else{
+  const empty=document.createElement('p');empty.textContent='No beef sides are hanging on the rail.';iceRoom.appendChild(empty);
+ }
+ panel.appendChild(iceRoom);
  const cousin=document.createElement('section');cousin.className='sheet';
  const titleC=document.createElement('h4');titleC.textContent='Your Cousin · Acting Butcher';cousin.appendChild(titleC);
  const mood=document.createElement('p');

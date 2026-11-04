@@ -14,6 +14,8 @@ In an alternate America shaped by a different course of history, Washington is a
 
 **Elias Crowe** inherits the family butcher shop, manages meat, customers, and the till with his strong-willed cousin, and sometimes accepts paid evening favors from Lui at the Golden Peacock.
 
+His butcher's ice-cooled meat room holds hanging beef sides for a standard 30-day aging period, with early customer requests and regularly delivered blocks of ice. His cousin handles ordinary cooling and cleaning, so meat care is a genuine part of the trade without constant spoilage chores.
+
 **Edmund Wardman** serves as an orderly at District Asylum, where his older brother controls the institution.
 
 **Bridget Kennedy**, an Irish businesswoman, owns the Star Club. Madame Star manages daily affairs while Bridget oversees the business. Her proprietor office is a career foundation, not yet a complete ownership economy.

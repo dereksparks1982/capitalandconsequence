@@ -3,6 +3,8 @@
  * Story secrets are deliberately NOT exposed by this operational model.
  */
 (function(root){'use strict';
+const cold=typeof module==='object'&&module.exports?require('./crowe-cold-room.js'):root.FE_CROWE_COLD_ROOM;
+if(!cold)throw Error('Crowe cold-room systems must load before the butcher shop.');
 const SHOP='croweButcherShop';
 const GOODS=Object.freeze({
  beef:Object.freeze({name:'Beef',wholesaleCents:17,defaultPriceCents:28}),
@@ -27,6 +29,7 @@ function ensure(save){
    cousin:{loyalty:62,resentment:28,suspicion:8,priceChanges:0,hiddenShortfallCents:0},
    hidden:{unbookedSalesCents:0,unenteredWithdrawalsCents:0},nextEntry:1};
  }
+ cold.ensure(save.croweButchery,save);
  return save.croweButchery;
 }
 function entry(s,save,type,label,amountCents=0){
@@ -48,6 +51,7 @@ function dateMinute(m){return new Date(m*60000)}
 function clockStep(save,s,m){
  const day=dateMinute(m),hour=day.getUTCHours(),weekday=day.getUTCDay();
  const dated={gameDate:day.toISOString().slice(0,10)};
+ cold.step(s,save,m);
  if(weekday===0||hour<8||hour>=17)return;
  const away=!inShop(save)||save.currentLocation?.roomId==='loft';
  // The cousin opens and prepares stock when the player is away.
@@ -102,13 +106,14 @@ function access(save,roomId=null){
  if(save.paused||save.phase==='report')return deny('The accounts are closed while the game is paused or reporting.');
  if(!inShop(save))return deny('Visit the inherited butcher shop to do this.');
  const room=roomId||save.currentLocation.roomId;
- if(!['shop-floor','cutting-room','stock-room','back-door'].includes(room))
+ if(!['shop-floor','cutting-room','stock-room','back-door','ice-room'].includes(room))
   return deny('Go downstairs to the shop floor, cutting room or stock room.');
  return {ok:true};
 }
 function quote(save,action,opts={}){
  const allowed=access(save);if(!allowed.ok)return allowed;
  const s=ensure(save),key=opts.key;
+ if(['iceDelivery','cleanRoom','receiveSide','cutSide'].includes(action))return cold.preview(s,save,action,opts);
  if(!['audit','draw','unrecordedDraw','cut','restock','price','counter','confront','listen'].includes(action))return deny('Unknown butcher-shop action.');
  if(!['draw','unrecordedDraw','audit','confront','listen'].includes(action)&&!GOODS[key])return deny('Select a butcher-shop product.');
  if(['cut','restock','price','counter'].includes(action)&&save.phase!=='day')return deny('The shop is closed for daytime trade.');
@@ -129,6 +134,10 @@ function apply(save,action,opts={},spentSeconds=0){
  const q=quote(save,action,opts);if(!q.ok)return q;
  if(spentSeconds!==q.seconds)return deny('The shop action must consume its full time.');
  const s=sync(save);let message='',result={};
+ if(['iceDelivery','cleanRoom','receiveSide','cutSide'].includes(action)){
+  const done=cold.perform(s,save,action,opts,spentSeconds);
+  return done.ok?{ok:true,message:done.message,status:summary(save)}:done;
+ }
  if(action==='cut'){
   const n=prepare(s,q.key,3);s.manualCuts+=n;message='Cut and prepared '+n+' lb of '+GOODS[q.key].name.toLowerCase()+'.';
   entry(s,save,'cut',message);
@@ -180,6 +189,7 @@ function summary(save){
  return {tillCents:s.tillCents,raw:{...s.raw},prepared:{...s.prepared},
   prices:{...s.prices},sales:s.sales,salesCents:s.salesCents,manualCuts:s.manualCuts,
   stockOrders:s.stockOrders,drawsCents:s.drawsCents,ledger:s.ledger.map(x=>({...x})),
+  coldRoom:cold.summary(s,save),
   lastAudit:s.lastAudit?{...s.lastAudit}:null,
   cousin:{loyalty:s.cousin.loyalty,resentment:s.cousin.resentment,priceChanges:s.cousin.priceChanges},
   loftResidence:'Cousin’s permanent upstairs home'};

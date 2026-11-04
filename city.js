@@ -454,7 +454,8 @@
    rooms:[
     {id:'shop-floor',name:'Butcher’s Counter',description:'A working meat counter with a customer register, price board and separate shop till.'},
     {id:'cutting-room',name:'Cutting Room',restricted:true,description:'Butcher’s blocks, knives and worktables where carcass cuts are trimmed and prepared.'},
-    {id:'stock-room',name:'Cold Larder and Stock Room',restricted:true,description:'Uncut carcass supplies, hanging meat and provisions kept from spoiling.'},
+    {id:'stock-room',name:'Stock Larder',restricted:true,description:'Prepared provisions and uncut stock stored for the working counter.'},
+    {id:'ice-room',name:'Ice-Cooled Hanging Room',restricted:true,description:'Hanging rails hold beef sides while large blocks of delivered ice maintain cooling. The iceman supplies the ice compartment and the cousin handles ordinary cleaning and drainage.'},
     {id:'back-door',name:'Supplier Delivery Door',restricted:true,description:'Meat and supplies arrive through the rear of the shop.'},
     {id:'loft',name:'Cousin’s Upstairs Loft',restricted:true,description:'The cousin lives permanently above the shop. His bed, wardrobe and washstand occupy this small private home.'}
    ]

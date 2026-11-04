@@ -24,4 +24,11 @@ assert(index.indexOf('app.js?v=')<index.indexOf('crowe-butchery-ui.js?v='),'Shop
 assert(index.indexOf('crowe-butchery-ui.js?v=')<index.indexOf('doorman-ui.js?v='),'Both local career activity panels load');
 assert(index.includes('doorman-duty.js?v=')&&index.includes('peacock-story.js?v='),'Optional night side stories remain present');
 assert.doesNotMatch(ui,/smother|romantic relationship|lover|murdered his father/i,'Public UI must not disclose secret');
-console.log('PASS Crowe city room, loft access, unchanged 42 map pins, loaded shop UI and private story separation');
+assert(city.getRoom(shop.SHOP,'ice-room')?.restricted,'Hanging side room has protected shop access');
+assert.equal(access.canRoom(city,{route:'criminal'},shop.SHOP,'ice-room','1878-01-02').ok,true);
+assert.equal(access.canRoom(city,{route:'industrialist'},shop.SHOP,'ice-room','1878-01-02').ok,false);
+assert(index.indexOf('crowe-cold-room.js?v=')<index.indexOf('crowe-butchery.js?v='),'Cooling model loads before butcher model');
+assert(ui.includes('Hanging Meat & Ice-Cooled Room'));
+assert(ui.includes('early:true'),'Early cutting is explicitly labeled');
+assert(ui.includes('iceDelivery')&&ui.includes('cleanRoom'));
+console.log('PASS Crowe rooms, owner-only ice cellar, approved map pins, cold-room script order and hidden story');

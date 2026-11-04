@@ -1,3 +1,11 @@
+## NOVEMBER 3–4, 2026 · ICE-COOLED CROWES BUTCHERY / STANDARD BEEF AGING
+
+**Owner's direct experience:** In the owner's father's actual butcher shop, sides of beef normally remained hanging under proper refrigeration and cleanliness for **at least 30 days** before cutting, unless a customer expressly requested an earlier cut. Under suitable controlled conditions, such meat may continue aging considerably longer. This is owner's historical trade practice, **not** an instruction that a 19th-century ice room always meets modern safe-aging requirements. **Do NOT use arbitrary two- or three-day expiration of hanging beef.**
+
+**Game direction:** A distinct ice-cooled hanging room with suspended sides, an iceman who makes paid ice deliveries and a competent live-in cousin who handles routine ice receipts, cleaning and stock care. **Spoilage should NOT become a nagging micromanagement mechanic.** Preserve maintained hanging meat without a hard date-based spoilage timer. Genuine, prolonged loss of cooling can trigger a warning and inspection hold; it must not wipe out months of stock without notice. Early cuts are customer-request exceptions; regular cutting becomes available after 30 aging days.
+
+**Implementation boundary:** First playable ice-room model uses game-balance numbers for sides, ice blocks, costs and melt rates; these are not historical weights/prices, real temperature specifications, or real-world food-handling guidance. It does not modify the owner's Washington/Salem maps or pick an undecided shipping chart. No map art restored.
+
 ## LATEST OWNER DECISION · NOVEMBER 1, 2026 · COMPONENTS → STREETLIGHTS → BULBS → FAIR
 
 **The following decisions supersede all older 1893 World's Fair and later streetlighting references below.** Those passages remain as historical records.

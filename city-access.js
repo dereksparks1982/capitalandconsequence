@@ -44,7 +44,7 @@
   }
   if(id==='star'&&room.id==='owner-office'&&role==='proprietor')return {ok:true,locationId:id,roomId:room.id};
   if(id==='salemHarbor'&&room.id==='leach-office'&&role==='mariner')return {ok:true,locationId:id,roomId:room.id};
-  if(id==='croweButcherShop'&&['cutting-room','stock-room','back-door','loft'].includes(room.id)&&
+  if(id==='croweButcherShop'&&['cutting-room','stock-room','ice-room','back-door','loft'].includes(room.id)&&
      (role==='criminal'||person==='croweCousin'))return {ok:true,locationId:id,roomId:room.id};
   if(id==='secondNightclub'){
    if(room.id==='doorman-post'&&(role==='criminal'||(person==='eliCrowe'&&actor.onDuty)))return {ok:true,locationId:id,roomId:room.id};
