@@ -84,7 +84,7 @@ function drawSprite(g,s,x,y,rotation=0){
  g.save();g.translate((x+w/2)*C.TILE,(y+h/2)*C.TILE);g.rotate(rotation*Math.PI/2);
  g.drawImage(art,sx,sy,sw,sh,-raw[0]*C.TILE/2,-raw[1]*C.TILE/2,raw[0]*C.TILE,raw[1]*C.TILE);g.restore();
 }
-function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,playerFacing='front',selected=null}={}){
+function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,playerFacing='front',selected=null,playerSprite='charles'}={}){
  const w=data.widthTiles,h=data.heightTiles;g.imageSmoothingEnabled=false;
  g.fillStyle='#413b34';g.fillRect(0,0,w*C.TILE,h*C.TILE);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
@@ -93,7 +93,14 @@ function drawRoom(g,data,{showGrid=false,showSpawn=false,player=null,playerFacin
  }
  for(const o of data.objects)drawSprite(g,C.asset(o.spriteId),o.x,o.y,o.rotation);
  const pos=player||showSpawn&&data.spawns.player;
- if(pos)drawSprite(g,C.asset('charles_'+(playerFacing||'front')),pos.x,pos.y);
+ if(pos){
+   if(playerSprite)drawSprite(g,C.asset(playerSprite+'_'+(playerFacing||'front')),pos.x,pos.y);
+   else{
+    // Neutral placement cursor until a playable character's own sprites are approved.
+    g.fillStyle='#e7c067';g.beginPath();g.arc((pos.x+.5)*C.TILE,(pos.y+.5)*C.TILE,10,0,Math.PI*2);g.fill();
+    g.strokeStyle='#342a1a';g.lineWidth=2;g.stroke();
+   }
+  }
  if(showGrid){g.beginPath();g.strokeStyle='rgba(11,10,9,.25)';g.lineWidth=1;
   for(let x=0;x<=w;x++){g.moveTo(x*C.TILE+.5,0);g.lineTo(x*C.TILE+.5,h*C.TILE)}
   for(let y=0;y<=h;y++){g.moveTo(0,y*C.TILE+.5);g.lineTo(w*C.TILE,y*C.TILE+.5)}g.stroke();}
@@ -109,7 +116,7 @@ function render(){
  const w=room.widthTiles*C.TILE,h=room.heightTiles*C.TILE;
  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  canvas.style.width=(w*zoom)+'px';canvas.style.height=(h*zoom)+'px';
- drawRoom(ctx,preview&&testRoom?testRoom:room,{showGrid:grid&&!preview,showSpawn:!preview,player:preview?position:null,selected:selectedId});
+ drawRoom(ctx,preview&&testRoom?testRoom:room,{showGrid:grid&&!preview,showSpawn:!preview,player:preview?position:null,selected:selectedId,playerSprite:locationId==='factory'&&roomId==='executive-office'?'charles':null});
  for(const btn of panel.querySelectorAll('[data-rb-mode]'))btn.classList.toggle('active',btn.dataset.rbMode===mode&&!preview);
  for(const btn of panel.querySelectorAll('[data-rb]'))
   if(['rotate','duplicate','delete','nudge-left','nudge-right','nudge-up','nudge-down'].includes(btn.dataset.rb))
