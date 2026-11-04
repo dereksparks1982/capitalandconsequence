@@ -15,10 +15,24 @@ section.hidden=true;
 section.innerHTML='<h4>Federal Electric · Executive Office Floorplan</h4>'+
  '<div class="rb-live-view"><canvas tabindex="0" aria-label="Walk Charles in the executive office with arrows or WASD"></canvas></div>'+
  '<p class="rb-scene-status" role="status">Click the room, then walk with WASD or arrow keys. Click adjacent doors to toggle them.</p>'+
- '<p class="rb-scene-help">Walk with arrows / WASD. Approach the desk and press E to use it. Existing travel rules handle other locations.</p>';
-description.after(section);
+ '<p class="rb-scene-help">Walk with arrows / WASD. Use E beside Charles\'s desk only in his actual executive office. The location directory handles travel.</p>';
+const launch=document.createElement('button');
+launch.id='dkArchitectRoomLaunch';launch.type='button';launch.className='dk-architect-room-launch';
+launch.textContent='DK Architect · Decorate Scene';
+launch.title='Open DK Architect for this actual room; layouts are saved independently';
+launch.hidden=true;
+description.after(launch);launch.after(section);
+launch.addEventListener('click',()=>{
+ const target=actualRoom();if(!target)return;
+ api.open({locationId:target.locationId,roomId:target.roomId});
+});
 const canvas=section.querySelector('canvas'),ctx=canvas.getContext('2d'),out=section.querySelector('.rb-scene-status');
 let layout=null,pos=null,activeKey='',facing='front';
+function actualRoom(){
+ if(overlay.hidden||root.FE_CITY?.isDevRoom?.())return null;
+ const p=root.FE_CITY?.currentLocation?.();
+ return p&&p.locationId===overlay.dataset.locationId?p:null;
+}
 function nearObject(obj){
  if(!obj||!pos)return false;
  const [w,h]=C.dims(C.asset(obj.spriteId),obj.rotation);
@@ -27,7 +41,7 @@ function nearObject(obj){
  return dx+dy<=1;
 }
 function nearbyDesk(){
- return layout?.objects.find(o=>o.spriteId==='desk_oak'&&nearObject(o))||null;
+ return isOffice()?layout?.objects.find(o=>o.spriteId==='desk_oak'&&nearObject(o))||null:null;
 }
 function useDesk(){
  if(!nearbyDesk()){out.textContent='Approach the office desk first, then press E.';return false;}
@@ -41,16 +55,19 @@ function isOffice(){
 function draw(){
  if(!layout||!pos)return;
  canvas.width=layout.widthTiles*C.TILE;canvas.height=layout.heightTiles*C.TILE;
- api.drawRoom(ctx,layout,{player:pos,playerFacing:facing});
+ api.drawRoom(ctx,layout,{player:pos,playerFacing:facing,playerSprite:isOffice()?'charles':null});
  if(nearbyDesk())out.textContent='Beside the executive desk. Press E to use it.';
 }
 function refresh(){
- if(!isOffice()){section.hidden=true;activeKey='';return;}
- const data=api.getSaved();
+ const target=actualRoom();launch.hidden=!target;
+ if(!target){section.hidden=true;activeKey='';return;}
+ const data=api.getSaved(target.locationId,target.roomId);
  if(!data){section.hidden=true;activeKey='';return;}
- const fingerprint=JSON.stringify(data);
+ const fingerprint=target.locationId+':'+target.roomId+':'+JSON.stringify(data);
  if(activeKey!==fingerprint){
   layout=data;pos={...data.spawns.player};activeKey=fingerprint;facing='front';
+   section.querySelector('h4').textContent='DK Architect · '+name.textContent.trim();
+   canvas.setAttribute('aria-label','Explore decorated '+name.textContent.trim()+' with arrow keys or WASD');
   out.textContent='Room loaded. Click the floorplan, then use arrows or WASD to walk.';
  }
  section.hidden=false;draw();
