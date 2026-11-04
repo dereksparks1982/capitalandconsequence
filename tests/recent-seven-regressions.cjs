@@ -19,7 +19,7 @@ assert(app.includes("if(typeof S!=='undefined'&&S.characterRoute==='industrialis
 const art=desk.slice(desk.indexOf('<div class="career-desk-art"'),desk.indexOf('<p class="career-desk-summary">'));
 assert(!art.includes('<small>'),'No extra competing desk captions');
 assert(art.includes('careerDeskShippingMap')&&art.includes('careerDeskLedger'));
-const decisions=read('DECISIONS.md').slice(0,2000);
+const decisions=read('DECISIONS.md');
 assert(decisions.indexOf('First, Charlie manufactures')>=0);
 assert(decisions.indexOf('First, Charlie manufactures')<decisions.indexOf('Then, Charlie may research'));
 assert(decisions.indexOf('streetlighting improvement contract')<decisions.indexOf("World's Fair follows"));

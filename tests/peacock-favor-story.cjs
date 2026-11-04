@@ -36,7 +36,12 @@ for(const path of ['return','manager','sell']){
  s.gameDate='1878-01-08';choose(s,'followUp');
  assert.equal(FE_MISSIONS.find(s,scene.ID).status,'completed');
  assert.equal(scene.summary(s).events.length,3);
- assert.equal(campaign.inspect(s).acts[1].status,'milestone-recorded');
+ const record=campaign.inspect(s);
+ assert.equal(record.title,'Blood and the Butcher’s Book');
+ assert.equal(record.recordedMilestones,0,
+  'Optional Golden Peacock side mission cannot grant unearned butcher-shop milestones');
+ assert.equal(record.acts[0].status,'available',
+  'The butcher trade remains the first earned main-story chapter');
  assert.equal(scene.preview(s,'sell',loc,room).ok,false);
  assert.equal(scene.preview(s,'followUp',loc,room).ok,false);
  assert.equal(s.personalCash,path==='sell'?6.85:4.35,'No duplicate payout');

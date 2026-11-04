@@ -1,5 +1,7 @@
 # Capital & Consequence
 
+**v0.7.111-dev · November 4, 2026 (unaccepted):** Source QA repair after eight local test failures. Update seven earlier-snapshot test expectations to preserve the current six-character roster, butcher-shop main campaign, optional nightclub side stories, and late-1878 electrical-contract chronology. The in-place updater registers GitHub-tracked tests, so retired local-only tests are reported but not deleted or executed. No gameplay balance, plot, dates, assets, map pins or approved UI geometry changed. See `docs/RELEASE-NOTES-v0.7.111-dev.md`.
+
 **One city. Countless lives. Every choice has consequences.**
 
 *Washington, D.C., 1878. Fortune favors the bold, but every ambition comes at a price.*

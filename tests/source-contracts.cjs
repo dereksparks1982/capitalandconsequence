@@ -143,15 +143,20 @@ check(city.getRoom('blackwoodAsylum','orderly-station').restricted===true&&city.
 const routesContext={window:{},document:{getElementById:()=>null}};
 vm.runInNewContext(read('character-routes.js'),routesContext,{filename:'character-routes.js'});
 const routes=routesContext.window.FE_CHARACTERS;
-check(routes.list().length===4,'Four selectable careers share one Washington');
+check(routes.list().length===6,'Six approved characters retain separate starting lives');
 check(routes.canStart('industrialist'),'Existing factory story remains playable');
-check(routes.canStart('investigator')&&routes.canStart('criminal')&&routes.canStart('wardman'),'All four desks may be opened in a new career foundation');
-check(routes.list().filter(r=>r.status==='foundation').length===3,'Unfinished careers are honestly marked as foundations');
-check(routes.get('industrialist').characterName==='Charles “Charlie” Whitcomb','Businessman name is recorded');
-check(routes.get('investigator').characterName==='Samuel “Sam” Harlan','Sam Harlan surname is recorded');
-check(routes.get('criminal').characterName==='Elias “Eli” Crowe','Elias retains his approved identity');
+check(['investigator','criminal','wardman','proprietor','mariner'].every(id=>routes.canStart(id)),'All six character routes remain selectable');
+check(routes.list().filter(r=>r.status==='foundation').length===4&&routes.get('criminal').status==='playable','Four foundations and playable butcher career retain actual work status');
+check(routes.get('industrialist').characterName==='Charles Whitecomb','Charles Whitecomb retains his selectable portrait identity');
+check(routes.get('investigator').characterName==='Samuel Harlan','Samuel Harlan retains his selectable portrait identity');
+check(routes.get('criminal').characterName==='Elias Crowe','Elias retains his approved identity');
 check(routes.get('wardman').characterName==='Edmund Wardman','Edmund Wardman is recorded');
-check(routes.get('industrialist').startingLocationId==='factory'&&routes.get('wardman').startingLocationId==='blackwoodAsylum','Four-route openings have stable locations');
+check(routes.get('industrialist').startingLocationId==='factory'&&
+ routes.get('wardman').startingLocationId==='blackwoodAsylum'&&
+ routes.get('criminal').startingLocationId==='croweButcherShop'&&
+ routes.get('proprietor').startingLocationId==='star'&&
+ routes.get('mariner').startingLocationId==='salemHarbor',
+ 'Six lives retain original job-specific starts, including separate Salem');
 check(routes.get('investigator').deskColor==='blue'&&routes.get('wardman').deskColor==='cream','Personal desk colors are distinct');
 check(routes.normalize('unknown')==='industrialist','Old saves migrate to executive');
 check(routes.get('industrialist').paperDoll==='assets/artwork/characters/paperdolls/paperdoll.png','Approved paper doll unchanged');

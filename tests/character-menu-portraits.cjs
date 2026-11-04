@@ -38,5 +38,13 @@ assert.ok(menu.includes('class="career-menu-portrait"'),'cards render portrait i
 assert.ok(menu.includes("cardRail.addEventListener('wheel'"),'wheel is mapped to horizontal scrolling');
 assert.ok(menu.includes("cardRail.addEventListener('keydown'"),'keyboard navigation');
 assert.ok(css.includes('overflow-x:auto')&&css.includes('scroll-snap-type:x proximity'),'horizontal scrolling CSS');
-for(const script of ['character-routes.js','career-shell.js'])assert.ok(html.includes('src="'+script+'?v=20261103-v07103-six-portraits"'),'new script cache key');
+for(const script of ['character-routes.js','career-shell.js']){
+ const needle='src="'+script+'?v=';
+ const i=html.indexOf(needle);
+ assert.ok(i>=0,script+' must be loaded with a cache-busting key');
+ assert.ok(/^\\d{8}-[^"]+/.test(html.slice(i+needle.length)),
+  script+' must retain a dated revision');
+}
+assert.ok(html.indexOf('character-routes.js?v=')<html.indexOf('career-shell.js?v='),
+ 'Character route definitions must load before the active portrait cards');
 console.log('PASS Six portraits, career IDs, locations, access, scroll and keyboard navigation');

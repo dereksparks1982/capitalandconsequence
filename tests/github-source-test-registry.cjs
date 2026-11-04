@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.join(__dirname,'..');
+const updater=fs.readFileSync(path.join(root,'scripts/build-from-github.py'),'utf8');
+const runner=fs.readFileSync(path.join(__dirname,'run-all.cjs'),'utf8');
+assert(updater.includes('tracked_tests = sorted('));
+assert(updater.includes('tests/.github-managed-tests.json'));
+assert(!updater.includes('.unlink('),'Retained local tests must not be deleted');
+assert(runner.includes('const missing=listed.filter('));
+assert(runner.includes('Retained local-only tests not run:'));
+assert(require('../merchant-navigation.js').MAP.includes('Mitchell_1880_Map/'));
+console.log('PASS current tracked test list, old local test retention and Mitchell identity');

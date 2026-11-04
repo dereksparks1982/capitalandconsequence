@@ -167,6 +167,20 @@ def main():
             raise RuntimeError("GitHub source lacks the actual Linux executable builder.")
         info("Verified GitHub version " + str(package.get("version", "unknown")) + ".")
         synchronize(staging, changed)
+        # Source QA follows the SHA-verified GitHub source tree, not obsolete
+        # tests retained locally from previously deleted tracked files.
+        # Never delete or overwrite untracked local tests.
+        tracked_tests = sorted(name.removeprefix("tests/") for name in manifest
+                               if name.startswith("tests/") and name.endswith(".cjs")
+                               and name != "tests/run-all.cjs")
+        if not tracked_tests or "merchant-mitchell-chart.cjs" not in tracked_tests:
+            raise RuntimeError("Tracked source-test list is incomplete.")
+        registered = safe_target("tests/.github-managed-tests.json")
+        temp_manifest = temp / "managed-tests.json"
+        temp_manifest.write_text(json.dumps(tracked_tests, indent=2)+"\\n", encoding="utf-8")
+        registered.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(temp_manifest, registered)
+        info("Registered " + str(len(tracked_tests)) + " current GitHub source tests.")
         env["GIT_TERMINAL_PROMPT"] = "0"
         env["npm_config_audit"] = "false"
         env["npm_config_fund"] = "false"

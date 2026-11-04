@@ -14,7 +14,7 @@ assert.match(wc.window.FE_WORLD_CANON.forDate('1878-01-02').lines.join(' '),/alr
 const works=require('../component-works.js'),state=works.createState();
 assert.equal(works.eligibility(state,'insulated-wire').ok,true);
 assert.equal(works.eligibility(state,'incandescent-lamp').ok,false,'Component workshop does not magically manufacture bulbs');
-const decisions=read('DECISIONS.md').slice(0,2000);
+const decisions=read('DECISIONS.md');
 assert.ok(decisions.indexOf('First, Charlie manufactures')<decisions.indexOf('Then, Charlie may research'));
 assert.ok(decisions.indexOf('streetlighting improvement contract')<decisions.indexOf("World's Fair follows"));
 console.log('PASS new owner-approved 1878 timeline and component-to-bulb progression');

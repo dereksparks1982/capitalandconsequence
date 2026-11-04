@@ -23,7 +23,12 @@ for(const id of ['settle','defy','disclose']){
  assert.equal(s.personalCash,id==='settle'?1:4);
  assert.equal(debts.preview(s,'consequence',place.locationId,place.roomId).ok,false);
  s.gameDate='1878-01-14';run(s,'consequence');
- assert.equal(main.inspect(s).acts[3].status,'milestone-recorded');
+ const record=main.inspect(s);
+ assert.equal(record.title,'Blood and the Butcher’s Book');
+ assert.equal(record.recordedMilestones,0,
+  'Optional Golden Peacock side mission cannot grant unearned butcher-shop milestones');
+ assert.equal(record.acts[0].status,'available',
+  'The butcher trade remains the first earned main-story chapter');
  assert.equal(FE_MISSIONS.find(s,debts.ID).status,'completed');
  assert.equal(s.lifeHistory.events.length,3);
  assert.equal(debts.preview(s,id,place.locationId,place.roomId).ok,false);
