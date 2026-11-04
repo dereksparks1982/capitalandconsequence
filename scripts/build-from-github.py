@@ -188,10 +188,9 @@ def main():
         subprocess.run([npm, "install", "--no-audit", "--no-fund"], cwd=ROOT, env=env, check=True)
         info("Building and smoke-testing the existing Linux game.")
         result = subprocess.run([npm, "run", "build:root:linux"], cwd=ROOT, env=env, check=False)
-        if result.returncode not in (0, 2):
-            raise RuntimeError("Linux game build or smoke test failed (" + str(result.returncode) + ").")
-        if result.returncode == 2:
-            info("WARNING: Native build reported a nonfatal distribution validation warning.")
+        if result.returncode != 0:
+            raise RuntimeError("Linux game build or packaged smoke test failed (" + str(result.returncode) +
+                               "); previously installed executable was not replaced.")
     executable = ROOT / "capitalandconsequence"
     if not executable.is_file() or not os.access(executable, os.X_OK):
         raise RuntimeError("No executable produced.")

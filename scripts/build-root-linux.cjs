@@ -13,7 +13,7 @@ const GITHUB_MAX_BLOB=100*1024*1024;
 // Packed, auditably sourced x86_64 Linux ELF. No compiler, sudo or network
 // needed on the player's machine. The full Electron executable stays alongside
 // it at capitalandconsequence-runtime and the real game's resources stay put.
-const nativeLauncherSha256='e23cf0527ea58659c37e1468b4e6fdcd6bcffdbc52510df56af13c1ff1739a38';
+const nativeLauncherSha256='18878c1edc4e952748defb70466203897f0596ccff82865599eafe474804cff9';
 function launcherBytes(){
  const zlib=require('node:zlib'),crypto=require('node:crypto');
  const encoded=fs.readFileSync(path.join(root,'scripts','linux-launcher-x64.b64gz'),'utf8').trim();
@@ -166,42 +166,24 @@ function run(){
  // process startup and directly execs the fully bundled Electron game binary.
  prepareNativeLinuxEntrypoint(dir);
  inspect(dir);
- // The user needs a LOCAL EXECUTABLE to test gameplay. A fragile UI smoke
- // assertion (or Wayland GPU readback) must not discard a valid ELF package.
- // Source regressions and real ELF/runtime integrity remain mandatory.
- // A failed smoke is always reported accurately and blocks STRICT acceptance,
- // but does not prevent local installation for hands-on debugging.
- let smokePassed=false,smokeError=null;
- try{
-  smoke(dir);
-  smokePassed=true;
- }catch(error){
-  smokeError=error;
-  console.warn('LOCAL GAME DIAGNOSTIC WARNING: '+error.message);
-  if(process.env.CAPITAL_REQUIRE_SMOKE==='1')throw error;
+ // The packaged game MUST pass its real Electron smoke test before any
+ // existing installed ELF or resource directory is replaced.
+ try{smoke(dir)}catch(error){
+  fs.rmSync(dir,{recursive:true,force:true});
+  throw Error('PACKAGED SMOKE FAILED: existing installed game preserved. '+error.message);
  }
  install(dir);
  const final=inspect(root);
- // Clean obsolete copies after a successful installation without touching the
- // current paired ELFs or root runtime. A cleanup warning never uninstalls a
- // valid game or invents a passing packaged smoke test.
- const cleaner=path.join(root,'scripts','clean-project.py');
- if(fs.existsSync(cleaner)){
-  const sweep=cp.spawnSync('python3',[cleaner],{
-   cwd:root,encoding:'utf8',timeout:120000,maxBuffer:2*1024*1024
-  });
-  if(sweep.status===0&&sweep.stdout)console.log(sweep.stdout.trim());
-  else console.warn('Project cleanup was skipped: '+
-   (sweep.error?.message||sweep.stderr||'Exit '+sweep.status).slice(-600));
- }
+ // No automatic archive cleanup, ZIP, backup export, or user-file relocation.
+ // Explicit cleanup is a separate owner-authorized operation, never part of
+ // updating the game.
  console.log('LINUX GAME EXECUTABLE INSTALLED: '+final.executable);
- console.log(smokePassed?'PACKAGED ELECTRON SMOKE TEST PASSED.':
-  'PACKAGED SMOKE TEST DID NOT PASS. The runnable ELF and complete runtime are installed for manual gameplay testing. This is NOT an accepted/released build.');
+ console.log('PACKAGED ELECTRON SMOKE TEST PASSED.');
  console.log('Game runtime now occupies the existing repository root. No AppImage or dist.');
  if(final.oversize.length){
   console.error('GITHUB ZIP NOT READY: '+final.oversize.map(x=>x.name+' '+Math.ceil(x.size/1048576)+' MiB').join('; '));
   console.error('GitHub does not accept blobs this large. Do not describe a source ZIP as playable.');
-  process.exitCode=2;
+  console.log('The GitHub size limit does not affect this validated LOCAL Linux game.');
  }else{
   console.log('GitHub individual-file size preflight PASSED. Publish all files to the repository and check the downloaded ZIP independently.');
  }

@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.join(__dirname,'..'),read=file=>fs.readFileSync(path.join(root,file),'utf8');
+const main=read('desktop/main.cjs'),runner=read('scripts/build-root-linux.cjs'),
+ updater=read('scripts/build-from-github.py'),native=read('scripts/linux-root-launcher.c');
+assert(main.includes("const sixCareerTest=await win.webContents.executeJavaScript("));
+assert(main.includes("expectedCareerIds=['industrialist','investigator','criminal','wardman','proprietor','mariner']"));
+assert(!main.includes("fourCareerTest")&&!main.includes("routeCount!==4"),
+ 'Packaged Electron startup may never reject the approved six-character roster');
+assert(native.includes('"--disable-vulkan"')&&native.includes('"--disable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"'),
+ 'Native graphics fix must reach Chromium before Electron JavaScript starts');
+assert(!native.includes('ozone-platform=x11'),
+ 'Native Wayland must not be replaced by a compatibility-only forced X11 backend');
+const smoke=runner.indexOf('try{smoke(dir)}'),install=runner.indexOf('install(dir);');
+assert(smoke>0&&install>smoke,'Packaged smoke must precede installing root executable');
+assert(runner.includes('throw Error(\'PACKAGED SMOKE FAILED: existing installed game preserved.'),
+ 'Smoke failures must abort installation without replacing the existing game');
+assert(!runner.includes('clean-project.py'),
+ 'Normal update must not archive or relocate any owner files');
+assert(!runner.includes('process.exitCode=2;'),
+ 'The GitHub ZIP size limit is not a local native game failure');
+assert(updater.includes('if result.returncode != 0:'),
+ 'Updater must not accept failed smoke or any nonzero native build');
+console.log('PASS six-character native smoke, no manual Vulkan arguments, mandatory acceptance, no automatic archives');

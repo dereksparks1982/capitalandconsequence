@@ -1,6 +1,7 @@
 /* Capital & Consequence Linux x86_64 native entrypoint.
  * A real ELF bootstrap executes the bundled Electron game runtime with
- * --no-sandbox BEFORE Chromium starts, not from Electron's main script.
+ * --disable-vulkan and --no-sandbox BEFORE Chromium starts, not from Electron's main script.
+ * Preserve the native Wayland backend; do not force X11 or ask the owner for flags.
  * No shell, network, elevated privileges, installers or downloads.
  */
 #define _POSIX_C_SOURCE 200809L
@@ -33,14 +34,19 @@ int main(int argc, char **argv) {
   memcpy(path + directory_len, runtime, sizeof(runtime));
   const int sandbox_enabled = getenv("CAPITAL_ENABLE_CHROMIUM_SANDBOX") != NULL &&
     strcmp(getenv("CAPITAL_ENABLE_CHROMIUM_SANDBOX"), "1") == 0;
-  const int extra = sandbox_enabled ? 0 : 1;
+  // Electron 44 can initialize the Vulkan GPU child before its JavaScript
+  // main process runs. Disable that backend at the actual ELF entrypoint.
+  // OpenGL/ANGLE remains available, including native Wayland sessions.
+  const int extra = sandbox_enabled ? 2 : 3;
   char **arguments = calloc((size_t)argc + (size_t)extra + 1, sizeof(*arguments));
   if (!arguments) {
     fprintf(stderr, "Capital & Consequence: out of memory.\n");
     return 127;
   }
   arguments[0] = path;
-  if (extra) arguments[1] = (char *)"--no-sandbox";
+  arguments[1] = (char *)"--disable-vulkan";
+  arguments[2] = (char *)"--disable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan";
+  if (!sandbox_enabled) arguments[3] = (char *)"--no-sandbox";
   for (int i = 1; i < argc; i++) arguments[i + extra] = argv[i];
   arguments[argc + extra] = NULL;
   execv(path, arguments);

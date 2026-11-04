@@ -165,12 +165,12 @@ async function runSmokeTest(win) {
     await win.webContents.executeJavaScript('window.FE_BOOTSTRAP_READY');
     const persisted=await win.webContents.executeJavaScript(`localStorage.getItem('__federalElectricSmokePersistence')`);
     if(persisted!=='ok') throw new Error('localStorage did not survive a full renderer reload');
-    // Regress the real four-career UI and profile autosave inside packaged Electron.
-    const fourCareerTest=await win.webContents.executeJavaScript(`(() => {
+    // Test the actual six-career roster, profile autosave and career isolation in packaged Electron.
+    const sixCareerTest=await win.webContents.executeJavaScript(`(() => {
       const oldS=S,oldActive=localStorage.getItem('federalElectricActiveProfile'),
         oldIndex=localStorage.getItem('federalElectricProfilesV1'),
         oldBlocked=profileSaveReadBlocked,menu=document.getElementById('careerMainMenu'),
-        result={menuVisible:!!menu&&!menu.hidden,routeCount:document.querySelectorAll('[data-career-pick]').length};
+        result={menuVisible:!!menu&&!menu.hidden,routeIds:[...document.querySelectorAll('[data-career-pick]')].map(b=>b.dataset.careerPick)};
       let id=null;
       try{
         document.querySelector('[data-career-pick="wardman"]').click();
@@ -198,8 +198,12 @@ async function runSmokeTest(win) {
         render();
       }
     })()`);
-    if(!fourCareerTest.menuVisible||fourCareerTest.routeCount!==4||!fourCareerTest.newRoute||!fourCareerTest.desk||!fourCareerTest.factoryHidden||!fourCareerTest.reloads)
-      throw new Error('Four career menu/save/desk smoke regression: '+JSON.stringify(fourCareerTest));
+    const expectedCareerIds=['industrialist','investigator','criminal','wardman','proprietor','mariner'];
+    if(!sixCareerTest.menuVisible||
+      JSON.stringify(sixCareerTest.routeIds)!==JSON.stringify(expectedCareerIds)||
+      !sixCareerTest.newRoute||!sixCareerTest.desk||
+      !sixCareerTest.factoryHidden||!sixCareerTest.reloads)
+      throw new Error('Six-character menu/save/desk smoke regression: '+JSON.stringify(sixCareerTest));
     // The retired office title may never reappear after desk, map or room transitions.
     const retiredOfficeTest=await win.webContents.executeJavaScript(`(() => {
       const title=document.getElementById('titleScreen'),menu=document.getElementById('careerMainMenu');

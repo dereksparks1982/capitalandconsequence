@@ -32,12 +32,13 @@ try{
   cwd:directory,env:{...process.env,...env},encoding:'utf8',timeout:5000});
  const normal=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'0'});
  assert.equal(normal.status,0,normal.stderr||'Native launcher cannot exec the bundled runtime');
- assert.deepEqual(normal.stdout.trim().split(/\r?\n/),['--no-sandbox','--smoke-test'],
-  'Chromium sandbox option MUST be injected before Electron starts, not from JS');
+ assert.deepEqual(normal.stdout.trim().split(/\r?\n/),['--disable-vulkan','--disable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan','--no-sandbox','--smoke-test'],
+  'Normal startup MUST prevent Chromium Wayland Vulkan conflicts before process creation');
  const configured=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'1'});
  assert.equal(configured.status,0,configured.stderr||'Cannot opt into configured Chromium sandbox');
- assert.equal(configured.stdout.trim(),'--smoke-test',
-  'Explicitly configured sandbox must be respected');
+ assert.deepEqual(configured.stdout.trim().split(/\r?\n/),
+  ['--disable-vulkan','--disable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan','--smoke-test'],
+  'Explicit Chromium sandbox setting must preserve safe native graphics startup');
  const withoutRuntime=path.join(directory,'missing');
  fs.renameSync(runtime,withoutRuntime);
  const missing=run({CAPITAL_ENABLE_CHROMIUM_SANDBOX:'0'});
