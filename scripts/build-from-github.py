@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Fetch GitHub's current source, preserve the map, and locally build the game.
-No Git, sudo, permanent source backups, GitHub Actions, AppImage, or second project folder.
+"""Update the EXISTING Ubuntu game directory directly from verified GitHub blobs.
+No Git authentication, source ZIP, backup copies, duplicated project folder or sudo.
+Every changed file is staged and hash-checked before any installed source is replaced.
 """
-import filecmp
-import io
+import hashlib
 import json
 import os
 import shutil
@@ -11,27 +11,110 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import urllib.parse
 import urllib.request
-import zipfile
 from pathlib import Path, PurePosixPath
 
 ROOT = Path.home() / "DKLab" / "Projects" / "Capital&Consequence"
-ZIP_URL = "https://github.com/dereksparks1982/capitalandconsequence/archive/refs/heads/main.zip"
-MAPS = {"assets/artwork/maps/title-map-1938.jpg", "assets/title-map-1938.jpg"}
-
+TREE_URL = "https://api.github.com/repos/dereksparks1982/capitalandconsequence/git/trees/main?recursive=1"
+RAW_URL = "https://raw.githubusercontent.com/dereksparks1982/capitalandconsequence/"
+KEEP_LOCAL = {"assets/artwork/maps/title-map-1938.jpg", "assets/title-map-1938.jpg"}
+SKIP_DIRS = {".git", "node_modules", "resources", "locales", "linux-unpacked", "dist"}
+REQUIRED = {"index.html", "package.json", "scripts/build-root-linux.cjs"}
 
 def info(msg):
     print(msg, flush=True)
 
-
 def fetch(url, output):
-    info("Fetching " + url)
     req = urllib.request.Request(url, headers={"User-Agent": "CapitalConsequenceLocalBuilder"})
     with urllib.request.urlopen(req, timeout=120) as incoming, open(output, "wb") as dest:
         shutil.copyfileobj(incoming, dest, length=1024 * 1024)
-    if output.stat().st_size < 1024:
-        raise RuntimeError("Downloaded archive is empty.")
+    if output.stat().st_size == 0:
+        raise RuntimeError("Downloaded source file is empty: " + str(output))
 
+def source_manifest():
+    req = urllib.request.Request(TREE_URL, headers={
+        "User-Agent": "CapitalConsequenceLocalBuilder",
+        "Accept": "application/vnd.github+json"
+    })
+    with urllib.request.urlopen(req, timeout=120) as response:
+        payload = json.load(response)
+    if payload.get("truncated") or not isinstance(payload.get("tree"), list):
+        raise RuntimeError("GitHub's source manifest was incomplete; installed files were not changed.")
+    sha = payload.get("sha")
+    if not isinstance(sha, str) or len(sha) != 40:
+        raise RuntimeError("GitHub returned no valid source tree identity.")
+    files = {}
+    for entry in payload["tree"]:
+        name = entry.get("path", "")
+        parts = PurePosixPath(name).parts
+        if (not parts or name.startswith("/") or any(p in (".", "..") for p in parts)
+                or any(p in SKIP_DIRS for p in parts)):
+            continue
+        if entry.get("type") == "blob" and entry.get("mode") == "120000":
+            raise RuntimeError("Unexpected tracked symlink: " + name)
+        if entry.get("type") != "blob":
+            continue
+        if entry.get("mode") not in ("100644", "100755"):
+            raise RuntimeError("Unexpected source type: " + name)
+        if not isinstance(entry.get("sha"), str) or len(entry["sha"]) != 40:
+            raise RuntimeError("Invalid source hash: " + name)
+        files[name] = {"sha": entry["sha"], "size": entry["size"]}
+    if not REQUIRED.issubset(files):
+        raise RuntimeError("Required game/build files are missing from GitHub.")
+    info("Verified source manifest: " + str(len(files)) + " tracked files.")
+    return files
+
+def git_blob_sha(path):
+    size = path.stat().st_size
+    digest = hashlib.sha1(b"blob " + str(size).encode("ascii") + b"\0")
+    with open(path, "rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+def safe_target(name):
+    dest = ROOT / name
+    parent = dest.parent
+    while parent != ROOT:
+        if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
+            raise RuntimeError("Unsafe existing source directory: " + str(parent))
+        parent = parent.parent
+    if dest.is_symlink() or (dest.exists() and not dest.is_file()):
+        raise RuntimeError("Unsafe existing source path: " + str(dest))
+    return dest
+
+def stage_changes(manifest, staging, tree_sha):
+    changed = []
+    for name, entry in manifest.items():
+        target = safe_target(name)
+        if name in KEEP_LOCAL and target.exists():
+            continue
+        if target.is_file() and git_blob_sha(target) == entry["sha"]:
+            continue
+        changed.append(name)
+    info("Fetching " + str(len(changed)) + " changed source files (no repository archive).")
+    for index, name in enumerate(changed, 1):
+        entry = manifest[name]
+        destination = staging / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        # A tree SHA cannot be used as a raw.githubusercontent.com revision;
+        # main is hash-checked against the frozen manifest before installation.
+        raw = RAW_URL + "main/" + urllib.parse.quote(name, safe="/")
+        fetch(raw, destination)
+        if destination.stat().st_size != entry["size"] or git_blob_sha(destination) != entry["sha"]:
+            raise RuntimeError("GitHub file changed during download: " + name + "; nothing was installed.")
+        if index % 50 == 0:
+            info("Verified " + str(index) + " source files.")
+    return changed
+
+def synchronize(staging, changed):
+    # No rollback copies by owner request. Full verification happens FIRST.
+    for name in changed:
+        target = safe_target(name)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(staging / name, target)
+    info("Updated " + str(len(changed)) + " files in the EXISTING project directory.")
 
 def tools(temp):
     env = os.environ.copy()
@@ -49,129 +132,61 @@ def tools(temp):
     npmfile = cache / name / "bin" / "npm"
     if not nodefile.is_file() or not npmfile.is_file():
         cache.mkdir(parents=True, exist_ok=True)
-        tgz = temp / (name + ".tar.xz")
-        fetch("https://nodejs.org/dist/v22.13.1/" + tgz.name, tgz)
-        with tarfile.open(tgz, "r:xz") as package:
+        archive = temp / (name + ".tar.xz")
+        fetch("https://nodejs.org/dist/v22.13.1/" + archive.name, archive)
+        with tarfile.open(archive, "r:xz") as package:
             for member in package.getmembers():
                 path = PurePosixPath(member.name)
                 if path.parts[:1] != (name,) or ".." in path.parts or path.is_absolute():
-                    raise RuntimeError("Unexpected Node archive entry")
+                    raise RuntimeError("Unexpected Node tool entry")
             try:
                 package.extractall(cache, filter="data")
             except TypeError:
                 package.extractall(cache)
     if not nodefile.is_file() or not npmfile.is_file():
-        raise RuntimeError("Could not prepare local Node.js build tools.")
+        raise RuntimeError("Could not prepare portable Node.js.")
     env["PATH"] = str(nodefile.parent) + os.pathsep + env.get("PATH", "")
-    info("Using portable Node.js v22.13.1 (no system installation).")
+    info("Using portable Node.js v22.13.1.")
     return str(npmfile), env
-
-
-def prepare_zip(zip_path, staging):
-    paths = []
-    with zipfile.ZipFile(zip_path) as archive:
-        for item in archive.infolist():
-            if item.is_dir():
-                continue
-            parts = PurePosixPath(item.filename).parts[1:]
-            if not parts or any(part in (".", "..") for part in parts):
-                continue
-            if parts[0] in (".git", "node_modules", "resources", "locales", "linux-unpacked", "dist"):
-                continue
-            rel = "/".join(parts)
-            if rel in MAPS and (ROOT / rel).exists():
-                continue
-            if ((item.external_attr >> 16) & 0o170000) == 0o120000:
-                raise RuntimeError("Unexpected symlink in source ZIP: " + rel)
-            destination = staging.joinpath(*parts)
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            with archive.open(item) as source, open(destination, "wb") as output:
-                shutil.copyfileobj(source, output, length=1024 * 1024)
-            paths.append(rel)
-    if not {"index.html", "package.json", "scripts/build-root-linux.cjs"}.issubset(paths):
-        raise RuntimeError("GitHub ZIP is missing required game/build files.")
-    package = json.loads((staging / "package.json").read_text())
-    if package.get("scripts", {}).get("build:root:linux") != "node scripts/build-root-linux.cjs":
-        raise RuntimeError("GitHub source lacks the real Linux executable builder.")
-    info("Verified GitHub source v" + str(package["version"]) + " (" + str(len(paths)) + " files).")
-    return paths
-
-
-def synchronize(staging, paths, temp):
-    changed = []
-    for name in paths:
-        target = ROOT / name
-        if target.is_file() and filecmp.cmp(target, staging / name, shallow=False):
-            continue
-        if target.is_symlink() or (target.exists() and not target.is_file()):
-            raise RuntimeError("Unsafe existing source path: " + str(target))
-        changed.append(name)
-    old = temp / "old-source"
-    # Only temporary rollback copies under temp/old-source. These disappear
-    # automatically with the temporary build directory: no archives kept.
-    installed = []
-    try:
-        for name in changed:
-            target = ROOT / name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if target.exists():
-                saved = old / name
-                saved.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(target, saved)
-            os.replace(staging / name, target)
-            installed.append(name)
-    except BaseException:
-        info("Source copy failed; restoring original source.")
-        for name in reversed(installed):
-            saved = old / name
-            target = ROOT / name
-            if saved.exists():
-                os.replace(saved, target)
-            else:
-                target.unlink(missing_ok=True)
-        raise
-    info("Updated " + str(len(changed)) + " source files in the EXISTING project folder.")
-
 
 def main():
     if sys.platform != "linux":
-        raise RuntimeError("This build supports Linux only.")
+        raise RuntimeError("This update supports Linux only.")
     if not ROOT.is_dir() or not (ROOT / "index.html").is_file():
         raise RuntimeError("Original project folder not found: " + str(ROOT))
     os.chdir(ROOT)
-    info("Building Capital & Consequence in " + str(ROOT))
+    info("Updating Capital & Consequence in " + str(ROOT))
+    manifest = source_manifest()
     with tempfile.TemporaryDirectory(prefix=".capital-local-build-", dir=ROOT) as directory:
         temp = Path(directory)
         npm, env = tools(temp)
-        source_zip = temp / "github-main.zip"
-        fetch(ZIP_URL, source_zip)
-        stage = temp / "stage"
-        stage.mkdir()
-        paths = prepare_zip(source_zip, stage)
-        synchronize(stage, paths, temp)
+        staging = temp / "stage"
+        staging.mkdir()
+        changed = stage_changes(manifest, staging, "")
+        package_file = staging / "package.json" if "package.json" in changed else ROOT / "package.json"
+        package = json.loads(package_file.read_text(encoding="utf-8"))
+        if package.get("scripts", {}).get("build:root:linux") != "node scripts/build-root-linux.cjs":
+            raise RuntimeError("GitHub source lacks the actual Linux executable builder.")
+        info("Verified GitHub version " + str(package.get("version", "unknown")) + ".")
+        synchronize(staging, changed)
         env["GIT_TERMINAL_PROMPT"] = "0"
         env["npm_config_audit"] = "false"
         env["npm_config_fund"] = "false"
-        info("Installing build dependencies locally.")
+        info("Installing dependencies locally.")
         subprocess.run([npm, "install", "--no-audit", "--no-fund"], cwd=ROOT, env=env, check=True)
-        info("Building AND smoke-testing real Linux game.")
+        info("Building and smoke-testing the existing Linux game.")
         result = subprocess.run([npm, "run", "build:root:linux"], cwd=ROOT, env=env, check=False)
-        if result.returncode not in (0, 2):
-            raise RuntimeError("Linux executable build or smoke test failed (exit " + str(result.returncode) + ").")
-        if result.returncode == 2:
-            info("WARNING: Local game built, but a bundled file exceeds GitHub's source-ZIP size limit.")
-            info("The game may run locally, but the repository ZIP is not yet a playable distribution.")
+        if result.returncode != 0:
+            raise RuntimeError("Linux game build or smoke test failed (" + str(result.returncode) + ").")
     executable = ROOT / "capitalandconsequence"
     if not executable.is_file() or not os.access(executable, os.X_OK):
-        raise RuntimeError("No executable produced; build is not complete.")
+        raise RuntimeError("No executable produced.")
     info("SUCCESS: " + str(executable))
-    info("Double-click capitalandconsequence in your main project folder.")
-    info("This builds locally; pushing the bundled runtime back to GitHub is separate.")
-
+    info("Launch the existing capitalandconsequence executable from your project directory.")
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        print("BUILD FAILED: " + str(error), file=sys.stderr, flush=True)
+        print("UPDATE FAILED: " + str(error), file=sys.stderr, flush=True)
         sys.exit(1)

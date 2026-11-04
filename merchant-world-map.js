@@ -29,12 +29,20 @@ function ensuredHost(){
  host.addEventListener('click',e=>{if(e.target===host)close()});
  return host;
 }
-function fleet(){return root.FE_EMPIRE.ensure(session.save).fleet}
+function isMariner(){return session?.save?.characterRoute==='mariner'}
+// Benjamin may consult the same historical atlas, but cannot borrow Charles's
+// factory fleet, debt, permissions or money. A chart study is not a trade grant.
+function fleet(){
+ if(isMariner())return {ships:[],ports:[],leads:[],electric:{},tradeHold:{},cash:0};
+ return root.FE_EMPIRE.ensure(session.save).fleet;
+}
 function state(){return regions.ensure(session.save)}
 function selectedShip(){return fleet().ships.find(s=>String(s.id)===String(session.shipId))}
 function setStatus(message){const el=host?.querySelector('#merchantWorldStatus');if(el)el.textContent=message}
 function open(save,onChange){
- if(save?.characterRoute!=='industrialist'||!root.FE_EMPIRE||!nav||!regions)return false;
+ const route=save?.characterRoute;
+ if(!['industrialist','mariner'].includes(route)||!nav||!regions||!camera||
+    (route==='industrialist'&&!root.FE_EMPIRE))return false;
  if(!session||session.save!==save)session={save,onChange,selection:{type:'port',id:'Baltimore'},mode:'inspect',
   shipId:null,scene:null,zone:'quay',scale:1,x:0,y:0,drag:null,ready:false,focus:null};
  else session.onChange=onChange;
@@ -117,7 +125,7 @@ function plot(){
  if(session.tradeQuote?.ok&&Array.isArray(session.tradeQuote.points)){
   svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.tradeQuote.from,session.tradeQuote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
  }
- const passage=root.FE_PASSENGER_SEA?.position?.(session.save);
+ const passage=isMariner()?null:root.FE_PASSENGER_SEA?.position?.(session.save);
  if(passage?.phase==='at-sea'){
   const trip=root.FE_PASSENGER_SEA.ensure(session.save).voyage;
   const visual=trip&&nav.displayRoute(trip.from,trip.to);
@@ -214,6 +222,19 @@ function harborRegister(name,zone){
 }
 function portPanel(name){
  const data=regions.port(name);if(!data)return '<p>Port not found.</p>';
+ if(isMariner()){
+  const survey=nav.plan('Baltimore',name,'schooner');
+  let html='<h3>'+esc(name)+'</h3><p>Historical chart reference for Benjamin Leach. This does not grant trading rights or move him from Salem.</p>';
+  if(survey)html+='<p>Illustrative wind-powered route from Baltimore: '+survey.nauticalMiles.toLocaleString('en-US')+
+   ' nautical miles · approximately '+survey.days+' days by schooner. No ticket or contract has been booked.</p>';
+  html+=action('port-scene:'+name,'Inspect Harbour Survey');
+  if(session.scene===name){
+   const zone=regions.inspectZone(name,session.zone)||data.zones[0];
+   html+=portMiniScene()+'<h4>'+esc(zone.name)+'</h4><p>'+esc(zone.description)+'</p>'+
+    '<p class="fine">Study only. This is not a physical visit, customs clearance or owned warehouse.</p>';
+  }
+  return html;
+ }
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
  let html='<h3>'+esc(name)+'</h3><p>'+ (authorized?'Established commercial port':'Not yet verified as a commercial destination')+'.</p>';
  html+='<p>'+inPort.length+' owned ship(s) currently berthed.</p>';
@@ -336,6 +357,10 @@ function shipPanel(id){
  return html;
 }
 function business(){
+ if(isMariner())return '<h3>Benjamin Leach · Salem Shipping Office</h3>'+
+  '<p>The Mitchell chart is available for studying known sea routes and making private annotations.</p>'+
+  '<p>Benjamin\'s independent shipping company, first contracts and passenger ledger are a career foundation, not Charles Whitecomb\'s Federal Electric treasury or merchant fleet.</p>'+
+  '<p class="fine">No schooner, cargo, contract, wage, berth or trade permission has been granted by opening this chart.</p>';
  const e=fleet(),opened=e.ships.filter(s=>s.status!=='lost');
  let html='<h3>Merchant Shipping Office</h3><p>Fleet cash '+cash(e.cash)+' · '+opened.length+' active vessels</p>'+
   '<div class="ocean-business-actions">'+action('buy:schooner','Buy Schooner · '+cash(root.FE_EMPIRE.PRICE.schooner))+'</div>';
@@ -373,22 +398,26 @@ function business(){
 }
 function draw(reset){
  if(!session||host?.hidden)return;
- root.FE_EMPIRE.advance(session.save);
+ if(!isMariner())root.FE_EMPIRE.advance(session.save);
  const directory=host.querySelector('.ocean-chart-directory');
  if(directory)session.directoryOpen=directory.open;
  const archiveOpened=host.querySelector('.ocean-voyage-archive')?.open||false;
- host.innerHTML='<div class="merchant-world-card"><header class="merchant-world-head"><div><small>CHARLES WHITCOMB · MERCHANT NAVIGATION</small><h2 id="merchantWorldHeading">World Shipping Chart</h2><p>'+esc(session.save.gameDate)+' · Ships move with the saved Washington clock</p></div><div class="merchant-world-tools">'+
+ host.innerHTML='<div class="merchant-world-card"><header class="merchant-world-head"><div><small>'+
+  (isMariner()?'BENJAMIN LEACH · SALEM CHART ROOM':'CHARLES WHITECOMB · MERCHANT NAVIGATION')+
+  '</small><h2 id="merchantWorldHeading">World Shipping Chart</h2><p>'+esc(session.save.gameDate)+
+  (isMariner()?' · Historical route study, no company transactions':' · Ships move with the saved Washington clock')+
+  '</p></div><div class="merchant-world-tools">'+
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
   '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Samuel Augustus Mitchell world map on Mercator projection, 1880">'+plot()+'</div>'+
   (session.walking&&root.FE_MERCHANT_HARBOR_UI?.render?.(session.save,session.walking)||'')+'</div>'+ 
-  '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
+  '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce',isMariner()?'Salem Office Notes':'Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
    session.selection.type==='pin'?pinPanel(session.selection.id):shipPanel(session.selection.id))+'</section>'+
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
-  (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
+  (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':isMariner()?'Right drag pans · wheel zooms · click to inspect a port · no trade is authorized.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
   '</span><span>Mitchell world atlas dated 1880; overlays show illustrative 1878 sailing routes.</span></footer></div>';
  const archiveNode=host.querySelector('.ocean-voyage-archive');if(archiveNode)archiveNode.open=archiveOpened;
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
@@ -407,6 +436,12 @@ function onClick(e){
  const command=e.target.closest('[data-ocean-action]')?.dataset.oceanAction;
  if(command){
   if(command==='close')return close();
+  // Actions are guarded here, not merely hidden, so forged DOM clicks cannot
+  // touch another career's economy or passenger booking.
+  if(isMariner()&&/^(?:passenger-tickets:|trade-|quote:|buy:|verify:|sell:|repair:|dispatch:|select-ship:)/.test(command)){
+   setStatus('Chart study only: this does not authorize company transactions or passage.');
+   return;
+  }
   if(command.startsWith('passenger-tickets:')){
    const allowed=(session.save.currentLocation?.locationId==='potomacFishingBank'&&
      session.save.currentLocation?.roomId==='passenger-pier')||
