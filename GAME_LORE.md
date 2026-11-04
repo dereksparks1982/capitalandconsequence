@@ -8,6 +8,10 @@ This file is the entry point for the game's established setting, chronology, cas
 
 Canon remains subject to new explicit owner decisions. Preserve the distinction among **approved facts**, **working implementation**, **provisional dates**, and **unapproved proposals**. Older contradictory records remain available for historical context; later specific owner approval controls.
 
+## NEWEST ELIAS CROWE CANON · NOVEMBER 3–4, 2026
+
+Elias Crowe's opening is now **his inherited butcher shop**, not employment as Lui's nightclub doorman. His late father's concealed will, the cousin's permanent upstairs loft, capable acting-management role, disputed accounts and the asymmetrical family murder mystery are described in the **developer-only** [Crowe butcher and family secrets dossier](docs/ELIAS-CROWE-BUTCHER-SHOP-AND-FAMILY-SECRETS.md). Do not publish the murder or secret romance as player knowledge. Keep Lui's independently owned Golden Peacock and approved locations; older character employment clauses are superseded by the owner's newer instruction.
+
 ## APPROVED WORLD AND STORY INTERPRETATIONS
 
 ### Alternate history is not a universal override

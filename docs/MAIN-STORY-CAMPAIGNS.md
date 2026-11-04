@@ -32,6 +32,8 @@ The four campaigns unfold in **the same diverging 1878 Washington**. Shared inst
 
 **Endings** depend on admissible evidence and decisions, not on the hidden culprit automatically appearing in his notebook. His household, neighborhood and racial discrimination in period society create real stakes rather than a caricature. Side investigations and a serial-murder arc can connect later.
 
+> **Owner revision · November 3–4, 2026:** Elias now begins as an inheriting butcher-shop owner, not a nightclub doorman. The five Golden Peacock chapters below describe **older implemented content** requiring future re-gating as non-employment contacts, not the current opening. The new family/property storyline (cousin manager, upstairs loft, disputed till/price decisions, missing will, concealed killing and adult relationship) is preserved in the [developer-only Crowe dossier](ELIAS-CROWE-BUTCHER-SHOP-AND-FAMILY-SECRETS.md). Never automatically disclose the mystery in the game.
+
 ## Elias Crowe | Behind the Golden Peacock
 
 *Single low-ranking doorman at Lui's Le Paon d'Or.*
