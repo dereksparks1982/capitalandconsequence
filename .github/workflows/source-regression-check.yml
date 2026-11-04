@@ -19,6 +19,9 @@ on:
       - tests/peacock-debts.cjs
       - tests/peacock-favor-story.cjs
       - tests/peacock-network.cjs
+      - desktop/main.cjs
+      - scripts/linux-root-launcher.c
+      - scripts/build-root-linux.cjs
 permissions:
   contents: read
 jobs:
@@ -35,3 +38,34 @@ jobs:
           node-version: '22'
       - name: Run complete offline source QA suite
         run: node tests/run-all.cjs
+
+  native-packaged:
+    name: Native packaged Linux game smoke (without user flags)
+    needs: offline-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the real game source
+        uses: actions/checkout@v4
+      - name: Configure Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Electron and local game dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build and smoke the actual Linux executable on a virtual desktop
+        shell: bash
+        run: |
+          command -v xvfb-run
+          status=0
+          xvfb-run -a -s "-screen 0 1440x900x24" env XDG_SESSION_TYPE=x11 npm run build:root:linux > native-smoke.log 2>&1 || status=$?
+          tail -n 140 native-smoke.log
+          if [ "$status" -ne 0 ]; then
+            echo "Native packaging or smoke failed with status $status"
+            exit "$status"
+          fi
+          grep -F "PACKAGED ELECTRON SMOKE TEST PASSED." native-smoke.log
+          test -x capitalandconsequence
+          test -x capitalandconsequence-runtime
+          test -s resources/app.asar
+          echo "Verified the exact root executable from a real successful packed Electron smoke."
