@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DK Architect · Test Center | Capital &amp; Consequence</title>
+<link rel="stylesheet" href="test-center.css">
+</head>
+<body>
+<main class="lab">
+  <header class="topline">
+    <div><div class="eyebrow">DK SOFTWORKS · CAPITAL &amp; CONSEQUENCE</div><h1>DK ARCHITECT <span>TEST CENTER</span></h1><p>One square room. One movable character. Original 32 × 32 artwork. No animations or career simulation.</p></div>
+    <div class="mode-buttons" role="group" aria-label="Test center mode">
+      <button id="walkMode" class="active" type="button" aria-pressed="true">▶ Walk Room</button>
+      <button id="editMode" type="button" aria-pressed="false">✎ Edit Room</button>
+    </div>
+  </header>
+  <div class="workspace">
+    <aside class="sidebar">
+      <h2>DK Architect Tools</h2>
+      <label class="label" for="tool">Action</label>
+      <select id="tool" aria-label="Editing action">
+        <option value="place">Place / Paint</option>
+        <option value="select">Select / Move</option>
+        <option value="erase">Erase Object / Wall</option>
+        <option value="fill">Bucket Fill</option>
+        <option value="rectangle">Rectangle (two corners)</option>
+        <option value="pick">Eyedropper</option>
+        <option value="spawn">Set Player Start</option>
+        <option value="door">Open / Close Door</option>
+      </select>
+      <label class="label" for="category">Art category / layer</label>
+      <select id="category">
+        <option value="furniture">Furniture</option>
+        <option value="floors">Floors</option>
+        <option value="construction">Walls &amp; Doors</option>
+        <option value="small_props">Small Props</option>
+        <option value="people">People (static)</option>
+      </select>
+      <div class="palette-head"><strong id="paletteTitle">Furniture</strong><span id="selectionLabel"></span></div>
+      <div id="palette" class="palette" aria-label="Available art objects"></div>
+      <div class="stack two">
+        <button id="rotate" type="button" title="Rotate selected furniture (R)">Rotate ↻</button>
+        <button id="duplicate" type="button">Duplicate</button>
+        <button id="remove" type="button">Delete Selected</button>
+        <button id="inspect" type="button">Check Access</button>
+        <button id="undo" type="button">Undo</button>
+        <button id="redo" type="button">Redo</button>
+      </div>
+    </aside>
+    <section class="stage" aria-label="Square test room">
+      <div class="stage-top"><strong>TEST ROOM 01</strong><span id="modeLabel">WALK MODE</span><span id="coordinates">16 × 16 tiles</span></div>
+      <div class="canvas-scroller"><canvas id="room" width="512" height="512" tabindex="0" role="img" aria-label="Square top-down playable room. Use WASD or arrow keys to walk; toggle Edit Room to place objects."></canvas></div>
+      <div class="status" id="status" role="status" aria-live="polite">WASD / arrow keys: move one tile. Click the floor to travel instantly along a clear path.</div>
+      <div class="hint" id="hint">Static character artwork; collision prevents walking through walls and solid furniture.</div>
+    </section>
+    <aside class="sidebar rightbar">
+      <h2>Room &amp; Layout</h2>
+      <dl class="stats"><dt>Room</dt><dd>16 × 16 tiles</dd><dt>Artwork</dt><dd>Original game sprites</dd><dt>Player</dt><dd id="position">8, 13</dd><dt>Objects</dt><dd id="objectCount">0</dd><dt>Current item</dt><dd id="itemInfo">None</dd><dt>Draft</dt><dd id="saveState">Not saved</dd></dl>
+      <div class="stack">
+        <button type="button" id="save">Save Test Layout</button>
+        <button type="button" id="load">Reload Saved Layout</button>
+        <button type="button" id="new">New Empty Room</button>
+        <button type="button" id="export">Export JSON</button>
+        <label class="upload">Import JSON <input type="file" id="import" accept="application/json,.json"></label>
+      </div>
+      <div class="helpbox"><h3>Controls</h3><p><strong>Walk:</strong> WASD or arrow keys move one tile per press. Click a clear destination for an instant, path-checked move. Click an adjacent door to open or close it.</p><p><strong>Edit:</strong> Pick an object on the left, then click a tile. Select / Move uses one click to select and another to place it. Press R to rotate, Delete to remove, or Ctrl+Z to undo.</p><p><strong>Floor and wall painting:</strong> Single tile, bucket fill, or two-corner rectangle. Use Erase to remove walls; floors stay filled.</p></div>
+    </aside>
+  </div>
+  <footer><strong>EXPERIMENTAL BRANCH ONLY.</strong> Test Center uses its own browser storage key. It never alters the real game's room layouts, world time, finances, characters, or saves. Design ideas were studied from Porcupine, Space Station 14, Ogmo Editor, 2dtiler, and Open World Builder; no third-party code or artwork is bundled.</footer>
+</main>
+<script src="room-builder-catalog.js"></script>
+<script src="room-builder-core.js"></script>
+<script src="room-builder-kit.js"></script>
+<script src="test-center.js"></script>
+</body>
+</html>
