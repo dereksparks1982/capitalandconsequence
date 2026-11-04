@@ -604,7 +604,7 @@ function onClick(e){
    changed(out);return;
   }
  }
- if(session.suppressPortClick){session.suppressPortClick=false;return;}
+ if(session.suppressPortClickUntil&&Date.now()<session.suppressPortClickUntil)return;
  if(['mark','move-pin','add-port','move-port'].includes(session.mode)&&e.target.closest('.merchant-world-stage')){
   const box=host.querySelector('.merchant-world-stage').getBoundingClientRect();
   const x=(e.clientX-box.left)*nav.CHART.width/box.width;
@@ -706,7 +706,7 @@ function onPointerUp(e){
   const dx=e.clientX-d.x,dy=e.clientY-d.y;
   if(Math.abs(dx)+Math.abs(dy)<4)return;
   const result=regions.movePort(session.save,d.port,d.start[0]+dx/session.scale,d.start[1]+dy/session.scale);
-  if(result.ok){session.suppressPortClick=true;session.selection={type:'port',id:d.port};session.tab='selection';session.onChange?.();draw(false)}
+  if(result.ok){session.suppressPortClickUntil=Date.now()+250;session.selection={type:'port',id:d.port};session.tab='selection';session.onChange?.();draw(false)}
   else setStatus(result.reason);
  }
 }

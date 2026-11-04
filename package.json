@@ -1,6 +1,6 @@
 {
   "name": "capital-consequence",
-  "version": "0.7.113",
+  "version": "0.7.114",
   "private": true,
   "description": "Capital & Consequence historical Washington life simulation (development beta)",
   "main": "desktop/main.cjs",
@@ -66,7 +66,7 @@
       "appimage": "1.0.3"
     }
   },
-  "author": "Elderred Softworks LLC",
+  "author": "DK Softworks",
   "license": "UNLICENSED",
   "desktopName": "com.elderredsoftworks.federalelectric.desktop"
 }

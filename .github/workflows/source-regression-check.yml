@@ -9,6 +9,13 @@ on:
       - merchant-navigation.js
       - merchant-chart.js
       - merchant-world-map.js
+      - merchant-regions.js
+      - merchant-chart.js
+      - room-builder-ui.js
+      - room-builder-scene.js
+      - room-builder.css
+      - tests/merchant-owner-ports.cjs
+      - tests/dk-architect-scenes.cjs
       - merchant-world-map.css
       - merchant-chart-camera.js
       - tests/merchant-chart-camera.cjs
