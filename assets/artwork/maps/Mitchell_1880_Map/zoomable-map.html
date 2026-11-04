@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capital &amp; Consequence | Mitchell World Chart (1880)</title>
+<style>
+:root{color-scheme:dark;--paper:#ddc99a;--ink:#251c14;--frame:#8f7449}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#181b1a;color:#f0dfb9;font:15px/1.4 Georgia,serif;display:flex;flex-direction:column}
+header{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;background:#332b22;border-bottom:2px solid var(--frame)}
+h1{font-size:19px;font-weight:normal;margin:0}
+header small{color:#ddcaa7}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+button{font:inherit;color:#251b12;background:#ebd8ae;border:1px solid #8d754b;border-radius:3px;padding:8px 14px;cursor:pointer;min-width:43px;min-height:40px}
+button:hover{background:#fff0c8}button:focus-visible{outline:3px solid #a5dfe2}
+#level{display:inline-block;min-width:55px;text-align:center;color:#fbdb92}
+main{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:none;cursor:grab;background:#39362d;user-select:none}
+main.dragging{cursor:grabbing}
+#stage{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#map{display:block;max-width:none;height:auto;pointer-events:none;user-select:none}
+#loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#2e2921ee;color:#f8e8ca;padding:18px 22px;border:1px solid #bda474;text-align:center;max-width:90%;z-index:2}
+#loading[hidden]{display:none}
+footer{padding:7px 16px;background:#282922;color:#d6c7a6;font-size:12px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
+a{color:#eed391}a:hover{color:#fff3be}
+@media(max-width:640px){header{padding:8px}h1{font-size:16px}.controls{gap:4px}button{padding:6px 10px}footer{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Capital &amp; Consequence · World Shipping Chart</h1><small>Samuel Augustus Mitchell, 1880 · original atlas artwork</small></div>
+  <div class="controls" role="group" aria-label="Map zoom controls">
+    <button type="button" id="minus" aria-label="Zoom out">−</button>
+    <output id="level" aria-live="polite">100%</output>
+    <button type="button" id="plus" aria-label="Zoom in">+</button>
+    <button type="button" id="fit">Fit whole atlas</button>
+    <button type="button" id="actual">Actual pixels</button>
+  </div>
+</header>
+<main id="viewport" tabindex="0" aria-label="Zoomable Mitchell world chart. Drag to pan, wheel or buttons to zoom. Keyboard plus and minus adjust zoom; arrow keys pan the chart.">
+  <div id="loading" role="status">Loading the historical chart…</div>
+  <div id="stage"><img id="map" alt="1880 Samuel Augustus Mitchell world map, Mercator projection centered on the Americas, within ornate open atlas pages" draggable="false"></div>
+</main>
+<footer>
+  <span id="sourceStatus" aria-live="polite">Loading source…</span>
+  <span>Scroll to zoom · Drag to pan · Two-finger pinch on touchscreens</span>
+  <span><a href="https://commons.wikimedia.org/wiki/File:Map_of_the_World_on_the_Mercator_projection,_exhibiting_the_American_Continent_as_its_centre._Entered_..._1879_by_S._Augustus_(IA_dr_map-of-the-world-on-the-mercator-projection-exhibiting-the-american-contin-0586004).jpg" target="_blank" rel="noopener noreferrer">Source and credits</a></span>
+</footer>
+<script>
+(()=>{'use strict';
+ const ORIGINAL='https://upload.wikimedia.org/wikipedia/commons/c/c6/Map_of_the_World_on_the_Mercator_projection%2C_exhibiting_the_American_Continent_as_its_centre._Entered_..._1879_by_S._Augustus_%28IA_dr_map-of-the-world-on-the-mercator-projection-exhibiting-the-american-contin-0586004%29.jpg';
+ const candidates=[['Local 9,664-pixel original','mitchell-world-1880.jpg'],['Full original from Wikimedia Commons (online)',ORIGINAL],['Local 2,048-pixel preview','mitchell-world-1880-preview.jpg']];
+ const vp=document.getElementById('viewport'),stage=document.getElementById('stage'),img=document.getElementById('map');
+ const loading=document.getElementById('loading'),status=document.getElementById('sourceStatus'),level=document.getElementById('level');
+ let w=2048,h=1259,scale=1,x=0,y=0,ready=false,source=0;
+ const pointers=new Map();let drag=null,pinch=null;
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+ function fitScale(){return Math.min(vp.clientWidth/w,vp.clientHeight/h)}
+ function apply(){if(!ready)return;const iw=w*scale,ih=h*scale;
+   x=iw<=vp.clientWidth?(vp.clientWidth-iw)/2:clamp(x,vp.clientWidth-iw,0);
+   y=ih<=vp.clientHeight?(vp.clientHeight-ih)/2:clamp(y,vp.clientHeight-ih,0);
+   stage.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
+   level.textContent=Math.round(scale/fitScale()*100)+'%';
+ }
+ function fit(){if(!ready)return;scale=fitScale();x=0;y=0;apply()}
+ function zoom(factor,px=vp.clientWidth/2,py=vp.clientHeight/2){if(!ready)return;
+   const next=clamp(scale*factor,fitScale(),Math.max(2,fitScale()));
+   if(next===scale)return;
+   x=px-(px-x)*next/scale;y=py-(py-y)*next/scale;scale=next;apply();
+ }
+ function loadNext(){if(source>=candidates.length){loading.textContent='No map image available. Recheck your internet connection or run get-original-map.py';return}
+   const [label,url]=candidates[source++];const test=new Image();
+   test.onload=()=>{w=test.naturalWidth;h=test.naturalHeight;img.src=url;img.width=w;img.height=h;stage.style.width=w+'px';stage.style.height=h+'px';ready=true;loading.hidden=true;
+     status.textContent=label+' · '+w.toLocaleString()+' × '+h.toLocaleString()+' pixels';fit();};
+   test.onerror=loadNext;test.src=url;
+ }
+ document.getElementById('plus').addEventListener('click',()=>zoom(1.55));
+ document.getElementById('minus').addEventListener('click',()=>zoom(1/1.55));
+ document.getElementById('fit').addEventListener('click',fit);
+ document.getElementById('actual').addEventListener('click',()=>{if(!ready)return;zoom(1/scale)});
+ vp.addEventListener('wheel',e=>{if(!ready)return;e.preventDefault();const rect=vp.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-rect.left,e.clientY-rect.top)},{passive:false});
+ vp.addEventListener('pointerdown',e=>{if(!ready)return;if(e.pointerType==='mouse'&&e.button!==0&&e.button!==2)return;e.preventDefault();vp.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);
+   if(pointers.size===1){drag=[e.clientX,e.clientY];pinch=null;vp.classList.add('dragging')}
+   if(pointers.size===2){const a=[...pointers.values()];pinch={distance:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])};drag=null}
+ });
+ vp.addEventListener('pointermove',e=>{if(!ready||!pointers.has(e.pointerId))return;e.preventDefault();const prev=pointers.get(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);
+   if(pointers.size===1&&drag){x+=e.clientX-prev[0];y+=e.clientY-prev[1];apply()}
+   else if(pointers.size===2&&pinch){const a=[...pointers.values()],dist=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);if(pinch.distance>0){const rect=vp.getBoundingClientRect();zoom(dist/pinch.distance,(a[0][0]+a[1][0])/2-rect.left,(a[0][1]+a[1][1])/2-rect.top)}pinch.distance=dist}
+ });
+ function end(e){pointers.delete(e.pointerId);drag=null;pinch=null;vp.classList.remove('dragging');if(pointers.size===1){const a=[...pointers.values()][0];drag=[a[0],a[1]]}}
+ vp.addEventListener('pointerup',end);vp.addEventListener('pointercancel',end);
+ vp.addEventListener('contextmenu',e=>e.preventDefault());
+ vp.addEventListener('keydown',e=>{if(['+','=','-','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','0'].includes(e.key)){e.preventDefault();if(e.key==='+'||e.key==='=')zoom(1.4);else if(e.key==='-')zoom(1/1.4);else if(e.key==='Home'||e.key==='0')fit();else{x+=e.key==='ArrowLeft'?70:e.key==='ArrowRight'?-70:0;y+=e.key==='ArrowUp'?70:e.key==='ArrowDown'?-70:0;apply()}}});
+ if('ResizeObserver' in window){let oldW=0,oldH=0;new ResizeObserver(()=>{const nw=vp.clientWidth,nh=vp.clientHeight;if(!ready||!oldW||!oldH){oldW=nw;oldH=nh;return}
+   const cx=(oldW/2-x)/scale,cy=(oldH/2-y)/scale;scale=Math.max(scale,fitScale());x=nw/2-cx*scale;y=nh/2-cy*scale;oldW=nw;oldH=nh;apply()}).observe(vp)}
+ loadNext();
+})();
+</script>
+</body>
+</html>
