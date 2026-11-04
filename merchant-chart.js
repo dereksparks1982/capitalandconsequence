@@ -5,8 +5,17 @@
 (function(root){
  'use strict';
  const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
+ const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const number=n=>Math.round(n).toLocaleString('en-US');
+ function positionOnChart(ship,save){
+  const p=nav.displayPosition(ship,save);if(!p)return null;
+  if(ship.status!=='at-sea'){
+   const saved=regions.chartPoint(save,ship.port);
+   return saved?{...p,x:saved[0],y:saved[1]}:p;
+  }
+  return p;
+ }
  function shipSymbol(ship,x,y,selected){
   const id=esc(ship.id),name=esc(ship.name);
   const shape='<path d="M-10 5h20l-4 5h-12z" fill="#213847" stroke="#fff6e5" stroke-width="1"/><path d="M0-13V5M-1-11L-9 3H-1zM2-9L8 3H2z" fill="#f7edd9" stroke="#213847" stroke-width="1.1"/>';
@@ -18,7 +27,7 @@
   const inService=vessels.filter(s=>s.status!=='lost');
   let svg='<svg viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mitchell 1880 world atlas and positions of the merchant fleet"><image href="'+esc(nav.PREVIEW)+'" x="0" y="0" width="'+nav.CHART.width+'" height="'+nav.CHART.height+'"/>';
   const portSet=new Set(fleet.ports||[]);
-  for(const [port,xy] of Object.entries(nav.DISPLAY_PORTS)){
+  for(const [port,xy] of Object.entries(regions.chartPorts(save))){
    const active=portSet.has(port);
    svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="'+(active?4.4:2.5)+'" fill="'+(active?'#123d3e':'#75634b')+'" stroke="#fff8e9" stroke-width="1.2"><title>'+esc(port)+(active?' (trade access)':' (not yet verified)')+'</title></circle>';
   }
@@ -30,7 +39,7 @@
   }
   const portCounts={};
   for(const ship of vessels){
-   const point=nav.displayPosition(ship,save);
+   const point=positionOnChart(ship,save);
    if(!point)continue;
    const inPort=ship.status!=='at-sea';
    const overlap=inPort?(portCounts[ship.port]=(portCounts[ship.port]||0)+1)-1:0;
@@ -41,7 +50,7 @@
   svg+='</svg>';
   let detail='<p class="fine">There are no purchased vessels yet. Acquire a sailing schooner above to see it on this chart.</p>';
   if(selected){
-   const point=nav.displayPosition(selected,save),trip=selected.trip;
+   const point=positionOnChart(selected,save),trip=selected.trip;
    const route=trip?nav.route(trip.from,trip.to):null;
    const distance=trip?.nauticalMiles||route?.nauticalMiles||null;
    const state=selected.status==='lost'?'Lost at sea':selected.status==='at-sea'?'Under sail':'In port';
