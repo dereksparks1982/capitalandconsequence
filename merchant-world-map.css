@@ -131,3 +131,11 @@ body.merchant-world-open{overflow:hidden}
 .merchant-manifest-entry details{margin:6px 0}
 .merchant-manifest-entry summary{cursor:pointer;font-size:13px}
 .merchant-manifest-entry ol{margin:7px 0;padding-left:19px}
+
+/* DK Softworks maritime chart editor: saved visual anchors only. */
+.ocean-port-editor{margin:12px 0;padding:10px;background:#fff5df;border:1px solid #baa17a}
+.ocean-port-editor h4{margin:0 0 7px}
+.ocean-chart-directory label,.ocean-port-editor label{display:block;margin:8px 0;font:700 13px Georgia,serif}
+.ocean-chart-directory input,.ocean-port-editor input{display:block;box-sizing:border-box;width:100%;font:14px Georgia,serif;padding:8px;margin-top:5px;border:1px solid #8b7455;background:#fffefa;color:#2e251a}
+.merchant-world-tools [data-ocean-action=edit-ports]{background:#f3e0ae;border:2px solid #87662f;color:#302517}
+.merchant-world-overlays .ocean-port.locked-port circle{fill:#99723b}
