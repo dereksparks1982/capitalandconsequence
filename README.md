@@ -1,5 +1,12 @@
 # Capital & Consequence
 
+## DK Softworks · House of Culture
+
+**DK Softworks** is the studio and project identity. **DK** draws on the Russian abbreviation **ДК** for **Дом культуры** (*Dom kultury*), meaning **“House of Culture.”** Traditionally, a *dom kultury* is a community center for the arts, creativity, performance, and learning.
+
+The in-game scene editor is named **DK Architect**, a tool intended to be reusable across DK Softworks projects. This identifies the present project or its stewardship; it does not change existing licenses, copyright holders, original creators, or historical credits.
+
+
 **v0.7.113-dev · November 4, 2026 (unaccepted):** Benjamin Leach's Salem map, return controls, and desk map are being repaired; the 1851 Salem asset remains separate from the world sailing atlas and Washington. Portrait trims: Bridget gold and Benjamin purple. Owner-editable chart ports are part of the same requested build. See `docs/RELEASE-NOTES-v0.7.113-dev.md`.
 
 **v0.7.112-dev · November 4, 2026 (unaccepted):** Linux startup repair: packaged smoke now validates the approved six character routes; the native launcher disables Vulkan before Electron/Chromium initialization while retaining native Wayland rather than requiring manual X11 flags; a failed packaged smoke now rejects the new build and keeps the existing installed game; updates no longer auto-archive owner files; GitHub ZIP size warnings no longer masquerade as local game failures. No gameplay, map, story, saved-game compatibility, or approved UI changes. See `docs/RELEASE-NOTES-v0.7.112-dev.md`.
