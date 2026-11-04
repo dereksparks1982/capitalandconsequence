@@ -34,7 +34,8 @@ assert(!main.includes('context.officeRestored='),
  'Removed old travel-bypass expectation cannot reappear in packaged checks');
 
 assert(main.includes('show:SMOKE_TEST'),'CI smoke window must map under native Wayland for animation frame callbacks');
-assert(main.includes('backgroundThrottling:!SMOKE_TEST'),'Visible smoke must not throttle its timed travel animation');
+assert(main.includes('backgroundThrottling:!(SMOKE_TEST||GRAPHICS_BOOT_TEST)'),
+ 'Both test windows must keep Chromium animations and initialization active');
 
 assert(main.includes("const GRAPHICS_BOOT_TEST = process.argv.includes('--graphics-smoke')"),
  'Wayland-focused smoke mode must be independent of full animated gameplay smoke');
