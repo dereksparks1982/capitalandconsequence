@@ -38,6 +38,20 @@ function fleet(){
 }
 function state(){return regions.ensure(session.save)}
 function selectedShip(){return fleet().ships.find(s=>String(s.id)===String(session.shipId))}
+function chartPorts(){return regions.chartPorts(session.save)}
+function chartPoint(name){return regions.chartPoint(session.save,name)}
+function chartRoute(from,to){
+ const route=nav.displayRoute(from,to);if(!route?.points?.length)return null;
+ const points=route.points.map(p=>p.slice());
+ points[0]=chartPoint(from)||points[0];points[points.length-1]=chartPoint(to)||points[points.length-1];
+ return {...route,points};
+}
+function chartShip(ship){
+ const old=nav.displayPosition(ship,session.save);if(!old)return null;
+ if(ship.status==='at-sea'&&ship.trip){const route=chartRoute(ship.trip.from,ship.trip.to);
+  return route?{...old,...nav.xyAt(route.points,old.progress)}:old;}
+ const point=chartPoint(ship.port);return point?{...old,x:point[0],y:point[1]}:old;
+}
 function setStatus(message){const el=host?.querySelector('#merchantWorldStatus');if(el)el.textContent=message}
 function open(save,onChange){
  const route=save?.characterRoute;
@@ -120,15 +134,15 @@ function plot(){
  const e=fleet(),m=state();
  let svg='<svg class="merchant-world-overlays" viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" role="group" aria-label="Mitchell 1880 atlas ports, ships and personal marks">';
  if(session.quote?.ok&&Array.isArray(session.quote.points)){
-  svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.quote.from,session.quote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
+  svg+='<polyline class="ocean-quoted-route" points="'+(chartRoute(session.quote.from,session.quote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
  }
  if(session.tradeQuote?.ok&&Array.isArray(session.tradeQuote.points)){
-  svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.tradeQuote.from,session.tradeQuote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
+  svg+='<polyline class="ocean-quoted-route" points="'+(chartRoute(session.tradeQuote.from,session.tradeQuote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed paid merchant cargo route from '+esc(session.tradeQuote.from)+' to '+esc(session.tradeQuote.to)+'</title></polyline>';
  }
  const passage=isMariner()?null:root.FE_PASSENGER_SEA?.position?.(session.save);
  if(passage?.phase==='at-sea'){
   const trip=root.FE_PASSENGER_SEA.ensure(session.save).voyage;
-  const visual=trip&&nav.displayRoute(trip.from,trip.to);
+  const visual=trip&&chartRoute(trip.from,trip.to);
   if(visual?.points?.length){
    svg+='<polyline class="ocean-passenger-route" points="'+visual.points.map(p=>p.join(',')).join(' ')+'"><title>Passenger route '+esc(trip.from)+' to '+esc(trip.to)+'</title></polyline>';
    const p=nav.xyAt(visual.points,passage.seaProgress);
@@ -137,14 +151,14 @@ function plot(){
  }
  for(const ship of e.ships){
   if(ship.status!=='at-sea'||!ship.trip)continue;
-  const line=nav.displayRoute(ship.trip.from,ship.trip.to)?.points;
+  const line=chartRoute(ship.trip.from,ship.trip.to)?.points;
   if(!Array.isArray(line)||line.length<2)continue;
   svg+='<polyline class="ocean-route" points="'+line.map(p=>p.map(n=>Number(n).toFixed(1)).join(',')).join(' ')+'"/>';
  }
- for(const [name,p]of Object.entries(nav.DISPLAY_PORTS)){
+ for(const [name,p]of Object.entries(chartPorts())){
   const selected=session.selection.type==='port'&&session.selection.id===name;
-  const active=e.ports.includes(name);
-  svg+='<g class="ocean-port'+(selected?' selected':'')+(active?' open-port':' locked-port')+'" data-ocean-port="'+esc(name)+'" tabindex="0" role="button" aria-label="Inspect '+esc(name)+' port"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="11"/><text x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle">⚓</text><title>'+esc(name)+(active?' established':' unverified')+'</title></g>';
+  const active=e.ports.includes(name),isCustom=!!regions.customPort(session.save,name);
+  svg+='<g class="ocean-port'+(selected?' selected':'')+(active?' open-port':' locked-port')+'" data-ocean-port="'+esc(name)+'" tabindex="0" role="button" aria-label="Inspect '+esc(name)+' port"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="11"/><text x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle">⚓</text><title>'+esc(name)+(isCustom?' owner-added chart port (unlicensed)':active?' established':' unverified')+'</title></g>';
  }
  for(const pin of m.pins){
   const [,shownY]=nav.savedMarkToDisplay(pin);
@@ -153,7 +167,7 @@ function plot(){
  const portCount={};
  for(const ship of e.ships){
   if(ship.status==='lost')continue;
-  const p=nav.displayPosition(ship,session.save);if(!p)continue;
+  const p=chartShip(ship);if(!p)continue;
   const offset=ship.status==='in-port'?(portCount[ship.port]=(portCount[ship.port]||0)+1)-1:0;
   const x=p.x+(offset?Math.cos(offset*2.4)*12:0),y=p.y+(offset?Math.sin(offset*2.4)*12:0);
   svg+='<g class="ocean-ship'+(String(ship.id)===String(session.shipId)?' selected':'')+'" data-ocean-ship="'+ship.id+'" role="button" tabindex="0" aria-label="Select '+esc(ship.name)+'"><circle cx="'+x+'" cy="'+y+'" r="13"/><path d="M'+(x-9)+' '+(y+3)+'h18l-4 6h-10z M'+x+' '+(y-13)+'v16 M'+(x-1)+' '+(y-10)+'l-8 11h8z" stroke-width="1.2"/><title>'+esc(ship.name)+'</title></g>';
@@ -181,9 +195,9 @@ function focusPoint(point,minimumScale=1){
  resize(false);
 }
 function chartDirectory(){
- const marks=state().pins,ports=Object.keys(nav.PORTS),opened=new Set(fleet().ports);
+ const marks=state().pins,ports=Object.keys(chartPorts()),opened=new Set(fleet().ports);
  let html='<details class="ocean-chart-directory"'+(session.directoryOpen?' open':'')+'><summary>Ports & Your Chart Marks · '+(ports.length+marks.length)+'</summary>';
- html+='<h4>Known ports</h4><div class="ocean-directory-links">'+ports.map(port=>
+ html+='<h4>Chart Ports</h4><p class="fine">Edit Ports lets you drag markers. You can also click Reposition after selecting one.</p><label>New harbor name <input id="merchantNewPortName" maxlength="64" placeholder="Name your port"></label>'+action('add-port','Place New Port')+'<div class="ocean-directory-links">'+ports.map(port=>
   action('focus-port:'+port,(opened.has(port)?'● ':'○ ')+port)).join('')+'</div>';
  if(marks.length)html+='<h4>My marked areas</h4><div class="ocean-directory-links">'+marks.map(pin=>
   action('focus-pin:'+pin.id,(pin.kind==='harbor'?'⚓ ':pin.kind==='coast'?'◇ ':pin.kind==='sea'?'≈ ':'◆ ')+pin.name)).join('')+'</div>';
@@ -220,11 +234,21 @@ function harborRegister(name,zone){
  if(zone==='lodging')return'<h5>Accommodation</h5><p>No passenger booking or paid berth is recorded. Overnight stays require future travel mechanics.</p>';
  return'<h5>Local Streets</h5><p>No player location transition is authorized by a survey of this district.</p>';
 }
+function portEditor(name,custom){
+ const point=chartPoint(name)||[];
+ return '<div class="ocean-port-editor"><h4>Marker Placement</h4><p>Chart position: '+point.join(', ')+'</p>'+
+  action('move-port:'+name,'Reposition Port')+
+  (custom?'<label>Port name <input id="merchantEditPortName" maxlength="64" value="'+esc(name)+'"></label>'+
+   action('rename-port:'+name,'Rename Port')+action('delete-port:'+name,'Remove Custom Port'):
+   '<p class="fine">Commercial permissions and sailing distances will not change.</p>')+'</div>';
+}
 function portPanel(name){
+ const custom=regions.customPort(session.save,name);
+ if(custom)return '<h3>'+esc(name)+'</h3><p>Owner-added chart harbor. Not a trade license, vessel destination, or booked passenger route.</p>'+portEditor(name,true);
  const data=regions.port(name);if(!data)return '<p>Port not found.</p>';
  if(isMariner()){
   const survey=nav.plan('Baltimore',name,'schooner');
-  let html='<h3>'+esc(name)+'</h3><p>Historical chart reference for Benjamin Leach. This does not grant trading rights or move him from Salem.</p>';
+  let html='<h3>'+esc(name)+'</h3><p>Historical chart reference for Benjamin Leach. This does not grant trading rights or move him from Salem.</p>'+portEditor(name,false);
   if(survey)html+='<p>Illustrative wind-powered route from Baltimore: '+survey.nauticalMiles.toLocaleString('en-US')+
    ' nautical miles · approximately '+survey.days+' days by schooner. No ticket or contract has been booked.</p>';
   html+=action('port-scene:'+name,'Inspect Harbour Survey');
@@ -236,7 +260,7 @@ function portPanel(name){
   return html;
  }
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
- let html='<h3>'+esc(name)+'</h3><p>'+ (authorized?'Established commercial port':'Not yet verified as a commercial destination')+'.</p>';
+ let html='<h3>'+esc(name)+'</h3><p>'+ (authorized?'Established commercial port':'Not yet verified as a commercial destination')+'.</p>'+portEditor(name,false);
  html+='<p>'+inPort.length+' owned ship(s) currently berthed.</p>';
  const quote=nav.plan('Baltimore',name,'schooner');
  if(quote){
