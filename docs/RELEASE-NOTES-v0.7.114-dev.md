@@ -17,3 +17,6 @@ The owner found unusable harbor pins, a Washington-vs-Salem return problem, and 
 - User-added chart ports are visual annotations, **not new sea routes or trading rights**.
 - GitHub source commits are not an owner-accepted packaged Linux release.
 - Source/runtime verification and native packaging status are reported separately in the build completion message.
+
+## Native smoke repair
+The first native package test exposed a browser-only script-order dependency: `merchant-chart.js` was using `FE_MERCHANT_REGIONS.chartPorts` before `merchant-regions.js` had loaded. Moved the module before its consumer in `index.html` and added a load-order regression assertion. No map coordinates or economic data were modified. Packaging must be re-verified after this repair.
