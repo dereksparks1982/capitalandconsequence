@@ -19,6 +19,9 @@ on:
       - tests/peacock-debts.cjs
       - tests/peacock-favor-story.cjs
       - tests/peacock-network.cjs
+      - tests/normal-linux-startup-contract.cjs
+      - crowe-butchery-ui.js
+      - tests/crowe-ui-wiring.cjs
       - desktop/main.cjs
       - scripts/linux-root-launcher.c
       - scripts/build-root-linux.cjs
