@@ -640,8 +640,14 @@ async function runSmokeTest(win) {
         context.secondTravelCompleted=await travelFromTitleMap();
         context.secondDestination=window.FE_CITY.currentLocation().locationId;
         context.secondRoomVisible=!room.hidden && getComputedStyle(room).display!=='none';
-        returnCityRoomToOffice();
-        context.officeRestored=window.FE_CITY.currentLocation().locationId==='factory' && room.hidden;
+        // The owner forbids teleporting between locations. A remote room's
+        // Return to Office control must refuse to manufacture free travel.
+        const remoteBefore={...window.FE_CITY.currentLocation()};
+        const returned=returnCityRoomToOffice();
+        context.remoteOfficeTeleportBlocked=returned===false&&
+          remoteBefore.locationId==='russianTradeHall'&&
+          window.FE_CITY.currentLocation().locationId===remoteBefore.locationId&&
+          !room.hidden;
       }finally{
         window.matchMedia=oldMatchMedia;
         closeTitleMap();closeCityRoom();title.hidden=true;
@@ -653,7 +659,7 @@ async function runSmokeTest(win) {
       }
       return context;
     })()`);
-    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonEnters||!cityTravel.mapReturned||!cityTravel.mapCloseRestoresRoom||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.officeRestored||!cityTravel.firstTravelCompleted||!cityTravel.secondTravelCompleted){
+    if(!cityTravel.hasRoom||!cityTravel.beforeGoVisible||cityTravel.savedLocation!=='oldChinatown'||!cityTravel.roomVisible||!cityTravel.roomAboveTitle||!cityTravel.mapClosed||!cityTravel.sameLocationButtonEnters||!cityTravel.mapReturned||!cityTravel.mapCloseRestoresRoom||cityTravel.secondDestination!=='russianTradeHall'||!cityTravel.secondRoomVisible||!cityTravel.remoteOfficeTeleportBlocked||!cityTravel.firstTravelCompleted||!cityTravel.secondTravelCompleted){
       throw new Error('Map navigation/room visibility regression: '+JSON.stringify(cityTravel));
     }
 

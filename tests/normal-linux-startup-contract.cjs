@@ -28,3 +28,7 @@ assert(!runner.includes('process.exitCode=2;'),
 assert(updater.includes('if result.returncode != 0:'),
  'Updater must not accept failed smoke or any nonzero native build');
 console.log('PASS six-character native smoke, no manual Vulkan arguments, mandatory acceptance, no automatic archives');
+assert(main.includes('remoteOfficeTeleportBlocked=returned===false'),
+ 'Packaged navigation must reject unauthorized zero-time return to distant office');
+assert(!main.includes('context.officeRestored='),
+ 'Removed old travel-bypass expectation cannot reappear in packaged checks');
