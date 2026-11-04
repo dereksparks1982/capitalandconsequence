@@ -18,3 +18,8 @@
 - Added an executable VM regression for Benjamin's chart opening and economic isolation, including forged merchant purchase buttons.
 - Updated Linux updater regression to check the new source manifest, absence of ZIP/backups, SHA validation and in-place replacement using a temporary toy directory.
 - JavaScript syntax and source-level checks can be performed remotely. **The entire Node suite and the packaged Ubuntu/Electron graphical walkthrough still require execution on the owner's computer.**
+
+## Source QA snapshot (GitHub Ubuntu / Node 22)
+- Run `41890333957` tested the main v0.7.110 feature commit: **250 of 257 source tests passed**. Both new checks (`merchant-mariner-atlas.cjs` and `linux-in-place-builder.cjs`) passed.
+- The seven failing tests were **already failing in preceding v0.7.109** (249 of 256 passed): `character-menu-portraits.cjs`, `electrified-washington-1878.cjs`, `peacock-debts.cjs`, `peacock-favor-story.cjs`, `peacock-network.cjs`, `recent-seven-regressions.cjs`, and `source-contracts.cjs`. Most reference older menu/biography/progression decisions; investigate each against current canon rather than silently deleting assertions.
+- The subsequent updater follow-up commit supports zero-byte Git blobs and restores prior nonfatal Linux packaging-status behavior. The owner's real Ubuntu desktop build and visual confirmation remain pending.
