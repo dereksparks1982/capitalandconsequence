@@ -229,7 +229,7 @@ function save(){
 function open(target){
  if(!panel.hidden)return;
  const current=root.FE_CITY?.currentLocation?.();
- const place=target&&typeof target==='object'?target:current;
+ const place=target&&typeof target.locationId==='string'&&typeof target.roomId==='string'?target:current;
  selectScene(place?.locationId||'factory',place?.roomId||'executive-office');
  lastFocus=document.activeElement;
  panel.querySelector('#rbSceneLabel').textContent=sceneLabel()+' · 32×32 tile artwork';
