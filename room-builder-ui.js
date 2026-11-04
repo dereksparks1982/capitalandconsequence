@@ -5,7 +5,7 @@
 const C=root.FE_ROOM_BUILDER_CORE,Kit=root.FE_ROOM_BUILDER_KIT;
 if(!C||!Kit||typeof document==='undefined')return;
 const SPRITES='assets/artwork/spritesheet.png';
-const locationId='factory',roomId='executive-office',STORAGE=C.key(locationId,roomId);
+let locationId='factory',roomId='executive-office',STORAGE=C.key(locationId,roomId);
 let room=C.makeRoom(),mode='stamp',assetId='desk_oak',selectedId=null,preview=false;
 let position={...room.spawns.player},dirty=false,zoom=1,grid=true,history=[],future=[];
 let lastFocus=null,drag=null,dragLast='',loaded=false,testRoom=null;
@@ -14,15 +14,23 @@ const names={floors:'Floors',construction:'Walls / Doors',furniture:'Furniture',
 const panel=document.createElement('section');
 panel.id='roomBuilderEditor';panel.className='room-builder-editor';panel.hidden=true;
 panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
-panel.setAttribute('aria-label','Room Builder, Federal Electric Executive Office');
-panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>ROOM BUILDER</h2><p>Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
-'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="fill" title="Flood fill connected matching tiles">Bucket Fill</button><button type="button" data-rb-mode="rectangle" title="Drag a rectangle of floors or walls">Rectangle</button><button type="button" data-rb-mode="pick">Eyedropper</button><button type="button" data-rb-mode="clear-wall">Remove Walls</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Charles Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
+panel.setAttribute('aria-label','DK Architect scene editor');
+panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>DK ARCHITECT</h2><p id="rbSceneLabel">Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
+'<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="fill" title="Flood fill connected matching tiles">Bucket Fill</button><button type="button" data-rb-mode="rectangle" title="Drag a rectangle of floors or walls">Rectangle</button><button type="button" data-rb-mode="pick">Eyedropper</button><button type="button" data-rb-mode="clear-wall">Remove Walls</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Player Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
 '<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Fill changes a connected region, Rectangle paints between two corners, Eyedropper selects existing art. Objects remain on their own layer.</p><dl id="rbInspector"></dl></aside>'+
 '<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
 '<footer class="rb-footer"><label class="rb-draft-field">Draft name <input id="rbDraftName" type="text" maxlength="50" placeholder="Office layout A"></label><button type="button" data-rb="draft-save">Save Named Draft</button><label class="rb-draft-field">Saved drafts <select id="rbDraftList"><option value="">No saved drafts</option></select></label><button type="button" data-rb="draft-load">Open Draft</button><button type="button" data-rb="draft-delete">Delete Draft</button><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="backup">Restore Backup</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
 const status=s=>{$('rbStatus').textContent=s};
+function sceneLabel(){return locationId+' / '+roomId}
+function selectScene(location,whichRoom){
+ const nextLocation=String(location||'factory'),nextRoom=String(whichRoom||'executive-office');
+ if(locationId===nextLocation&&roomId===nextRoom)return;
+ locationId=nextLocation;roomId=nextRoom;STORAGE=C.key(locationId,roomId);
+ room=C.makeRoom(locationId,roomId);dirty=false;loaded=false;selectedId=null;preview=false;testRoom=null;
+ history=[];future=[];position={...room.spawns.player};
+}
 function loadSaved(){
  let raw;try{raw=localStorage.getItem(STORAGE)}catch(e){status('Local storage unavailable. Use Export JSON to preserve layouts.');return false;}
  if(!raw)return false;
@@ -33,7 +41,7 @@ function snapshot(){history.push(C.clone(room));if(history.length>60)history.shi
 function mutate(fn){
  const old=C.clone(room),before=JSON.stringify(room),result=fn();
  if(JSON.stringify(room)!==before){history.push(old);if(history.length>60)history.shift();future=[];dirty=true;position={...room.spawns.player};render();return true;}
- if(result===false)status('Placement blocked: wall, furniture, outside room, or Charles spawn.');
+ if(result===false)status('Placement blocked: wall, furniture, outside room, or Player spawn.');
  return false;
 }
 function undo(){if(!history.length)return;future.push(C.clone(room));room=history.pop();dirty=true;position={...room.spawns.player};render();}
@@ -112,7 +120,7 @@ function render(){
  $('rbInspector').replaceChildren();
  const info=Kit.describe(sel?sel.spriteId:assetId);
  const values=sel?[['Selected',s?.name],['Grid',sel.x+', '+sel.y],['Rotation',sel.rotation*90+'°'],['Solid',s?.solid?'Yes':'No'],['Use',info?.kind],['Behavior',info?.hint]]:[
-  ['Brush',selectedSprite?.name||'None'],['Layer',info?.category||'None'],['Function',info?.hint||''],['Charles spawn',room.spawns.player.x+', '+room.spawns.player.y],['Room size',room.widthTiles+' × '+room.heightTiles]];
+  ['Brush',selectedSprite?.name||'None'],['Layer',info?.category||'None'],['Function',info?.hint||''],['Player spawn',room.spawns.player.x+', '+room.spawns.player.y],['Room size',room.widthTiles+' × '+room.heightTiles]];
  for(const [name,value] of values){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name;dd.textContent=value; $('rbInspector').append(dt,dd);}
 }
 function coords(e){
@@ -207,20 +215,26 @@ function save(){
   }
   localStorage.setItem(STORAGE,serialized);
   room=data;dirty=false;loaded=true;render();
-  status('Saved locally: Federal Electric / Executive Office. Previous valid version kept as a backup.');
+  status('Saved locally: '+sceneLabel()+'. Previous valid version kept as a backup.');
   root.FE_ROOM_BUILDER?.refreshScene?.();return true;
  }catch(e){status('Save failed: '+e.message);return false;}
 }
-function open(){
+function open(target){
  if(!panel.hidden)return;
+ const current=root.FE_CITY?.currentLocation?.();
+ const place=target&&typeof target==='object'?target:current;
+ selectScene(place?.locationId||'factory',place?.roomId||'executive-office');
  lastFocus=document.activeElement;
+ panel.querySelector('#rbSceneLabel').textContent=sceneLabel()+' · 32×32 tile artwork';
+ panel.setAttribute('aria-label','DK Architect · '+sceneLabel());
+ panel.querySelector('[data-rb="sample"]').hidden=!(locationId==='factory'&&roomId==='executive-office');
  if(!loaded)loadSaved();
  panel.hidden=false;preview=false;selectedId=null;position={...room.spawns.player};
  palette();drafts();render();panel.querySelector('[data-rb="close"]').focus();
 }
 function close(){
  if(dirty&&!root.confirm('Discard unsaved editor changes?'))return;
- if(dirty){if(!loadSaved())room=C.makeRoom();dirty=false;}
+ if(dirty){if(!loadSaved())room=C.makeRoom(locationId,roomId);dirty=false;}
  panel.hidden=true;preview=false;lastFocus?.focus?.();
 }
 function rotate(){if(!selectedId)return;const o=room.objects.find(v=>v.id===selectedId);if(o)mutate(()=>C.relocate(room,o.id,o.x,o.y,(o.rotation+1)%4));}
@@ -245,7 +259,7 @@ function del(){if(!selectedId)return;mutate(()=>C.remove(room,selectedId));selec
 function download(){
  const text=JSON.stringify(C.sanitize(room,locationId,roomId),null,2),blob=new Blob([text],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='federal-electric-executive-office.room.json';a.click();
+ a.href=url;a.download='dk-architect-'+locationId+'-'+roomId+'.room.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported layout JSON. No game files or career saves changed.');
 }
 panel.addEventListener('click',e=>{
@@ -315,12 +329,12 @@ panel.addEventListener('click',e=>{
   if(loadSaved()){dirty=false;history=[];future=[];position={...room.spawns.player};render();status('Saved layout reopened.');}
   else status('No valid saved layout found.');
  }
- if(action==='sample'&&root.confirm('Load the crude demonstration office? This only replaces your unsaved draft; your last saved layout stays intact until you Save.')){
+ if(action==='sample'&&locationId==='factory'&&roomId==='executive-office'&&root.confirm('Load the crude demonstration office? This only replaces your unsaved draft; your last saved layout stays intact until you Save.')){
   snapshot();room=C.sampleOffice();selectedId=null;preview=false;testRoom=null;dirty=true;
   render();status('Example office draft loaded. This is not a final approved layout. Use Save only if you want it.');
  }
- if(action==='reset'&&root.confirm('Start a fresh executive office layout? Your saved layout remains until you press Save.')){
-  snapshot();room=C.makeRoom();selectedId=null;dirty=true;preview=false;render();status('New empty office draft. Save to replace the previous design.');
+ if(action==='reset'&&root.confirm('Start a fresh layout for '+sceneLabel()+'? Your saved layout remains until you press Save.')){
+  snapshot();room=C.makeRoom(locationId,roomId);selectedId=null;dirty=true;preview=false;render();status('New empty room draft. Save to replace the previous design for '+sceneLabel()+'.');
  }
 });
 $('rbCategory').addEventListener('change',()=>{const s=root.FE_ROOM_CATALOG.find(a=>a.category===$('rbCategory').value);assetId=s?.id||assetId;mode='stamp';palette();render();});
@@ -367,13 +381,13 @@ function attach(){
  if(!body)return;
  if(!document.getElementById('roomBuilderLaunch')){
   const btn=document.createElement('button');btn.id='roomBuilderLaunch';btn.type='button';
-  btn.textContent='Build / Decorate Rooms';btn.title='Open 32×32 visual editor for Charles\'s executive office';
+  btn.textContent='DK Architect';btn.title='Open 32×32 scene editor for the current playable room';
   btn.addEventListener('click',open);body.appendChild(btn);
  }
 }
 attach();
-root.FE_ROOM_BUILDER={open,refreshScene:()=>{},loadSaved,drawRoom,getSaved:()=>{
- try{const x=localStorage.getItem(STORAGE);return x?C.sanitize(JSON.parse(x),locationId,roomId):null;}
+root.FE_ROOM_BUILDER={open,refreshScene:()=>{},loadSaved,drawRoom,getSaved:(location=locationId,whichRoom=roomId)=>{
+ try{const x=localStorage.getItem(C.key(location,whichRoom));return x?C.sanitize(JSON.parse(x),location,whichRoom):null;}
  catch(e){return null;}
 }};
 })(window);
