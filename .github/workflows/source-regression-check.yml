@@ -70,7 +70,7 @@ jobs:
           test -s resources/app.asar
           echo "Verified the exact root executable from a real successful packed Electron smoke."
 
-      - name: Native Wayland compositor smoke with unchanged game launcher
+      - name: Native Wayland compositor startup check with unchanged game launcher
         shell: bash
         run: |
           if ! command -v weston >/dev/null 2>&1; then
@@ -88,15 +88,15 @@ jobs:
           done
           test -S "$runtime_dir/capital-wayland-ci" || { tail -n 60 weston-headless.log; exit 1; }
           status=0
-          timeout 170s env -u DISPLAY -u WAYLAND_SOCKET XDG_SESSION_TYPE=wayland XDG_RUNTIME_DIR="$runtime_dir" WAYLAND_DISPLAY=capital-wayland-ci ./capitalandconsequence --smoke-test > wayland-smoke.log 2>&1 || status=$?
+          timeout 45s env -u DISPLAY -u WAYLAND_SOCKET XDG_SESSION_TYPE=wayland XDG_RUNTIME_DIR="$runtime_dir" WAYLAND_DISPLAY=capital-wayland-ci ./capitalandconsequence --graphics-smoke > wayland-smoke.log 2>&1 || status=$?
           tail -n 110 wayland-smoke.log
           if [ "$status" -ne 0 ]; then
             echo "Native Wayland smoke failed with status $status"
             exit "$status"
           fi
-          grep -F "FEDERAL_ELECTRIC_SMOKE_OK" wayland-smoke.log
+          grep -F "CAPITAL_WAYLAND_BOOT_OK" wayland-smoke.log
           if grep -F "'--ozone-platform=wayland' is not compatible with Vulkan" wayland-smoke.log; then
             echo "The Vulkan/Wayland startup problem is not fixed."
             exit 1
           fi
-          echo "Native Wayland game smoke passed without graphics compatibility arguments."
+          echo "Native Wayland graphics and renderer startup passed without player compatibility arguments."

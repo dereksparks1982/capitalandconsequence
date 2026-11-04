@@ -35,3 +35,12 @@ assert(!main.includes('context.officeRestored='),
 
 assert(main.includes('show:SMOKE_TEST'),'CI smoke window must map under native Wayland for animation frame callbacks');
 assert(main.includes('backgroundThrottling:!SMOKE_TEST'),'Visible smoke must not throttle its timed travel animation');
+
+assert(main.includes("const GRAPHICS_BOOT_TEST = process.argv.includes('--graphics-smoke')"),
+ 'Wayland-focused smoke mode must be independent of full animated gameplay smoke');
+assert(main.includes("console.log('CAPITAL_WAYLAND_BOOT_OK')"),
+ 'Native Wayland renderer boot must acknowledge success explicitly');
+assert(main.includes("!view.butcherUiReady"),
+ 'Wayland boot verifies the real Crowe shop UI rather than only its JavaScript syntax');
+assert(main.includes('show:SMOKE_TEST||GRAPHICS_BOOT_TEST'),
+ 'Native Wayland test must map its compositor window');

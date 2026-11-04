@@ -27,6 +27,7 @@ app.setName('Capital & Consequence');
 
 const APP_ROOT = path.resolve(__dirname, '..');
 const SMOKE_TEST = process.argv.includes('--smoke-test');
+const GRAPHICS_BOOT_TEST = process.argv.includes('--graphics-smoke');
 let logFile = null;
 
 function safeText(value) {
@@ -700,17 +701,41 @@ async function runSmokeTest(win) {
   }
 }
 
+async function runGraphicsBootTest(win) {
+  try {
+    await win.webContents.executeJavaScript('window.FE_BOOTSTRAP_READY');
+    const view=await win.webContents.executeJavaScript(`(() => ({
+      title:document.title,
+      menuVisible:!!document.getElementById('careerMainMenu'),
+      routeIds:[...document.querySelectorAll('[data-career-pick]')].map(x=>x.dataset.careerPick),
+      cityLoaded:window.FederalElectricCity?.mapLocations?.().length===42,
+      butcherUiReady:typeof window.FE_CROWE_BUTCHERY_UI?.refresh==='function'
+    }))()`);
+    const routes=['industrialist','investigator','criminal','wardman','proprietor','mariner'];
+    if(!win.isVisible()||view.title!=='Capital & Consequence'||
+       !view.menuVisible||!view.cityLoaded||!view.butcherUiReady||
+       JSON.stringify(view.routeIds)!==JSON.stringify(routes))
+      throw Error('Native Wayland renderer failed to initialize: '+JSON.stringify(view));
+    console.log('CAPITAL_WAYLAND_BOOT_OK');
+    setTimeout(()=>app.quit(),250);
+  }catch(error){
+    console.error('CAPITAL_WAYLAND_BOOT_FAIL',error);
+    app.exit(1);
+  }
+}
+
 function createMainWindow() {
   const win=new BrowserWindow({
     title:'Capital & Consequence',width:1440,height:900,minWidth:1100,minHeight:720,
-    backgroundColor:'#111111',autoHideMenuBar:true,show:SMOKE_TEST,
-    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:!SMOKE_TEST,preload:path.join(__dirname,'preload.cjs')}
+    backgroundColor:'#111111',autoHideMenuBar:true,show:SMOKE_TEST||GRAPHICS_BOOT_TEST,
+    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:!(SMOKE_TEST||GRAPHICS_BOOT_TEST),preload:path.join(__dirname,'preload.cjs')}
   });
 
   win.once('ready-to-show',()=>{if(!SMOKE_TEST)win.show();});
   win.webContents.once('did-finish-load',()=>{
     writeLog('main-window-loaded',win.webContents.getURL());
     if(SMOKE_TEST)void runSmokeTest(win);
+    else if(GRAPHICS_BOOT_TEST)void runGraphicsBootTest(win);
   });
   void win.loadFile(path.join(APP_ROOT,'index.html')).catch(error=>{
     writeLog('main-window-load-failure',error);
