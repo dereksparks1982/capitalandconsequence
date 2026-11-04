@@ -1,7 +1,9 @@
 # CAPITAL & CONSEQUENCE
 # COMPANY BIBLE
 
-**Company:** Elderred Softworks LLC (DKLab)  
+**Company / studio brand:** DK Softworks  
+**Meaning:** Russian **ДК** = **Дом культуры** (*Dom kultury*), “House of Culture.”  
+**Historical organizational attribution:** Elderred Softworks LLC (DKLab), preserved where applicable in legal and historical records.  
 **Project:** Capital & Consequence  
 **Authority:** The owner and creator  
 **Established:** November 1, 2026  
