@@ -22,6 +22,8 @@ function ensure(save){
  if(!Array.isArray(m.pins))m.pins=[];
  if(!Number.isSafeInteger(m.nextPin)||m.nextPin<0)m.nextPin=m.pins.length;
  if(!m.view||typeof m.view!=='object')m.view={scale:null,x:null,y:null};
+ if(!m.portPositions||typeof m.portPositions!=='object'||Array.isArray(m.portPositions))m.portPositions={};
+ if(!Array.isArray(m.customPorts))m.customPorts=[];
  return m;
 }
 function addPin(save,x,y){
@@ -64,7 +66,45 @@ function inspectZone(portName,id){
  const zone=ZONES.find(z=>z.id===id);
  return zone?{port:portName,...zone}:null;
 }
-const api=Object.freeze({ZONES,ensure,addPin,rename,move,classify,remove,port,inspectZone});
+/* Owner-set coordinates are a visual overlay, not a change to sailing routes or licenses. */
+const validXY=(x,y)=>Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&y>=0&&x<=NAV.CHART.width&&y<=NAV.CHART.height;
+const round=n=>Math.round(n*10)/10;
+function customPort(save,name){return ensure(save).customPorts.find(p=>p.name===String(name))||null}
+function chartPorts(save){
+ const m=ensure(save),out={...NAV.DISPLAY_PORTS};
+ for(const [n,p]of Object.entries(m.portPositions))if(Object.hasOwn(NAV.DISPLAY_PORTS,n)&&Array.isArray(p)&&validXY(p[0],p[1]))out[n]=p.slice(0,2);
+ for(const p of m.customPorts)if(p&&typeof p.name==='string'&&validXY(p.x,p.y))out[p.name]=[p.x,p.y];
+ return out;
+}
+function chartPoint(save,name){return Object.hasOwn(chartPorts(save),name)?chartPorts(save)[name]:null}
+function addPort(save,name,x,y){
+ const m=ensure(save),label=String(name??'').trim();
+ if(!label||label.length>64||['__proto__','constructor','prototype'].includes(label))return{ok:false,reason:'Port name must be 1 to 64 characters and cannot be a reserved word.'};
+ if(!validXY(x,y))return{ok:false,reason:'Place the port on the printed world chart.'};
+ if([...Object.keys(NAV.DISPLAY_PORTS),...m.customPorts.map(p=>p.name)].some(n=>n.toLowerCase()===label.toLowerCase()))return{ok:false,reason:'That port is already registered.'};
+ if(m.customPorts.length>=80)return{ok:false,reason:'Maximum of 80 user-added ports.'};
+ const port={name:label,x:round(x),y:round(y)};m.customPorts.push(port);return{ok:true,port};
+}
+function movePort(save,name,x,y){
+ if(!validXY(x,y))return{ok:false,reason:'The harbor marker must remain on the printed chart.'};
+ const m=ensure(save),port=customPort(save,name);
+ if(port){port.x=round(x);port.y=round(y);return{ok:true,port};}
+ if(Object.hasOwn(NAV.DISPLAY_PORTS,name)){m.portPositions[name]=[round(x),round(y)];return{ok:true,port:{name,x:round(x),y:round(y)}};}
+ return{ok:false,reason:'No such port exists on the chart.'};
+}
+function renamePort(save,name,newName){
+ const port=customPort(save,name),next=String(newName??'').trim();
+ if(!port)return{ok:false,reason:'Only owner-added ports can be renamed.'};
+ if(!next||next.length>64||['__proto__','constructor','prototype'].includes(next))return{ok:false,reason:'Invalid port name.'};
+ if([...Object.keys(NAV.DISPLAY_PORTS),...ensure(save).customPorts.filter(p=>p!==port).map(p=>p.name)].some(n=>n.toLowerCase()===next.toLowerCase()))return{ok:false,reason:'That port name is already used.'};
+ port.name=next;return{ok:true,port};
+}
+function deletePort(save,name){
+ const m=ensure(save),i=m.customPorts.findIndex(p=>p.name===name);
+ if(i<0)return{ok:false,reason:'Built-in ports may be moved, but not deleted.'};
+ m.customPorts.splice(i,1);return{ok:true};
+}
+const api=Object.freeze({ZONES,ensure,addPin,rename,move,classify,remove,port,inspectZone,customPort,chartPorts,chartPoint,addPort,movePort,renamePort,deletePort});
 if(typeof module==='object'&&module.exports)module.exports=api;
 if(root)root.FE_MERCHANT_REGIONS=api;
 })(typeof window!=='undefined'?window:globalThis);
