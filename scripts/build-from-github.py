@@ -177,7 +177,7 @@ def main():
             raise RuntimeError("Tracked source-test list is incomplete.")
         registered = safe_target("tests/.github-managed-tests.json")
         temp_manifest = temp / "managed-tests.json"
-        temp_manifest.write_text(json.dumps(tracked_tests, indent=2)+"\\n", encoding="utf-8")
+        temp_manifest.write_text(json.dumps(tracked_tests, indent=2)+"\n", encoding="utf-8")
         registered.parent.mkdir(parents=True, exist_ok=True)
         os.replace(temp_manifest, registered)
         info("Registered " + str(len(tracked_tests)) + " current GitHub source tests.")
