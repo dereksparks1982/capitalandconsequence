@@ -27,6 +27,10 @@
 - Cousin's loft is a permanently lived-in, privately bounded upstairs room, not a temporary guest bed. Shop floor, cutting/preparation room, storage/larder, supplier receiving door and loft comprise the intended establishment. Avoid inventing or moving the already approved Washington map pins without owner direction.
 - Criminal adventures and Golden Peacock social contacts remain possible **outside** his ordinary butcher profession. Old club missions dependent on mandatory paid doorman shifts require a carefully approved future rewrite as club contacts/side arcs, **not** erasure or an accidental declaration that he remains employed as a doorman.
 
+### OPTIONAL GOLDEN PEACOCK SIDE WORK · owner suggestion November 4, 2026
+
+**An additional idea under discussion:** Elias might sometimes accept a limited **paid evening door shift** at Lui Delacroix's Golden Peacock, despite owning his butcher shop. Lui may personally contact Elias with an occasional job offer; accepting or declining is entirely voluntary. The work would pay Elias **personal income**, consume genuine night-time minutes and keep the cousin managing the butcher shop in his absence. This should **not** revive the old mandatory nightclub-doorman opening or make wages an automatic income stream. The existing doorman encounters could be reused or adapted only when the owner settles how these offers are initiated, how often they occur, shift length/pay and progression. The exact mechanics remain **proposed, not yet confirmed**. Golden Peacock still belongs exclusively to Lui; Elias gains no ownership or automatic criminal intelligence from a temporary shift.
+
 ### Mystery design and reveal gates
 1. **Opening:** Elias inherits and controls shop; cousin argues about ownership, runs it capably, and may interfere with prices or books. Public story calls father an alcoholic casualty. Elias's destroyed will is a private guilty secret.
 2. **Unease:** Repeated price reversals, inexplicable till shortages and disputed records create practical trouble. These are *not automatically clues proving murder*.
