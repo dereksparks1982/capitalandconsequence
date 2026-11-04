@@ -318,3 +318,8 @@ body > #titleDevPanel.title-dev-panel[hidden]{display:none!important}
 @media(max-width:430px){
  .career-menu-route{flex-basis:min(80vw,236px);width:min(80vw,236px)}
 }
+
+.career-menu-route[data-color=gold]{border-top-color:#b68b2c}
+.career-menu-route[data-color=purple]{border-top-color:#603c83}
+.career-desk[data-route=mariner] .career-desk-map{padding:0!important;background:transparent;border:0;width:110px;height:112px;max-width:110px;max-height:112px;box-shadow:2px 3px 4px #1b160e80}
+.career-desk[data-route=mariner] .career-desk-map img{width:100%;height:100%;max-height:none;object-fit:fill}

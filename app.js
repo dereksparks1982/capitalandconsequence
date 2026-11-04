@@ -33,7 +33,7 @@ const stockOpeningValues=Object.fromEntries([...stockSeed1878,...stockSeed].map(
 function stockUniverse(startYear=CAMPAIGN_START_YEAR){return startYear<1890?[...stockSeed1878,...stockSeed]:stockSeed}
 let SAVE_KEY='federalElectricSave';
 const CAMPAIGN_START_YEAR=1878, CAMPAIGN_START_DATE='1878-01-02';
-const APP_VERSION='v0.7.112-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
+const APP_VERSION='v0.7.113-dev', TURNS_PER_MONTH=4, CAMPAIGN_MONTHS=93, CAMPAIGN_TURNS=TURNS_PER_MONTH*CAMPAIGN_MONTHS, BUSINESS_DAY_SECONDS=3600, NIGHT_SECONDS=3600, DAY_SECONDS=BUSINESS_DAY_SECONDS, MARKET_TICK_MS=5000, STOCK_HISTORY_DAYS=90, WORKER_HOURLY_WAGE_1890=.18, WORKDAY_HOURS=8, WORKER_DAILY_WAGE=WORKER_HOURLY_WAGE_1890*WORKDAY_HOURS, GENERAL_MANAGER_DAILY_WAGE=5.50;
 const PROFILE_INDEX_KEY='federalElectricProfilesV1', ACTIVE_PROFILE_KEY='federalElectricActiveProfile', PROFILE_MIGRATED_KEY='federalElectricProfilesMigratedV1', PROFILE_LIMIT=4;
 const MATERIAL_MARKET={copper:{name:'Copper',unitPrice:.012},glass:{name:'Glass',unitPrice:.006},carbon:{name:'Carbon filaments',unitPrice:.008},tungsten:{name:'Tungsten filaments',unitPrice:.018}};
 function filamentMaterial(){return S.gameDate>='1906-01-01'?'tungsten':'carbon'}
@@ -3017,10 +3017,11 @@ function guardedRoomPanel(name,action){try{action()}catch(error){console.warn('C
 function syncCityRoomDeskReturn(locationId,developerPreview=false){
  const button=document.getElementById('cityRoomReturnOffice');
  if(!button)return;
- const local=locationId==='factory'&&S.characterRoute==='industrialist'&&!developerPreview;
+ const salem=locationId==='salemHarbor'&&S.characterRoute==='mariner';
+ const local=!developerPreview&&(salem||locationId==='factory'&&S.characterRoute==='industrialist');
  button.hidden=!local;
  button.disabled=!local;
- button.textContent='Return to Executive Desk';
+ button.textContent=salem?'Return to Wharf Desk':'Return to Executive Desk';
 }
 /* Household food: actual player room, one authoritative world clock, saved actions. */
 function renderHouseholdFood(location,room,dev=false){
@@ -3322,6 +3323,9 @@ function closeCityRoom(){
  updateTitleDevCityControls();
 }
 function returnCityRoomToMap(){
+ if(S.characterRoute==='mariner'&&currentCityLocation().locationId==='salemHarbor'){
+  closeCityRoom();window.FE_SALEM_MAP?.open?.(S,()=>save(true));return;
+ }
  if(typeof S!=='undefined'&&S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port))return;
  const locationId=cityRoomSession.locationId;
  if(!locationId)return;
@@ -3340,6 +3344,16 @@ function returnCityRoomToMap(){
  });
 }
 function returnCityRoomToOffice(){
+ const here=currentCityLocation();
+ if(S.characterRoute==='mariner'&&here.locationId==='salemHarbor'){
+  if(cityRoomSession.dev||S.paused||S.phase==='report')return false;
+  if(here.roomId!=='leach-office'){
+   if(!window.FE_TRAVEL?.recordRoomMove?.('salemHarbor',here.roomId,'leach-office'))return false;
+   S.currentLocation={locationId:'salemHarbor',roomId:'leach-office'};window.FE_NPC_AI?.syncClock?.();save(true);
+  }
+  closeCityRoom();window.FE_SALEM_MAP?.close?.();closeTitleMap(false);
+  showTab('desk');window.FE_CAREER_SHELL?.refreshDesk?.();render();return true;
+ }
  // Do not mutate player location or skip travel to teleport home. The only
  // physical desk supported here is Charles's Federal Electric executive office.
  // Other venues must use the Map > Federal Electric journey animation.
@@ -4923,6 +4937,7 @@ function titleMapZoom(factor,clientX,clientY){
  titleMapClamp();titleMapApply();
 }
 function openTitleMap(){
+ if(S.characterRoute==='mariner'){window.FE_SALEM_MAP?.open?.(S,()=>save(true));return;}
  if(S.characterRoute==='industrialist'&&(S.passengerSea?.voyage||S.passengerSea?.port)){
   note('Charles is away by sea. Complete the passenger journey before using the Washington street map.');return;
  }
@@ -4988,6 +5003,11 @@ function closeTitleMapOrReturnToLocation(){
 }
 function toggleTitleMapShortcut(){
  if(careerMainMenuVisible())return;
+ if(S.characterRoute==='mariner'){
+  if(window.FE_SALEM_MAP?.isOpen?.()){window.FE_SALEM_MAP.close();return;}
+  const room=document.getElementById('cityRoomOverlay');if(room&&!room.hidden)closeCityRoom();
+  window.FE_SALEM_MAP?.open?.(S,()=>save(true));return;
+ }
  const viewer=$('#titleMapViewer');
  if(!viewer)return;
  if(!viewer.hidden){closeTitleMapOrReturnToLocation();return;}

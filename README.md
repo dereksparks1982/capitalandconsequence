@@ -1,5 +1,7 @@
 # Capital & Consequence
 
+**v0.7.113-dev · November 4, 2026 (unaccepted):** Benjamin Leach's Salem map, return controls, and desk map are being repaired; the 1851 Salem asset remains separate from the world sailing atlas and Washington. Portrait trims: Bridget gold and Benjamin purple. Owner-editable chart ports are part of the same requested build. See `docs/RELEASE-NOTES-v0.7.113-dev.md`.
+
 **v0.7.112-dev · November 4, 2026 (unaccepted):** Linux startup repair: packaged smoke now validates the approved six character routes; the native launcher disables Vulkan before Electron/Chromium initialization while retaining native Wayland rather than requiring manual X11 flags; a failed packaged smoke now rejects the new build and keeps the existing installed game; updates no longer auto-archive owner files; GitHub ZIP size warnings no longer masquerade as local game failures. No gameplay, map, story, saved-game compatibility, or approved UI changes. See `docs/RELEASE-NOTES-v0.7.112-dev.md`.
 
 **v0.7.111-dev · November 4, 2026 (unaccepted):** Source QA repair after eight local test failures. Update seven earlier-snapshot test expectations to preserve the current six-character roster, butcher-shop main campaign, optional nightclub side stories, and late-1878 electrical-contract chronology. The in-place updater registers GitHub-tracked tests, so retired local-only tests are reported but not deleted or executed. No gameplay balance, plot, dates, assets, map pins or approved UI geometry changed. See `docs/RELEASE-NOTES-v0.7.111-dev.md`.
