@@ -31,4 +31,13 @@ assert(index.indexOf('crowe-cold-room.js?v=')<index.indexOf('crowe-butchery.js?v
 assert(ui.includes('Hanging Meat & Ice-Cooled Room'));
 assert(ui.includes('early:true'),'Early cutting is explicitly labeled');
 assert(ui.includes('iceDelivery')&&ui.includes('cleanRoom'));
+const scene=read('crowe-shop-scene.js'),css=read('crowe-shop-scene.css');
+assert(index.includes('crowe-shop-scene.css?v='),'Interactive shop floor CSS must load without changing city layout');
+assert(index.indexOf('crowe-shop-scene.js?v=')<index.indexOf('crowe-butchery-ui.js?v='),'Scene must load before butcher UI');
+assert(index.indexOf('app.js?v=')<index.indexOf('crowe-shop-scene.js?v='),'Shop scene must load after the city runtime');
+assert(ui.includes('scene.render(sceneHost'),'Crowe location UI mounts interactive plan');
+assert(ui.includes('FE_CITY?.openRoom?.(shop.SHOP,roomId)'),'Room inspection leads to genuine city navigation');
+assert(scene.includes('floorPlan(svg,summary,currentRoom)')&&scene.includes('onAction?.('),'Scene uses inventory and dispatches work');
+assert(css.includes('.crowe-scene-stage')&&css.includes('aspect-ratio:3/2'),'Plan has responsive styling');
+assert.doesNotMatch(scene,/smother|murdered his father|adult relationship/i,'Public scene cannot reveal family plot');
 console.log('PASS Crowe rooms, owner-only ice cellar, approved map pins, cold-room script order and hidden story');

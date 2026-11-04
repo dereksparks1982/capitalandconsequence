@@ -14,7 +14,7 @@ In an alternate America shaped by a different course of history, Washington is a
 
 **Elias Crowe** inherits the family butcher shop, manages meat, customers, and the till with his strong-willed cousin, and sometimes accepts paid evening favors from Lui at the Golden Peacock.
 
-His butcher's ice-cooled meat room holds hanging beef sides for a standard 30-day aging period, with early customer requests and regularly delivered blocks of ice. His cousin handles ordinary cooling and cleaning, so meat care is a genuine part of the trade without constant spoilage chores.
+His butcher's ice-cooled meat room holds hanging beef sides for a standard 30-day aging period, with early customer requests and regularly delivered blocks of ice. His cousin handles ordinary cooling and cleaning, so meat care is a genuine part of the trade without constant spoilage chores. **The shop now has an interactive top-down workroom plan:** inspect hanging sides, ice chest, counter, cutting block, stock larder, supplier door, ledger and the cousin's loft; move into workrooms using the existing room controls.
 
 **Edmund Wardman** serves as an orderly at District Asylum, where his older brother controls the institution.
 

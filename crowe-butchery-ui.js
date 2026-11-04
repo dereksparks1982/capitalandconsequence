@@ -3,6 +3,7 @@
  */
 (function(root){'use strict';
 const shop=root.FE_CROWE_BUTCHERY;
+const scene=root.FE_CROWE_SHOP_SCENE;
 if(!shop)throw Error('Butcher shop system must load before its UI.');
 const el=id=>document.getElementById(id);
 const fmt=cents=>(cents<0?'-$':'$')+(Math.abs(cents)/100).toFixed(2);
@@ -81,6 +82,19 @@ function refresh(){
  const h=document.createElement('h3');h.textContent='Crowe Family Butchers · Working Counter';panel.appendChild(h);
  const notice=document.createElement('p');notice.textContent=message||'Cut meat, stock the counter, set your own prices, serve customers, and keep an eye on the till.';notice.setAttribute('role','status');panel.appendChild(notice);
  const cold=s.coldRoom;
+ const sceneHost=document.createElement('div');
+ sceneHost.className='crowe-scene-host';
+ panel.appendChild(sceneHost);
+ if(scene)scene.render(sceneHost,{
+  summary:s,currentRoom:loc.roomId,
+  onNavigate:roomId=>{
+   if(root.FE_CITY?.isDevRoom?.()||S.characterRoute!=='criminal'||loc.locationId!==shop.SHOP)return;
+   const opened=root.FE_CITY?.openRoom?.(shop.SHOP,roomId);
+   if(!opened){message='This workroom is not accessible at present.';refresh();return;}
+   save(true);refresh();
+  },
+  onAction:(action,options)=>doAction(action,options)
+ });
  if(S.currentLocation.roomId==='loft'){
   const upstairs=document.createElement('p');
   upstairs.textContent='Your cousin lives here permanently. The bed, washstand and wardrobe are his. Go downstairs to manage the meat and accounts.';
