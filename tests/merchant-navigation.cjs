@@ -1,5 +1,5 @@
 'use strict';
-/* Offline regression: owner-selected Admiralty chart, saved-clock voyages and fleet accounting.
+/* Offline regression: owner-approved Mitchell atlas, preserved saved-clock voyages and fleet accounting.
  * No network, Actions, or Electron UI are required for this focused source test.
  */
 const assert=require('node:assert/strict');
@@ -56,7 +56,7 @@ assert(middle.progress>.45&&middle.progress<.55);
 assert(Math.hypot(middle.x-atStart.x,middle.y-atStart.y)>15);
 assert.deepEqual(ship.trip.routePoints,track,'rendering must not mutate saved voyage');
 const html=chart.render(save,e.fleet,String(ship.id),true);
-assert(html.includes(nav.MAP));
+assert(html.includes(nav.PREVIEW),'Read-only fleet summary uses the Mitchell preview rather than loading 230MB of pixels');
 assert(html.includes('merchant-ship'));
 assert(html.includes('data-empire-action="ship-info:'));
 assert(html.includes('1878')||html.includes('1878 navigation survey'));

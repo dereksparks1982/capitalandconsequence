@@ -1,4 +1,4 @@
-/* Interactive merchant map on the owner-selected 1888 Admiralty scan.
+/* Interactive merchant map on the owner-selected Samuel Augustus Mitchell 1880 atlas.
  * Printed art remains unchanged; port symbols, ship routes and saved marks are overlays.
  * All trade permissions and the authoritative Washington game clock remain intact.
  */
@@ -110,7 +110,7 @@ function zoom(factor,clientX,clientY){
 }
 function plot(){
  const e=fleet(),m=state();
- let svg='<svg class="merchant-world-overlays" viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" role="group" aria-label="Admiralty chart ports, ships and personal marks">';
+ let svg='<svg class="merchant-world-overlays" viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" role="group" aria-label="Mitchell 1880 atlas ports, ships and personal marks">';
  if(session.quote?.ok&&Array.isArray(session.quote.points)){
   svg+='<polyline class="ocean-quoted-route" points="'+(nav.displayRoute(session.quote.from,session.quote.to)?.points||[]).map(p=>p.join(',')).join(' ')+'"><title>Proposed voyage from '+esc(session.quote.from)+' to '+esc(session.quote.to)+'</title></polyline>';
  }
@@ -381,7 +381,7 @@ function draw(reset){
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
-  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Historic Admiralty navigation chart, published 1888">'+plot()+'</div>'+
+  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Samuel Augustus Mitchell world map on Mercator projection, 1880">'+plot()+'</div>'+
   (session.walking&&root.FE_MERCHANT_HARBOR_UI?.render?.(session.save,session.walking)||'')+'</div>'+ 
   '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
@@ -389,7 +389,7 @@ function draw(reset){
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
   (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
-  '</span><span>Admiralty print dated 1888; visible routes are illustrative, not 1878 records.</span></footer></div>';
+  '</span><span>Mitchell world atlas dated 1880; overlays show illustrative 1878 sailing routes.</span></footer></div>';
  const archiveNode=host.querySelector('.ocean-voyage-archive');if(archiveNode)archiveNode.open=archiveOpened;
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
  const onCommerce=session.tab==='commerce';sel.hidden=!!onCommerce;commerce.hidden=!onCommerce;

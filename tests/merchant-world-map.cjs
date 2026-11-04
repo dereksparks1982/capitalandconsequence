@@ -1,5 +1,5 @@
 'use strict';
-/* Source-only checks for independent shipping map, desk miniature and pin study layer.
+/* Source-only checks for Mitchell's owner-approved shipping atlas, desk preview and marks.
    Character transit is deliberately NOT represented as implemented by this test. */
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -14,7 +14,7 @@ const html=read('index.html');
 const desk=read('career-shell.js');
 const arrange=read('desk-collection.js');
 const css=read('merchant-world-map.css');
-assert(fs.existsSync(path.join(root,nav.MAP)),'owner-selected Admiralty art must be bundled');
+assert(fs.existsSync(path.join(root,nav.MAP)),'owner-selected Mitchell full-resolution art must be bundled');
 assert(src.includes('FE_MERCHANT_MAP'), 'shipping map API must exist');
 assert(src.includes('merchant-world-viewport')&&src.includes('merchant-world-stage'), 'full map viewport missing');
 assert(src.includes('onPointerDown')&&src.includes('e.button!==2'), 'right mouse panning must be present');
@@ -29,14 +29,17 @@ for(const name of ['buyShip','dispatch','repairShip','verifyLead','sellElectric'
 assert(src.includes('portPanel(')&&src.includes('ocean-port-scene'), 'compact port region viewer missing');
 assert(src.includes('function harborRegister(')&&src.includes('Recorded Federal Electric Cargo'), 'dockside sector register must read real goods');
 assert(src.includes('function portMiniScene(')&&src.includes('aria-pressed'), 'compact harbour sections should have an inspectable selected area');
-assert(src.includes('Passage estimate from Baltimore'), 'historical-style voyage estimator missing');
+assert(src.includes("const quote=nav.plan('Baltimore',name,'schooner')")&&src.includes('Sailing estimate from Baltimore'), 'historical-style voyage estimator must still compute actual schooner plans');
 assert(!src.includes('S.currentLocation='), 'chart must not teleport a playable character');
 assert(desk.includes('careerDeskShippingMap')&&desk.includes('careerDeskShippingButton'), 'accessible desk chart opener missing');
-assert(desk.includes(nav.MAP), 'desk art must use the owner-selected Admiralty chart');
+assert(desk.includes(nav.PREVIEW), 'desk miniature must use the Mitchell preview while the world viewer loads the full image');
+assert(src.includes('nav.MAP'),'Main shipping viewer must load the original full-resolution Mitchell image');
 assert(arrange.includes("pos('shipping')")&&arrange.includes("shipping:Object.freeze"), 'draggable map position must save');
 assert(html.includes('merchant-world-map.js')&&html.includes('merchant-world-map.css')&&html.includes('merchant-regions.js'));
 assert(html.includes('title-map-1938.jpg'), 'original Washington map must not be swapped out');
 assert(css.includes('.career-desk .career-desk-shipping'));
+assert(nav.MAP.includes('Mitchell_1880_Map/mitchell-world-1880.jpg'));
+assert(nav.CHART.height===492&&nav.CHART.nativeWidth===9664);
 assert.equal(typeof commerce.dispatch,'function');
 const a={characterRoute:'industrialist',gameDate:'1878-05-10'};
 let m=regions.ensure(a);

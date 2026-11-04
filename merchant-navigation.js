@@ -1,29 +1,29 @@
-/* Saved-clock routes with display-only overlay on the owner-selected 1888 Admiralty image.
- * Existing 800x600 voyage geometry is kept unchanged for legacy games.
- * The new map's 800x434 overlay is separate from economic passage state.
- * The print date is historical-art provenance, not a change to the game's 1878 start.
+/* Merchant navigation: Mitchell's 1880 world Mercator atlas, selected by the owner.
+ * Original print and 1878 sail-only voyage geometry remain unchanged.
+ * Display positions are separate from saved economic routes and travel time.
  */
 (function(root){
  'use strict';
- const MAP='assets/artwork/Chart_of_the_world_showing_tracks_followed_by_sailing_and_low_powered_steam_vessels_RMG_E0798.tiff.jpg';
- const CHART=Object.freeze({width:800,height:434,nativeWidth:3840});
- // Visual survey refined against the owner's Admiralty scan, not invented port permissions.
- // Pixel coordinates live ONLY in the 800x434 display overlay. The original 800x600
- // navigation records, miles, freight schedules, authorized ports and save data stay intact.
+ const MAP='assets/artwork/maps/Mitchell_1880_Map/mitchell-world-1880.jpg';
+ const PREVIEW='assets/artwork/maps/Mitchell_1880_Map/mitchell-world-1880-preview.jpg';
+ const CHART=Object.freeze({width:800,height:492,nativeWidth:9664});
+ // Carefully calibrated study overlay on the 9664 x 5944 archival JPEG.
+ // Coast placement is approximate at worldwide scale; original painting is unmodified.
+ // Overlay uses image coordinates ONLY. Existing 800x600 physical voyage data is preserved.
  const DISPLAY_PORTS=Object.freeze({
-  Baltimore:[289,182],Philadelphia:[294,178],'New York':[298,175],
-  Liverpool:[424,144],Hamburg:[449,149],Havana:[289,226],
-  Singapore:[645,242],'Hong Kong':[662,217]
+  Baltimore:[370,223],Philadelphia:[372,222],'New York':[373,221],
+  Liverpool:[465,196],Hamburg:[482,196],Havana:[363,248],
+  Singapore:[603,277],'Hong Kong':[617,249]
  });
  const DISPLAY_LANES=Object.freeze([
-  {a:'Baltimore',b:'Philadelphia',points:[[289,182],[306,187],[310,181],[294,178]]},
-  {a:'Philadelphia',b:'New York',points:[[294,178],[307,181],[308,178],[298,175]]},
-  {a:'New York',b:'Liverpool',points:[[298,175],[313,163],[341,145],[369,136],[401,139],[418,145],[424,144]]},
-  {a:'Liverpool',b:'Hamburg',points:[[424,144],[430,148],[438,145],[449,149]]},
-  {a:'New York',b:'Havana',points:[[298,175],[313,189],[316,204],[307,219],[296,229],[289,226]]},
-  {a:'Hamburg',b:'Singapore',points:[[449,149],[436,147],[427,155],[423,181],[420,218],
-   [423,260],[447,301],[483,342],[522,347],[559,324],[597,290],[623,258],[645,242]]},
-  {a:'Singapore',b:'Hong Kong',points:[[645,242],[650,236],[655,224],[660,219],[662,217]]}
+  {a:'Baltimore',b:'Philadelphia',points:[[370,223],[377,227],[381,222],[372,222]]},
+  {a:'Philadelphia',b:'New York',points:[[372,222],[382,224],[382,219],[373,221]]},
+  {a:'New York',b:'Liverpool',points:[[373,221],[390,213],[414,200],[438,190],[454,190],[465,196]]},
+  {a:'Liverpool',b:'Hamburg',points:[[465,196],[468,205],[478,202],[482,196]]},
+  {a:'New York',b:'Havana',points:[[373,221],[385,233],[387,244],[374,253],[363,248]]},
+  {a:'Hamburg',b:'Singapore',points:[[482,196],[463,209],[456,228],[459,251],[463,275],
+   [479,324],[500,356],[524,361],[555,338],[582,306],[603,277]]},
+  {a:'Singapore',b:'Hong Kong',points:[[603,277],[611,266],[617,249]]}
  ]);
  const PORTS=Object.freeze({
   Baltimore:[208,324],Philadelphia:[214,319],'New York':[220,311],
@@ -150,7 +150,7 @@
    if(points.length)section.shift();
    points.push(...section);
   }
-  return {...planned,points,survey:'admiralty-1888-visual-only'};
+  return {...planned,points,survey:'mitchell-1880-visual-only'};
  }
  function displayPosition(ship,save){
   const legacy=position(ship,save);if(!legacy)return null;
@@ -164,7 +164,7 @@
  // Saved personal pins still use the original 800x600 chart grid.
  function savedMarkToDisplay(mark){return [mark.x,mark.y*CHART.height/600]}
  function displayMarkToSaved(x,y){return [x,y*600/CHART.height]}
- const api=Object.freeze({MAP,CHART,PORTS,LANES,DISPLAY_PORTS,DISPLAY_LANES,
+ const api=Object.freeze({MAP,PREVIEW,CHART,PORTS,LANES,DISPLAY_PORTS,DISPLAY_LANES,
   route,displayRoute,plan,sailingDays,gameMinute,position,displayPosition,xyAt,
   savedMarkToDisplay,displayMarkToSaved});
  if(typeof module==='object'&&module.exports)module.exports=api;

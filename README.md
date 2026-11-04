@@ -22,6 +22,8 @@ His butcher's ice-cooled meat room holds hanging beef sides for a standard 30-da
 
 **Benjamin Leach** is a self-made shipping merchant based at a fictional Salem wharf office. His route includes a Salem harbor foundation and access to the world shipping chart; a complete maritime trade economy remains in development.
 
+**World shipping chart:** The owner selected Samuel Augustus Mitchell's **1880 World on Mercator's Projection** atlas. The interactive shipping viewer uses the original **9,664 × 5,944** JPEG, with wheel/buttons to zoom, right mouse to pan, approximate port markers and moving ships drawn separately on the antique printed map. The desk miniature uses its matching preview. Washington and Salem retain their separate historical maps; physical city walks are separate interiors.
+
 Work for a living, manage your money, build businesses, travel by sailing ship, trade, gamble, make acquaintances, and follow the opportunities that find you. Ocean journeys can take weeks or months. Reputations grow, debts accumulate, relationships change, and yesterday's decisions can return when you least expect them.
 
 There's no single road to success. You might build a fortune, lose everything, uncover a secret, find a different calling, or simply survive another day in the capital.

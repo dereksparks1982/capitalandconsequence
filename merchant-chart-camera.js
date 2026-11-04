@@ -1,12 +1,12 @@
-/* Pure maritime chart camera math, independent of trade state and world time.
- * The display remains on the owner's 800x434 Admiralty scan, while the
- * original 800x600 saved pin and journey coordinates are kept separately.
+/* Pure maritime chart camera math. The owner's Mitchell 1880 atlas is drawn
+ * in an 800 x 492 logical viewport, from the bundled 9664-pixel scan.
+ * Camera v3 is specific to this image; previous artwork cameras reset to fit.
  */
 (function(root){
 'use strict';
 const finite=v=>Number.isFinite(v);
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-const chart=Object.freeze({width:800,height:434,nativeWidth:3840});
+const chart=Object.freeze({width:800,height:492,nativeWidth:9664});
 function viewport(v){return {width:Math.max(1,Number(v?.width)||1),height:Math.max(1,Number(v?.height)||1)};}
 function fit(v){
  const p=viewport(v);
@@ -16,7 +16,7 @@ function limit(v,nativeWidth=chart.nativeWidth,pixelRatio=1){
  const physical=Math.max(1,Number(pixelRatio)||1);
  const native=Math.max(1,Number(nativeWidth)||chart.nativeWidth);
  // The minimum fit always wins if the whole chart cannot be sharp at this DPI.
- return Math.max(fit(v),Math.min(3.5,native/(chart.width*physical)));
+ return Math.max(fit(v),Math.min(10,native/(chart.width*physical)));
 }
 function constrain(position,v){
  const p=viewport(v);
@@ -35,17 +35,16 @@ function centered(v,point,scale){
 }
 function restored(saved,v,nativeWidth=chart.nativeWidth,pixelRatio=1){
  const p=viewport(v),base=fitted(p);
- if(!saved||!finite(saved.zoom)||saved.zoom<=0||
+ if(!saved||saved.chartVersion!==3||!finite(saved.zoom)||saved.zoom<=0||
     !finite(saved.cx)||!finite(saved.cy))return base;
  const scaled=clamp(base.scale*saved.zoom,base.scale,limit(p,nativeWidth,pixelRatio));
- const cy=saved.chartVersion===2?saved.cy:saved.cy*chart.height/600;
- return centered(p,[saved.cx,cy],scaled);
+ return centered(p,[saved.cx,saved.cy],scaled);
 }
 function recorded(view,v){
  const p=viewport(v),base=fit(p);
  const x=clamp((p.width/2-view.x)/view.scale,0,chart.width);
  const y=clamp((p.height/2-view.y)/view.scale,0,chart.height);
- return {zoom:Math.round(view.scale/base*10000)/10000,cx:x,cy:y,chartVersion:2};
+ return {zoom:Math.round(view.scale/base*10000)/10000,cx:x,cy:y,chartVersion:3};
 }
 function zoomed(view,v,factor,px,py,nativeWidth=chart.nativeWidth,pixelRatio=1){
  const p=viewport(v),original=constrain(view,p);

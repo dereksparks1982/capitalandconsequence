@@ -16,7 +16,7 @@
   const vessels=Array.isArray(fleet?.ships)?fleet.ships:[];
   const selected=vessels.find(s=>String(s.id)===String(selectedId))||vessels.find(s=>s.status!=='lost')||vessels[0];
   const inService=vessels.filter(s=>s.status!=='lost');
-  let svg='<svg viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Admiralty shipping chart and positions of the merchant fleet"><image href="'+esc(nav.MAP)+'" x="0" y="0" width="'+nav.CHART.width+'" height="'+nav.CHART.height+'"/>';
+  let svg='<svg viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mitchell 1880 world atlas and positions of the merchant fleet"><image href="'+esc(nav.PREVIEW)+'" x="0" y="0" width="'+nav.CHART.width+'" height="'+nav.CHART.height+'"/>';
   const portSet=new Set(fleet.ports||[]);
   for(const [port,xy] of Object.entries(nav.DISPLAY_PORTS)){
    const active=portSet.has(port);
@@ -53,7 +53,7 @@
   }
   const options=vessels.map(s=>'<option value="'+esc(s.id)+'"'+(selected?.id===s.id?' selected':'')+'>'+esc(s.name)+(s.status==='lost'?' (lost)':'')+'</option>').join('');
   const selector=vessels.length?'<label for="merchantChartShip">Select vessel </label><select id="merchantChartShip" data-merchant-ship-select>'+options+'</select>':'';
-  return '<details class="merchant-chart"'+(expanded?' open':'')+'><summary>Fleet Sailing Chart · '+inService.length+' vessels</summary><p class="fine">British Admiralty chart published in 1888, used as visual reference for an alternate-1878 game. Ship overlays are illustrative, not verified Admiralty tracks; passage times follow saved game records. Ships advance only when the saved game clock advances.</p><div class="merchant-chart-layout"><div class="merchant-chart-map">'+svg+'</div><aside class="merchant-chart-details">'+selector+detail+'</aside></div><p class="fine">Click a ship icon or choose a vessel to inspect it. White-backed markers represent your ships; the original chart remains unedited.</p></details>';
+  return '<details class="merchant-chart"'+(expanded?' open':'')+'><summary>Fleet Sailing Chart · '+inService.length+' vessels</summary><p class="fine">Samuel Augustus Mitchell world Mercator atlas published in 1880, selected as a historical visual reference for the alternate-1878 game. Ship overlays are illustrative, not verified Admiralty tracks; passage times follow saved game records. Ships advance only when the saved game clock advances.</p><div class="merchant-chart-layout"><div class="merchant-chart-map">'+svg+'</div><aside class="merchant-chart-details">'+selector+detail+'</aside></div><p class="fine">Click a ship icon or choose a vessel to inspect it. White-backed markers represent your ships; the original chart remains unedited.</p></details>';
  }
  const api=Object.freeze({render:chart});
  if(typeof module==='object'&&module.exports)module.exports=api;
