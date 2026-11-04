@@ -17,3 +17,6 @@ The owner ran the existing in-place Ubuntu updater and verified that 0.7.111 ins
 ## Limitations
 
 A Node source test is not a full GPU/desktop acceptance. Real Electron packaging and smoke should be checked in an Ubuntu graphics session before owner installation. User's hardware-specific NVIDIA/Wayland result remains unverified until that machine is tested. No saved-game compatibility work, story edits, maps, economy, art, UI geometry, or character relocations.
+
+## Packaged Ubuntu run: diagnosis and regression coverage
+The first successfully installed CI dependencies allowed a real Electron package to launch. The six-character check passed, as did the road-to-Commerce, Star Club and Chinatown visits. The next smoke assertion still demanded a pre-supersession **1893 Fair lock**, although the owner's November 1 decision moved the exposition to late 1878 and preserved public access to its mapped approach. Replaced that stale condition with direct checks of the public approach, event restriction before October 1878 and positive eligibility at the provisional late-1878 boundary. Game fair code and event admission policy are unchanged.

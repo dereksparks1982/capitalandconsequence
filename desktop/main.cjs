@@ -398,8 +398,16 @@ async function runSmokeTest(win) {
         out.chinatownEnabled=!go.disabled;
         await goAndWait();
         out.chinatownEntered=!room.hidden&&S.currentLocation.locationId==='oldChinatown';
+        // The owner's later decision allows a public approach to every
+        // mapped place regardless of year; only the Fair event is dated.
         openTitleMap();openTitleMapLocation('washingtonFairgrounds');
-        out.fairLocked=go.disabled&&notice.textContent.includes('1893');
+        const fairActor={kind:'player',route:S.characterRoute};
+        const fairAccess=window.FE_CITY_ACCESS;
+        out.fairPublicApproachAvailable=!go.disabled&&!go.hidden;
+        out.fairEventLockedBefore1878=fairAccess?.canRoom?.(
+          window.FederalElectricCity,fairActor,'washingtonFairgrounds','fairgrounds','1878-09-30')?.ok===false;
+        out.fairEventEligibleLate1878=fairAccess?.canRoom?.(
+          window.FederalElectricCity,fairActor,'washingtonFairgrounds','fairgrounds','1878-10-01')?.ok===true;
         out.fairNotVisited=S.currentLocation.locationId==='oldChinatown';
         return out;
       }finally{

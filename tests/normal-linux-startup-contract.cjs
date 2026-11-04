@@ -7,6 +7,12 @@ assert(main.includes("const sixCareerTest=await win.webContents.executeJavaScrip
 assert(main.includes("expectedCareerIds=['industrialist','investigator','criminal','wardman','proprietor','mariner']"));
 assert(!main.includes("fourCareerTest")&&!main.includes("routeCount!==4"),
  'Packaged Electron startup may never reject the approved six-character roster');
+assert(main.includes('fairPublicApproachAvailable')&&
+       main.includes('fairEventLockedBefore1878')&&
+       main.includes('fairEventEligibleLate1878'),
+ 'Native smoke must test both open mapped approach and the protected late-1878 Fair event');
+assert(!main.includes("notice.textContent.includes('1893')"),
+ 'A superseded 1893 exposition date must not invalidate packaged startup');
 assert(native.includes('"--disable-vulkan"')&&native.includes('"--disable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"'),
  'Native graphics fix must reach Chromium before Electron JavaScript starts');
 assert(!native.includes('ozone-platform=x11'),
