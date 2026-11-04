@@ -11,7 +11,7 @@ function make(type){
  assert(sea.embark(s,'Liverpool',type).ok);
  return s;
 }
-for(const type of ['schooner','steamer']){
+for(const type of ['schooner']){
  const s=make(type),st=life.ensure(s);
  assert.equal(st.people.length,3);assert.equal(st.conversations.length,0);
  const before=s.worldCalendar.worldMinute,cash=s.personalCash,company=s.companyCash;
@@ -31,7 +31,7 @@ for(const type of ['schooner','steamer']){
  assert(!far.ok,'cannot speak to an unseen passenger from the cabin');
  const invalid=life.offerTalk(s,'traveler','unsupported');assert(!invalid.ok);
 }
-const s=make('steamer'),actor=life.position(s,'traveler'),me=ship.ensure(s);
+const s=make('schooner'),actor=life.position(s,'traveler'),me=ship.ensure(s);
 assert(actor&&me);
 me.deck=actor.deck;me.x=actor.x;me.y=actor.y; // Establish real same-room presence for engine model testing.
 const original=s.worldCalendar.worldMinute,personal=s.personalCash,company=s.companyCash;

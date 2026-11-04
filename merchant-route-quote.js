@@ -36,7 +36,7 @@
   if(!itinerary)return {ok:false,reason:'There is no connected maritime route to this destination.'};
   const cargoLoad=cargoSnapshot(save,cargo);
   if(!cargoLoad.ok)return cargoLoad;
-  const fee=ship.type==='steamer'?210:110;
+  const fee=110;
   const insurance=insured?Math.ceil(empire.PRICE[ship.type]*.0075):0;
   const due=fee+insurance;
   if(fleet.cash<due)return {ok:false,reason:'Fleet treasury needs $'+due.toFixed(2)+' before this voyage can begin.',due};

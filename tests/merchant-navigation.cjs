@@ -14,7 +14,7 @@ assert.deepEqual(Object.keys(nav.PORTS).sort(),Object.keys(empire.PORTS).sort())
 assert.equal(nav.LANES.length,7);
 for(const a of Object.keys(nav.PORTS))for(const b of Object.keys(nav.PORTS)){
  if(a===b)continue;
- for(const type of ['schooner','steamer']){
+ for(const type of ['schooner']){
   const p=nav.plan(a,b,type);
   assert(p, a+' to '+b+' lacks navigable shipping lanes');
   assert(p.points.length>=2);
@@ -26,7 +26,7 @@ for(const a of Object.keys(nav.PORTS))for(const b of Object.keys(nav.PORTS)){
   assert(p.points.every(point=>point.length===2&&point[0]>=0&&point[0]<=800&&point[1]>=0&&point[1]<=600));
  }
 }
-assert(nav.plan('New York','Liverpool','steamer').days < nav.plan('New York','Liverpool','schooner').days);
+assert.equal(nav.plan('New York','Liverpool','steamer'),null,'no steam travel option');
 assert(nav.plan('New York','Liverpool','schooner').days>=20);
 assert(nav.plan('Hamburg','Singapore','schooner').days>=65);
 assert.equal(nav.plan('Baltimore','Baltimore','schooner'),null);

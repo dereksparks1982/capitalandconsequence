@@ -5,7 +5,7 @@
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const trade=typeof module==='object'&&module.exports?require('./merchant-trade.js'):root.FE_MERCHANT_TRADE;
 const manifest=typeof module==='object'&&module.exports?require('./merchant-manifest.js'):root.FE_MERCHANT_MANIFEST;
-const PRICE={steel:65000,rail:175000,schooner:14000,steamer:36000};
+const PRICE={steel:65000,rail:175000,schooner:14000};
 const PORTS={
  Baltimore:{distance:0,storm:.006,piracy:0,leads:['New York']},
  Philadelphia:{distance:4,storm:.01,piracy:0,leads:['New York']},
@@ -90,16 +90,16 @@ function repairRails(save){
 }
 function buyShip(save,type){
  const e=ensure(save),f=e.fleet,price=PRICE[type],reserve=f.ships.length?0:2500;
- if(!['schooner','steamer'].includes(type)||save.characterRoute!=='industrialist'||save.paused)return result('Unavailable: vessel cannot be acquired.');
+ if(type!=='schooner'||save.characterRoute!=='industrialist'||save.paused)return result('Unavailable: vessel cannot be acquired.');
  if(save.personalCash<price+reserve)return result('Unavailable: vessel purchase requires '+money(price+reserve)+' personal cash.');
  save.personalCash-=price+reserve;f.cash+=reserve;
  const id=++f.nextId;
- f.ships.push({id,name:(type==='schooner'?'Schooner ':'Steamship ')+id,type,port:'Baltimore',condition:95,status:'in-port',trip:null,experience:0});
+ f.ships.push({id,name:'Schooner '+id,type,port:'Baltimore',condition:95,status:'in-port',trip:null,experience:0});
  event(e,save.gameDate,'Acquired '+type+' #'+id+' for '+money(price)+'; crew and home port assigned.');
  root.FE_SKILLS?.practice?.(save,'business-management',{amount:.31,difficulty:50,event:'ship-buy:'+id,source:'Merchant shipping acquisition'});
  return result('Vessel added to merchant fleet.');
 }
-function daysFor(a,b,type){const voyage=nav?.plan?.(a,b,type);return voyage?.days||Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*(type==='steamer'?.85:1.12)))}
+function daysFor(a,b,type){const voyage=nav?.plan?.(a,b,type);return voyage?.days||Math.max(3,Math.round(Math.abs(PORTS[a].distance-PORTS[b].distance)*1.12))}
 function availableFederalCargo(save){
  // 1878 Federal Electric manufactures actual telegraph keys and fittings,
  // not light bulbs; sell and transport only real finished warehouse goods.
@@ -114,7 +114,8 @@ function dispatch(save,id,dest,cargo,insured){
  if(!ship||ship.status!=='in-port'||!f.ports.includes(dest)||dest===ship.port)return result('Unavailable: ship or established route not ready.');
  if(save.paused||save.phase==='report')return result('Unavailable: voyage cannot begin now.');
  if(!['freight','electric'].includes(cargo))return result('Unavailable: unknown cargo.');
- const charge=ship.type==='steamer'?210:110,insurance=insured?Math.ceil(PRICE[ship.type]*.0075):0;
+ if(ship.type!=='schooner')return result('Unavailable: only sailing vessels can depart.');
+ const charge=110,insurance=insured?Math.ceil(PRICE[ship.type]*.0075):0;
  if(f.cash<charge+insurance)return result('Unavailable: fleet treasury needs '+money(charge+insurance)+' for fees, coal and insurance.');
  const consignment=cargo==='electric'?availableFederalCargo(save):null;
  if(cargo==='electric'&&(save.characterRoute!=='industrialist'||!consignment))
@@ -125,7 +126,7 @@ function dispatch(save,id,dest,cargo,insured){
  }
  f.cash-=charge+insurance;ledger(f,save.gameDate,'Departure, port fees'+(insured?', hull insurance':''),-charge-insurance);
  const from=ship.port,voyage=nav?.plan?.(from,dest,ship.type),days=voyage?.days||daysFor(from,dest,ship.type);ship.status='at-sea';
- ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0,consignment,
+ ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?400:0,consignment,
   departMinute:nav?.gameMinute?.(save)??null,routePoints:voyage?.points||null,nauticalMiles:voyage?.nauticalMiles||null,navSurvey:voyage?.survey||null};
  manifest?.registerMerchant?.(save,ship);
  event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?consignment.units+' '+consignment.productId+' goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
@@ -191,7 +192,7 @@ function sellTrade(save,port,lotId){
 function repairShip(save,id){
  const e=ensure(save),f=e.fleet,ship=f.ships.find(v=>v.id===id);
  if(!ship||ship.status!=='in-port'||save.paused||save.phase!=='day')return result('Unavailable: repairs require a ship in port and an open workday.');
- const price=Math.ceil((100-ship.condition)*(ship.type==='steamer'?38:24)+60);
+ const price=Math.ceil((100-ship.condition)*24+60);
  if(f.cash<price)return result('Unavailable: shipyard needs '+money(price)+' fleet cash.');
  f.cash-=price;ship.condition=100;ledger(f,save.gameDate,'Shipyard repair '+ship.name,-price);
  root.FE_SKILLS?.practice?.(save,'ship-repair',{amount:.32,difficulty:56,event:'repair-ship:'+ship.id+':'+f.ledger.length,source:'Shipyard repairs'});
@@ -287,7 +288,7 @@ function advance(save){
   if(e.steel.owned){e.steel.cash-=8;ledger(e.steel,day,'Mill premises and plant upkeep',-8)}
   for(const s of e.fleet.ships){
    if(s.status==='lost')continue;
-   const daily=s.type==='steamer'?(s.status==='at-sea'?20:7):(s.status==='at-sea'?9:4);
+   const daily=s.status==='at-sea'?9:4;
    e.fleet.cash-=daily;ledger(e.fleet,day,s.name+' wages, stores and upkeep',-daily);
    if(s.status==='in-port')s.condition=Math.max(6,s.condition-.035);
    if(s.status==='at-sea'&&s.trip?.eta<=day)arrive(save,e,s,day);
@@ -310,7 +311,7 @@ function render(save,onChange){
  html+=!r.owned?'<p>Thirty-five-mile short line: '+money(PRICE.rail)+' plus $10,000 reserve.</p>'+button('buy-rail','Acquire Railroad'):'<p>Cash '+money(r.cash)+' · '+r.miles+' track miles · Condition '+r.condition.toFixed(0)+'%</p><p>Passenger and freight receipts balanced against wages, coal, rolling stock and repairs.</p>'+button('repair-track','Repair Railway');
  html+='</article></div><h4>Merchant Fleet</h4><p>Fleet treasury '+money(f.cash)+' · '+f.ships.filter(x=>x.status!=='lost').length+' active ships · Established ports: '+f.ports.map(esc).join(', ')+'</p>';
  html+='<p>'+button('world-shipping-map','Open World Shipping Map · Routes, Ports, Fleet Operations')+'</p>';
- html+=button('buy-schooner','Buy Schooner · '+money(PRICE.schooner))+button('buy-steamer','Buy Steamship · '+money(PRICE.steamer));
+ html+=button('buy-schooner','Buy Schooner · '+money(PRICE.schooner));
  for(const lead of f.leads)html+='<p class="empire-lead">Captain '+esc(lead.captain)+' learned of '+esc(lead.port)+' while in '+esc(lead.from)+'. '+button('verify:'+lead.port,'Verify port · $35')+'</p>';
  for(const ship of f.ships){
   html+='<article class="empire-ship"><strong>'+esc(ship.name)+'</strong> · '+esc(ship.status==='lost'?'LOST AT SEA':ship.status==='at-sea'?'AT SEA':'IN PORT')+' · Hull '+ship.condition.toFixed(0)+'% · '+esc(ship.status==='at-sea'?ship.trip.from+' → '+ship.trip.to+' · due '+ship.trip.eta:ship.port);
@@ -348,7 +349,6 @@ function render(save,onChange){
   else if(key==='sell-iron')outcome=merchantSale(save,'iron');
   else if(key==='repair-track')outcome=repairRails(save);
   else if(key==='buy-schooner')outcome=buyShip(save,'schooner');
-  else if(key==='buy-steamer')outcome=buyShip(save,'steamer');
   else if(key.startsWith('verify:'))outcome=verifyLead(save,key.slice(7));
   else if(key.startsWith('sell-electric:'))outcome=sellElectric(save,key.slice(14));
   else if(key.startsWith('trade-sale:')){

@@ -65,6 +65,8 @@ If the requested work cannot be done without an unapproved collateral change, **
 
 ## DEVELOPMENT AND RELEASE RULES
 
+- **PRE-RELEASE SAVE POLICY (OWNER DIRECTIVE, NOVEMBER 3, 2026):** The owner starts **a new game with every development build**. **Old save files and compatibility with earlier builds are NOT a priority or development requirement at this stage.** Do not delay implementation for previous-build save migrations, schema preservation, or fallback handling unless the owner explicitly requests it later. Functional saving and loading **within the current build** are still required where the game uses them. Do not confuse old save files with source history, approved lore, or currently working gameplay, which remain protected.
+
 - **GitHub Actions and compute policy (owner revised November 2, 2026; shared DK LAB rule):** GitHub Actions **and** limited or billable compute are permitted, but **use both sparingly**. Prefer local Linux checks when they adequately verify a change. Run hosted tests or compute jobs only when they bring clear verification or development value, not automatically after every commit.
 - Keep necessary Actions jobs and other compute work targeted, efficient, and proportionate; avoid wasteful reruns, large artifact uploads, unnecessary retention, and avoidable resource charges. Do not infer unlimited usage merely because quotas have reset. Record what was actually executed and verified.
 - **Linux-first.** Work in the existing project and existing installed game; do not silently create a replacement project or duplicate installation.

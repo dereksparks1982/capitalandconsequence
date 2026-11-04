@@ -12,7 +12,7 @@
  const ZONES=['quay','warehouse','customs','market','lodging','street'];
  const TRANSFER_DAYS=2;
  const LODGING_COST=1.25; // Provisional game balance, not an authenticated 1878 room rate.
- const BOAT_RATES=Object.freeze({schooner:{base:12,perNM:.012},steamer:{base:25,perNM:.018}});
+ const BOAT_RATES=Object.freeze({schooner:{base:12,perNM:.012}});
  const validPort=p=>Object.prototype.hasOwnProperty.call(nav.PORTS,p);
  const rounded=n=>Math.round(n*100)/100;
  const result=(ok,reason,extra={})=>({ok,reason,...extra});
@@ -62,9 +62,9 @@
    daysRemaining:Math.max(0,Math.ceil((trip.arrivalMinute-(now??trip.departMinute))/1440)),
    feeder,weatherDelayMinutes:delay};
  }
- function quote(save,to,type='steamer'){
+ function quote(save,to,type='schooner'){
   if(!save||save.characterRoute!=='industrialist')return result(false,'Only Charles can purchase a passenger berth.');
-  if(!BOAT_RATES[type])return result(false,'Unknown passenger vessel type.');
+  if(type!=='schooner')return result(false,'Only sailing vessels are available for passage.');
   if(save.paused||save.phase==='report')return result(false,'Passenger bookings are unavailable while paused or during a report.');
   if(save.worldCalendarStatus!=='ready'||!Number.isSafeInteger(save.worldCalendar?.worldMinute))
    return result(false,'Passenger passage requires the authoritative saved 24-hour clock.');

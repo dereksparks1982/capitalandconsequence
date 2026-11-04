@@ -13,7 +13,7 @@ const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-w
 const regions=typeof module==='object'&&module.exports?require('./merchant-regions.js'):root.FE_MERCHANT_REGIONS;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'$'+Number(v||0).toFixed(2);
-let host=null,save=null,actions=null,booking=false,shipType='steamer',dest='Liverpool',status='',checkersSelected=null;
+let host=null,save=null,actions=null,booking=false,shipType='schooner',dest='Liverpool',status='',checkersSelected=null;
 let journalDraft='',journalOwner=null,journalVoyage=null;
 function button(key,text){return '<button type="button" data-passenger-action="'+esc(key)+'">'+esc(text)+'</button>'}
 function ensureHost(){
@@ -275,7 +275,7 @@ function draw(){
   const destinations=Object.keys(nav.PORTS).filter(x=>x!=='Baltimore'&&x!=='Philadelphia');
   body='<h3>Passenger Ticket Office</h3><p>Departure: '+esc(from)+'</p><p class="fine">The Washington pier connects through an estimated two-day river and coastal transfer to Baltimore before a longer sea crossing. Returning includes the corresponding connection back to Washington.</p>'+
    (home?'<label>Destination <select id="passengerDestination">'+destinations.map(x=>'<option'+(dest===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>':'<p>Destination: Baltimore, then Washington Passenger Pier.</p>')+
-   '<label>Vessel <select id="passengerShipType"><option value="steamer"'+(shipType==='steamer'?' selected':'')+'>Steamship</option><option value="schooner"'+(shipType==='schooner'?' selected':'')+'>Schooner</option></select></label>';
+   '<p>Vessel: <strong>Sailing schooner</strong></p>';
   const q=quote();
   body+=q.ok?'<div class="passenger-quote"><p><strong>'+esc(q.from)+' → '+esc(q.to)+'</strong> · '+q.nauticalMiles.toLocaleString('en-US')+' nautical miles.</p>'+
    '<p>Sea passage '+q.seaDays+' days + '+q.transferDays+' days connection = <strong>'+q.days+' game days</strong>.</p>'+

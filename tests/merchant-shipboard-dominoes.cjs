@@ -7,8 +7,8 @@ function voyage(){
  const s={characterRoute:'industrialist',phase:'day',paused:false,gameDate:'1878-03-10',
   personalCash:500,companyCash:2500,currentLocation:{locationId:'potomacFishingBank',roomId:'passenger-pier'},
   worldCalendarStatus:'ready',worldCalendar:{worldMinute:now}};
- const boarded=sea.embark(s,'Liverpool','steamer');assert(boarded.ok,boarded.reason);
- const interior=ship.ensure(s);interior.deck='main';interior.x=3;interior.y=4;
+ const boarded=sea.embark(s,'Liverpool','schooner');assert(boarded.ok,boarded.reason);
+ const interior=ship.ensure(s);interior.deck='lower';interior.x=3;interior.y=4;
  assert(ship.at(s,'cards'));return s;
 }
 const s=voyage(),cash=s.personalCash,company=s.companyCash,clock=s.worldCalendar.worldMinute;

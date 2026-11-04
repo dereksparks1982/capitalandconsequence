@@ -11,7 +11,7 @@ function make(type){
  const boarded=sea.embark(s,'Liverpool',type);assert(boarded.ok,boarded.reason);
  return s;
 }
-for(const type of ['schooner','steamer']){
+for(const type of ['schooner']){
  const s=make(type),p=ship.ensure(s),minute=s.worldCalendar.worldMinute,cash=s.personalCash,company=s.companyCash;
  assert(ship.at(s,'rest'),'board at actual passenger berth');
  assert(!ship.at(s,'meal'),'not at galley');
@@ -25,20 +25,16 @@ for(const type of ['schooner','steamer']){
  const copy=JSON.parse(JSON.stringify(s));
  assert.equal(ship.ensure(copy).x,p.x,'walk position persists on disk');
  assert.equal(ship.ensure(copy).voyageId,p.voyageId);
- assert.equal(ship.decks(s).length,type==='steamer'?3:2);
+ assert.equal(ship.decks(s).length,2);
  for(const deck of ship.decks(s)){
   assert.equal(deck.rows.length,9);
   assert(deck.rows.every(row=>row.length===12));
   assert.equal(deck.rows.filter(row=>row.includes('H')).length,1);
  }
 }
-const s=make('steamer'),p=ship.ensure(s);
+const s=make('schooner'),p=ship.ensure(s);
 function walkPath(points){for(const [x,y] of points){const offer=ship.moveOffer(s,x,y);assert(offer.ok,offer.reason);assert(ship.move(s,x,y).ok)}}
-walkPath([[3,4],[3,3],[4,3],[5,3],[6,3],[6,2]]);
-assert(ship.deckOffer(s,'main').ok);
-assert(ship.changeDeck(s,'main').ok);
-assert.equal(ship.ensure(s).deck,'main');
-walkPath([[6,3],[5,3],[4,3],[3,3],[3,4]]);
+walkPath([[3,4]]);
 assert(ship.at(s,'cards'));
 assert(!ship.cardOffer(s,'hit').ok);
 assert(ship.cardOffer(s,'start').ok);

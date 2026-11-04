@@ -23,7 +23,7 @@ const MARKET_PREMIUM=Object.freeze({
  Singapore:{machinery:1.92,textiles:1.63,cotton:1.48,timber:1.75,coffee:.9,tea:1.05},
  'Hong Kong':{machinery:1.95,textiles:1.78,cotton:1.62,timber:1.82,coffee:1.32,tea:.88}
 });
-const CAPACITY=Object.freeze({schooner:12,steamer:24});
+const CAPACITY=Object.freeze({schooner:12});
 const money=n=>Math.round(Number(n)*100)/100;
 const fail=reason=>({ok:false,reason});
 function week(save){
@@ -76,15 +76,15 @@ function quote(save,ship,dest,item,units,insured,fleet){
  const route=nav.plan(ship.port,dest,ship.type);
  if(!route)return fail('No charted commercial sea route connects these ports.');
  const buyUnit=price(ship.port,item,'buy'),saleUnit=price(dest,item,'sell');
- const purchase=buyUnit*units,loading=units*4,departure=ship.type==='steamer'?210:110;
- const hullInsurance=insured?Math.ceil(({schooner:14000,steamer:36000})[ship.type]*.0075):0;
+ const purchase=buyUnit*units,loading=units*4,departure=110;
+ const hullInsurance=insured?Math.ceil(14000*.0075):0;
  const cargoInsurance=insured?Math.ceil(purchase*.045):0;
  const due=money(purchase+loading+departure+hullInsurance+cargoInsurance);
  if(!Number.isFinite(fleet.cash)||fleet.cash<due)
   return fail('Fleet treasury requires $'+due.toFixed(2)+' to buy and ship this cargo.');
  const agent=Math.ceil(saleUnit*units*.06),duty=Math.ceil(saleUnit*units*.05);
  const projectedGross=money(saleUnit*units),projectedNet=money(projectedGross-agent-duty);
- const upkeepPerDay=ship.type==='steamer'?20:9;
+ const upkeepPerDay=9;
  return {ok:true,shipId:ship.id,shipName:ship.name,type:ship.type,
   from:ship.port,to:dest,item,units,insured:!!insured,
   productName:GOODS[item].name,remaining:left,capacity:CAPACITY[ship.type],

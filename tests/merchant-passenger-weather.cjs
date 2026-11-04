@@ -57,7 +57,7 @@ s.paused=false;
 s.phase='report';assert(!sea.lodgingQuote(s).ok);
 s.phase='day';
 assert(sea.lodgingQuote(s).ok);
-const back=sea.embark(s,'Baltimore','steamer');assert(back.ok);
+const back=sea.embark(s,'Baltimore','schooner');assert(back.ok);
 const ret=sea.ensure(s).voyage, ocean=ret.seaDays*1440, feeder=ret.transferDays*1440;
 assert(ret.returning);
 assert.equal(sea.position(s).feeder,false,'return must begin with an ocean crossing');

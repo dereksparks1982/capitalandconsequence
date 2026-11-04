@@ -6,11 +6,11 @@ const now=Math.floor(Date.parse('1878-03-10T09:00:00Z')/60000);
 const s={characterRoute:'industrialist',paused:false,phase:'day',gameDate:'1878-03-10',
  personalCash:800,companyCash:3200,currentLocation:{locationId:'potomacFishingBank',roomId:'passenger-pier'},
  worldCalendarStatus:'ready',worldCalendar:{worldMinute:now}};
-const ticket=sea.embark(s,'Liverpool','steamer');assert(ticket.ok,ticket.reason);
+const ticket=sea.embark(s,'Liverpool','schooner');assert(ticket.ok,ticket.reason);
 const p=ship.ensure(s),cash=s.personalCash,company=s.companyCash,minute=s.worldCalendar.worldMinute;
 p.deck='lower';p.x=3;p.y=4;
 assert(!journal.quote(s,'A note').ok,'must be at passenger berth');
-p.x=3;p.y=5;assert(ship.at(s,'rest'));
+p.x=3;p.y=3;assert(ship.at(s,'rest'));
 assert(!journal.quote(s,'     ').ok,'reject empty page');
 assert(!journal.quote(s,'x'.repeat(801)).ok,'hard character limit');
 assert(journal.quote(s,'  Dear diary, \nStill at sea.  ').ok);
@@ -30,7 +30,7 @@ assert.equal(journal.pages(restored).length,1,'journal remains readable after do
 assert(!journal.quote(restored,'Another note').ok,'no writing while ashore');
 restored.passengerSea.journal.pages[0].body='Different saved copy';
 assert.equal(journal.pages(s)[0].body,'Dear diary, \nStill at sea.','read returns independent copy');
-p.deck='main';p.x=3;p.y=4;assert(ship.at(s,'cards'));
+p.deck='lower';p.x=3;p.y=4;assert(ship.at(s,'cards'));
 assert(domino.act(s,'start').ok);
 assert(!ship.cardOffer(s,'start').ok,'twenty-one blocked during dominoes');
 assert(!journal.quote(s,'Away from berth').ok,'must remain at berth to write');
@@ -38,7 +38,7 @@ assert(!journal.write(s,'Away from berth').ok);
 assert(domino.resign(s).ok);
 // A page legitimately started with 15 minutes before docking must still
 // commit after its 10 minute action, even though only five minutes remain.
-p.deck='lower';p.x=3;p.y=5;
+p.deck='lower';p.x=3;p.y=3;
 const arrival=s.passengerSea.voyage.arrivalMinute;
 s.passengerSea.voyage.arrivalMinute=s.worldCalendar.worldMinute+15;
 assert(journal.quote(s,'Docking soon.').ok);

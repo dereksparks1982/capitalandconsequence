@@ -8,10 +8,8 @@
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const number=n=>Math.round(n).toLocaleString('en-US');
  function shipSymbol(ship,x,y,selected){
-  const id=esc(ship.id),name=esc(ship.name),kind=ship.type==='steamer'?'steamer':'schooner';
-  const shape=kind==='steamer'?
-   '<path d="M-11 3h22l-4 7h-14z" fill="#1e3440" stroke="#f8eccd" stroke-width="1.1"/><path d="M-6-4h12v7h-12z" fill="#fff2da"/><path d="M-1-9h4v5h-4z" fill="#70462a"/>':
-   '<path d="M-10 5h20l-4 5h-12z" fill="#213847" stroke="#fff6e5" stroke-width="1"/><path d="M0-13V5M-1-11L-9 3H-1zM2-9L8 3H2z" fill="#f7edd9" stroke="#213847" stroke-width="1.1"/>';
+  const id=esc(ship.id),name=esc(ship.name);
+  const shape='<path d="M-10 5h20l-4 5h-12z" fill="#213847" stroke="#fff6e5" stroke-width="1"/><path d="M0-13V5M-1-11L-9 3H-1zM2-9L8 3H2z" fill="#f7edd9" stroke="#213847" stroke-width="1.1"/>';
   return '<g class="merchant-ship'+(selected?' is-selected':'')+'" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+')" role="button" tabindex="0" data-empire-action="ship-info:'+id+'" aria-label="'+name+', '+(ship.status==='at-sea'?'underway':'in port')+'"><title>'+name+'</title><circle r="15" fill="'+(selected?'#f0d987':'#fff6df')+'" fill-opacity=".87" stroke="#273543" stroke-width="'+(selected?'2.5':'1.3')+'"/>'+shape+'</g>';
  }
  function chart(save,fleet,selectedId,expanded){
@@ -41,7 +39,7 @@
    svg+=shipSymbol(ship,point.x+dx,point.y+dy,selected?.id===ship.id);
   }
   svg+='</svg>';
-  let detail='<p class="fine">There are no purchased vessels yet. Acquire a schooner or steamship above to see it on this chart.</p>';
+  let detail='<p class="fine">There are no purchased vessels yet. Acquire a sailing schooner above to see it on this chart.</p>';
   if(selected){
    const point=nav.displayPosition(selected,save),trip=selected.trip;
    const route=trip?nav.route(trip.from,trip.to):null;

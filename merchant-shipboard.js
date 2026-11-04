@@ -5,11 +5,6 @@
 (function(root){
 'use strict';
 const MAPS=Object.freeze({
- steamer:[
-  {id:'lower',name:'Cabins & Stores',rows:['############','#....#.....#','#.....H....#','#..B.......#','#..........#','#..B.......#','#........X.#','#..........#','############']},
-  {id:'main',name:'Dining Saloon',rows:['############','#..........#','#.....H....#','#..........#','#..C....G..#','#..........#','#........W.#','#..........#','############']},
-  {id:'upper',name:'Promenade Deck',rows:['############','#..........#','#.....H....#','#..........#','#..........#','#...O......#','#..........#','#........X.#','############']}
- ],
  schooner:[
   {id:'lower',name:'Passenger Berths & Mess',rows:['############','#..........#','#.....H....#','#..B.......#','#..C....G..#','#..........#','#........W.#','#..........#','############']},
   {id:'upper',name:'Weather Deck',rows:['############','#..........#','#.....H....#','#..........#','#..........#','#...O......#','#..........#','#..........#','############']}
@@ -18,13 +13,13 @@ const MAPS=Object.freeze({
 const STATIONS=Object.freeze({rest:'B',meal:'G',water:'W',cards:'C',lookout:'O'});
 const allowed=t=>typeof t==='string'&&/^[.BHCGWO]$/.test(t);
 const no=reason=>({ok:false,reason}),yes=(reason,extra={})=>({ok:true,reason,...extra});
-function decks(s){return MAPS[s?.passengerSea?.voyage?.type]||null}
+function decks(s){return s?.passengerSea?.voyage?.type==='schooner'?MAPS.schooner:null}
 function deck(s,id){return (decks(s)||[]).find(d=>d.id===id)||null}
 function tile(s,id,x,y){return deck(s,id)?.rows?.[y]?.[x]??null}
 function aboard(s){return s?.characterRoute==='industrialist'&&s.currentLocation?.locationId==='passengerVessel'&&!!s.passengerSea?.voyage&&!!decks(s)}
 function ensure(s){
  if(!aboard(s))return null;
- const trip=s.passengerSea.voyage,init=trip.type==='schooner'?{deck:'lower',x:3,y:3}:{deck:'lower',x:3,y:5};
+ const trip=s.passengerSea.voyage,init={deck:'lower',x:3,y:3};
  let p=s.passengerSea.interior;
  if(!p||p.version!==1||p.voyageId!==trip.id){
   p={version:1,voyageId:trip.id,...init,game:{next:0,round:null,history:[]},observations:[]};

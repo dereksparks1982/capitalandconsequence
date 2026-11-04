@@ -1,3 +1,11 @@
+## LATEST OWNER DECISION · NOVEMBER 3, 2026 · SAILING VESSELS ONLY
+
+**The owner explicitly established that this game has no steamships. Maritime passenger and merchant vessels use wind-powered sails only.** The existing sailing schooner is the current playable vessel; other sailing rigs may be proposed later, but are not automatically added. This instruction **supersedes** older references permitting the purchase, operation, booking, or travel time of steamships (including the older Merchant Fleet section below). Keep the owner-approved maritime map artwork unchanged even if its archival filename/title mentions historical steam vessels.
+
+Ocean passages take days for short coastal journeys, weeks for Atlantic crossings, and potentially months for long multi-ocean journeys. The player may pass onboard time through actions and normal world-clock progression. This decision does not approve unimplemented piracy, ransom, permanent death, or new shipboard secrets.
+
+**Development save policy:** The owner starts a fresh game for each development build. Backward compatibility and migrations for earlier-build saves are not required at this stage. See `COMPANY_BIBLE.md`.
+
 ## LATEST OWNER DECISION · NOVEMBER 1, 2026 · COMPONENTS → STREETLIGHTS → BULBS → FAIR
 
 **The following decisions supersede all older 1893 World's Fair and later streetlighting references below.** Those passages remain as historical records.

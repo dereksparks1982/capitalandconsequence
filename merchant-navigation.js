@@ -75,27 +75,26 @@
   }
   return {from:a,to:b,points,legs:legsSummary,nauticalMiles:Math.round(distance[b]),survey:'ecoclipper-image-traced-v1'};
  }
- function sailingDays(nauticalMiles,type){
-  if(!Number.isFinite(nauticalMiles)||nauticalMiles<=0)return null;
-  // Effective passage speeds include time lost to winds, maneuvering, and port approaches.
-  const effectivePerDay=type==='steamer'?12*24*.85:6*24*.75;
+ function sailingDays(nauticalMiles,type='schooner'){
+  if(type!=='schooner'||!Number.isFinite(nauticalMiles)||nauticalMiles<=0)return null;
+  // Solely wind-powered vessels: effective speed allows for calm days,
+  // prevailing winds, tacking, maneuvers and approach delays.
+  const effectivePerDay=6*24*.75;
   return Math.max(2,Math.ceil(nauticalMiles/effectivePerDay));
  }
- function plan(a,b,type){
-  const r=route(a,b);if(!r||!['schooner','steamer'].includes(type))return null;
-  // 1878 reference: Liverpool -> New York (westbound) took substantially
-  // longer under sail than the eastbound crossing. Other routes follow
-  // nautical-mile estimates and pay for intermediate port calls.
-  // Existing saved trips retain their original ETA; this only quotes new ones.
+ function plan(a,b,type='schooner'){
+  if(type!=='schooner')return null;
+  const r=route(a,b);if(!r)return null;
+  // 1878 sail-only routes: headwinds lengthen westbound Atlantic crossings.
+  // Multi-leg passages also include realistic stops to reprovision.
   const oceanDays=sailingDays(r.nauticalMiles,type);
   const westbound=r.legs.some(leg=>leg.from==='Liverpool'&&leg.to==='New York');
-  const westboundAdjustment=westbound?
-   Math.ceil(oceanDays*(type==='schooner'?.25:.10)):0;
+  const westboundAdjustment=westbound?Math.ceil(oceanDays*.25):0;
   const calls=Math.max(0,r.legs.length-1);
-  const portDays=calls*(type==='schooner'?2:1);
+  const portDays=calls*2;
   return {...r,days:oceanDays+westboundAdjustment+portDays,
    underwayDays:oceanDays+westboundAdjustment,portDays,
-   basis:'1878 modeled distance, westbound headwinds and route stopovers'};
+   basis:'1878 wind-powered sailing, westbound headwinds and port stopovers'};
  }
  const dateMinute=date=>{
   if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;

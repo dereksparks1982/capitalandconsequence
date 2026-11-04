@@ -14,11 +14,11 @@ const advanceDate=(save,minutes)=>{
  save.gameDate=new Date(minutes*60000).toISOString().slice(0,10);
 };
 assert.equal(nav.plan('Liverpool','New York','schooner').days,38,'westbound sailing benchmark');
-assert.equal(nav.plan('Liverpool','New York','steamer').days,15,'westbound steam benchmark');
+assert.equal(nav.plan('Liverpool','New York','steamer'),null,'steamships are not available');
 assert.ok(nav.plan('Hamburg','Singapore','schooner').days>=90,'intercontinental months');
 assert.ok(nav.plan('New York','Hong Kong','schooner').days>=120,'multi-ocean months');
-assert.ok(nav.plan('New York','Hong Kong','steamer').days>=50,'multi-ocean weeks');
-assert.ok(nav.plan('Baltimore','Philadelphia','steamer').days<10,'coastal voyages remain days');
+assert.ok(nav.plan('New York','Hong Kong','schooner').days>=120,'multi-ocean sail takes months');
+assert.ok(nav.plan('Baltimore','Philadelphia','schooner').days<10,'coastal voyages remain days');
 const save={characterRoute:'industrialist',paused:false,phase:'day',personalCash:300000,
  gameDate:'1878-02-01',worldCalendarStatus:'ready',
  worldCalendar:{worldMinute:minute('1878-02-01')},
@@ -39,10 +39,10 @@ empire.advance(save);
 assert.equal(voyage.status,'arrived');
 assert.ok(voyage.passengers.every(p=>p.status==='disembarked'));
 assert.ok(records.records(save,'Philadelphia').length===1,'port search');
-const q=sea.quote(save,'Liverpool','steamer');
+const q=sea.quote(save,'Liverpool','schooner');
 assert.equal(q.ok,true,q.reason);
 assert.ok(q.days>14);
-assert.equal(sea.embark(save,'Liverpool','steamer').ok,true);
+assert.equal(sea.embark(save,'Liverpool','schooner').ok,true);
 const pax=records.records(save).find(v=>v.kind==='passenger');
 assert.ok(pax);
 assert.equal(pax.passengers[0].name,'Charles Whitecomb');
@@ -64,19 +64,7 @@ const restored=JSON.parse(JSON.stringify(save));
 assert.equal(records.records(restored).length,2);
 assert.equal(records.records(restored,pax.id)[0].id,pax.id);
 assert.ok(records.archive(restored,'Charles Whitecomb').includes('fictional'));
-const oldSave={gameDate:'1878-03-02',
- industrialEmpire:{version:1,lastDate:'1878-03-02',
- steel:{owned:false,cash:0,rails:0,iron:0,condition:92,ledger:[]},
- rail:{owned:false,cash:0,miles:35,condition:86,ledger:[]},
- fleet:{cash:0,ships:[{id:9,name:'Old Schooner',type:'schooner',port:'Baltimore',
- condition:80,status:'at-sea',trip:{from:'Baltimore',to:'Liverpool',depart:'1878-02-01',
- eta:'1878-03-30',cargo:'freight',insured:false,fee:400}}],
- ports:['Baltimore','Philadelphia'],leads:[],electric:{},tradeHold:{},nextId:9,ledger:[]},log:[]}};
-empire.ensure(oldSave);
-assert.equal(records.records(oldSave)[0].passengers.length,0,'no fake historical backfill');
-assert.equal(records.records(oldSave)[0].source,'recovered-existing-save');
-assert.equal(records.records(oldSave).length,1);
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-assert.ok(html.indexOf('merchant-manifest.js?v=20261103-v07104-ships')<
- html.indexOf('industrial-empire.js?v=20261103-v07104-ships'),'manifest script loaded first');
-console.log('PASS multi-week/month duration, ship cargo, permanent NPC passenger rolls, clocks, old-save recovery');
+assert.ok(html.indexOf('merchant-manifest.js?v=20261103-v07105-sail-only')<
+ html.indexOf('industrial-empire.js?v=20261103-v07105-sail-only'),'manifest script loaded first');
+console.log('PASS multi-week/month duration, ship cargo, permanent NPC passenger rolls, clocks, sailing-only fleet');

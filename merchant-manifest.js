@@ -54,7 +54,7 @@ function registerMerchant(save,ship,legacy=false){
  const entry={id,kind:'merchant',shipId:ship.id,shipName:String(ship.name),
   type:ship.type,from:t.from,to:t.to,depart:t.depart,eta:t.eta,
   departMinute:t.departMinute??null,arrived:null,status:'at-sea',cargo:cargo(t),
-  passengers:legacy?[]:travelers(id,ship.name,t,ship.type==='steamer'?6:2),
+  passengers:legacy?[]:travelers(id,ship.name,t,2),
   crew:'Names not yet registered',source:legacy?'recovered-existing-save':'fictional-simulation',
   events:[{date:t.depart,kind:legacy?'recovered':'departure',
    description:legacy?'Recovered voyage already underway in an earlier save; no fictional passenger names invented retroactively.':
@@ -94,7 +94,7 @@ function registerPassenger(save,trip,playerName,legacy=false){
  const boarding={id:id+'-PLAYER',name:String(playerName||'Charles Whitecomb'),
   from:trip.from,to:trip.to,role:'player',status:'aboard',
   fictional:true,fare:trip.fare};
- const peers=legacy?[]:travelers(id,'Passenger '+trip.type,trip,trip.type==='steamer'?8:3);
+ const peers=legacy?[]:travelers(id,'Passenger '+trip.type,trip,3);
  const row={id,kind:'passenger',shipName:'Ticketed '+trip.type+' passenger vessel',
   type:trip.type,from:trip.from,to:trip.to,depart:save.gameDate,
   eta:trip.etaDate,departMinute:trip.departMinute,status:'at-sea',arrived:null,

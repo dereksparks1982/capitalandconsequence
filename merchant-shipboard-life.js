@@ -5,6 +5,7 @@
 (function(root){
 'use strict';
 const ship=typeof module==='object'&&module.exports?require('./merchant-shipboard.js'):root.FE_SHIPBOARD;
+const manifest=typeof module==='object'&&module.exports?require('./merchant-manifest.js'):root.FE_MERCHANT_MANIFEST;
 const PEOPLE=Object.freeze([
  {id:'traveler',label:'Fellow Traveler',role:'passenger',
   description:'A traveler carrying a worn notebook. Their name and destination beyond the ticketed voyage are unknown.'},
@@ -34,11 +35,10 @@ function ensure(save){
  return life;
 }
 function schedule(save,id){
- const steamer=save?.passengerSea?.voyage?.type==='steamer';
  const at=(deck,x,y)=>({deck,x,y});
- const lowerB=at('lower',3,steamer?5:3),saloon=at(steamer?'main':'lower',3,4),
-  galley=at(steamer?'main':'lower',8,4),water=at(steamer?'main':'lower',9,6),
-  lookout=at('upper',4,5),stairs=at(steamer?'main':'lower',6,2);
+ const lowerB=at('lower',3,3),saloon=at('lower',3,4),
+  galley=at('lower',8,4),water=at('lower',9,6),
+  lookout=at('upper',4,5),stairs=at('lower',6,2);
  if(id==='traveler')return [lowerB,galley,lookout,lowerB];
  if(id==='cards')return [lowerB,lookout,saloon,saloon];
  if(id==='steward')return [galley,galley,water,stairs];
@@ -81,7 +81,7 @@ function onDeck(save,deck){
  // Show two registered simulated travelers on real shipboard tiles. Their
  // stable scheduler IDs still drive walking and dialogue on older saves.
  const registryId=save?.passengerSea?.voyage?.registryId;
- const row=registryId&&root.FE_MERCHANT_MANIFEST?.ensure?.(save)?.voyages?.find(v=>v.id===registryId);
+ const row=registryId&&manifest?.ensure?.(save)?.voyages?.find(v=>v.id===registryId);
  const registered=row?.passengers?.filter(p=>p.role==='passenger')||[];
  return PEOPLE.map(p=>{
   const visitor=p.id==='traveler'?registered[0]:p.id==='cards'?registered[1]:null;

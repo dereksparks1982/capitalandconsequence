@@ -8,12 +8,11 @@ function aboard(type){
   worldCalendarStatus:'ready',worldCalendar:{worldMinute:now}};
  const b=sea.embark(s,'Liverpool',type);assert(b.ok,b.reason);return s;
 }
-for(const type of ['steamer','schooner']){
+for(const type of ['schooner']){
  const s=aboard(type),p=ship.ensure(s),x=p.x,y=p.y,
   personal=s.personalCash,company=s.companyCash,minute=s.worldCalendar.worldMinute;
  assert.deepEqual(ship.findPath(s,x,y),[],'already standing at tile');
  assert.equal(ship.findPath(s,0,0),null,'wall forbidden');
- if(type==='steamer')assert.equal(ship.findPath(s,9,6),null,'crew-only X is forbidden');
  assert.equal(ship.findPath(s,100,100),null,'out of bounds');
  assert.equal(ship.findPath(s,3.4,5),null,'integer coordinates only');
  assert(!ship.pathOffer(s,x,y).ok,'no movement to same tile');
@@ -31,7 +30,7 @@ for(const type of ['steamer','schooner']){
  assert.equal(s.personalCash,personal);assert.equal(s.companyCash,company);
  assert.equal(s.worldCalendar.worldMinute,minute,'engine never runs another timer');
  assert(!ship.pathOffer(s,0,0).ok);
- assert(ship.deckOffer(s,type==='steamer'?'main':'upper').ok,'stair action still required');
+ assert(ship.deckOffer(s,'upper').ok,'stair action still required');
  s.paused=true;assert(!ship.pathOffer(s,6,3).ok);s.paused=false;
  s.passengerSea.voyage.arrivalMinute=s.worldCalendar.worldMinute+1;
  assert(!ship.pathOffer(s,6,3).ok,'cannot walk through arrival');

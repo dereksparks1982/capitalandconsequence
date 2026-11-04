@@ -11,7 +11,7 @@ const save={characterRoute:'industrialist',gameDate:'1878-03-10',
  worldCalendarStatus:'ready',worldCalendar:{worldMinute:base},
  currentLocation:{locationId:'potomacFishingBank',roomId:'passenger-pier'},
  personalCash:200,companyCash:3000,phase:'day',paused:false};
-const booking=sea.embark(save,'Liverpool','steamer');
+const booking=sea.embark(save,'Liverpool','schooner');
 assert(booking.ok,booking.reason);
 assert.equal(save.currentLocation.locationId,'passengerVessel');
 needs.ensure(save);

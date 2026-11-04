@@ -217,12 +217,12 @@ function portPanel(name){
  const authorized=fleet().ports.includes(name),inPort=fleet().ships.filter(s=>s.status==='in-port'&&s.port===name);
  let html='<h3>'+esc(name)+'</h3><p>'+ (authorized?'Established commercial port':'Not yet verified as a commercial destination')+'.</p>';
  html+='<p>'+inPort.length+' owned ship(s) currently berthed.</p>';
- const quote=nav.plan('Baltimore',name,'schooner'),steam=nav.plan('Baltimore',name,'steamer');
- if(quote&&steam){
-  html+='<div class="ocean-voyage-quote"><h4>Passage estimate from Baltimore</h4>'+
+ const quote=nav.plan('Baltimore',name,'schooner');
+ if(quote){
+  html+='<div class="ocean-voyage-quote"><h4>Sailing estimate from Baltimore</h4>'+
    '<p>'+quote.nauticalMiles.toLocaleString('en-US')+' nautical miles along '+quote.legs.length+
-   ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong> · Steamship: <strong>'+
-   steam.days+' days</strong></p><p class="fine">This is a route estimate, not a booked journey or verified period sailing schedule.</p></div>';
+   ' chart leg(s)</p><p>Schooner: <strong>'+quote.days+' days</strong></p>'+
+   '<p class="fine">Wind-powered sailing estimate, not a booked journey or verified departure schedule.</p></div>';
  }
  const arrived=fleet().tradeHold?.[name]||[];
  if(arrived.length){
@@ -234,17 +234,13 @@ function portPanel(name){
       action('trade-sell:'+name+':'+lot.id,'Sell Through Port Agent')+'</p>';
     }).join('')+'</section>';
  }
- if(name!=='Baltimore'&&root.FE_PASSENGER_SEA){
+ if(name!=='Baltimore'&&root.FE_PASSENGER_SEA&&quote){
   const passage=root.FE_PASSENGER_SEA;
-  const rateS=passage.BOAT_RATES.schooner,rateT=passage.BOAT_RATES.steamer;
-  if(quote&&steam){
-   const schoonerFare=rateS.base+rateS.perNM*quote.nauticalMiles+passage.TRANSFER_DAYS*4;
-   const steamerFare=rateT.base+rateT.perNM*steam.nauticalMiles+passage.TRANSFER_DAYS*4;
-   html+='<section class="ocean-quote-details"><h4>Passenger Passage From Washington</h4>'+
-    '<p>Schooner: '+(quote.days+passage.TRANSFER_DAYS)+' game days · '+cash(schoonerFare)+'</p>'+
-    '<p>Steamship: '+(steam.days+passage.TRANSFER_DAYS)+' game days · '+cash(steamerFare)+'</p>'+
-    '<p class="fine">Includes the estimated two-day Washington-to-Baltimore feeder. Personal ticket purchase requires physical boarding at the Potomac Passenger Pier.</p></section>';
-  }
+  const rate=passage.BOAT_RATES.schooner;
+  const fare=rate.base+rate.perNM*quote.nauticalMiles+passage.TRANSFER_DAYS*4;
+  html+='<section class="ocean-quote-details"><h4>Sailing Passage From Washington</h4>'+
+    '<p>Schooner: '+(quote.days+passage.TRANSFER_DAYS)+' game days · '+cash(fare)+'</p>'+
+    '<p class="fine">Includes the two-day Washington-to-Baltimore feeder. A ticket requires physical boarding at the Potomac Passenger Pier.</p></section>';
  }
  html+=action('passenger-tickets:'+name,'Passenger Ticket Office')+
   action('port-scene:'+name,'Explore Harbour Layout')+action('walk-open:'+name,'Open Walkable Harbour Survey');
@@ -342,7 +338,7 @@ function shipPanel(id){
 function business(){
  const e=fleet(),opened=e.ships.filter(s=>s.status!=='lost');
  let html='<h3>Merchant Shipping Office</h3><p>Fleet cash '+cash(e.cash)+' · '+opened.length+' active vessels</p>'+
-  '<div class="ocean-business-actions">'+action('buy:schooner','Buy Schooner · '+cash(root.FE_EMPIRE.PRICE.schooner))+action('buy:steamer','Buy Steamship · '+cash(root.FE_EMPIRE.PRICE.steamer))+'</div>';
+  '<div class="ocean-business-actions">'+action('buy:schooner','Buy Schooner · '+cash(root.FE_EMPIRE.PRICE.schooner))+'</div>';
  for(const s of e.ships)html+=action('select-ship:'+s.id,s.name+' · '+(s.status==='at-sea'?'At sea':s.status==='lost'?'Lost':s.port));
  if(e.leads.length){html+='<h4>Captain Leads</h4>';for(const lead of e.leads)
   html+='<p>'+esc(lead.port)+' (heard at '+esc(lead.from)+') '+action('verify:'+lead.port,'Verify · $35')+'</p>'}
@@ -385,7 +381,7 @@ function draw(reset){
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
-  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="British Admiralty sailing and low-powered steam navigation chart, published 1888">'+plot()+'</div>'+
+  '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Historic Admiralty navigation chart, published 1888">'+plot()+'</div>'+
   (session.walking&&root.FE_MERCHANT_HARBOR_UI?.render?.(session.save,session.walking)||'')+'</div>'+ 
   '<aside class="merchant-world-sidebar">'+chartDirectory()+'<div class="ocean-tabs">'+action('tab:selection','Inspect & Regions')+action('tab:commerce','Shipping Office')+'</div>'+
   '<section id="merchantWorldSelection">'+(session.selection.type==='port'?portPanel(session.selection.id):
