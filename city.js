@@ -646,6 +646,8 @@
   return copy;
  }
  function listLocations(){return LOCATIONS.filter(location=>!!location.map).map(copyLocation)}
+ // Blueprint catalogue includes off-map locations; selecting one never moves the player.
+ function allLocations(){return LOCATIONS.map(copyLocation)}
  function getLocation(id){
   const location=LOCATIONS.find(v=>v.id===id);
   return location?copyLocation(location):null;
@@ -679,6 +681,7 @@
  window.FederalElectricCity={
   version:1,
   listLocations,
+  allLocations,
   getLocation,
   getRoom,
   mapLocations,

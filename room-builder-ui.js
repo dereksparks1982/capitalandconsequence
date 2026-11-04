@@ -18,12 +18,22 @@ panel.setAttribute('aria-label','DK Architect scene editor');
 panel.innerHTML='<div class="rb-window"><header class="rb-head"><div><small>CAPITAL & CONSEQUENCE · DEVELOPER TOOLS</small><h2>DK ARCHITECT</h2><p id="rbSceneLabel">Federal Electric · Executive Office · 32×32 original artwork</p></div><button type="button" data-rb="close">Close ×</button></header>'+
 '<nav class="rb-toolbar" aria-label="Editing tools"><button type="button" data-rb-mode="select">Select / Drag</button><button type="button" data-rb-mode="stamp">Place / Paint</button><button type="button" data-rb-mode="fill" title="Flood fill connected matching tiles">Bucket Fill</button><button type="button" data-rb-mode="rectangle" title="Drag a rectangle of floors or walls">Rectangle</button><button type="button" data-rb-mode="pick">Eyedropper</button><button type="button" data-rb-mode="clear-wall">Remove Walls</button><button type="button" data-rb-mode="erase">Erase</button><button type="button" data-rb-mode="spawn">Set Player Spawn</button><button type="button" data-rb="rotate">Rotate R</button><button type="button" data-rb="duplicate">Duplicate</button><button type="button" data-rb="delete">Delete</button><button type="button" data-rb="nudge-left" title="Move selected object left">←</button><button type="button" data-rb="nudge-up" title="Move selected object up">↑</button><button type="button" data-rb="nudge-down" title="Move selected object down">↓</button><button type="button" data-rb="nudge-right" title="Move selected object right">→</button><button type="button" data-rb="undo">Undo</button><button type="button" data-rb="redo">Redo</button><button type="button" data-rb="inspect">Check Room</button><button type="button" data-rb="test">Test Walk ▶</button></nav>'+
 '<div class="rb-workarea"><aside class="rb-side"><h3>Art Catalog</h3><label>Category <select id="rbCategory"><option value="floors">Floors</option><option value="construction">Walls / Doors</option><option selected value="furniture">Furniture</option><option value="small_props">Small Props</option><option value="people">People</option></select></label><div id="rbPalette" class="rb-palette"></div><p>Choose an asset, then click the grid. Fill changes a connected region, Rectangle paints between two corners, Eyedropper selects existing art. Objects remain on their own layer.</p><dl id="rbInspector"></dl></aside>'+
-'<main class="rb-main"><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
+'<main class="rb-main"><div class="rb-scene-selectors"><label>Location <select id="rbLocation"></select></label><label>Scene / Room <select id="rbRoom"></select></label><button type="button" data-rb="scene-open">Open Scene for Editing</button><small>Blueprint only. Selecting a different room never moves your character or advances game time.</small></div><div class="rb-canvas-tools"><label>Width <input id="rbWidth" type="number" min="8" max="40" value="16"></label><label>Height <input id="rbHeight" type="number" min="8" max="40" value="12"></label><button type="button" data-rb="resize">Resize Room</button><label>Zoom <input id="rbZoom" type="range" min="75" max="200" step="25" value="100"></label><label><input id="rbGrid" type="checkbox" checked> Grid</label><span id="rbDirty" aria-live="polite">Unsaved draft</span></div><div id="rbViewport" class="rb-viewport"><canvas id="rbCanvas" tabindex="0" aria-label="Room canvas. Choose an object or paint tool."></canvas></div><p class="rb-help">TEST: Arrow keys or WASD to walk. Click a nearby door to open/close it. Editor tests do not advance the game clock.</p></main></div>'+
 '<footer class="rb-footer"><label class="rb-draft-field">Draft name <input id="rbDraftName" type="text" maxlength="50" placeholder="Office layout A"></label><button type="button" data-rb="draft-save">Save Named Draft</button><label class="rb-draft-field">Saved drafts <select id="rbDraftList"><option value="">No saved drafts</option></select></label><button type="button" data-rb="draft-load">Open Draft</button><button type="button" data-rb="draft-delete">Delete Draft</button><button type="button" data-rb="save">Save Layout</button><button type="button" data-rb="reload">Reopen Saved</button><button type="button" data-rb="backup">Restore Backup</button><button type="button" data-rb="export">Export JSON</button><label class="rb-import">Import JSON <input id="rbImport" type="file" accept=".json,application/json"></label><button type="button" data-rb="sample">Load Example Office</button><button type="button" data-rb="reset">New Empty Layout</button><output id="rbStatus" role="status" aria-live="polite">Choose an asset to begin.</output></footer></div>';
 document.body.appendChild(panel);
 const $=id=>panel.querySelector('#'+id),canvas=$('rbCanvas'),ctx=canvas.getContext('2d'),viewport=$('rbViewport');
 const status=s=>{$('rbStatus').textContent=s};
-function sceneLabel(){return locationId+' / '+roomId}
+function sceneLabel(){const place=root.FederalElectricCity?.getLocation?.(locationId);return (place?.name||locationId)+' / '+(place?.rooms?.find(v=>v.id===roomId)?.name||roomId)}
+function allScenes(){return root.FederalElectricCity?.allLocations?.()||[]}
+function populateScenes(location=locationId,whichRoom=roomId){
+ const places=allScenes(),locationList=$('rbLocation'),roomList=$('rbRoom');
+ locationList.replaceChildren();roomList.replaceChildren();
+ for(const place of places){const opt=document.createElement('option');opt.value=place.id;opt.textContent=place.name;locationList.append(opt)}
+ if(places.some(p=>p.id===location))locationList.value=location;
+ const chosen=places.find(p=>p.id===locationList.value);
+ for(const area of chosen?.rooms||[]){const opt=document.createElement('option');opt.value=area.id;opt.textContent=area.name;roomList.append(opt)}
+ if((chosen?.rooms||[]).some(r=>r.id===whichRoom))roomList.value=whichRoom;
+}
 function selectScene(location,whichRoom){
  const nextLocation=String(location||'factory'),nextRoom=String(whichRoom||'executive-office');
  if(locationId===nextLocation&&roomId===nextRoom)return;
@@ -231,6 +241,7 @@ function open(target){
  const current=root.FE_CITY?.currentLocation?.();
  const place=target&&typeof target.locationId==='string'&&typeof target.roomId==='string'?target:current;
  selectScene(place?.locationId||'factory',place?.roomId||'executive-office');
+ populateScenes();
  lastFocus=document.activeElement;
  panel.querySelector('#rbSceneLabel').textContent=sceneLabel()+' · 32×32 tile artwork';
  panel.setAttribute('aria-label','DK Architect · '+sceneLabel());
@@ -269,11 +280,26 @@ function download(){
  a.href=url;a.download='dk-architect-'+locationId+'-'+roomId+'.room.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported layout JSON. No game files or career saves changed.');
 }
+$('rbLocation').addEventListener('change',()=>{populateScenes($('rbLocation').value,'');status('Choose the room and press Open Scene for Editing.');});
 panel.addEventListener('click',e=>{
  const button=e.target.closest('button');if(!button)return;
  const action=button.dataset.rb,tool=button.dataset.rbMode;
  if(tool){preview=false;mode=tool;render();return;}
  if(action==='close')close();
+ if(action==='scene-open'){
+  const place=$('rbLocation').value,which=$('rbRoom').value;
+  const target=allScenes().find(v=>v.id===place);
+  if(!target?.rooms?.some(v=>v.id===which)){status('Choose a registered room.');return;}
+  if(locationId===place&&roomId===which){status('Already editing this scene.');return;}
+  if(dirty&&!root.confirm('Discard unsaved DK Architect changes to open another scene? The saved layout stays intact.'))return;
+  selectScene(place,which);populateScenes();
+  panel.querySelector('#rbSceneLabel').textContent=sceneLabel()+' · 32×32 tile artwork';
+  panel.setAttribute('aria-label','DK Architect · '+sceneLabel());
+  panel.querySelector('[data-rb="sample"]').hidden=!(locationId==='factory'&&roomId==='executive-office');
+  loadSaved();position={...room.spawns.player};palette();drafts();render();
+  status('Editing '+sceneLabel()+'. Your character has not moved.');
+  return;
+ }
  if(action==='resize'){
   const w=Number($('rbWidth').value),h=Number($('rbHeight').value);
   const next=C.resize(room,w,h);

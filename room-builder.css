@@ -82,3 +82,9 @@
  border:2px solid #8e7043;cursor:pointer;font:700 14px Georgia,serif}
 .dk-architect-room-launch:hover,.dk-architect-room-launch:focus-visible{background:#f6e9c3;outline:2px solid #bf9849;outline-offset:2px}
 .room-builder-editor [data-rb=sample][hidden]{display:none!important}
+
+/* DK Architect's registered scene picker; design-only, not physical travel. */
+.room-builder-editor .rb-scene-selectors{display:flex;flex-wrap:wrap;align-items:end;gap:10px;padding:10px 13px;background:#e9dfc5;border-bottom:2px solid #a28b63;color:#3d3022}
+.room-builder-editor .rb-scene-selectors label{display:flex;flex-direction:column;gap:3px;flex:1 1 180px;font:700 12px Georgia,serif}
+.room-builder-editor .rb-scene-selectors select{font:15px Georgia,serif;max-width:100%;padding:7px;background:#fff9e8;border:1px solid #856a49}
+.room-builder-editor .rb-scene-selectors small{flex:1 1 220px;font:12px/1.4 Georgia,serif}

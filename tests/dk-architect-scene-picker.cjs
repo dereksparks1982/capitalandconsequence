@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
+const sandbox={window:{}};vm.runInNewContext(read('city.js'),sandbox);
+const city=sandbox.window.FederalElectricCity;
+const locations=city.allLocations();const salem=locations.find(p=>p.id==='salemHarbor');
+assert(salem,'registered off-map Salem must be available for blueprints');
+assert(salem.rooms.some(p=>p.id==='leach-office'));
+assert(salem.rooms.some(p=>p.id==='harbor-walk'));
+assert(!city.listLocations().some(p=>p.id==='salemHarbor'),'Salem must remain absent from Washington city map');
+salem.rooms[0].name='CHANGED';assert.notEqual(city.getLocation('salemHarbor').rooms[0].name,'CHANGED','location records must be copied');
+const editor=read('room-builder-ui.js');
+for(const token of ['rbLocation','rbRoom','scene-open','function allScenes()','function populateScenes(','selectScene(place,which)','if(dirty&&!root.confirm','STORAGE=C.key(locationId,roomId)'])assert(editor.includes(token),'Missing editor control: '+token);
+assert(read('room-builder.css').includes('.rb-scene-selectors'));
+console.log('PASS DK Architect registered scene selection and Salem separation');
