@@ -28,3 +28,15 @@ Actual Weston/Wayland startup confirmed the earlier Vulkan conflict diagnostic n
 
 ### Distinguishing full gameplay from headless compositor boot
 The user's real machine has a Wayland GPU path, unlike the CI headless Weston compositor which may suspend animation frame callbacks or run without a DRM device. Full packaged game smoke (including every travel, UI and save interaction) remains mandatory under Ubuntu's virtual desktop and **passed**. The separate native Wayland test now runs a bounded `--graphics-smoke` check of a mapped real Electron window, city registry, all six menu cards and live Crowe panel, with the launcher's automatic Vulkan safety flags. It rejects the former Wayland/Vulkan incompatibility diagnostic. This does not bypass or weaken the full packaged smoke test and does not add an end-user launch flag.
+
+
+## Verified build and test evidence (November 4, 2026)
+
+**GitHub Actions run 41901841281, commit `3bcf55fb2056c5f6ad62385da47518b81b81b67d`: both Ubuntu jobs succeeded.**
+
+- Complete Node 22 source suite: **259 passed, 0 failed, 259 total**.
+- Real electron-builder x86_64 game, installed via the exact native `capitalandconsequence` ELF: **packaged Electron smoke passed**, exercising the live renderer, six character cards, actual profile/save/reload, traveling into city venues, protected 1878 fair access, no-teleport restrictions, room overlays, effects and physical navigation.
+- Separate *native Weston/Wayland* headless-compositor startup: **`CAPITAL_WAYLAND_BOOT_OK`**, verifying loaded renderer, all six character choices and the Crowe shop UI. The original `'--ozone-platform=wayland' is not compatible with Vulkan` error was absent. The test uses the original executable without user-supplied compatibility flags.
+- In-place updater blocks nonzero smoke results; native builder now installs only after smoke passes. No automatic cleanup/archive runs during normal updates; a too-large GitHub ZIP does not invalidate the already smoke-tested locally installed game.
+
+**Acceptance boundary:** These checks verify the GitHub Linux environment, not the owner's particular NVIDIA-equipped Ubuntu desktop. A real desktop launch there is still needed before labeling this owner-accepted or releasing/tagging it. Gameplay balance, story, map imagery and geometry, and old-save compatibility were not changed.
