@@ -42,7 +42,7 @@ for(const script of ['character-routes.js','career-shell.js']){
  const needle='src="'+script+'?v=';
  const i=html.indexOf(needle);
  assert.ok(i>=0,script+' must be loaded with a cache-busting key');
- assert.ok(/^\\d{8}-[^"]+/.test(html.slice(i+needle.length)),
+ assert.ok(/^\d{8}-[^"]+/.test(html.slice(i+needle.length)),
   script+' must retain a dated revision');
 }
 assert.ok(html.indexOf('character-routes.js?v=')<html.indexOf('career-shell.js?v='),
