@@ -82,7 +82,20 @@
   return Math.max(2,Math.ceil(nauticalMiles/effectivePerDay));
  }
  function plan(a,b,type){
-  const r=route(a,b);return r?{...r,days:sailingDays(r.nauticalMiles,type)}:null;
+  const r=route(a,b);if(!r||!['schooner','steamer'].includes(type))return null;
+  // 1878 reference: Liverpool -> New York (westbound) took substantially
+  // longer under sail than the eastbound crossing. Other routes follow
+  // nautical-mile estimates and pay for intermediate port calls.
+  // Existing saved trips retain their original ETA; this only quotes new ones.
+  const oceanDays=sailingDays(r.nauticalMiles,type);
+  const westbound=r.legs.some(leg=>leg.from==='Liverpool'&&leg.to==='New York');
+  const westboundAdjustment=westbound?
+   Math.ceil(oceanDays*(type==='schooner'?.25:.10)):0;
+  const calls=Math.max(0,r.legs.length-1);
+  const portDays=calls*(type==='schooner'?2:1);
+  return {...r,days:oceanDays+westboundAdjustment+portDays,
+   underwayDays:oceanDays+westboundAdjustment,portDays,
+   basis:'1878 modeled distance, westbound headwinds and route stopovers'};
  }
  const dateMinute=date=>{
   if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;

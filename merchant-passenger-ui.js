@@ -285,6 +285,7 @@ function draw(){
   body+=button('booking-close','Close Ticket Office');
  }else if(travel.phase==='at-sea'){
   const trip=st.voyage;
+  const registered=root.FE_MERCHANT_MANIFEST?.ensure?.(save)?.voyages?.find(v=>v.id===trip.registryId);
   const meters=save.characterNeeds?.meters||{};
   body='<div class="passenger-voyage-summary"><p>From <b>'+esc(trip.from)+'</b> to <b>'+esc(trip.to)+'</b> · '+esc(trip.type)+'</p>'+
    '<p>Estimated arrival: <b>'+esc(trip.etaDate)+'</b> · '+travel.daysRemaining+' days remaining.</p>'+
@@ -293,11 +294,13 @@ function draw(){
    (trip.weather?.observed&&trip.weather.delayMinutes?
     '<p class="passenger-weather-notice">Rough-sea delay recorded: '+(trip.weather.delayMinutes/60).toFixed(0)+' hours. Revised arrival: <strong>'+esc(trip.etaDate)+'</strong>.</p>':
     '<p class="fine">Arrival is an estimate. Rough seas may change the schedule during the crossing.</p>')+'</div>'+
-   shipScene()+'<div class="passenger-sea-map"><svg viewBox="0 0 800 600" role="img" aria-label="Current passenger vessel on the original maritime route chart">'+
-   '<image href="'+esc(nav.MAP)+'" width="800" height="600"/>'+
-   '<polyline points="'+trip.points.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="4" stroke-dasharray="9 6"/>'+
-   (travel.coordinates?'<circle id="passengerLiveShip" cx="'+travel.coordinates.x+'" cy="'+travel.coordinates.y+'" r="14" fill="#f4d16d" stroke="#432a1e" stroke-width="3"/>'+
-   '<text id="passengerLiveLabel" x="'+travel.coordinates.x+'" y="'+(travel.coordinates.y+5)+'" text-anchor="middle" fill="#251f1b" font-size="17">♟</text>':'')+
+   shipScene()+'<div class="passenger-sea-map"><svg viewBox="0 0 '+nav.CHART.width+' '+nav.CHART.height+'" role="img" aria-label="Current passenger vessel on the Admiralty maritime chart">'+
+   '<image href="'+esc(nav.MAP)+'" width="'+nav.CHART.width+'" height="'+nav.CHART.height+'"/>'+
+   '<polyline points="'+(nav.displayRoute(trip.from,trip.to)?.points||[]).map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#7b2c24" stroke-width="3" stroke-dasharray="8 5"/>'+
+   ((nav.displayRoute(trip.from,trip.to)?.points?.length)?(point=>{
+     return point?'<circle id="passengerLiveShip" cx="'+point.x+'" cy="'+point.y+'" r="10" fill="#f4d16d" stroke="#432a1e" stroke-width="2"/>'+
+      '<text id="passengerLiveLabel" x="'+point.x+'" y="'+(point.y+4)+'" text-anchor="middle" fill="#251f1b" font-size="12">♟</text>':'';
+    })(nav.xyAt(nav.displayRoute(trip.from,trip.to).points,travel.seaProgress||0)):'')+
    '</svg></div>'+
    '<div class="passenger-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(travel.progress*100)+'"><span style="width:'+Math.floor(travel.progress*100)+'%"></span></div>'+
    '<div class="passenger-time-actions">'+
@@ -309,11 +312,14 @@ function draw(){
   if(notices.length)body+='<section class="passenger-voyage-notices"><h3>Captain’s Passage Register</h3>'+
     notices.map(e=>'<p>'+esc(e.date)+' · '+(e.kind==='weather-delay'?
      'Rough seas delayed arrival by '+Math.round(e.delayMinutes/60)+' hours.':'Fare paid and berth issued.')+'</p>').join('')+'</section>';
+  if(registered)body+='<details class="passenger-full-register"><summary>Passenger Manifest · '+registered.passengers.length+' travelers</summary>'+root.FE_MERCHANT_MANIFEST.detail(registered)+'</details>';
   if(save.phase==='report')body+='<div class="passenger-day-report"><h3>Daily Report · '+esc(save.gameDate)+'</h3>'+
    '<p>Company close: '+money(save.dailyReport?.companyEnd??save.companyCash)+
    ' · Personal cash: '+money(save.dailyReport?.personalAtClose??save.personalCash)+'</p></div>';
  }else{
+  const past=root.FE_MERCHANT_MANIFEST?.records?.(save,'')?.filter(v=>v.kind==='passenger')||[];
   body='<h3>Port of '+esc(st.port)+'</h3>'+cargoScene()+journalBook(false)+
+   (past.length?'<details class="passenger-full-register"><summary>Passenger Voyage Archive · '+past.length+'</summary>'+past.slice(-15).reverse().map(v=>root.FE_MERCHANT_MANIFEST.detail(v)).join('')+'</details>':'')+
    '<div class="passenger-port-actions">'+button('ticket','Book Return Passage')+
    button('shipping-map','Open Shipping Chart')+'</div>';
  }
@@ -410,7 +416,9 @@ function keydown(e){
 if(typeof document!=='undefined')root.setInterval?.(()=>{
  if(!host||host.hidden||booking||!save?.passengerSea?.voyage)return;
  const live=sea.position(save),dot=host.querySelector('#passengerLiveShip');
- if(dot&&live.coordinates){dot.setAttribute('cx',live.coordinates.x);dot.setAttribute('cy',live.coordinates.y);const icon=host.querySelector('#passengerLiveLabel');if(icon){icon.setAttribute('x',live.coordinates.x);icon.setAttribute('y',live.coordinates.y+5)}}
+ const trip=save.passengerSea.voyage,shown=trip&&nav.displayRoute(trip.from,trip.to);
+ const pos=shown?nav.xyAt(shown.points,live.seaProgress||0):null;
+ if(dot&&pos){dot.setAttribute('cx',pos.x);dot.setAttribute('cy',pos.y);const icon=host.querySelector('#passengerLiveLabel');if(icon){icon.setAttribute('x',pos.x);icon.setAttribute('y',pos.y+4)}}
  const pct=Math.floor((live.progress||0)*100),bar=host.querySelector('.passenger-progress');
  if(bar){bar.setAttribute('aria-valuenow',pct);const fill=bar.querySelector('span');if(fill)fill.style.width=pct+'%'}
  const board=ship.ensure(save);

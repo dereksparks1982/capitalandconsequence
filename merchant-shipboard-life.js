@@ -78,7 +78,17 @@ function positionAt(save,id,minute){
 function position(save,id){return positionAt(save,id,save.worldCalendar?.worldMinute)}
 function onDeck(save,deck){
  if(!ensure(save))return [];
- return PEOPLE.map(p=>({...p,...position(save,p.id)})).filter(p=>p.deck===deck);
+ // Show two registered simulated travelers on real shipboard tiles. Their
+ // stable scheduler IDs still drive walking and dialogue on older saves.
+ const registryId=save?.passengerSea?.voyage?.registryId;
+ const row=registryId&&root.FE_MERCHANT_MANIFEST?.ensure?.(save)?.voyages?.find(v=>v.id===registryId);
+ const registered=row?.passengers?.filter(p=>p.role==='passenger')||[];
+ return PEOPLE.map(p=>{
+  const visitor=p.id==='traveler'?registered[0]:p.id==='cards'?registered[1]:null;
+  return {...p,...(visitor?{label:visitor.name,
+   description:'Ticketed passenger on this voyage, registered in the ship manifest.'}:{}),
+   ...position(save,p.id)};
+ }).filter(p=>p.deck===deck);
 }
 function nearby(save){
  const me=ship.ensure(save);if(!me)return [];

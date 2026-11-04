@@ -4,6 +4,7 @@
 'use strict';
 const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
 const trade=typeof module==='object'&&module.exports?require('./merchant-trade.js'):root.FE_MERCHANT_TRADE;
+const manifest=typeof module==='object'&&module.exports?require('./merchant-manifest.js'):root.FE_MERCHANT_MANIFEST;
 const PRICE={steel:65000,rail:175000,schooner:14000,steamer:36000};
 const PORTS={
  Baltimore:{distance:0,storm:.006,piracy:0,leads:['New York']},
@@ -36,6 +37,7 @@ function ensure(save){
  if(!e.fleet.tradeHold||typeof e.fleet.tradeHold!=='object')e.fleet.tradeHold={};
  if(!Array.isArray(e.fleet.ledger))e.fleet.ledger=[];
  if(!Array.isArray(e.log))e.log=[];
+ manifest?.recoverFleet?.(save,e.fleet);
  if(!e.lastDate&&/^\d{4}-\d{2}-\d{2}$/.test(save.gameDate||''))e.lastDate=save.gameDate;
  return e;
 }
@@ -125,6 +127,7 @@ function dispatch(save,id,dest,cargo,insured){
  const from=ship.port,voyage=nav?.plan?.(from,dest,ship.type),days=voyage?.days||daysFor(from,dest,ship.type);ship.status='at-sea';
  ship.trip={from,to:dest,cargo,depart:save.gameDate,eta:addDay(save.gameDate,days),insured,fee:cargo==='freight'?(ship.type==='steamer'?840:400):0,consignment,
   departMinute:nav?.gameMinute?.(save)??null,routePoints:voyage?.points||null,nauticalMiles:voyage?.nauticalMiles||null,navSurvey:voyage?.survey||null};
+ manifest?.registerMerchant?.(save,ship);
  event(e,save.gameDate,ship.name+' departed '+from+' for '+dest+' with '+(cargo==='electric'?consignment.units+' '+consignment.productId+' goods':'merchant freight')+'. ETA '+ship.trip.eta+'.');
  root.FE_SKILLS?.practice?.(save,'logistics',{amount:.28,difficulty:51,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Scheduling cargo shipment'});
  root.FE_SKILLS?.practice?.(save,'cargo-handling',{amount:.17,difficulty:43,event:'dispatch:'+ship.id+':'+ship.trip.depart+':'+dest,source:'Cargo manifest review'});
@@ -152,6 +155,7 @@ function dispatchTrade(save,id,dest,item,units,insured){
   tradeLot:lot,insurancePremium:offer.cargoInsurance,
   departMinute:nav.gameMinute(save),routePoints:offer.points,
   nauticalMiles:offer.nauticalMiles,navSurvey:'ecoclipper-image-traced-v1',manifestId:idTrip};
+ manifest?.registerMerchant?.(save,ship);
  event(e,save.gameDate,ship.name+' departed '+ship.port+' for '+dest+
   ' carrying '+lot.units+' paid '+lot.name+'. Purchase '+money(offer.purchase)+
   ', handling/passage '+money(offer.loading+offer.fee)+
@@ -220,12 +224,13 @@ function sellElectric(save,port){
  root.FE_SKILLS?.practice?.(save,'salesmanship',{amount:.25,difficulty:46,event:'export-sale:'+port+':'+save.gameDate,source:'Overseas Federal Electric sale'});
  return result(cargo.units+' '+cargo.productId+' goods sold at '+port+' for '+money(cents/100)+'.');
 }
-function arrive(e,ship,date){
+function arrive(save,e,ship,date){
  const v=ship.trip;if(!v)return;const key=ship.id+'|'+v.depart+'|'+v.to+'|'+v.cargo;
  const weather=PORTS[v.to],risk=weather.storm*(1+(100-ship.condition)/65)*(v.to==='Havana'&&+date.slice(5,7)>=6&&+date.slice(5,7)<=11?2:1);
  const piracy=weather.piracy,draw=roll(key+'|risk');
  if(draw<risk*.17+piracy*.22){
   const cause=draw<risk*.17?'storm':'piracy',insure=v.insured?Math.round(PRICE[ship.type]*.72):0;
+  manifest?.closeMerchant?.(save,ship,v,'lost',date,{cause});
   ship.status='lost';ship.trip=null;if(insure){e.fleet.cash+=insure;ledger(e.fleet,date,'Hull insurance settlement for '+ship.name,insure)}
   if(v.cargo==='trade'&&v.tradeLot){
    const cargoCover=v.insured?Math.round(v.tradeLot.purchase*.7):0;
@@ -237,12 +242,13 @@ function arrive(e,ship,date){
   return;
  }
  const damage=draw<risk+piracy?Math.round(8+roll(key+'|damage')*37):Math.round(1+roll(key+'|wear')*4);
+ const spoiled=v.cargo==='trade'&&v.tradeLot&&draw<risk+piracy?Math.max(1,Math.floor(v.tradeLot.units*.2)):0;
+ manifest?.closeMerchant?.(save,ship,v,'arrived',date,{damagedUnits:spoiled});
  ship.condition=Math.max(7,ship.condition-damage);ship.port=v.to;ship.status='in-port';ship.trip=null;ship.experience++;
  if(v.cargo==='freight'){e.fleet.cash+=v.fee;ledger(e.fleet,date,'Completed merchant freight: '+v.to,v.fee)}
  else if(v.cargo==='trade'){
   const lot=v.tradeLot;
   if(lot){
-   const spoiled=draw<risk+piracy?Math.max(1,Math.floor(lot.units*.2)):0;
    const landed=Math.max(0,lot.units-spoiled);
    if(spoiled){
     const cover=v.insured?Math.floor(lot.purchase*spoiled/lot.units*.7):0;
@@ -284,7 +290,7 @@ function advance(save){
    const daily=s.type==='steamer'?(s.status==='at-sea'?20:7):(s.status==='at-sea'?9:4);
    e.fleet.cash-=daily;ledger(e.fleet,day,s.name+' wages, stores and upkeep',-daily);
    if(s.status==='in-port')s.condition=Math.max(6,s.condition-.035);
-   if(s.status==='at-sea'&&s.trip?.eta<=day)arrive(e,s,day);
+   if(s.status==='at-sea'&&s.trip?.eta<=day)arrive(save,e,s,day);
   }
  }
  e.lastDate=date;

@@ -8,6 +8,7 @@
  'use strict';
  const nav=typeof module==='object'&&module.exports?require('./merchant-navigation.js'):root.FE_MERCHANT_NAV;
  const walk=typeof module==='object'&&module.exports?require('./merchant-harbor-walk.js'):root.FE_MERCHANT_HARBOR_WALK;
+ const manifest=typeof module==='object'&&module.exports?require('./merchant-manifest.js'):root.FE_MERCHANT_MANIFEST;
  const ZONES=['quay','warehouse','customs','market','lodging','street'];
  const TRANSFER_DAYS=2;
  const LODGING_COST=1.25; // Provisional game balance, not an authenticated 1878 room rate.
@@ -23,6 +24,7 @@
   if(!Array.isArray(st.history))st.history=[];
   if(!st.position||typeof st.position!=='object')st.position={zone:'quay',x:6,y:7};
   if(!Number.isSafeInteger(st.nextId)||st.nextId<0)st.nextId=0;
+  if(st.voyage)manifest?.registerPassenger?.(save,st.voyage,'Charles Whitecomb',true);
   return st;
  }
  // Deterministic voyage exposure: a forecast is not a guaranteed arrival date.
@@ -108,6 +110,7 @@
    points:q.points,legs:q.legs,returning:q.returning,
    weather:{triggerMinute:oceanStart+Math.floor(q.seaDays*1440*.45),
     delayMinutes,observed:false,description:'Modeled rough-sea delay; historical conditions unverified.'}};
+  manifest?.registerPassenger?.(save,st.voyage,'Charles Whitecomb');
   st.port=null;
   save.currentLocation={locationId:'passengerVessel',roomId:'cabin'};
   st.history.push({id,date:save.gameDate,kind:'embarked',from:q.from,to:q.to,fare:q.fare,eta:q.etaDate});
@@ -129,10 +132,12 @@
     st.history.push({id:trip.id,kind:'weather-delay',date:save.gameDate,
      delayMinutes:weather.delayMinutes,eta:trip.etaDate});
     st.history=st.history.slice(-80);
+    manifest?.weatherDelay?.(save,trip,save.gameDate,weather.delayMinutes);
    }
   }
   if(now<trip.arrivalMinute)return result(false,'No passenger arrival due.');
   const isReturn=!!trip.returning;
+  manifest?.closePassenger?.(save,trip,save.gameDate);
   st.voyage=null;
   st.port=isReturn?null:trip.to;
   st.position={zone:'quay',x:6,y:7};

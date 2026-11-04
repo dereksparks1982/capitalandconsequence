@@ -32,6 +32,16 @@ There's no single road to success. You might build a fortune, lose everything, u
 
 ---
 
+## Working shipping and passenger records (v0.7.104-dev)
+
+Ocean shipping runs on the **saved world clock**. In 1878, a steamer may make a major Atlantic crossing in roughly two weeks, while sailing ships can take five or more weeks westbound. Multi-ocean passages can take **months**. Short coastal journeys remain shorter. Voyage times are estimates based on chart distance, vessel type, direction and stopovers; adverse weather may delay a passenger journey. Departed voyages keep their saved arrival dates across updates.
+
+Merchant shipping now records each dispatched vessel, its route, departure and ETA, real purchased cargo lots or generic freight, and a small cast of **fictional passengers** whose journeys close on arrival or reported loss. Paid passenger travel records Charles and other ticketed simulated travelers. The two familiar walkable shipboard passenger NPCs use names from the current voyage roll where recorded. These are in-game characters, **not historical immigrants or verified genealogical records**.
+
+Open **World Shipping Chart → Shipping Office → Permanent Ship & Passenger Register** to search by vessel, passenger, cargo, or port, including completed voyages. The archive belongs to each saved profile and has no automatic history-pruning limit. Older underway saves are recovered without inventing names retroactively. Completed voyage outcomes preserve cargo quantities and recorded passenger dispositions; commercial sale, ownership, insurance and port authorization remain governed by the existing systems.
+
+Sources and research: [Timothy J. Hatton, *Emigrant voyages from the UK to North America and Australasia*](https://onlinelibrary.wiley.com/doi/10.1111/ehr.13351), on the historical contrast between sailing and steamship voyage durations. Exact timings for every individual 1878 sailing are not claimed.
+
 ## Legal: All Rights Reserved
 
 **Copyright © 2026 Derek Sparks. All rights reserved. Published by Elderred Softworks LLC.**

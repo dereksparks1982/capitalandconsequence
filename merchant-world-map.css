@@ -119,3 +119,15 @@ body.merchant-world-open{overflow:hidden}
 .merchant-world-overlays .ocean-quoted-route{stroke:#b43725;stroke-width:4;
  stroke-dasharray:10 4;fill:none;opacity:.92;pointer-events:none}
 .merchant-world-overlays .ocean-route{stroke:#273d54;stroke-width:2.2}
+
+/* v0.7.104: compact searchable voyage ledgers. Layout of the chart is untouched. */
+.ocean-voyage-archive{border-top:2px double #9d8966;margin:12px 0;padding:10px 0}
+.ocean-voyage-archive summary,.ocean-ship-history summary{cursor:pointer;font-weight:bold}
+.ocean-voyage-archive label{display:block;font-size:14px;line-height:1.4;margin:10px 0}
+.ocean-voyage-archive input[type=search]{display:block;width:100%;box-sizing:border-box;margin:5px 0;padding:9px;border:1px solid #8f7759;background:#fff9ed;color:#281f16}
+.merchant-manifest-entry{margin:8px 0;padding:9px;background:#f3e9d2;border:1px solid #a89574;overflow-wrap:anywhere}
+.merchant-manifest-entry h5{font-size:14px;margin:0 0 6px}
+.merchant-manifest-entry p{font-size:13px;line-height:1.45;margin:5px 0}
+.merchant-manifest-entry details{margin:6px 0}
+.merchant-manifest-entry summary{cursor:pointer;font-size:13px}
+.merchant-manifest-entry ol{margin:7px 0;padding-left:19px}

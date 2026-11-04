@@ -129,3 +129,11 @@ span.passenger-cell{cursor:default}
 .shipboard-cell[data-passenger-action^="ship-go:"]{cursor:pointer}
 .shipboard-cell[data-passenger-action^="ship-go:"]:hover,
 .shipboard-cell[data-passenger-action^="ship-go:"]:focus-visible{outline:2px solid #367179;outline-offset:-2px}
+
+/* v0.7.104: on-board fictional passenger rolls, readable in cabin and port. */
+.passenger-full-register{margin:14px 0;padding:10px;background:#e7dac1;border:1px solid #897457}
+.passenger-full-register>summary{cursor:pointer;font-weight:700}
+.passenger-full-register .merchant-manifest-entry{padding:9px;margin:8px 0;background:#fff4de}
+.passenger-full-register .merchant-manifest-entry p{margin:6px 0}
+.passenger-full-register li{margin:4px 0}
+.passenger-sea-map svg{width:100%;height:auto;display:block}

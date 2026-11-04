@@ -18,6 +18,7 @@ function ensuredHost(){
  document.body.appendChild(host);
  host.addEventListener('click',onClick);
  host.addEventListener('change',onChange);
+ host.addEventListener('input',onInput);
  host.addEventListener('keydown',onKey);
  host.addEventListener('pointerdown',onPointerDown);
  host.addEventListener('pointermove',onPointerMove);
@@ -278,6 +279,7 @@ function pinPanel(id){
 function shipPanel(id){
  const s=fleet().ships.find(v=>String(v.id)===String(id));if(!s)return'<p>Ship not found.</p>';
  const p=nav.position(s,session.save);
+ const ledger=root.FE_MERCHANT_MANIFEST?.records?.(session.save,'',s.id)||[];
  let html='<h3>'+esc(s.name)+'</h3><p><strong>'+esc(s.status.toUpperCase())+'</strong> · '+esc(s.type)+' · Hull '+Number(s.condition).toFixed(0)+'%</p>';
  if(s.status==='at-sea'&&s.trip){
   const trip=s.trip,seaMiles=trip.nauticalMiles||nav.route(trip.from,trip.to)?.nauticalMiles||0;
@@ -334,6 +336,7 @@ function shipPanel(id){
     '<p class="fine">This is an estimate; no ship moved and no cash or cargo was transferred.</p></section>';
   }
  }
+ if(ledger.length)html+='<details class="ocean-ship-history"><summary>Ship Register · '+ledger.length+' recorded voyages</summary>'+ledger.slice(-8).reverse().map(v=>root.FE_MERCHANT_MANIFEST.detail(v)).join('')+'</details>';
  return html;
 }
 function business(){
@@ -357,6 +360,13 @@ function business(){
  }
  html+='<h4>Physical Cargo Holds · '+held+' unsold lots</h4><p class="fine">Goods are paid for at origin and may be damaged or lost in transit. Receiving the lot creates no revenue until it is deliberately sold through the receiving port agent.</p>';
  html+='<h4>Trade Ports</h4><p>'+e.ports.map(esc).join(' · ')+'</p>';
+ if(root.FE_MERCHANT_MANIFEST){
+  const query=session.manifestSearch||'';
+  html+='<details class="ocean-voyage-archive"><summary>Permanent Ship & Passenger Register</summary>'+
+   '<p class="fine">Fictional in-game vessel, passenger and cargo records. Not real historical immigration manifests. Saved voyages are never dropped from the register.</p>'+
+   '<label>Search ship, passenger, cargo, or port <input type="search" data-ocean-manifest-search value="'+esc(query)+'" placeholder="Passenger name, ship, origin, destination"></label>'+
+   '<div id="oceanManifestResults">'+root.FE_MERCHANT_MANIFEST.archive(session.save,query,60)+'</div></details>';
+ }
  const history=root.FE_EMPIRE.ensure(session.save).log||[];
  if(history.length)html+='<details class="ocean-voyage-log"><summary>Shipping Office Journal · '+history.length+' entries</summary>'+
   history.slice(0,20).map(line=>'<p>'+esc(line)+'</p>').join('')+'</details>';
@@ -370,6 +380,7 @@ function draw(reset){
  root.FE_EMPIRE.advance(session.save);
  const directory=host.querySelector('.ocean-chart-directory');
  if(directory)session.directoryOpen=directory.open;
+ const archiveOpened=host.querySelector('.ocean-voyage-archive')?.open||false;
  host.innerHTML='<div class="merchant-world-card"><header class="merchant-world-head"><div><small>CHARLES WHITCOMB · MERCHANT NAVIGATION</small><h2 id="merchantWorldHeading">World Shipping Chart</h2><p>'+esc(session.save.gameDate)+' · Ships move with the saved Washington clock</p></div><div class="merchant-world-tools">'+
   action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
@@ -383,6 +394,7 @@ function draw(reset){
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
   (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
   '</span><span>Admiralty print dated 1888; visible routes are illustrative, not 1878 records.</span></footer></div>';
+ const archiveNode=host.querySelector('.ocean-voyage-archive');if(archiveNode)archiveNode.open=archiveOpened;
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
  const onCommerce=session.tab==='commerce';sel.hidden=!!onCommerce;commerce.hidden=!onCommerce;
  if(session.walking)host.querySelector('.merchant-harbor-walk')?.focus();
@@ -529,6 +541,12 @@ function onClick(e){
   if(out.ok){session.selection={type:'pin',id:out.pin.id};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
   else setStatus(out.reason);
  }
+}
+function onInput(e){
+ if(!session||!e.target.matches('[data-ocean-manifest-search]'))return;
+ session.manifestSearch=e.target.value;
+ const result=host.querySelector('#oceanManifestResults');
+ if(result&&root.FE_MERCHANT_MANIFEST)result.innerHTML=root.FE_MERCHANT_MANIFEST.archive(session.save,session.manifestSearch,60);
 }
 function onChange(e){
  const freight=e.target?.matches?.('[data-ocean-destination],[data-ocean-cargo],[data-ocean-insurance]');
