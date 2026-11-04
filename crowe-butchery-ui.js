@@ -180,4 +180,4 @@ function refresh(){
  accounts.appendChild(log);
 }
 root.FE_CROWE_BUTCHERY_UI=Object.freeze({refresh});
-})();
+})(typeof window!=='undefined'?window:globalThis);

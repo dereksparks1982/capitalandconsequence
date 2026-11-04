@@ -32,3 +32,6 @@ assert(main.includes('remoteOfficeTeleportBlocked=returned===false'),
  'Packaged navigation must reject unauthorized zero-time return to distant office');
 assert(!main.includes('context.officeRestored='),
  'Removed old travel-bypass expectation cannot reappear in packaged checks');
+
+assert(main.includes('show:SMOKE_TEST'),'CI smoke window must map under native Wayland for animation frame callbacks');
+assert(main.includes('backgroundThrottling:!SMOKE_TEST'),'Visible smoke must not throttle its timed travel animation');

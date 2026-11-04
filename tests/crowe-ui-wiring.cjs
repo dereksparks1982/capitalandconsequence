@@ -4,6 +4,12 @@ const read=f=>fs.readFileSync(path.join(__dirname,'..',f),'utf8');
 const cityCtx={window:{}};vm.runInNewContext(read('city.js'),cityCtx);
 const city=cityCtx.window.FederalElectricCity,access=require('../city-access.js'),shop=require('../crowe-butchery.js');
 const routes=read('character-routes.js'),main=read('app.js'),ui=read('crowe-butchery-ui.js'),index=read('index.html');
+// Execute the actual browser IIFE; static wiring tests missed that its root
+// parameter was undefined, crashing the playable butcher-shop interface.
+const uiContext={window:{FE_CROWE_BUTCHERY:shop,FE_CROWE_SHOP_SCENE:{}},document:{}};
+vm.runInNewContext(ui,uiContext,{filename:'crowe-butchery-ui.js'});
+assert.equal(typeof uiContext.window.FE_CROWE_BUTCHERY_UI?.refresh,'function',
+ 'Crowe UI must register in a real browser global without a startup exception');
 const place=city.getLocation(shop.SHOP);
 assert.equal(place.name,'Crowe Family Butchers');
 assert.equal(place.defaultRoom,'shop-floor');

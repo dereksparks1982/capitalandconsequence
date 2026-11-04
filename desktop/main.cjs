@@ -703,8 +703,8 @@ async function runSmokeTest(win) {
 function createMainWindow() {
   const win=new BrowserWindow({
     title:'Capital & Consequence',width:1440,height:900,minWidth:1100,minHeight:720,
-    backgroundColor:'#111111',autoHideMenuBar:true,show:false,
-    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,preload:path.join(__dirname,'preload.cjs')}
+    backgroundColor:'#111111',autoHideMenuBar:true,show:SMOKE_TEST,
+    webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:!SMOKE_TEST,preload:path.join(__dirname,'preload.cjs')}
   });
 
   win.once('ready-to-show',()=>{if(!SMOKE_TEST)win.show();});
