@@ -9,11 +9,11 @@
 
 > **FIX THE PROBLEM. PRESERVE THE WORLD.**
 
-This Bible records the ten rules the owner explicitly directed the developer to follow after unauthorized development changes. It applies to every assistant, developer, automated process, future build, refactor, test revision, documentation update, and handoff.
+This Bible records the owner's binding rules for development, including the explicit requirement to listen fully and wait for authorization before building. It applies to every assistant, developer, automated process, future build, refactor, test revision, documentation update, and handoff.
 
 **Read this file before touching the project.** Read the relevant existing canon and decisions too. This document contains **development procedures only**, not lore. See [GAME_LORE.md](GAME_LORE.md) and its linked canon files for the story and world; those decisions remain authoritative **until the owner approves a revision**. No creative decision is inherently permanent or beyond criticism.
 
-## THE TEN NON-NEGOTIABLE RULES
+## THE ELEVEN NON-NEGOTIABLE RULES
 
 ### 1. THE OWNER IS THE FINAL AUTHORITY
 The owner has final approval over what belongs in the game, what changes, and what stays. **Developers are expressly allowed and encouraged to suggest improvements, challenge weak ideas, point out conflicts, and recommend alternatives.** Explain the reason, likely consequences, and tradeoffs candidly. Advice is not an override: do not implement a departure from an owner decision without approval.
@@ -44,6 +44,13 @@ Record what was changed, why, what was explicitly authorized, and what was actua
 
 ### 10. STOP MEANS STOP
 When the owner says **stop**, stop making changes. No more editing, committing, pushing, testing that mutates project state, or carrying on with the same task until the owner explicitly gives a new instruction. A new instruction authorizes only its stated scope.
+
+### 11. LISTEN FIRST. NEVER BUILD WITHOUT CLEAR AUTHORIZATION
+**No code changes, gameplay builds, assets, releases, or commits for a build may begin until the owner has actually authorized that work.** Authorization can be conversational and contextual, such as "build," "go ahead," "implement it," "do the next build," or an equally clear instruction referring to a defined development task; those exact words are **not** required. But an idea, suggestion, correction, design discussion, or continuation of an explanation is **not** permission to start implementing it.
+
+**Do not run off while the owner is still talking.** The owner commonly develops a request over several messages. Listen to the whole explanation, accept further details and revisions, discuss options when asked, and **wait for a clear go-ahead** before writing code or launching a build. Phrases such as "what do you think," "maybe," "I'm thinking," "let's say," or "hold on" are not build authorization. An approval of one idea is not automatic permission to build all ideas under discussion.
+
+An instruction to **read, inspect, research, explain, plan, or document** authorizes only that named task, **not** a build. If the owner's intent to begin implementation is uncertain, ask instead of assuming. Even after authorization, stay within the requested scope and keep listening for changes or a stop instruction. An express stop immediately overrides any earlier permission to continue.
 
 ## CHANGE-SCOPE AND REVIEW DISCIPLINE
 
