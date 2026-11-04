@@ -52,7 +52,7 @@ jobs:
         with:
           node-version: '22'
       - name: Install Electron and local game dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Build and smoke the actual Linux executable on a virtual desktop
         shell: bash
         run: |
