@@ -431,7 +431,7 @@ function draw(reset){
   '</small><h2 id="merchantWorldHeading">World Shipping Chart</h2><p>'+esc(session.save.gameDate)+
   (isMariner()?' · Historical route study, no company transactions':' · Ships move with the saved Washington clock')+
   '</p></div><div class="merchant-world-tools">'+
-  action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
+  action('mark',session.mode==='mark'?'Cancel Marking':'Mark Area')+action('edit-ports',session.mode==='edit-ports'?'Finish Editing Ports':'Edit Ports')+action('zoom-out','−')+action('fit','Fit')+action('zoom-in','+')+
   '<output id="merchantWorldZoom">100%</output>'+action('close','✕')+'</div></header>'+
   '<div class="merchant-world-columns"><div class="merchant-world-viewport" tabindex="0" aria-label="Shipping chart. Right drag to pan; wheel or buttons to zoom; select a port or ship.">'+
   '<div class="merchant-world-stage"><img draggable="false" src="'+esc(nav.MAP)+'" alt="Samuel Augustus Mitchell world map on Mercator projection, 1880">'+plot()+'</div>'+
@@ -441,7 +441,7 @@ function draw(reset){
    session.selection.type==='pin'?pinPanel(session.selection.id):shipPanel(session.selection.id))+'</section>'+
   '<section id="merchantWorldCommerce">'+business()+'</section></aside></div>'+
   '<footer><span id="merchantWorldStatus" role="status" aria-live="polite">'+
-  (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':isMariner()?'Right drag pans · wheel zooms · click to inspect a port · no trade is authorized.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
+  (session.mode==='mark'?'Click the chart to drop a personal pin.':session.mode==='move-pin'?'Click the chart to place the selected pin at its new location.':session.mode==='add-port'?'Click the printed chart where your new port belongs.':session.mode==='move-port'?'Click the printed chart to reposition this port.':session.mode==='edit-ports'?'Left-drag a harbor to move it. Right-drag to pan.':isMariner()?'Right drag pans · wheel zooms · click to inspect a port · no trade is authorized.':'Right drag pans · wheel zooms · left click inspects · select Shipping Office to trade.')+
   '</span><span>Mitchell world atlas dated 1880; overlays show illustrative 1878 sailing routes.</span></footer></div>';
  const archiveNode=host.querySelector('.ocean-voyage-archive');if(archiveNode)archiveNode.open=archiveOpened;
  const sel=host.querySelector('#merchantWorldSelection'),commerce=host.querySelector('#merchantWorldCommerce');
@@ -500,11 +500,34 @@ function onClick(e){
   if(command==='zoom-in')return zoom(1.25);
   if(command==='zoom-out')return zoom(.8);
   if(command==='fit')return resize(true);
-  if(command==='mark'){session.mode=session.mode==='inspect'?'mark':'inspect';return draw(false)}
+  if(command==='mark'){session.mode=session.mode==='mark'?'inspect':'mark';return draw(false)}
+   if(command==='edit-ports'){session.mode=session.mode==='edit-ports'?'inspect':'edit-ports';return draw(false)}
+   if(command==='add-port'){
+    const name=host.querySelector('#merchantNewPortName')?.value?.trim();
+    if(!name){setStatus('Enter the name of the new port first.');return}
+    if(chartPoint(name)){setStatus('That port already exists. Select it to move it.');return}
+    session.newPortName=name;session.mode='add-port';return draw(false);
+   }
+   if(command.startsWith('move-port:')){
+    const port=command.slice(10);
+    if(!chartPoint(port)){setStatus('Port not found.');return}
+    session.movingPort=port;session.mode='move-port';return draw(false);
+   }
+   if(command.startsWith('rename-port:')){
+    const name=command.slice(12);
+    const outcome=regions.renamePort(session.save,name,host.querySelector('#merchantEditPortName')?.value);
+    if(outcome.ok){session.selection={type:'port',id:outcome.port.name};session.onChange?.();draw(false)}
+    else setStatus(outcome.reason);return;
+   }
+   if(command.startsWith('delete-port:')){
+    const outcome=regions.deletePort(session.save,command.slice(12));
+    if(outcome.ok){session.selection={type:'port',id:'Baltimore'};session.onChange?.();draw(false)}
+    else setStatus(outcome.reason);return;
+   }
   if(command.startsWith('move-pin:')){session.mode='move-pin';session.movingPin=+command.slice(9);return draw(false)}
   if(command.startsWith('tab:')){session.tab=command.slice(4);return draw(false)}
   if(command.startsWith('focus-port:')){
-   const port=command.slice(11),p=nav.DISPLAY_PORTS[port];if(!p)return;
+   const port=command.slice(11),p=chartPoint(port);if(!p)return;
    session.selection={type:'port',id:port};session.tab='selection';session.scene=null;
    draw(false);root.requestAnimationFrame(()=>focusPoint(p,1.1));return;
   }
@@ -581,21 +604,31 @@ function onClick(e){
    changed(out);return;
   }
  }
+ if(session.suppressPortClick){session.suppressPortClick=false;return;}
+ if(['mark','move-pin','add-port','move-port'].includes(session.mode)&&e.target.closest('.merchant-world-stage')){
+  const box=host.querySelector('.merchant-world-stage').getBoundingClientRect();
+  const x=(e.clientX-box.left)*nav.CHART.width/box.width;
+  const displayY=(e.clientY-box.top)*nav.CHART.height/box.height;
+  if(['add-port','move-port'].includes(session.mode)){
+   const name=session.mode==='add-port'?session.newPortName:session.movingPort;
+   const result=session.mode==='add-port'?regions.addPort(session.save,name,x,displayY):regions.movePort(session.save,name,x,displayY);
+   if(result.ok){session.selection={type:'port',id:result.port.name};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
+   else setStatus(result.reason);
+   return;
+  }
+  const [,y]=nav.displayMarkToSaved(x,displayY);
+  const result=session.mode==='move-pin'?regions.move(session.save,session.movingPin,x,y):regions.addPin(session.save,x,y);
+  if(result.ok){session.selection={type:'pin',id:result.pin.id};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
+  else setStatus(result.reason);
+  return;
+ }
  const port=e.target.closest('[data-ocean-port]')?.dataset.oceanPort;
  if(port){session.selection={type:'port',id:port};session.tab='selection';session.scene=null;return draw(false)}
  const pin=e.target.closest('[data-ocean-pin]')?.dataset.oceanPin;
  if(pin){session.selection={type:'pin',id:pin};session.tab='selection';return draw(false)}
  const ship=e.target.closest('[data-ocean-ship]')?.dataset.oceanShip;
  if(ship){session.shipId=ship;session.selection={type:'ship',id:ship};session.tab='selection';return draw(false)}
- if((session.mode==='mark'||session.mode==='move-pin')&&e.target.closest('.merchant-world-stage')){
-  const box=host.querySelector('.merchant-world-stage').getBoundingClientRect();
-  const x=(e.clientX-box.left)*nav.CHART.width/box.width;
-  const screenY=(e.clientY-box.top)*nav.CHART.height/box.height;
-  const [,y]=nav.displayMarkToSaved(x,screenY);
-  const out=session.mode==='move-pin'?regions.move(session.save,session.movingPin,x,y):regions.addPin(session.save,x,y);
-  if(out.ok){session.selection={type:'pin',id:out.pin.id};session.mode='inspect';session.tab='selection';session.onChange?.();draw(false)}
-  else setStatus(out.reason);
- }
+
 }
 function onInput(e){
  if(!session||!e.target.matches('[data-ocean-manifest-search]'))return;
@@ -643,7 +676,17 @@ function onKey(e){
  if(e.key==='Escape'){e.preventDefault();close()}
 }
 function onPointerDown(e){
- if(!session||e.button!==2)return;
+ if(!session)return;
+ if(e.button===0&&session.mode==='edit-ports'){
+  const port=e.target.closest('[data-ocean-port]')?.dataset.oceanPort;
+  const point=port&&chartPoint(port);
+  if(point){
+   session.drag={kind:'port',id:e.pointerId,port,start:point.slice(),x:e.clientX,y:e.clientY};
+   try{e.target.closest('.merchant-world-viewport')?.setPointerCapture(e.pointerId)}catch(_){}
+   e.preventDefault();return;
+  }
+ }
+ if(e.button!==2)return;
  const vp=e.target.closest('.merchant-world-viewport');if(!vp)return;
  session.drag={id:e.pointerId,x:e.clientX,y:e.clientY,oldX:session.x,oldY:session.y};
  try{vp.setPointerCapture(e.pointerId)}catch(_){}
@@ -651,11 +694,22 @@ function onPointerDown(e){
 }
 function onPointerMove(e){
  const d=session?.drag;if(!d||d.id!==e.pointerId)return;
+ if(d.kind==='port')return;
  Object.assign(session,camera.moved({scale:session.scale,x:d.oldX,y:d.oldY},
   mapViewport(),e.clientX-d.x,e.clientY-d.y));
  resize(false);
 }
-function onPointerUp(e){if(session?.drag?.id===e.pointerId)session.drag=null}
+function onPointerUp(e){
+ const d=session?.drag;if(!d||d.id!==e.pointerId)return;
+ session.drag=null;
+ if(d.kind==='port'){
+  const dx=e.clientX-d.x,dy=e.clientY-d.y;
+  if(Math.abs(dx)+Math.abs(dy)<4)return;
+  const result=regions.movePort(session.save,d.port,d.start[0]+dx/session.scale,d.start[1]+dy/session.scale);
+  if(result.ok){session.suppressPortClick=true;session.selection={type:'port',id:d.port};session.tab='selection';session.onChange?.();draw(false)}
+  else setStatus(result.reason);
+ }
+}
 function onWheel(e){
  if(!e.target.closest('.merchant-world-viewport')||!session||e.target.closest('.merchant-harbor-walk'))return;
  e.preventDefault();zoom(e.deltaY>0?.85:1.15,e.clientX,e.clientY);
