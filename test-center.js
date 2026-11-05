@@ -8,6 +8,15 @@ const $=id=>document.getElementById(id),canvas=$('room'),g=canvas?.getContext('2
 if(!g)return;
 const KEY='dkSoftworks.testCenter.room.v1',LOC='test-center',ROOM='room-01';
 const IMG=new Image();IMG.src='assets/artwork/spritesheet.png';
+const THIRD_PARTY=new Map();
+function imageFor(sprite){
+ if(!sprite?.source_image)return IMG;
+ if(THIRD_PARTY.has(sprite.source_image))return THIRD_PARTY.get(sprite.source_image);
+ const image=new Image();THIRD_PARTY.set(sprite.source_image,image);
+ image.addEventListener('load',()=>{palette();redraw()});
+ image.addEventListener('error',()=>setStatus('Sprite failed to load: '+sprite.source_image));
+ image.src=sprite.source_image;return image;
+}
 const labels={furniture:'Furniture',floors:'Floors',construction:'Walls & Doors',small_props:'Small Props',people:'People (static)'};
 let room=null,player=null,facing='front',mode='walk',tool='place',category='furniture',spriteId='desk_oak';
 let selected=null,corner=null,history=[],future=[],dirty=false,loaded=false;
@@ -42,14 +51,15 @@ function redo(){if(!future.length){setStatus('Nothing to redo.');return}history.
 function drawSprite(ctx,s,x,y,rotation=0){
  if(!s)return;
  const size=C.dims(s,rotation),dx=x*C.TILE,dy=y*C.TILE;
- if(!IMG.complete||!IMG.naturalWidth){
+ const image=imageFor(s);
+ if(!image.complete||!image.naturalWidth){
   ctx.fillStyle=s.category==='floors'?'#8e795d':s.category==='construction'?'#5e5449':s.category==='people'?'#e2c38c':'#8c7151';
   ctx.fillRect(dx,dy,size[0]*C.TILE,size[1]*C.TILE);return;
  }
  const [sx,sy,sw,sh]=s.atlas_rect,base=s.footprint_tiles||[1,1];
- if(!rotation){ctx.drawImage(IMG,sx,sy,sw,sh,dx,dy,size[0]*C.TILE,size[1]*C.TILE);return;}
+ if(!rotation){ctx.drawImage(image,sx,sy,sw,sh,dx,dy,size[0]*C.TILE,size[1]*C.TILE);return;}
  ctx.save();ctx.translate((x+size[0]/2)*C.TILE,(y+size[1]/2)*C.TILE);ctx.rotate(rotation*Math.PI/2);
- ctx.drawImage(IMG,sx,sy,sw,sh,-base[0]*C.TILE/2,-base[1]*C.TILE/2,base[0]*C.TILE,base[1]*C.TILE);ctx.restore();
+ ctx.drawImage(image,sx,sy,sw,sh,-base[0]*C.TILE/2,-base[1]*C.TILE/2,base[0]*C.TILE,base[1]*C.TILE);ctx.restore();
 }
 function draw(){
  g.imageSmoothingEnabled=false;g.clearRect(0,0,canvas.width,canvas.height);
@@ -85,16 +95,18 @@ function thumb(s){
  const cv=document.createElement('canvas');cv.width=48;cv.height=48;
  const c=cv.getContext('2d');if(!c)return cv;c.imageSmoothingEnabled=false;
  c.fillStyle='#ab9671';c.fillRect(0,0,48,48);
- if(IMG.complete&&IMG.naturalWidth){
+ const image=imageFor(s);
+ if(image.complete&&image.naturalWidth){
   const [sx,sy,sw,sh]=s.atlas_rect,scale=Math.min(42/sw,42/sh);
-  c.drawImage(IMG,sx,sy,sw,sh,(48-sw*scale)/2,(48-sh*scale)/2,sw*scale,sh*scale);
+  c.drawImage(image,sx,sy,sw,sh,(48-sw*scale)/2,(48-sh*scale)/2,sw*scale,sh*scale);
  }
  return cv;
 }
 function palette(){
  const el=$('palette');el.replaceChildren();
  $('paletteTitle').textContent=labels[category];
- for(const s of root.FE_ROOM_CATALOG.filter(x=>x.category===category)){
+ const pack=$('artPack').value;
+ for(const s of root.FE_ROOM_CATALOG.filter(x=>x.category===category&&(pack==='all'||(x.third_party_pack||'original')===pack))){
   const b=document.createElement('button');b.type='button';b.dataset.sprite=s.id;b.title=s.name;
   b.className=s.id===spriteId?'active':'';b.append(thumb(s));
   const label=document.createElement('span');label.textContent=s.name;b.append(label);
@@ -272,9 +284,16 @@ function keys(e){
 $('walkMode').addEventListener('click',()=>setMode('walk'));
 $('editMode').addEventListener('click',()=>setMode('edit'));
 $('category').addEventListener('change',e=>{
- category=e.target.value;
- spriteId=root.FE_ROOM_CATALOG.find(s=>s.category===category)?.id||'desk_oak';
+ category=e.target.value;const pack=$('artPack').value;
+ spriteId=root.FE_ROOM_CATALOG.find(s=>s.category===category&&(pack==='all'||(s.third_party_pack||'original')===pack))?.id||'';
  palette();corner=null;redraw();setStatus('Choose an item from '+labels[category]+'.');
+});
+$('artPack').addEventListener('change',()=>{
+ const pack=$('artPack').value,available=root.FE_ROOM_CATALOG.filter(s=>pack==='all'||(s.third_party_pack||'original')===pack);
+ if(!available.some(s=>s.category===category)){category=available[0]?.category||'furniture';$('category').value=category;}
+ spriteId=available.find(s=>s.category===category)?.id||'';
+ palette();corner=null;selected=null;redraw();
+ setStatus('Switched to '+$('artPack').selectedOptions[0].textContent+'. Select a sprite and click a tile.');
 });
 $('tool').addEventListener('change',e=>{tool=e.target.value;corner=null;selected=null;setMode('edit');});
 canvas.addEventListener('click',e=>{const p=coords(e);if(p)act(p);canvas.focus({preventScroll:true});});

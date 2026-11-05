@@ -35,4 +35,20 @@ assert(C.path(room,{x:8,y:13},{x:8,y:10})!==null);
 const saved=JSON.parse(JSON.stringify(room));
 assert.equal(C.sanitize(saved,'test-center','room-01').objects.length,1);
 assert.throws(()=>C.sanitize(saved,'factory','executive-office'),'Test layout cannot load as approved office');
+
+// Check actual copied third-party sprite files and isolated runtime catalog.
+assert(html.includes('test-center-vendor-assets.js')&&html.includes('id="artPack"'));
+assert(src.includes('THIRD_PARTY')&&src.includes('imageFor(sprite)'));
+vm.runInNewContext(read('test-center-vendor-assets.js'),scope,{filename:'test-center-vendor-assets.js'});
+assert.equal(scope.window.FE_ROOM_CATALOG.length,79);
+for(const sprite of scope.window.FE_ROOM_CATALOG.filter(s=>s.source_image)){
+ const bytes=fs.readFileSync(path.join(dir,sprite.source_image));
+ assert.equal(bytes.subarray(1,4).toString('ascii'),'PNG','Missing PNG: '+sprite.source_image);
+ assert(C.asset(sprite.id));
+}
+const trial=C.makeRoom('test-center','room-01',16,16);
+assert(C.place(trial,'pp_berth',3,3));
+assert(C.paint(trial,2,2,'ss14_plating'));
+assert(C.sanitize(trial,'test-center','room-01'));
+
 console.log('PASS DK Architect test center: standalone, 69 sprites, square room, static walk/collision, editor, isolated save/export');

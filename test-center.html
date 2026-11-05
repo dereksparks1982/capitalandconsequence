@@ -9,7 +9,7 @@
 <body>
 <main class="lab">
   <header class="topline">
-    <div><div class="eyebrow">DK SOFTWORKS · CAPITAL &amp; CONSEQUENCE</div><h1>DK ARCHITECT <span>TEST CENTER</span></h1><p>One square room. One movable character. Original 32 × 32 artwork. No animations or career simulation.</p></div>
+    <div><div class="eyebrow">DK SOFTWORKS · CAPITAL &amp; CONSEQUENCE</div><h1>DK ARCHITECT <span>TEST CENTER</span></h1><p>One square room. One movable character. Original and third-party sprites (79 total). No animations or career simulation.</p></div>
     <div class="mode-buttons" role="group" aria-label="Test center mode">
       <button id="walkMode" class="active" type="button" aria-pressed="true">▶ Walk Room</button>
       <button id="editMode" type="button" aria-pressed="false">✎ Edit Room</button>
@@ -18,6 +18,7 @@
   <div class="workspace">
     <aside class="sidebar">
       <h2>DK Architect Tools</h2>
+      <label class="label" for="artPack">Sprite library</label><select id="artPack"><option value="all">All 79 sprites</option><option value="original">Capital &amp; Consequence (69)</option><option value="porcupine">Project Porcupine (6)</option><option value="ss14">Space Station 14 (4)</option></select>
       <label class="label" for="tool">Action</label>
       <select id="tool" aria-label="Editing action">
         <option value="place">Place / Paint</option>
@@ -67,9 +68,10 @@
       <div class="helpbox"><h3>Controls</h3><p><strong>Walk:</strong> WASD or arrow keys move one tile per press. Click a clear destination for an instant, path-checked move. Click an adjacent door to open or close it.</p><p><strong>Edit:</strong> Pick an object on the left, then click a tile. Select / Move uses one click to select and another to place it. Press R to rotate, Delete to remove, or Ctrl+Z to undo.</p><p><strong>Floor and wall painting:</strong> Single tile, bucket fill, or two-corner rectangle. Use Erase to remove walls; floors stay filled.</p></div>
     </aside>
   </div>
-  <footer><strong>EXPERIMENTAL BRANCH ONLY.</strong> Test Center uses its own browser storage key. It never alters the real game's room layouts, world time, finances, characters, or saves. Design ideas were studied from Porcupine, Space Station 14, Ogmo Editor, 2dtiler, and Open World Builder; no third-party code or artwork is bundled.</footer>
+  <footer><strong>EXPERIMENTAL BRANCH ONLY.</strong> Test Center uses its own browser storage key. It never alters the real game's room layouts, world time, finances, characters, or saves. Six actual upstream Git submodules and ten directly bundled third-party PNGs are included. Mixed licenses, including noncommercial art restrictions, are explained in test-center-assets/LICENSE-AND-CREDITS.md.</footer>
 </main>
 <script src="room-builder-catalog.js"></script>
+<script src="test-center-vendor-assets.js"></script>
 <script src="room-builder-core.js"></script>
 <script src="room-builder-kit.js"></script>
 <script src="test-center.js"></script>

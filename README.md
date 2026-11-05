@@ -1,6 +1,6 @@
 # Capital & Consequence
 
-**Experimental `test-center` branch:** [DK Architect Test Center](TEST-CENTER.md) has an isolated square playable room with static 32px character movement and tile/object editing. Open `test-center.html` in the branch checkout. This does **not** merge or modify the game on `main`.
+**Experimental `test-center` branch including six upstream repositories and ten directly bundled third-party PNGs:** [DK Architect Test Center](TEST-CENTER.md) has an isolated square playable room with static 32px character movement and tile/object editing. Open `test-center.html` in the branch checkout. This does **not** merge or modify the game on `main`.
 
 **v0.7.115-dev · November 4, 2026 (unaccepted):** DK Architect now lists registered scenes, including Salem waterfront and other off-map locations, allowing decoration without teleporting a character or changing the game clock. Switching scenes protects unsaved work and retains the established per-room layout storage. See `docs/RELEASE-NOTES-v0.7.115-dev.md`.
 

@@ -21,3 +21,7 @@ The square is 16 × 16 tiles at 32 pixels per tile, with authentic game art. All
 Run `node tests/test-center.cjs` on this branch to check the standalone contract and original collision/placement APIs, then `node tests/run-all.cjs` for the existing source regressions. Browser movement, pixel display and file dialogs still need an interactive local check before acceptance.
 
 **No changes to `main`, saved careers, Salem, Washington, map UI, shipping charts, or accepted 1878 narrative.**
+
+## Real upstream repositories and sprite packs
+
+Six pinned upstream Git submodules are under `third_party/`: Project Porcupine, Space Station 14, Ogmo Editor 3 CE, 2dtiler, PathFinding.js and OpenWorldBuilder/base. **Ten actual PNG assets** copied from the first two are committed to `test-center-assets/` and available in the **Sprite library** dropdown for painting and object placement. All 69 existing original game sprites remain available. Open the standalone `test-center.html` directly; the extra sprites do not require the large source submodules. See `test-center-assets/LICENSE-AND-CREDITS.md` for exact asset source and licenses; some art is noncommercial-only.

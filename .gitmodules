@@ -1,0 +1,23 @@
+[submodule "third_party/project-porcupine"]
+	path = third_party/project-porcupine
+	url = https://github.com/TeamPorcupine/ProjectPorcupine.git
+
+[submodule "third_party/space-station-14"]
+	path = third_party/space-station-14
+	url = https://github.com/space-wizards/space-station-14.git
+
+[submodule "third_party/ogmo-editor-3-ce"]
+	path = third_party/ogmo-editor-3-ce
+	url = https://github.com/Ogmo-Editor-3/OgmoEditor3-CE.git
+
+[submodule "third_party/2dtiler-app"]
+	path = third_party/2dtiler-app
+	url = https://github.com/2dtiler/app.git
+
+[submodule "third_party/pathfinding-js"]
+	path = third_party/pathfinding-js
+	url = https://github.com/qiao/PathFinding.js.git
+
+[submodule "third_party/open-world-builder"]
+	path = third_party/open-world-builder
+	url = https://github.com/OpenWorldBuilder/base.git
